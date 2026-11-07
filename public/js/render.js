@@ -443,7 +443,7 @@ function drawWorld(g, snap) {
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
         const needHuman = p.c === 'cpu' || p.nr;
         text(g, String(Math.ceil(p.dt / 60)), sx, sy - 62, 10, p.dt < 180 ? '#ff4d4d' : '#fff', 'center');
-        if (Math.floor(snap.t / 15) % 2) text(g, needHuman ? 'PLAYER REVIVE ONLY!' : 'REVIVE!', sx, sy - 50, 6, needHuman ? '#ff8a8a' : '#ffd23d', 'center');
+        if (!needHuman && Math.floor(snap.t / 15) % 2) text(g, 'REVIVE!', sx, sy - 50, 6, '#ffd23d', 'center');
       }
     } });
   }
