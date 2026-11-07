@@ -9,7 +9,7 @@ const STEP = 1000 / 60;
 const app = {
   screen: 'loading', role: 'local', net: null, myId: 0, code: '', msg: '', msgT: 0,
   slots: [], sim: null, snap: null, prevSnap: null, snapAt: 0, snapGap: 33,
-  menu: 0, remoteIn: {}, guestNames: {}, lobbyDirty: true, paused: false, acc: 0, last: 0, sendTick: 0, pendingEv: [], t: 0,
+  menu: 0, stageSel: 0, remoteIn: {}, guestNames: {}, lobbyDirty: true, paused: false, acc: 0, last: 0, sendTick: 0, pendingEv: [], t: 0,
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -84,7 +84,7 @@ function joinOnline(code, name) {
 function onGuestMessage(m) {
   if (m.t === 'joined') { app.myId = m.id; toast('Joined room ' + m.code + ' — press ATTACK to take a slot'); }
   else if (m.t === 'error') { toast(m.error); app.role = 'local'; app.screen = 'title'; app.net && app.net.close(); }
-  else if (m.t === 'lobby') { app.slots = m.slots; app.screen = 'lobby'; }
+  else if (m.t === 'lobby') { app.slots = m.slots; app.screen = 'lobby'; app.hostChoosing = m.choosing ? m.sel : null; }
   else if (m.t === 'snap') {
     app.prevSnap = app.snap; app.snap = m.s; const now = performance.now();
     app.snapGap = app.snapAt ? Math.min(100, Math.max(16, now - app.snapAt)) : 33; app.snapAt = now;
@@ -94,14 +94,14 @@ function onGuestMessage(m) {
 }
 function broadcastLobby() {
   if (app.role !== 'host' || !app.net || !app.net.open) return;
-  app.net.send({ t: 'lobby', slots: app.slots, code: app.code });
+  app.net.send({ t: 'lobby', slots: app.slots, code: app.code, choosing: app.screen === 'stages', sel: app.stageSel });
   app.lobbyDirty = false;
 }
 
 // ---------- game start / step ----------
 function startGame() {
   const cfg = app.slots.map((s, i) => ({ fid: s.fid, weapon: s.weapon, ctrl: s.ctrl, owner: s.owner, name: fname(s.fid) }));
-  app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0);
+  app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0, app.stageSel);
   app.screen = 'game'; app.paused = false; app.acc = 0;
   M.bosses.forEach((b, i) => { if (i < 2) R.bossImages(i); });
 }
@@ -150,8 +150,16 @@ function localDevicesInput() {
           if (p.u || p.d) cycle(i, 'weapon', p.d ? 1 : -1);
           if (p.j) releaseSlot(i);
         }
-        if (p.start) { startGame(); return; }
+        if (p.start) { app.screen = 'stages'; app.msgT = 0; app.lobbyDirty = true; A.play('menu'); return; }
       }
+    } else if (app.screen === 'stages') {
+      // Stage select: 4 x 3 grid of the twelve Sproto Arcade stages.
+      const sel = app.stageSel;
+      if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
+      if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
+      if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
+      if (p.a || p.start) { startGame(); return; }
+      if (p.j) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
     } else if (app.screen === 'game') {
       // Drop-in: any unassigned device presses ATTACK to take over a CPU Sproto.
       if (i < 0 && p.a) {
@@ -193,6 +201,7 @@ addEventListener('keydown', e => {
       else if (app.sim) S.toggleGod(app.sim);
     } else lastNine = e.timeStamp;
   } else if (!e.repeat) lastNine = -Infinity;
+  if (e.code === 'Escape' && app.screen === 'stages') { app.screen = 'lobby'; app.lobbyDirty = true; return; }
   if (e.code === 'Escape' && app.screen === 'lobby') { if (app.net) app.net.close(); app.net = null; app.role = 'local'; app.screen = 'title'; }
   if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'local') app.paused = !app.paused;
   if (e.code === 'KeyM') A.toggle();
@@ -243,7 +252,33 @@ function drawLobby() {
     ? ['ATTACK: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon', 'Waiting for the host to start…']
     : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: begin — empty slots are CPU Sprotos. ESC: back'];
   lines.forEach((l, k) => T(g, l, S.W / 2, 292 + k * 14, 6, '#c8c6e0', 'center'));
+  if (app.role === 'guest' && app.hostChoosing != null) {
+    g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 150, S.W, 40);
+    T(g, 'HOST IS CHOOSING: STAGE ' + (app.hostChoosing + 1) + ' · ' + M.bosses[app.hostChoosing].stage.toUpperCase(), S.W / 2, 170, 8, '#ffd23d', 'center');
+  }
   if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 332, 6, '#7aff8a', 'center');
+}
+function drawStages() {
+  R.drawBackground(g, app.stageSel, app.t * 0.4);
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
+  T(g, 'CHOOSE A STAGE', 12, 16, 12, '#ffd23d');
+  T(g, 'STAGE ' + (app.stageSel + 1) + ' OF 12', S.W - 12, 16, 8, '#c8c6e0', 'right');
+  const cw = 148, ch = 82;
+  for (let i = 0; i < 12; i++) {
+    const c = i % 4, r = Math.floor(i / 4), x = 8 + c * (cw + 8), y = 34 + r * (ch + 8), on = i === app.stageSel;
+    const back = R.img('assets/stages/' + String(i + 1).padStart(2, '0') + '-back.jpg');
+    g.fillStyle = '#000'; g.fillRect(x, y, cw, ch);
+    if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / 62)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, 62); }
+    g.fillStyle = on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
+    g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + 62, cw, 20);
+    T(g, String(i + 1), x + 6, y + 10, 8, on ? '#ffd23d' : '#fff');
+    T(g, M.bosses[i].stage, x + 6, y + 72, M.bosses[i].stage.length > 17 ? 5 : 6, on ? '#ffd23d' : '#e8e6f8');
+    g.strokeStyle = on ? (Math.floor(app.t / 10) % 2 ? '#ffd23d' : '#fff') : 'rgba(255,255,255,.18)'; g.lineWidth = on ? 3 : 1;
+    g.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
+  }
+  const b = M.bosses[app.stageSel];
+  T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 318, 8, '#ff8a8a', 'center');
+  T(g, 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
   if (!a || k >= 1) return b;
@@ -285,13 +320,14 @@ function frame(now) {
     const inp = {}; for (const s of app.slots) if (s.ctrl === 'remote' && s.owner === app.myId) inp[s.dev] = I.pack(I.read(s.dev));
     app.net.send({ t: 'in', inp });
   }
-  if (app.screen === 'lobby' && app.role === 'host' && (app.lobbyDirty || app.t % 60 === 0)) broadcastLobby();
+  if ((app.screen === 'lobby' || app.screen === 'stages') && app.role === 'host' && (app.lobbyDirty || app.t % 60 === 0)) broadcastLobby();
 
   g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
   g.fillStyle = '#000'; g.fillRect(0, 0, S.W, S.H);
   if (app.screen === 'loading') { T(g, 'LOADING SPROTOS…', S.W / 2, S.H / 2, 10, '#fff', 'center'); g.fillStyle = '#ffd23d'; g.fillRect(170, S.H / 2 + 16, 300 * (app.loadK || 0), 6); }
   else if (app.screen === 'title' || app.screen === 'join') drawTitle();
   else if (app.screen === 'lobby') drawLobby();
+  else if (app.screen === 'stages') drawStages();
   else if (app.screen === 'game') drawGame();
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
 }

@@ -65,13 +65,13 @@ function newPlayer(slot, cfg) {
   };
 }
 
-function create(slots, seed) {
+function create(slots, seed, firstStage) {
   const state = {
     t: 0, seed: seed >>> 0 || 1234567, mode: 'play', stageIdx: 0, stage: null, camX: 0, lockX: null,
     players: slots.map((c, i) => newPlayer(i, c)), enemies: [], projs: [], items: [], fx: [], boss: null,
     banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0, god: false,
   };
-  startStage(state, 0);
+  startStage(state, Math.max(0, Math.min(11, firstStage | 0)));
   return state;
 }
 

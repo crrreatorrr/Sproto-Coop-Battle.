@@ -17,7 +17,7 @@ const ready = im => im && im.complete && im.naturalWidth > 0;
 function preload(onProgress) {
   const list = [];
   for (const f of M.fighters) { for (let i = 0; i < 32; i++) list.push(`assets/fighters/${f.id}/${String(i).padStart(2, '0')}.png`); for (let i = 0; i < 8; i++) list.push(`assets/fighters/${f.id}/w0${i}.png`); }
-  for (const n of ['01', '02']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.jpg`); }
+  for (const n of ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.jpg`); }
   for (const n of ['cockpit-front', 'cockpit-rear', 'idle', 'laser', 'muzzle', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']) list.push(`assets/ufo/${n}.png`);
   let done = 0;
   return Promise.all(list.map(src => new Promise(res => { const im = img(src); const fin = () => { done++; onProgress && onProgress(done / list.length); res(); }; if (im.complete) fin(); else { im.onload = fin; im.onerror = fin; } })));

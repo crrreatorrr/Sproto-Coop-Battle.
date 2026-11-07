@@ -25,7 +25,7 @@ npm start            # http://localhost:8080
 | Keys 2 | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 |
 | Gamepad | Stick / D-pad | X (or RB) | A | B / Y |
 
-Start / Enter begins the game from the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
+Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages with the arrows or stick, then Attack or Start to fight. The run continues from that stage. Jump or Esc goes back to the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
 
 **God mode:** press **9 twice** quickly during a battle, the same input as Sproto Arcade. Human Sprotos get unlimited health and attack twice as fast (UFO lasers and bombs too). CPU teammates are unaffected. Press 9 twice again to turn it off. Online guests can toggle it too, and it applies to the whole team.
 
