@@ -340,7 +340,6 @@ function drawItem(g, it, camX, t) {
     shadow(g, sx, sy, 22);
     g.fillStyle = `rgba(120,255,140,${0.18 + 0.1 * Math.sin(t / 6)})`; g.beginPath(); g.moveTo(sx - 10, sy - 40 + bob); g.lineTo(sx + 10, sy - 40 + bob); g.lineTo(sx + 24, sy); g.lineTo(sx - 24, sy); g.fill();
     if (ready(rear) && ready(front)) { g.drawImage(rear, sx - 47, sy - 70 + bob, 94, 51); g.drawImage(front, sx - 47, sy - 70 + bob, 94, 51); }
-    text(g, 'UFO · PLAYERS ONLY', sx, sy - 76 + bob, 6, '#7aff8a', 'center');
   }
 }
 
