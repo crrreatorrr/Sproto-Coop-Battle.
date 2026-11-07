@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    name: node22-test-build-browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Clean install
+        run: npm ci
+      - name: Sim, relay, and asset tests
+        run: npm test
+      - name: Static build, asset check, and budgets
+        run: npm run build && npm run check:assets && npm run check:budgets
+      - name: Install pinned Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser host and guest smoke
+        run: npm run test:browser
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coop-baseline-screenshots
+          path: tests/artifacts/**
+          if-no-files-found: ignore

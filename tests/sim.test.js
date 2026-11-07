@@ -5,6 +5,12 @@ require('../public/js/manifest.js');
 const Sim = require('../public/js/sim.js');
 require('../public/js/ai.js');
 const assert = require('assert');
+const crypto = require('crypto');
+const gameplay = require('./fixtures/gameplay-hashes.json');
+
+function snapHash(state) {
+  return crypto.createHash('sha256').update(JSON.stringify(Sim.snapshot(state))).digest('hex');
+}
 
 const slots = Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'cpu', name: 'CPU' + (i + 1) }));
 const s = Sim.create(slots, 42);
@@ -25,6 +31,12 @@ console.log({ mode: s.mode, stageReached: maxStage + 1, bossSeen, ufoTicks: ufoR
 assert(maxStage >= 1 || s.stage.waves.some(w => w.done), 'the team makes progress');
 assert(ufoRides === 0, 'CPU Sprotos never take the UFO');
 assert(s.mode === 'gameover' || s.mode === 'victory', 'an all-CPU team eventually wins or loses');
+assert.strictEqual(s.mode, gameplay.cpuSeed42Terminal.mode);
+assert.strictEqual(s.stageIdx + 1, gameplay.cpuSeed42Terminal.stageReached);
+assert.strictEqual(s.t, gameplay.cpuSeed42Terminal.t);
+assert.strictEqual(s.players.length, gameplay.cpuSeed42Terminal.players);
+assert.strictEqual(snapHash(s), gameplay.cpuSeed42Terminal.snapSha256);
+console.log('cpu gameplay hash', gameplay.cpuSeed42Terminal.snapSha256);
 console.log('ok');
 
 // God mode: human Sprotos never lose health and attack twice as fast.
@@ -169,4 +181,38 @@ console.log('ok');
     for (let i = 0; i < 90; i++) { me.in = { ...N, a: i % 4 === 0 ? 1 : 0 }; Sim.step(g); g.events.length = 0; maxCombo = Math.max(maxCombo, me.combo); if (me.hs > 0) sawStop = true; e.x = me.x + 30; e.st = e.st === 'knock' || e.st === 'lying' ? 'walk' : e.st; e.z = 0; }
     assert(maxCombo === 4, 'katana combos up to 4 hits'); assert(sawStop, 'hits cause hitstop'); }
   console.log('fighting mechanics ok');
+}
+
+// Six-seat hashes: two local devices plus four CPU, then six scripted local devices.
+{
+  const expected = gameplay.mixedSeed7Tick1800;
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: i < 2 ? 'local' : 'cpu', name: 'P' + (i + 1) })), expected.seed);
+  for (let i = 0; i < expected.ticks; i++) {
+    for (const p of g.players) if (p.ctrl === 'local') p.in = { l: 0, r: i % 100 < 70 ? 1 : 0, u: 0, d: 0, a: i % 10 === 0 ? 1 : 0, j: i % 45 === 0 ? 1 : 0, s: 0, p: 0 };
+    Sim.step(g);
+    g.events.length = 0;
+  }
+  assert.strictEqual(g.players.length, 6);
+  assert.strictEqual(g.mode, expected.mode);
+  assert.strictEqual(g.stageIdx + 1, expected.stageReached);
+  assert.strictEqual(g.t, expected.t);
+  assert.strictEqual(snapHash(g), expected.snapSha256);
+  console.log('mixed gameplay hash', expected.snapSha256);
+}
+{
+  const expected = gameplay.sixLocalSeed99Tick1800;
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'local', name: 'P' + (i + 1) })), expected.seed);
+  for (let i = 0; i < expected.ticks; i++) {
+    g.players.forEach((p, slot) => {
+      p.in = { l: 0, r: i % 100 < 70 ? 1 : 0, u: slot % 2 === 0 && i % 30 < 8 ? 1 : 0, d: slot % 2 === 1 && i % 30 < 8 ? 1 : 0, a: i % 12 === slot ? 1 : 0, j: i % 80 === slot * 3 ? 1 : 0, s: 0, p: 0 };
+    });
+    Sim.step(g);
+    g.events.length = 0;
+  }
+  assert.strictEqual(g.players.length, 6);
+  assert.strictEqual(g.mode, expected.mode);
+  assert.strictEqual(g.stageIdx + 1, expected.stageReached);
+  assert.strictEqual(g.t, expected.t);
+  assert.strictEqual(snapHash(g), expected.snapSha256);
+  console.log('six-local gameplay hash', expected.snapSha256);
 }
