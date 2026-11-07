@@ -34,8 +34,14 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 ## How it plays
 
 - **Every Sproto is armed:** Katana, Bo Staff, War Hammer, Spear, Battle Axe or Chain Flail. Each has its own reach, speed and damage.
-- **3-hit combo:** the last hit knocks the enemy down. Jump + Attack is a diving strike.
-- **Special** (or Attack + Jump together): a spinning weapon sweep that hits all around you and costs a little health.
+- **Combos:** Attack strings a 3-hit combo (4 on the Katana); the last hit knocks down. Hits freeze attacker and target for a moment (hitstop) and big hits shake the screen. Jump + Attack is a diving strike.
+- **Dash:** double-tap left or right. The first frames dodge through attacks; Attack during a dash is a knockdown dash strike. The end of any attack can be cancelled into a dash.
+- **Block and parry:** hold Special to block (75% less damage from the front). Start blocking just before a hit lands to **parry**: no damage, and the attacker is left dazed.
+- **Grab and throw:** walk into a dazed enemy (after a parry or a long combo) to grab it. Attack knees it twice, then throws it; push a direction while pressing Attack to throw that way. A thrown Sproto knocks down everyone it flies into.
+- **Launcher and juggles:** Up + Attack launches an enemy into the air; anyone can keep hitting it to juggle (each juggle hit does 15% less).
+- **Ground slam:** Down + Attack in the air slams down with a shockwave that also hits enemies lying on the floor.
+- **Weapons play differently:** Katana: 4-hit combo. Bo Staff: hit 2 strikes behind you too. War Hammer: the finisher sends a shockwave along the lane. Spear: the finisher pierces the whole lane. Battle Axe: hits make enemies bleed. Chain Flail: hits pull enemies toward you.
+- **Special** (a quick tap, or Attack + Jump together): a spinning weapon sweep that hits all around you and costs a little health.
 - **Down, dead, game over:** a Sproto at 0 HP is down for **10 seconds**. Human players can revive anyone by standing over them. CPU Sprotos never revive other CPUs, and they revive a human only **once per life**. Nobody comes back on their own: a Sproto nobody revives in time dies. Dead CPUs sit out the rest of the stage and return at the next one. A human who dies drops back in once (shown as ♥♥ → ♥ in the HUD). **The second death of any human player is game over, and so is every Sproto on screen being down or dead.**
 - **Dodging:** before a boss fires, red stripes mark the lanes it will shoot along. Shots fly straight down those lanes and low to the ground: **stand in a stripe and you get hit; step out of it or jump over the shot and you don't.** Spreads always leave gaps. A weapon swing knocks thrown knives and homing missiles out of the air.
 - **Difficulty:** four waves of 12+ Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on, with harder bosses that call in reinforcements. CPU teammates are deliberately weaker than humans (55% damage dealt, 135% damage taken), so the team will lose Sprotos.

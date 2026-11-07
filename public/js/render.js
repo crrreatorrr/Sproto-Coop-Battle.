@@ -101,6 +101,12 @@ function fighterPose(o, wpn) {
     case 'jump': return { pose: o.z > 30 && t < 14 ? 8 : 9, ang: -70 };
     case 'jumpatk': return { pose: 23, ang: Math.min(70, -60 + t * 18), swoosh: t < 10 };
     case 'land': return { pose: 10, ang: -20 };
+    case 'dash': return { pose: 6, ang: -25 };
+    case 'dashatk': return { pose: 12, ang: t < 9 ? -120 + t * 17 : 30, swoosh: t >= 2 && t <= 9 };
+    case 'block': return { pose: 25, ang: -95 };
+    case 'grab': return o.kn ? { pose: 16, ang: 70 } : { pose: 27, ang: 70 };
+    case 'throw': return { pose: 28, ang: 20 };
+    case 'slam': return { pose: 23, ang: 85, swoosh: true };
     case 'hit': return { pose: 24, ang: -10 };
     case 'knock': case 'lying': case 'down': case 'dead': return { pose: 24, ang: 0, lying: o.st !== 'knock' || o.z < 4, tilt: o.st === 'knock' };
     case 'special': return { pose: 31, ang: t * 32, swoosh: true };
@@ -376,6 +382,15 @@ function drawFx(g, f, camX) {
     g.strokeStyle = `rgba(255,255,255,${1 - f.t / 20})`; g.lineWidth = 3; g.beginPath(); g.ellipse(sx, sy, 10 + f.t * 4, 4 + f.t * 1.3, 0, 0, 7); g.stroke();
   } else if (f.k === 'text') {
     g.globalAlpha = Math.max(0, 1 - f.t / 60); text(g, f.tx, sx, sy - f.t * 0.6, 8, '#fff', 'center'); g.globalAlpha = 1;
+  } else if (f.k === 'parry') {
+    const a = Math.max(0, 1 - f.t / 16);
+    g.strokeStyle = `rgba(255,255,255,${a})`; g.lineWidth = 3; g.beginPath(); g.arc(sx, sy, 8 + f.t * 2, 0, 7); g.stroke();
+    g.fillStyle = `rgba(140,220,255,${a * .6})`; g.beginPath(); g.arc(sx, sy, 6, 0, 7); g.fill();
+  } else if (f.k === 'wave' || f.k === 'thrust') {
+    const a = Math.max(0, 1 - f.t / 18), d = f.sm || 1, len = f.k === 'wave' ? 170 : 150;
+    g.fillStyle = f.k === 'wave' ? `rgba(255,190,90,${a * .55})` : `rgba(220,240,255,${a * .6})`;
+    const x0 = sx, x1 = sx + d * len * Math.min(1, f.t / 6);
+    g.fillRect(Math.min(x0, x1), sy - (f.k === 'wave' ? 6 : 3), Math.abs(x1 - x0), f.k === 'wave' ? 12 : 6);
   } else if (f.k === 'nova') {
     const r = 20 + f.t * 8, a = Math.max(0, 1 - f.t / 40);
     g.strokeStyle = `rgba(255,170,60,${a})`; g.lineWidth = 6; g.beginPath(); g.ellipse(sx, sy, r, r * .35, 0, 0, 7); g.stroke();
@@ -459,6 +474,9 @@ function drawBanner(g, snap) {
 
 function drawWorld(g, snap) {
   const camX = snap.camX;
+  const sk = snap.sk || 0;
+  g.save();
+  if (sk) g.translate(Math.round(Math.sin(snap.t * 1.7) * sk), Math.round(Math.cos(snap.t * 2.3) * sk * 0.6));
   drawBackground(g, snap.si, camX);
   const list = [];
   for (const it of snap.items) list.push({ y: it.y - (it.k === 'ufo' ? 0.5 : 0), d: () => drawItem(g, it, camX, snap.t) });
@@ -488,7 +506,7 @@ function drawWorld(g, snap) {
     const sx = e.x - camX, sy = FLOOR_TOP + e.y, wpn = S.ENEMY_WEAPONS[e.w];
     list.push({ y: e.y, d: () => {
       shadow(g, sx, sy, 12);
-      const st = e.st === 'attack' ? 'attack' : e.st;
+      const st = e.st === 'grabbed' ? 'hit' : e.st;
       drawFighter(g, { f: e.f, st, t: e.st === 'attack' ? e.t * (8 / wpn.startup) : e.t, z: e.z, fc: e.fc, cb: 1 }, sx, sy - e.z, 'shadow', wpn.thrower && e.st === 'attack' && e.t > wpn.startup ? null : wpn.id, { startup: 8, active: 4, recovery: 10 }, e.d && e.st === 'lying' && e.t > 20 ? (e.t % 6 < 3 ? 0.3 : 1) : 1);
       if (!e.d && e.hp < e.mh) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
     } });
@@ -509,6 +527,7 @@ function drawWorld(g, snap) {
   list.sort((a, b) => a.y - b.y);
   for (const o of list) o.d();
   for (const f of snap.fx) drawFx(g, f, camX);
+  g.restore();
   drawHud(g, snap);
   drawBanner(g, snap);
 }

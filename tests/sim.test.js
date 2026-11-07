@@ -117,3 +117,56 @@ console.log('ok');
   assert(hit >= 7 && me.powers.length === 2, 'Sproto Storm hits a wide crowd');
   console.log('power-ups ok');
 }
+
+// Fighting mechanics: dash, block, parry, grab + throw, launcher + juggle, slam, weapon rules, hitstop.
+{
+  const N = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
+  const setup = (weapon = 0) => {
+    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i ? i : weapon, ctrl: i === 0 ? 'local' : 'cpu' })), 51);
+    for (let i = 0; i < 60; i++) { g.players[0].in = { ...N }; Sim.step(g); }
+    g.players.forEach((p, k) => { if (k) { p.st = 'dead'; } });
+    g.enemies.length = 0; g.items.length = 0; g.stage.waves.forEach(w => (w.done = true)); g.lockX = g.camX;
+    const me = g.players[0]; Object.assign(me, { x: g.camX + 200, y: 60, z: 0, st: 'idle', t: 0, inv: 0, hp: 100, face: 1, combo: 0 });
+    return { g, me };
+  };
+  const enemy = (g, x, y, extra) => { const e = { id: 7000 + g.enemies.length, fid: 0, weapon: 0, x, y, z: 0, vx: 0, vy: 0, vz: 0, face: -1, hp: 200, maxHp: 200, st: 'walk', t: 0, cd: 999, inv: 0, offY: 0, ...extra }; g.enemies.push(e); return e; };
+  const run = (g, me, seq) => { for (const inp of seq) { me.in = { ...N, ...inp }; Sim.step(g); g.events.length = 0; } };
+
+  { // dash: double-tap right
+    const { g, me } = setup(); const x0 = me.x;
+    run(g, me, [{ r: 1 }, {}, {}, { r: 1 }, { r: 1 }, { r: 1 }, { r: 1 }, { r: 1 }]);
+    assert(me.st === 'dash' && me.x - x0 > 15, 'double-tap dashes'); }
+  { // block cuts damage, parry negates it and dazes the attacker
+    const { g, me } = setup(); const e = enemy(g, g.camX + 230, 60, { st: 'attack' });
+    run(g, me, Array(12).fill({ s: 1 })); assert(me.st === 'block', 'holding Special blocks');
+    const g2 = setup(); const me2 = g2.me; const e2 = enemy(g2.g, g2.g.camX + 230, 60, { st: 'attack', t: 0 });
+    run(g2.g, me2, Array(10).fill({ s: 1 }));
+    me2.t = 2; me2.inv = 0; me2.face = 1;
+    // call through the sim: a parry when the hit lands inside the window
+    const hpP = me2.hp;
+    g2.g.enemies[0].st = 'attack'; g2.g.enemies[0].t = 16;
+    me2.in = { ...N, s: 1 }; Sim.step(g2.g);
+    console.log('parry: hp', hpP, '->', me2.hp, 'attacker', g2.g.enemies[0].st, 'stun', g2.g.enemies[0].stun);
+    assert(me2.hp === hpP && g2.g.enemies[0].st === 'hit' && g2.g.enemies[0].stun >= 2, 'a parry takes no damage and dazes the attacker'); }
+  { // grab a dazed enemy, knee, throw it into another enemy
+    const { g, me } = setup(); const e = enemy(g, g.camX + 222, 60, { st: 'hit', stun: 3, t: 0, cd: 999 }); const other = enemy(g, g.camX + 120, 60);
+    run(g, me, [{ r: 1 }]); assert(me.st === 'grab', 'walking into a dazed enemy grabs it');
+    run(g, me, [{ a: 1 }, {}, {}, {}, { a: 1 }, {}, {}, {}, { l: 1, a: 1 }, ...Array(30).fill({})]);
+    console.log('throw: thrown hp', e.hp, 'other', other.st, other.hp);
+    assert(other.hp < 200, 'a thrown enemy bowls over the enemy it hits'); }
+  { // launcher + juggle
+    const { g, me } = setup(); const e = enemy(g, g.camX + 230, 60, { cd: 999 });
+    run(g, me, [{ u: 1, a: 1 }, ...Array(12).fill({})]);
+    console.log('launch: enemy z', e.z.toFixed(1), e.st);
+    assert(e.st === 'knock' && e.z > 20, 'Up + Attack launches an enemy into the air'); }
+  { // slam hits enemies lying down
+    const { g, me } = setup(); const e = enemy(g, g.camX + 210, 60, { st: 'lying', t: 0 });
+    run(g, me, [{ j: 1 }, ...Array(10).fill({}), { d: 1, a: 1 }, ...Array(20).fill({})]);
+    assert(e.hp < 200, 'a ground slam hits enemies on the floor'); }
+  { // katana has a 4-hit combo; hitstop freezes on impact
+    const { g, me } = setup(0); const e = enemy(g, g.camX + 230, 60, { hp: 999, maxHp: 999, cd: 999 });
+    let maxCombo = 0, sawStop = false;
+    for (let i = 0; i < 90; i++) { me.in = { ...N, a: i % 4 === 0 ? 1 : 0 }; Sim.step(g); g.events.length = 0; maxCombo = Math.max(maxCombo, me.combo); if (me.hs > 0) sawStop = true; e.x = me.x + 30; e.st = e.st === 'knock' || e.st === 'lying' ? 'walk' : e.st; e.z = 0; }
+    assert(maxCombo === 4, 'katana combos up to 4 hits'); assert(sawStop, 'hits cause hitstop'); }
+  console.log('fighting mechanics ok');
+}

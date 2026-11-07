@@ -24,6 +24,8 @@ const ENEMY_WEAPONS = [
 ];
 // Each human may die once and drop back in; the second death loses the game.
 const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 2;
+// Fighting: dash (double-tap), block/parry (hold Special), grab/throw, launcher + juggles, slam.
+const DASH_TICKS = 14, DOUBLE_TAP = 14, BLOCK_HOLD = 9, PARRY_WINDOW = 8, GRAB_TICKS = 150;
 // A downed Sproto that nobody revives within 10 seconds dies.
 const UFO_TICKS = 720, DOWN_TICKS = 600, REVIVE_TICKS = 70;
 // CPU teammates are deliberately weaker than humans so the team can lose Sprotos.
@@ -61,7 +63,7 @@ function newPlayer(slot, cfg) {
     x: 80 + slot * 14, y: 18 + slot * 17, z: 0, vx: 0, vy: 0, vz: 0, face: 1,
     hp: MAX_HP, lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
     inv: 90, downT: 0, revive: 0, ufoT: 0, ufoShield: 0, shotCd: 0, ballCd: 0, out: false, contT: 0,
-    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0 }, powers: [], ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
+    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, sHeld: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
   };
 }
 
@@ -109,11 +111,20 @@ function setState(p, st) { p.st = st; p.t = 0; }
 
 function updatePlayer(state, p) {
   const inp = p.in;
+  if (p.hs > 0) { p.hs--; return; } // hitstop: frozen for a few ticks on impact (inputs stay buffered)
   const pressA = inp.a && !p.prev.a, pressJ = inp.j && !p.prev.j, pressS = inp.s && !p.prev.s, pressP = inp.p && !p.prev.p;
-  p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s; p.prev.p = inp.p;
+  // Double-tap left or right to dash.
+  let dash = 0;
+  for (const [k, d] of [['l', -1], ['r', 1]]) {
+    if (inp[k] && !p.prev[k]) { if (p.tapDir === d && state.t - p.tapT <= DOUBLE_TAP) dash = d; p.tapDir = d; p.tapT = state.t; }
+  }
+  // Special: a quick tap spins (on release), holding it blocks.
+  const tapS = !inp.s && p.sHeld > 0 && p.sHeld < BLOCK_HOLD && !p.prev.d;
+  p.sHeld = inp.s ? p.sHeld + 1 : 0;
+  p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s; p.prev.p = inp.p; p.prev.l = inp.l; p.prev.r = inp.r; p.prev.d = inp.d;
   p.t++;
   const god = isGod(state, p);
-  if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk')) p.t++; // 2x attack speed
+  if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk' || p.st === 'dashatk')) p.t++; // 2x attack speed
   if (god && alive(p)) p.hp = MAX_HP;  if (p.inv > 0) p.inv--;
   if (p.comboT > 0 && --p.comboT === 0) p.combo = 0;
 
@@ -152,11 +163,20 @@ function updatePlayer(state, p) {
     if (p.t > 40) { setState(p, 'idle'); p.inv = 60; }
   } else if (p.st === 'attack') {
     const w = WEAPONS[p.weapon];
-    const tot = w.startup + w.active + w.recovery + (p.combo === 3 ? 6 : 0);
+    const fin = isFinisher(p);
+    const tot = w.startup + w.active + w.recovery + (fin ? 6 : 0);
     p.vx *= 0.7; p.vy = 0;
-    if (p.t > w.startup && p.t <= w.startup + w.active) meleeHit(state, p, w.reach + (p.combo === 3 ? 8 : 0), w.dmg + (p.combo === 3 ? 4 : 0), p.combo === 3, w.knock);
-    if (p.t >= tot) setState(p, 'idle');
-    else if (pressA && p.t > w.startup + w.active && p.combo < 3) startAttack(state, p);
+    if (p.t > w.startup && p.t <= w.startup + w.active) {
+      if (p.launch) meleeHit(state, p, w.reach, w.dmg, false, 1, false, { launch: true });
+      else {
+        // Bo Staff: hit 2 also strikes behind you.
+        meleeHit(state, p, w.reach + (fin ? 8 : 0), w.dmg + (fin ? 4 : 0), fin, w.knock, w.id === 'bo' && p.combo === 2, { fin });
+        if (fin && p.t === w.startup + 1) weaponFinisher(state, p, w);
+      }
+    }
+    if (dash && p.t > w.startup + w.active) startDash(state, p, dash); // cancel recovery into a dash
+    else if (p.t >= tot) setState(p, 'idle');
+    else if (pressA && p.t > w.startup + w.active && !fin && !p.launch) startAttack(state, p, inp);
   } else if (p.st === 'jumpatk') {
     const w = WEAPONS[p.weapon];
     meleeHit(state, p, w.reach * 0.8, w.dmg + 2, true, w.knock);
@@ -168,8 +188,37 @@ function updatePlayer(state, p) {
     if (p.t >= 36) setState(p, 'idle');
   } else if (p.st === 'land') {
     if (p.t > 6) setState(p, 'idle');
+  } else if (p.st === 'dash') {
+    p.vx = p.dashDir * (p.t < 8 ? 6.2 : 3); p.vy = (inp.d ? 1 : inp.u ? -1 : 0) * 1.2;
+    if (pressA) { setState(p, 'dashatk'); p.hitDone = new Set(); ev(state, 'swing'); }
+    else if (p.t >= DASH_TICKS) setState(p, 'idle');
+  } else if (p.st === 'dashatk') {
+    // Dash strike: slides through and knocks the first enemies down.
+    p.vx *= 0.9; p.vy = 0;
+    const w = WEAPONS[p.weapon];
+    if (p.t >= 2 && p.t <= 9) meleeHit(state, p, w.reach + 6, w.dmg + 3, true, w.knock + 1);
+    if (p.t >= 20) setState(p, 'idle');
+  } else if (p.st === 'block') {
+    p.vx = 0; p.vy = 0;
+    if (!inp.s) setState(p, 'idle');
+  } else if (p.st === 'grab') {
+    updateGrab(state, p, pressA, inp);
+  } else if (p.st === 'throw') {
+    p.vx = 0; p.vy = 0;
+    if (p.t > 14) setState(p, 'idle');
+  } else if (p.st === 'slam') {
+    p.vx *= 0.9;
+    if (p.z === 0) {
+      // Ground slam: a shockwave that also hits enemies lying on the floor.
+      const w = WEAPONS[p.weapon];
+      p.hitDone = new Set();
+      meleeHit(state, p, 56, w.dmg + 6, true, 4, true, { lying: true });
+      fx(state, 'ring', p.x, p.y, 0); ev(state, 'boom'); shake(state, 5);
+      setState(p, 'land');
+    }
   } else if (p.st === 'jump') {
-    if (pressA) { setState(p, 'jumpatk'); p.hitDone = new Set(); ev(state, 'swing'); }
+    if (pressA && inp.d && p.z > 20) { setState(p, 'slam'); p.vz = -9; p.hitDone = new Set(); ev(state, 'swing'); }
+    else if (pressA) { setState(p, 'jumpatk'); p.hitDone = new Set(); ev(state, 'swing'); }
     if (p.z === 0 && p.t > 2) { setState(p, 'land'); p.vx = 0; p.vy = 0; }
   } else { // idle / walk
     const sp = p.ctrl === 'cpu' && p.ai.rescue ? 3.6 : 2.3; // a rescuing CPU sprints
@@ -177,13 +226,22 @@ function updatePlayer(state, p) {
     p.vx = mx * sp; p.vy = my * sp * 0.62;
     if (mx) p.face = mx;
     p.st = mx || my ? 'walk' : 'idle';
+    const dazed = mx ? state.enemies.find(e => e.st === 'hit' && e.stun >= 2 && !e.dead && Math.abs(e.y - p.y) < 10 && (e.x - p.x) * mx > 0 && Math.abs(e.x - p.x) < 26) : null;
     if ((pressP || (pressS && inp.d)) && p.powers.length) {
       usePower(state, p, p.powers.shift());
-    } else if (pressS || (pressA && pressJ)) {
+    } else if (dash) {
+      startDash(state, p, dash);
+    } else if (p.sHeld >= BLOCK_HOLD) {
+      setState(p, 'block'); ev(state, 'shield');
+    } else if (dazed && p.ctrl !== 'cpu' || (dazed && p.ctrl === 'cpu' && rng(state) < 0.02)) {
+      startGrab(state, p, dazed);
+    } else if (pressA && inp.u) {
+      startAttack(state, p, inp, true); // launcher
+    } else if (tapS || (pressA && pressJ)) {
       if (god || p.hp > SPECIAL_COST + 1) { if (!god) p.hp -= SPECIAL_COST; setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0); }
     } else if (pressJ) {
       setState(p, 'jump'); p.vz = 8.6; p.vx = mx * 2.6; p.vy = my * 1.4; ev(state, 'jump');
-    } else if (pressA) startAttack(state, p);
+    } else if (pressA) startAttack(state, p, inp);
     // Pick up items by walking over them.
     for (const it of state.items) {
       if (it.kind === 'crate' || it.taken) continue;
@@ -200,8 +258,11 @@ function clampPlayer(state, p) {
   p.x = clamp(p.x, state.camX + 14, Math.min(state.camX + W - 14, right - 14));
 }
 
-function startAttack(state, p) {
-  p.combo = p.combo >= 3 ? 1 : p.combo + 1;
+const maxCombo = p => (WEAPONS[p.weapon].id === 'katana' ? 4 : 3); // Katana: a 4th combo hit
+const isFinisher = p => !p.launch && p.combo >= maxCombo(p);
+function startAttack(state, p, inp, launch) {
+  p.launch = !!launch;
+  p.combo = launch ? 1 : p.combo >= maxCombo(p) ? 1 : p.combo + 1;
   p.comboT = 40;
   setState(p, 'attack');
   p.hitDone = new Set();
@@ -210,14 +271,68 @@ function startAttack(state, p) {
   ev(state, 'swing');
 }
 
-function meleeHit(state, p, reach, dmg, knockdown, knockF, around) {
+function startDash(state, p, dir) {
+  setState(p, 'dash'); p.dashDir = dir; p.face = dir; p.inv = Math.max(p.inv, 7); ev(state, 'jump');
+  fx(state, 'ring', p.x - dir * 10, p.y, 0);
+}
+function shake(state, n) { state.shake = Math.max(state.shake || 0, n); }
+// Weapon finishers: each weapon's last combo hit has its own effect.
+function weaponFinisher(state, p, w) {
+  const dmg = p.ctrl === 'cpu' ? Math.ceil(10 * CPU_DMG) : 10;
+  if (w.id === 'hammer' || w.id === 'spear') {
+    // Hammer: a shockwave rolls along the lane. Spear: the thrust pierces the whole lane.
+    const len = w.id === 'hammer' ? 170 : 150;
+    for (const e of state.enemies) {
+      if (e.hp <= 0 || e.st === 'lying' || p.hitDone.has(e.id)) continue;
+      const dx = (e.x - p.x) * p.face;
+      if (dx > 0 && dx < len && Math.abs(e.y - p.y) < 14) { p.hitDone.add(e.id); hurtEnemy(state, e, dmg + (w.id === 'spear' ? 6 : 0), true, p.face, 4, p); }
+    }
+    fx(state, w.id === 'hammer' ? 'wave' : 'thrust', p.x + p.face * 20, p.y, 0, { small: p.face }); shake(state, 4);
+  }
+}
+function startGrab(state, p, e) {
+  setState(p, 'grab'); p.grab = e.id; p.knees = 0; p.face = e.x > p.x ? 1 : -1;
+  e.st = 'grabbed'; e.t = 0; e.vx = 0; e.vy = 0; e.vz = 0; e.z = 0;
+  ev(state, 'swing');
+}
+function updateGrab(state, p, pressA, inp) {
+  p.vx = 0; p.vy = 0;
+  const e = state.enemies.find(o => o.id === p.grab);
+  if (!e || e.dead || e.st !== 'grabbed' || p.t > GRAB_TICKS) { if (e && e.st === 'grabbed') { e.st = 'walk'; e.t = 0; } p.grab = null; setState(p, 'idle'); return; }
+  e.x = p.x + p.face * 22; e.y = p.y; e.face = -p.face;
+  const dir = (inp.r ? 1 : 0) - (inp.l ? 1 : 0);
+  if (pressA && !dir && p.knees < 2) {
+    // Knee strike.
+    p.knees++; p.kneeT = state.t; hurtEnemy(state, e, p.ctrl === 'cpu' ? 4 : 7, false, p.face, 0, p); e.st = 'grabbed'; e.t = 0;
+    p.hs = 3; e.hs = 3; ev(state, 'hit');
+  } else if (pressA) {
+    // Throw: forward, or the way you are pushing. The thrown Sproto bowls over the crowd.
+    const d = dir || p.face;
+    p.face = d; e.st = 'knock'; e.t = 0; e.vx = d * 7.5; e.vz = 4.5; e.thrown = p.slot; e.x = p.x + d * 10;
+    hurtEnemy(state, e, p.ctrl === 'cpu' ? 6 : 12, true, d, 7.5, p);
+    if (!e.dead) { e.st = 'knock'; e.vx = d * 7.5; }
+    p.grab = null; setState(p, 'throw'); ev(state, 'throw'); shake(state, 3);
+  }
+}
+function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
+  opt = opt || {};
   const hits = p.hitDone || (p.hitDone = new Set());
+  const w = WEAPONS[p.weapon];
   for (const e of state.enemies) {
-    if (e.hp <= 0 || hits.has(e.id) || e.st === 'lying') continue;
+    if (e.hp <= 0 || hits.has(e.id) || e.st === 'grabbed' || (e.st === 'lying' && !opt.lying)) continue;
     const dx = (e.x - p.x) * (around ? Math.sign(e.x - p.x) || 1 : p.face);
-    if (dx < -10 || dx > reach || Math.abs(e.y - p.y) > 15 || Math.abs(e.z - p.z) > 40) continue;
+    // Airborne (juggled) enemies can be hit higher than standing ones.
+    if (dx < -10 || dx > reach || Math.abs(e.y - p.y) > 15 || e.z - p.z > 75 || p.z - e.z > 40) continue;
     hits.add(e.id);
-    hurtEnemy(state, e, p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_DMG) : dmg, knockdown, Math.sign(e.x - p.x) || p.face, knockF, p);
+    const dir = Math.sign(e.x - p.x) || p.face;
+    hurtEnemy(state, e, p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_DMG) : dmg, knockdown, dir, knockF, p, opt.launch);
+    // Weapon rules: Axe hits make enemies bleed; Flail hits pull them in.
+    if (w.id === 'axe' && !e.dead) { e.bleed = Math.min(3, (e.bleed || 0) + 1); e.bleedT = 180; e.bleedBy = p.slot; }
+    if (w.id === 'flail' && !e.dead && e.st !== 'knock') e.x += (p.x + p.face * 26 - e.x) * 0.5;
+    // Hitstop: attacker and target freeze briefly; finishers hit harder and shake the screen.
+    const stop = opt.fin || knockdown ? 6 : 3;
+    p.hs = Math.max(p.hs, stop); e.hs = stop;
+    if (opt.fin) shake(state, 2);
   }
   for (const it of state.items) {
     if (it.kind !== 'crate' || hits.has(it.id)) continue;
@@ -243,12 +358,25 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around) {
     if (Math.abs(dx) < half + reach * 0.8 && Math.abs(b.y - p.y) < 32) {
       hits.add('boss');
       hurtBoss(state, b, p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_DMG) : dmg, p);
+      p.hs = Math.max(p.hs, 3);
     }
   }
 }
 
-function hurtPlayer(state, p, dmg, dir, knock) {
+function hurtPlayer(state, p, dmg, dir, knock, src) {
   if (p.inv > 0 || !alive(p) || p.st === 'special') return false;
+  // Blocking (hold Special) stops 75% of a frontal hit; blocking just before the hit is a parry.
+  if (p.st === 'block' && Math.sign(dir) === -p.face) {
+    if (p.t <= PARRY_WINDOW) {
+      fx(state, 'parry', p.x + p.face * 14, p.y, 34); fx(state, 'text', p.x, p.y, 76, { text: 'PARRY!' }); ev(state, 'shield');
+      p.hs = 6; p.inv = 20; p.score += 300;
+      if (src && src.st === 'attack') { src.st = 'hit'; src.t = 0; src.stun = 3; src.vx = -dir * 2; src.hs = 10; } // the attacker is left dazed
+      return true;
+    }
+    p.hp -= Math.max(1, Math.round(dmg * 0.25)); p.vx = dir * 1.5; p.inv = 10; fx(state, 'shield', p.x, p.y, 30); ev(state, 'shield');
+    if (p.hp <= 0) { p.hp = 0; setState(p, 'down'); p.downT = DOWN_TICKS; p.revive = 0; p.vx = 0; p.z = 0; ev(state, 'down'); }
+    return true;
+  }
   if (isGod(state, p)) { fx(state, 'shield', p.x, p.y, 30 + p.z); return false; } // unlimited health
   if (p.st === 'ufo') {
     p.ufoShield--; p.inv = 40; fx(state, 'shield', p.x, p.y, 50); ev(state, 'shield');
@@ -316,6 +444,7 @@ function usePower(state, p, pt) {
   setState(p, 'special'); p.hitDone = new Set(); p.inv = 70;
   const owner = p, kind = POWERS[pt] || 'storm';
   state.banner = { text: ['SPROTO STORM!', 'METEOR RAIN!', 'CHAIN LIGHTNING!'][pt] || 'POWER!', t: 50, power: 1 };
+  shake(state, 8);
   ev(state, 'transform');
   const foes = state.enemies.filter(e => e.hp > 0 && e.x > state.camX - 20 && e.x < state.camX + W + 20);
   const b = state.boss && state.boss.hp > 0 && state.boss.st !== 'enter' && state.boss.st !== 'transform' && state.boss.st !== 'dead' ? state.boss : null;
@@ -396,7 +525,10 @@ function spawnEnemy(state, side) {
   });
 }
 
-function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p) {
+function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p, launch) {
+  // Juggles: each extra hit on an airborne enemy does 15% less.
+  const air = e.st === 'knock' && e.z > 4 && !e.dead;
+  if (air) { e.jug = (e.jug || 0) + 1; dmg = Math.max(1, Math.round(dmg * Math.pow(0.85, e.jug))); }
   e.hp -= dmg;
   if (p) p.score += dmg * 10;
   fx(state, 'spark', e.x + dir * 4, e.y, 34 + e.z);
@@ -407,11 +539,19 @@ function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p) {
     if (p) p.score += 200;
     return;
   }
+  if (launch) { e.st = 'knock'; e.t = 0; e.vx = dir * 0.8; e.vz = 9.5; e.jug = 0; e.stun = 0; fx(state, 'text', e.x, e.y, 80, { text: 'LAUNCH!' }); return; }
+  if (air) { e.vz = Math.max(e.vz, 4.6); e.vx = dir * 0.9; e.t = 0; return; } // keep them up in the air
   if (knockdown || (e.st === 'hit' && e.t < 4 && e.stun > 2)) { e.st = 'knock'; e.t = 0; e.vx = dir * knockF; e.vz = 5.5; e.stun = 0; }
   else { e.st = 'hit'; e.t = 0; e.vx = dir * 1.2; e.stun = (e.stun || 0) + 1; }
 }
 
 function updateEnemy(state, e) {
+  if (e.hs > 0) { e.hs--; return; }
+  if (e.bleedT > 0) {
+    e.bleedT--;
+    if (e.bleedT % 30 === 0 && e.hp > 0 && !e.dead) { e.hp -= e.bleed * 2; fx(state, 'spark', e.x, e.y, 30); if (e.hp <= 0) hurtEnemy(state, e, 0, true, 1, 2, state.players[e.bleedBy]); }
+  }
+  if (e.st === 'grabbed') { e.t++; return; }
   e.t++;
   e.x += e.vx; e.y = clamp(e.y + e.vy, 0, DEPTH); e.z += e.vz;
   if (e.z > 0 || e.vz > 0) e.vz -= 0.55;
@@ -420,7 +560,12 @@ function updateEnemy(state, e) {
   if (e.st === 'hit') { e.vx *= 0.8; if (e.t > 18) { e.st = 'walk'; e.t = 0; e.cd = Math.max(e.cd, 20); } return; }
   if (e.st === 'knock') {
     e.vx *= 0.97;
-    if (e.z === 0 && e.t > 6) { e.vx = 0; e.st = 'lying'; e.t = 0; if (e.dead) { ev(state, 'ko'); } }
+    if (e.thrown !== undefined && e.thrown !== null) {
+      // A thrown Sproto bowls over everyone it flies into.
+      for (const o of state.enemies) if (o !== e && o.hp > 0 && o.st !== 'lying' && o.st !== 'grabbed' && Math.abs(o.x - e.x) < 22 && Math.abs(o.y - e.y) < 14 && o.st !== 'knock') hurtEnemy(state, o, 14, true, Math.sign(e.vx) || 1, 5, state.players[e.thrown]);
+      if (e.z === 0 && e.t > 4) e.thrown = null;
+    }
+    if (e.z === 0 && e.t > 6) { e.vx = 0; e.st = 'lying'; e.t = 0; e.jug = 0; if (e.dead) { ev(state, 'ko'); } }
     return;
   }
   if (e.st === 'lying') { if (e.dead ? e.t > 50 : e.t > 46) { if (e.dead) e.remove = true; else { e.st = 'walk'; e.t = 0; e.stun = 0; } } return; }
@@ -447,7 +592,7 @@ function updateEnemy(state, e) {
         const dx = (q.x - e.x) * e.face;
         if (dx > -8 && dx < w.reach && Math.abs(q.y - e.y) < 14 && q.z < 40 && !(e.hitDone && e.hitDone.has(q.slot))) {
           (e.hitDone || (e.hitDone = new Set())).add(q.slot);
-          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(state.stageIdx / 3)) * ENEMY_DMG(state.stageIdx)), e.face, w.id === 'club' && rng(state) < 0.4);
+          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(state.stageIdx / 3)) * ENEMY_DMG(state.stageIdx)), e.face, w.id === 'club' && rng(state) < 0.4, e);
         }
       }
     }
@@ -679,8 +824,9 @@ function step(state) {
   updateBoss(state);
   updateProjs(state);
   updateStrikes(state);
+  if (state.shake > 0) { state.shake *= 0.85; if (state.shake < 0.3) state.shake = 0; }
   for (const f of state.fx) f.t++;
-  state.fx = state.fx.filter(f => f.t < (f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : f.kind === 'nova' ? 40 : f.kind === 'bolt' ? 18 : f.kind === 'meteor' ? f.small : 14));
+  state.fx = state.fx.filter(f => f.t < (f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : f.kind === 'nova' ? 40 : f.kind === 'bolt' ? 18 : f.kind === 'meteor' ? f.small : f.kind === 'wave' || f.kind === 'thrust' ? 18 : f.kind === 'parry' ? 16 : 14));
   state.items = state.items.filter(i => !i.taken);
   if (state.mode === 'play') { updateCamera(state); updateWaves(state); }
   if (state.mode === 'clear' && ++state.clearT > 220) {
@@ -695,9 +841,9 @@ function step(state) {
 const r1 = v => Math.round(v * 10) / 10;
 function snapshot(state) {
   return {
-    t: state.t, god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
+    t: state.t, sk: r1(state.shake || 0), god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
-    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice() })),
+    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice() })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0 })),
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
