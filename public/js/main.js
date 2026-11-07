@@ -35,7 +35,7 @@ function claimSlot(ctrl, owner, dev) {
   const i = app.slots.findIndex(s => s.ctrl === 'cpu');
   if (i < 0) return -1;
   Object.assign(app.slots[i], { ctrl, owner, dev, label: ctrl === 'remote' ? (app.guestNames[owner] || 'Online') + ' · ' + (I.DEVICE_NAMES[dev] || dev) : I.DEVICE_NAMES[dev] });
-  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (p.st === 'out') p.contT = 0; }
+  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); }
   app.lobbyDirty = true; A.play('join');
   toast(`P${i + 1} joined (${ctrl === 'remote' ? (app.guestNames[owner] || 'online') : I.DEVICE_NAMES[dev]})`);
   return i;

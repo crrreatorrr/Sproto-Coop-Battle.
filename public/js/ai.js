@@ -4,7 +4,7 @@
 function think(state, p) {
   const S = root.Sim, inp = p.in;
   inp.l = inp.r = inp.u = inp.d = inp.a = inp.j = inp.s = 0;
-  if (p.st === 'out') return;
+  if (p.st === 'dead') return;
   if (p.st === 'down') return;
   const ai = p.ai;
   ai.t++;
@@ -36,7 +36,7 @@ function think(state, p) {
     // Advance with the team, spread across the belt.
     const crate = state.items.find(i => i.kind === 'crate' && i.x > p.x - 20 && i.x - p.x < 160);
     if (crate) { if (go(crate.x - 30, crate.y, 6)) { p.face = 1; inp.a = ai.t % 14 === 0 ? 1 : 0; } return; }
-    go(state.camX + 300 + p.slot * 26, 12 + p.slot * 19 + ai.jitter * 0.3, 12);
+    go(state.camX + 420 + p.slot * 24, 12 + p.slot * 19 + ai.jitter * 0.3, 12);
     return;
   }
   const w = S.WEAPONS[p.weapon];
@@ -44,6 +44,12 @@ function think(state, p) {
   const reach = isBoss ? foe.w * 0.42 + w.reach * 0.55 : w.reach * 0.7;
   const side = p.x < foe.x ? -1 : 1;
   const laneOff = isBoss ? [-26, 26, -12, 12, 0, -20][p.slot] : 0;
+  // Step out of a warned boss lane (CPUs react late, so they still get caught sometimes).
+  const bs = state.boss;
+  if (bs && bs.st === 'fire' && bs.warn && bs.t > 12 && S.rng(state) < 0.7) {
+    const inLane = bs.warn.find(ly => Math.abs(ly - p.y) < 12);
+    if (inLane !== undefined) { if (p.y > inLane || inLane < 18) inp.d = 1; else inp.u = 1; return; }
+  }
   // Dodge incoming shots by jumping.
   for (const pr of state.projs) if (pr.enemy && Math.abs(pr.y - p.y) < 12 && Math.sign(p.x - pr.x) === Math.sign(pr.vx) && Math.abs(pr.x - p.x) < 50 && p.st !== 'jump' && S.rng(state) < 0.06) { inp.j = 1; return; }
   const inPlace = go(foe.x + side * reach, foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0), isBoss ? 14 : 6);

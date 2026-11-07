@@ -17,6 +17,7 @@ const ready = im => im && im.complete && im.naturalWidth > 0;
 function preload(onProgress) {
   const list = [];
   for (const f of M.fighters) { for (let i = 0; i < 32; i++) list.push(`assets/fighters/${f.id}/${String(i).padStart(2, '0')}.png`); for (let i = 0; i < 8; i++) list.push(`assets/fighters/${f.id}/w0${i}.png`); }
+  for (const n of ['01', '02']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.jpg`); }
   for (const n of ['cockpit-front', 'cockpit-rear', 'idle', 'laser', 'muzzle', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']) list.push(`assets/ufo/${n}.png`);
   let done = 0;
   return Promise.all(list.map(src => new Promise(res => { const im = img(src); const fin = () => { done++; onProgress && onProgress(done / list.length); res(); }; if (im.complete) fin(); else { im.onload = fin; im.onerror = fin; } })));
@@ -219,8 +220,29 @@ function background(si) {
   const th = THEMES[si % THEMES.length];
   return bgCache[si] = { th, far: layer(th.far[0], th.far[1], FLOOR_TOP, si * 3 + 1), mid: layer(th.mid[0], th.mid[1], FLOOR_TOP, si * 3 + 2), floor: floorTile(...th.floor) };
 }
+// Sproto Arcade stage art: scenery above the floor scrolls at half speed, the floor scrolls with
+// the fighters. Copies alternate with mirrored copies so the panoramas loop without seams.
+function mirrorTile(g, im, x0, y, h) {
+  const w = im.width * (h / im.height);
+  let k = Math.floor(-x0 / w), x = x0 + k * w;
+  for (; x < W; x += w, k++) {
+    if (k % 2 === 0) g.drawImage(im, Math.round(x), y, Math.ceil(w) + 1, h);
+    else { g.save(); g.translate(Math.round(x + w), y); g.scale(-1, 1); g.drawImage(im, 0, 0, Math.ceil(w) + 1, h); g.restore(); }
+  }
+}
 function drawBackground(g, si, camX) {
-  const bg = background(si);
+  const n = String(si % 12 + 1).padStart(2, '0');
+  const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.jpg`);
+  if (ready(back) && ready(floor)) {
+    mirrorTile(g, back, -camX * 0.5, 0, 226);
+    mirrorTile(g, floor, -camX, FLOOR_TOP - 6, 150);
+    const grd = g.createLinearGradient(0, FLOOR_TOP - 6, 0, FLOOR_TOP + 6);
+    grd.addColorStop(0, 'rgba(0,0,0,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grd; g.fillRect(0, FLOOR_TOP - 6, W, 12);
+    if (si < 11) { img(`assets/stages/${String(si + 2).padStart(2, '0')}-back.jpg`); img(`assets/stages/${String(si + 2).padStart(2, '0')}-floor.jpg`); }
+    return;
+  }
+  const bg = background(si); // drawn fallback while the stage art loads
   const grd = g.createLinearGradient(0, 0, 0, FLOOR_TOP);
   grd.addColorStop(0, bg.th.sky[0]); grd.addColorStop(1, bg.th.sky[1]);
   g.fillStyle = grd; g.fillRect(0, 0, W, FLOOR_TOP);
@@ -365,15 +387,14 @@ function drawHud(g, snap) {
     text(g, 'P' + (p.s + 1), x + 26, y + 9, 7, col);
     text(g, p.c === 'cpu' ? 'CPU' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 6, '#9a98b8');
     text(g, String(p.n).slice(0, 15), x + 26, y + 18, String(p.n).length > 8 ? 4.5 : 6, '#fff');
-    if (p.st === 'out') {
-      if (p.c === 'cpu') text(g, 'REBOOT', x + 26, y + 30, 6, '#9a98b8');
-      else if (Math.floor(snap.t / 20) % 2) text(g, 'CONTINUE?', x + 26, y + 30, 6, '#ffd23d');
+    if (p.st === 'dead') {
+      text(g, 'DEAD', x + 26, y + 30, 7, '#ff4d4d');
     } else {
       g.fillStyle = '#300'; g.fillRect(x + 26, y + 25, pw - 34, 5);
       g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * p.hp / S.MAX_HP, 5);
-      text(g, 'x' + p.l, x + 3, y + 32, 6, '#fff');
+      if (p.c !== 'cpu') text(g, p.l > 1 ? '♥♥' : '♥', x + 3, y + 32, 6, '#ff5a7a');
       text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 5, '#c8c6e0');
-      if (p.st === 'down') text(g, 'DOWN ' + Math.ceil(p.dt / 60), x + 64, y + 9, 5, '#ff4d4d');
+      if (p.st === 'down') text(g, 'DOWN ' + Math.ceil(p.dt / 60) + 's', x + 64, y + 9, 5, '#ff4d4d');
       if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
     }
   });
@@ -406,7 +427,7 @@ function drawWorld(g, snap) {
   for (const it of snap.items) list.push({ y: it.y - (it.k === 'ufo' ? 0.5 : 0), d: () => drawItem(g, it, camX, snap.t) });
   // Downed players are drawn first so standing teammates appear over them while reviving.
   for (const p of snap.players) {
-    if (p.st === 'out') continue;
+    if (p.st === 'dead') continue;
     const sx = p.x - camX, sy = FLOOR_TOP + p.y;
     list.push({ y: p.y - (p.st === 'down' ? 1 : 0), d: () => {
       shadow(g, sx, sy, p.st === 'ufo' ? 26 : 13);
@@ -421,6 +442,7 @@ function drawWorld(g, snap) {
         g.fillStyle = '#300'; g.fillRect(sx - 16, sy - 40, 32, 4);
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
         const needHuman = p.c === 'cpu' || p.nr;
+        text(g, String(Math.ceil(p.dt / 60)), sx, sy - 62, 10, p.dt < 180 ? '#ff4d4d' : '#fff', 'center');
         if (Math.floor(snap.t / 15) % 2) text(g, needHuman ? 'PLAYER REVIVE ONLY!' : 'REVIVE!', sx, sy - 50, 6, needHuman ? '#ff8a8a' : '#ffd23d', 'center');
       }
     } });
@@ -433,6 +455,17 @@ function drawWorld(g, snap) {
       drawFighter(g, { f: e.f, st, t: e.st === 'attack' ? e.t * (8 / wpn.startup) : e.t, z: e.z, fc: e.fc, cb: 1 }, sx, sy - e.z, 'shadow', wpn.thrower && e.st === 'attack' && e.t > wpn.startup ? null : wpn.id, { startup: 8, active: 4, recovery: 10 }, e.d && e.st === 'lying' && e.t > 20 ? (e.t % 6 < 3 ? 0.3 : 1) : 1);
       if (!e.d && e.hp < e.mh) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
     } });
+  }
+  // Boss lane warnings: a red stripe along each lane about to be shot.
+  const bw = snap.boss;
+  if (bw && bw.wl && bw.st === 'fire' && bw.t < 30) {
+    const k = bw.t / 30, x0 = bw.x - camX;
+    for (const ly of bw.wl) {
+      const y = FLOOR_TOP + ly;
+      g.fillStyle = `rgba(255,40,40,${0.18 + 0.25 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
+      if (bw.fc < 0) g.fillRect(0, y - 6, x0, 12); else g.fillRect(x0, y - 6, W - x0, 12);
+    }
+    if (Math.floor(bw.t / 6) % 2) text(g, 'MOVE!', x0 + bw.fc * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
   }
   if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX) });

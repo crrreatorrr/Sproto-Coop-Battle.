@@ -20,14 +20,17 @@ const ENEMY_WEAPONS = [
   { id: 'club',   reach: 40, dmg: 7, startup: 16, active: 4, recovery: 22 },
   { id: 'knife',  reach: 32, dmg: 5, startup: 10, active: 3, recovery: 16 },
   { id: 'pike',   reach: 62, dmg: 8, startup: 20, active: 5, recovery: 24 },
-  { id: 'knife',  reach: 32, dmg: 5, startup: 10, active: 3, recovery: 18, thrower: true },
+  { id: 'knife',  reach: 32, dmg: 5, startup: 22, active: 3, recovery: 18, thrower: true },
 ];
-const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 3;
-const UFO_TICKS = 720, DOWN_TICKS = 360, REVIVE_TICKS = 70;
+// Each human may die once and drop back in; the second death loses the game.
+const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 2;
+// A downed Sproto that nobody revives within 10 seconds dies.
+const UFO_TICKS = 720, DOWN_TICKS = 600, REVIVE_TICKS = 70;
 // CPU teammates are deliberately weaker than humans so the team can lose Sprotos.
 const CPU_DMG = 0.55, CPU_TAKEN = 1.35;
 // Difficulty: more Shadow Sprotos, tougher and more aggressive.
-const ENEMY_HP = 1.5, ENEMY_DMG = 1.4, MAX_ON_SCREEN = 12;
+// Difficulty ramps by stage: stage 1 is a warm-up, stage 12 is brutal.
+const ENEMY_HP = s => 1.0 + 0.09 * s, ENEMY_DMG = s => 0.8 + 0.1 * s, MAX_ON_SCREEN = 12;
 
 function rng(state) { // mulberry32 stored in state.seed
   let t = (state.seed = (state.seed + 0x6D2B79F5) | 0);
@@ -42,7 +45,7 @@ function stageLength(i) { return 2200 + i * 80; }
 function makeStage(state, i) {
   const len = stageLength(i);
   const waves = [];
-  const per = 12 + Math.min(8, i); // six players face real crowds
+  const per = 8 + Math.min(14, Math.round(i * 1.3)); // crowds grow every stage
   waves.push({ x: 420, count: per, done: false });
   waves.push({ x: Math.floor(len * 0.3), count: per + 3, done: false });
   waves.push({ x: Math.floor(len * 0.5), count: per + 4, done: false, ufo: true });
@@ -79,8 +82,8 @@ function startStage(state, i) {
   state.mode = 'play'; state.clearT = 0;
   for (const c of state.stage.crates) state.items.push({ id: state.nextId++, kind: 'crate', x: c.x, y: c.y, z: 0, hp: 12 });
   state.players.forEach((p, k) => {
-    Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: p.out ? 'out' : 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
-    if (!p.out) p.hp = Math.max(p.hp, 60);
+    Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
+    p.hp = p.dead ? 60 : Math.max(p.hp, 60); p.dead = false; // dead CPUs return for the next stage
   });
   state.banner = { text: 'STAGE ' + (i + 1), sub: (root.MANIFEST ? root.MANIFEST.bosses[i % 12].stage : ''), t: 150 };
   ev(state, 'stage');
@@ -96,7 +99,7 @@ const isGod = (state, p) => state.god && p.ctrl !== 'cpu';
 function toggleGod(state) {
   state.god = !state.god;
   state.banner = { text: state.god ? 'GOD MODE ON' : 'GOD MODE OFF', sub: state.god ? 'Unlimited health · 2x attack speed' : '', t: 90 };
-  if (state.god) for (const p of state.players) if (p.ctrl !== 'cpu' && p.st !== 'out') p.hp = MAX_HP;
+  if (state.god) for (const p of state.players) if (p.ctrl !== 'cpu' && alive(p)) p.hp = MAX_HP;
   ev(state, state.god ? 'ufo' : 'shield');
 }
 const alive = p => p.st !== 'down' && p.st !== 'out' && p.st !== 'dead';
@@ -111,15 +114,10 @@ function updatePlayer(state, p) {
   p.t++;
   const god = isGod(state, p);
   if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk')) p.t++; // 2x attack speed
-  if (god && p.st !== 'down' && p.st !== 'out') p.hp = MAX_HP;  if (p.inv > 0) p.inv--;
+  if (god && alive(p)) p.hp = MAX_HP;  if (p.inv > 0) p.inv--;
   if (p.comboT > 0 && --p.comboT === 0) p.combo = 0;
 
-  if (p.st === 'out') {
-    // Out of lives: humans press attack to continue, CPUs continue automatically.
-    p.contT++;
-    if ((p.ctrl === 'cpu' && p.contT > 900) || (p.ctrl !== 'cpu' && pressA)) respawn(state, p, true);
-    return;
-  }
+  if (p.st === 'dead') return; // no automatic revives: dead Sprotos sit out the rest of the stage
   if (p.st === 'down') {
     p.downT--;
     // Humans revive anyone. CPU Sprotos revive only humans, and only once per life (p.npcRevived).
@@ -133,11 +131,7 @@ function updatePlayer(state, p) {
         helper.score += 500; ev(state, 'revive'); fx(state, 'text', p.x, p.y, 70, { text: 'REVIVED!' });
       }
     } else p.revive = Math.max(0, p.revive - 1);
-    if (p.downT <= 0) {
-      p.lives--;
-      if (p.lives > 0) respawn(state, p, false);
-      else { setState(p, 'out'); p.contT = 0; }
-    }
+    if (p.downT <= 0) die(state, p);
     return;
   }
 
@@ -230,6 +224,15 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around) {
     it.hp -= dmg; fx(state, 'spark', it.x, it.y, 18); ev(state, 'hit');
     if (it.hp <= 0) breakCrate(state, it);
   }
+  // Swinging into a thrown knife or a missile knocks it out of the air.
+  for (const pr of state.projs) {
+    if (!pr.enemy || !(pr.kind === 'knife' || pr.homing) || pr.remove) continue;
+    const dx = (pr.x - p.x) * (around ? Math.sign(pr.x - p.x) || 1 : p.face);
+    if (dx > -10 && dx < reach + 6 && Math.abs(pr.y - p.y) < 16 && Math.abs(pr.z - (p.z + 26)) < 40) {
+      pr.remove = true; p.score += 100; fx(state, 'spark', pr.x, pr.y, pr.z); ev(state, 'shield');
+      if (pr.homing) { fx(state, 'boom', pr.x, pr.y, pr.z, { small: 1 }); ev(state, 'boom'); }
+    }
+  }
   const b = state.boss;
   if (b && b.hp > 0 && b.st !== 'enter' && b.st !== 'transform' && !hits.has('boss')) {
     const half = b.w / 2;
@@ -262,14 +265,26 @@ function hurtPlayer(state, p, dmg, dir, knock) {
   return true;
 }
 
+function die(state, p) {
+  p.hp = 0; p.revive = 0;
+  fx(state, 'text', p.x, p.y, 70, { text: p.name + ' DIED' }); ev(state, 'ko');
+  if (p.ctrl === 'cpu') { setState(p, 'dead'); p.dead = true; p.lives = 0; return; }
+  p.lives--;
+  if (p.lives <= 0) { setState(p, 'dead'); p.dead = true; gameOver(state, p.name + ' (P' + (p.slot + 1) + ') died twice'); return; }
+  respawn(state, p, false);
+}
+function gameOver(state, why) {
+  if (state.mode === 'gameover') return;
+  state.mode = 'gameover'; state.banner = { text: 'GAME OVER', sub: why + ' · press START', t: 99999 }; ev(state, 'bossdown');
+}
+
 function respawn(state, p, cont) {
-  if (cont) { p.lives = START_LIVES; p.score = 0; }
   const ps = activePlayers(state);
   const ax = ps.length ? ps.reduce((s, o) => s + o.x, 0) / ps.length : state.camX + 120;
   p.npcRevived = false; // a new life gets one CPU revive again
   Object.assign(p, { hp: MAX_HP, x: clamp(ax, state.camX + 40, state.camX + W - 40), y: 30 + rng(state) * 60, z: 140, vz: 0, vx: 0, vy: 0, inv: 150, revive: 0, ufoT: 0 });
   setState(p, 'jump');
-  fx(state, 'text', p.x, p.y, 90, { text: p.name + (cont ? ' CONTINUES' : ' IS BACK') });
+  fx(state, 'text', p.x, p.y, 90, { text: p.name + ' IS BACK · LAST LIFE' });
   ev(state, 'respawn');
 }
 
@@ -316,7 +331,7 @@ function ejectUfo(state, p) {
 // ---------------- enemies (Shadow Sprotos) ----------------
 function spawnEnemy(state, side) {
   const kind = Math.floor(rng(state) * ENEMY_WEAPONS.length);
-  const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP);
+  const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx));
   const x = side > 0 ? state.camX + W + 30 + rng(state) * 40 : state.camX - 30 - rng(state) * 40;
   state.enemies.push({
     id: state.nextId++, fid: Math.floor(rng(state) * (root.MANIFEST ? root.MANIFEST.fighters.length : 3)), weapon: kind, x, y: rng(state) * DEPTH, z: 0, vx: 0, vy: 0, vz: 0,
@@ -367,7 +382,7 @@ function updateEnemy(state, e) {
     e.vx = 0; e.vy = 0;
     if (w.thrower) {
       if (e.t === w.startup) {
-        state.projs.push({ id: state.nextId++, kind: 'knife', x: e.x + e.face * 16, y: e.y, z: 30, vx: e.face * 5.5, vy: 0, vz: 0, dmg: Math.round(6 * ENEMY_DMG), t: 0, life: 120, enemy: true });
+        state.projs.push({ id: state.nextId++, kind: 'knife', x: e.x + e.face * 16, y: e.y, z: 18, vx: e.face * 4, vy: 0, vz: 0, dmg: Math.round(6 * ENEMY_DMG(state.stageIdx)), t: 0, life: 120, enemy: true });
         ev(state, 'throw');
       }
     } else if (e.t > w.startup && e.t <= w.startup + w.active) {
@@ -375,7 +390,7 @@ function updateEnemy(state, e) {
         const dx = (q.x - e.x) * e.face;
         if (dx > -8 && dx < w.reach && Math.abs(q.y - e.y) < 14 && q.z < 40 && !(e.hitDone && e.hitDone.has(q.slot))) {
           (e.hitDone || (e.hitDone = new Set())).add(q.slot);
-          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(state.stageIdx / 3)) * ENEMY_DMG), e.face, w.id === 'club' && rng(state) < 0.4);
+          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(state.stageIdx / 3)) * ENEMY_DMG(state.stageIdx)), e.face, w.id === 'club' && rng(state) < 0.4);
         }
       }
     }
@@ -403,7 +418,7 @@ function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % 12] : nul
 function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
-  const hp = 3400 + state.stageIdx * 400;
+  const hp = 2600 + state.stageIdx * 480; // 2,600 on stage 1 up to 7,880 on stage 12
   state.boss = {
     bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
@@ -455,7 +470,7 @@ function updateBoss(state) {
   // Periodic Shadow Sprotos keep six players busy.
   if (b.t % Math.floor(300 * fast) === 150 && state.enemies.length < 7) { spawnEnemy(state, 1); spawnEnemy(state, -1); spawnEnemy(state, 1); }
   // Contact damage.
-  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge') hurtPlayer(state, p, 20 + state.stageIdx, Math.sign(p.x - b.x) || 1, true);
+  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge') hurtPlayer(state, p, 16 + state.stageIdx * 1.5, Math.sign(p.x - b.x) || 1, true);
 
   if (b.st === 'idle') {
     // Drift toward a lane near the target, keep distance from the group.
@@ -469,14 +484,17 @@ function updateBoss(state) {
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1).
       const charge = b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
       if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; ev(state, 'charge'); }
-      else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y; }
+      else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y;
+        // Lock the lanes now; they are shown on the floor until the shots fire. Spreads leave gaps.
+        const offs = b.row === 2 ? (b.phase ? [-72, -36, 0, 36, 72] : [-40, 0, 40]) : [0];
+        b.warn = b.missile ? null : offs.map(o => clamp(Math.round(b.ty + o), 0, DEPTH)).filter((v, i, a) => a.indexOf(v) === i); }
     }
   } else if (b.st === 'fire') {
     // 4-frame weapon animation: anticipation, locked, muzzle (fire), recoil.
     // Weapons A and C fire bursts (3 shots, 5 in phase 2); weapon B fires one wide volley.
-    const fireAt = 24, burst = b.missile || b.row === 2 ? 1 : (b.phase ? 5 : 3);
-    if (b.t >= fireAt && (b.t - fireAt) % 6 === 0 && (b.t - fireAt) / 6 < burst) bossShoot(state, b);
-    if (b.t > 48 + (burst - 1) * 6) { b.st = 'idle'; b.t = 0; }
+    const fireAt = 30, burst = b.missile || b.row === 2 ? 1 : (b.phase ? 3 : 2);
+    if (b.t >= fireAt && (b.t - fireAt) % 8 === 0 && (b.t - fireAt) / 6 < burst) bossShoot(state, b);
+    if (b.t > 54 + (burst - 1) * 8) { b.st = 'idle'; b.t = 0; b.warn = null; }
   } else if (b.st === 'charge') {
     if (b.t < 24) { b.x += (rng(state) - 0.5) * 2; }
     else { b.x += b.tx * 8.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20); } }
@@ -489,20 +507,19 @@ function bossShoot(state, b) {
   const bodyH = ph ? (ph.body[3] - ph.body[1]) * BOSS_SCALE : 120;
   const mz = bodyH * 0.45;
   const mx = b.x + b.face * b.w * 0.55;
-  const spd = b.phase ? 6.2 : 5;
-  const dmg = 15 + Math.floor(state.stageIdx / 2);
+  const spd = b.phase ? 4.6 : 3.8;
+  const dmg = 11 + state.stageIdx;
   ev(state, 'bossfire');
   if (b.missile) {
     // Homing missiles: one in phase 1, a pair in phase 2.
-    for (const off of b.phase ? [-24, 24] : [0]) state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: clamp(b.y + off, 0, DEPTH), z: mz, vx: b.face * 2.2, vy: 0, vz: 0, dmg: dmg + 8, t: 0, life: 340, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
+    for (const off of b.phase ? [-24, 24] : [0]) state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: clamp(b.y + off, 0, DEPTH), z: mz, vx: b.face * 1.6, vy: 0, vz: 0, dmg: dmg + 8, t: 0, life: 300, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
     return;
   }
+  // Shots fly straight along the lanes that were warned on the floor, low enough to jump over.
+  // Standing in a warned lane gets you hit; stepping out of it or jumping does not.
   const r = b.row - 1; // projectile row 0..2 matches weapon A/B/C firing rows 1..3
-  const lanes = r === 1 ? (b.phase ? [-48, -32, -16, 0, 16, 32, 48] : [-40, -20, 0, 20, 40]) : [0];
-  for (const off of lanes) {
-    const ty = clamp(b.ty + off, 0, DEPTH);
-    const steps = Math.max(1, Math.abs(b.tx - mx) / spd);
-    state.projs.push({ id: state.nextId++, kind: 'boss', row: r, x: mx, y: b.y, z: r === 2 ? 14 : mz * 0.5, vx: b.face * spd, vy: clamp((ty - b.y) / steps, -1.5, 1.5), vz: 0, dmg, t: 0, life: 200, enemy: true, phase: b.phase, bi: b.bi });
+  for (const y of b.warn || [b.ty]) {
+    state.projs.push({ id: state.nextId++, kind: 'boss', row: r, x: mx, y, z: 16, vx: b.face * spd, vy: 0, vz: 0, dmg, t: 0, life: 260, enemy: true, phase: b.phase, bi: b.bi });
   }
 }
 
@@ -514,8 +531,8 @@ function updateProjs(state) {
     if (pr.homing && ps.length) {
       let best = ps[0], bd = 1e9;
       for (const p of ps) { const d = Math.abs(p.x - pr.x) + Math.abs(p.y - pr.y); if (d < bd) { bd = d; best = p; } }
-      pr.vx += Math.sign(best.x - pr.x) * 0.05; pr.vy += Math.sign(best.y - pr.y) * 0.03;
-      pr.vx = clamp(pr.vx, -2.8, 2.8); pr.vy = clamp(pr.vy, -1.3, 1.3);
+      pr.vx += Math.sign(best.x - pr.x) * 0.03; pr.vy += Math.sign(best.y - pr.y) * 0.015;
+      pr.vx = clamp(pr.vx, -1.9, 1.9); pr.vy = clamp(pr.vy, -0.7, 0.7);
       pr.z += (24 - pr.z) * 0.02;
     }
     pr.x += pr.vx; pr.y += pr.vy; pr.z += pr.vz;
@@ -523,7 +540,7 @@ function updateProjs(state) {
     if (pr.t > pr.life || pr.x < state.camX - 80 || pr.x > state.camX + W + 80) { pr.remove = true; continue; }
     if (pr.enemy) {
       for (const p of ps) {
-        if (Math.abs(p.x - pr.x) < 16 && Math.abs(p.y - pr.y) < 11 && Math.abs((p.z + 26) - pr.z) < 32) {
+        if (Math.abs(p.x - pr.x) < 14 && Math.abs(p.y - pr.y) < 9 && pr.z >= p.z - 4 && pr.z <= p.z + 54) {
           if (hurtPlayer(state, p, pr.dmg, Math.sign(pr.vx) || 1, !!pr.boom || pr.row === 2)) {
             pr.remove = true;
             if (pr.boom) { fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
@@ -531,7 +548,7 @@ function updateProjs(state) {
           }
         }
       }
-      if (pr.homing && pr.t > 320) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
+      if (pr.homing && pr.t > 280) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
     } else if (pr.kind === 'laser') {
       for (const e of state.enemies) {
         if (e.hp <= 0 || pr.hit.includes(e.id)) continue;
@@ -610,9 +627,8 @@ function step(state) {
     if (state.stageIdx + 1 >= 12) { state.mode = 'victory'; state.banner = { text: 'VICTORY!', sub: 'All twelve machines are scrap', t: 99999 }; ev(state, 'victory'); }
     else startStage(state, state.stageIdx + 1);
   }
-  // Game over only when every human is out of lives and none continued.
-  const humans = state.players.filter(p => p.ctrl !== 'cpu');
-  if (humans.length && humans.every(p => p.st === 'out' && p.contT > 600)) { state.mode = 'gameover'; state.banner = { text: 'GAME OVER', sub: 'Press START to retry', t: 99999 }; }
+  // Game over when every Sproto on screen is down or dead (nobody is left to revive).
+  if (state.mode === 'play' && !state.players.some(alive)) gameOver(state, 'Every Sproto is down');
 }
 
 // Compact, render-only view of the state (used for rendering and network snapshots).
@@ -621,12 +637,12 @@ function snapshot(state) {
   return {
     t: state.t, god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
-    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, ct: p.contT, nr: p.npcRevived ? 1 : 0 })),
+    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0 })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0 })),
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
-    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0 },
+    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0 },
   };
 }
 

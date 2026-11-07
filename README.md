@@ -34,7 +34,8 @@ Start / Enter begins the game from the lobby. In the lobby, LEFT/RIGHT changes y
 - **Every Sproto is armed:** Katana, Bo Staff, War Hammer, Spear, Battle Axe or Chain Flail. Each has its own reach, speed and damage.
 - **3-hit combo:** the last hit knocks the enemy down. Jump + Attack is a diving strike.
 - **Special** (or Attack + Jump together): a spinning weapon sweep that hits all around you and costs a little health.
-- **Revive:** a Sproto at 0 HP is down, not out. A human player standing over them revives them before the timer runs out. CPU Sprotos never revive other CPUs. They will revive a human player only **once per life**; the second time you go down, only another human can save you, or you lose a life and drop back in. Out of lives? Press ATTACK to continue.
+- **Down, dead, game over:** a Sproto at 0 HP is down for **10 seconds**. Human players can revive anyone by standing over them. CPU Sprotos never revive other CPUs, and they revive a human only **once per life**. Nobody comes back on their own: a Sproto nobody revives in time dies. Dead CPUs sit out the rest of the stage and return at the next one. A human who dies drops back in once (shown as ♥♥ → ♥ in the HUD). **The second death of any human player is game over, and so is every Sproto on screen being down or dead.**
+- **Dodging:** before a boss fires, red stripes mark the lanes it will shoot along. Shots fly straight down those lanes and low to the ground: **stand in a stripe and you get hit; step out of it or jump over the shot and you don't.** Spreads always leave gaps. A weapon swing knocks thrown knives and homing missiles out of the air.
 - **Difficulty:** four waves of 12+ Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on, with harder bosses that call in reinforcements. CPU teammates are deliberately weaker than humans (55% damage dealt, 135% damage taken), so the team will lose Sprotos.
 - **The UFO (from Sproto Arcade):** a UFO beacon drops mid-stage and when a boss changes phase. Whoever grabs it pilots the saucer for 12 seconds. Attack fires the green laser, Jump/Special drops the beach-ball bomb, and the saucer's shield absorbs 4 hits.
 - **Crates** hold health snacks and gems.
@@ -50,7 +51,9 @@ Only these sprites are reused:
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
 - **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (`public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
 
-The weapons, backgrounds, items and effects are drawn in code (`public/js/render.js`). `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
+- **Stages:** the backgrounds are Sproto Arcade's stage art (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, `art/codebreak/shaft.webp`). `tools/build-backgrounds.py` splits each panorama at its floor line into scenery that scrolls at half speed and a floor that scrolls with the fighters (`public/assets/stages/`). Rooftop Breakaway has no floor of its own, so it borrows Neon Tomorrow's street.
+
+The weapons, items and effects are drawn in code (`public/js/render.js`). `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
 
 ## Code map
 
