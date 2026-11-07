@@ -22,7 +22,8 @@ for (let i = 0; i < 60 * 60 * 40 && s.mode !== 'victory' && s.mode !== 'gameover
 const snap = JSON.stringify(Sim.snapshot(s));
 console.log({ mode: s.mode, stageReached: maxStage + 1, bossSeen, ufoTicks: ufoRides, snapshotBytes: snap.length,
   stageMinutes: stageTicks.slice(1).map((t, k) => ((t - stageTicks[k]) / 3600).toFixed(1)) });
-assert(ufoRides > 0 || maxStage >= 1, 'the team makes progress');
+assert(maxStage >= 1 || s.stage.waves.some(w => w.done), 'the team makes progress');
+assert(ufoRides === 0, 'CPU Sprotos never take the UFO');
 assert(s.mode === 'gameover' || s.mode === 'victory', 'an all-CPU team eventually wins or loses');
 console.log('ok');
 

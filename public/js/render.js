@@ -335,11 +335,12 @@ function drawItem(g, it, camX, t) {
     g.fillStyle = '#3affc8'; g.beginPath(); g.moveTo(sx, sy - 20 + bob); g.lineTo(sx + 7, sy - 12 + bob); g.lineTo(sx, sy - 4 + bob); g.lineTo(sx - 7, sy - 12 + bob); g.fill();
     g.fillStyle = '#fff'; g.fillRect(sx - 2, sy - 16 + bob, 2, 3);
   } else if (it.k === 'ufo') {
-    const im = img('assets/ufo/idle.png'); const bob = Math.sin(t / 10) * 4;
+    // Empty saucer (cockpit layers only, no pilot) as the pickup icon.
+    const rear = img('assets/ufo/cockpit-rear.png'), front = img('assets/ufo/cockpit-front.png'); const bob = Math.sin(t / 10) * 4;
     shadow(g, sx, sy, 22);
     g.fillStyle = `rgba(120,255,140,${0.18 + 0.1 * Math.sin(t / 6)})`; g.beginPath(); g.moveTo(sx - 10, sy - 40 + bob); g.lineTo(sx + 10, sy - 40 + bob); g.lineTo(sx + 24, sy); g.lineTo(sx - 24, sy); g.fill();
-    if (ready(im)) g.drawImage(im, sx - 47, sy - 70 + bob, 94, 51);
-    text(g, 'UFO', sx, sy - 76 + bob, 8, '#7aff8a', 'center');
+    if (ready(rear) && ready(front)) { g.drawImage(rear, sx - 47, sy - 70 + bob, 94, 51); g.drawImage(front, sx - 47, sy - 70 + bob, 94, 51); }
+    text(g, 'UFO · PLAYERS ONLY', sx, sy - 76 + bob, 6, '#7aff8a', 'center');
   }
 }
 

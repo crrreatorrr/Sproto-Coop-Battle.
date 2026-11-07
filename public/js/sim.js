@@ -185,6 +185,7 @@ function updatePlayer(state, p) {
     // Pick up items by walking over them.
     for (const it of state.items) {
       if (it.kind === 'crate' || it.taken) continue;
+      if (it.kind === 'ufo' && p.ctrl === 'cpu') continue; // only human players can take the UFO
       if (Math.abs(it.x - p.x) < 20 && Math.abs(it.y - p.y) < 14) takeItem(state, p, it);
     }
   }

@@ -28,8 +28,9 @@ function think(state, p) {
   if (downed) { go(downed.x, downed.y, 10); return; }
 
   // Grab the UFO or a snack when useful.
-  const item = state.items.find(i => (i.kind === 'ufo' || (i.kind === 'snack' && p.hp < 35) || i.kind === 'gem') && Math.abs(i.x - p.x) < 160);
-  if (item && !(item.kind === 'ufo' && state.players.some(o => o.ctrl !== 'cpu' && Math.abs(o.x - item.x) < 120))) { go(item.x, item.y, 6); return; }
+  // CPUs never go for the UFO: it is for human players only.
+  const item = state.items.find(i => ((i.kind === 'snack' && p.hp < 35) || i.kind === 'gem') && Math.abs(i.x - p.x) < 160);
+  if (item) { go(item.x, item.y, 6); return; }
 
   const foe = nearestFoe(state, p);
   if (!foe) {
