@@ -10,13 +10,15 @@ const app = {
   screen: 'loading', role: 'local', net: null, myId: 0, code: '', msg: '', msgT: 0,
   slots: [], sim: null, snap: null, prevSnap: null, snapAt: 0, snapGap: 33,
   menu: 0, stageSel: 0, remoteIn: {}, guestNames: {}, lobbyDirty: true, paused: false, acc: 0, last: 0, sendTick: 0, pendingEv: [], t: 0,
+  hub: { kind: 'offline', label: 'OFFLINE', balance: null, confirming: false, message: '' },
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
 }
 app.slots = defaultSlots();
 // Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
-const MENU = window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE'];
+// RETURN TO BAR stays last so LOCAL / HOST / JOIN keep their original indexes.
+const MENU = (window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE']).concat(['RETURN TO BAR']);
 const fname = fid => M.fighters[fid].name;
 function toast(s) { app.msg = s; app.msgT = 240; }
 
@@ -124,9 +126,49 @@ function hostStep() {
 }
 
 // ---------- per-frame device handling ----------
+function runLive() {
+  if (app.screen !== 'game') return false;
+  const mode = app.role === 'guest' ? (app.snap && app.snap.mode) : (app.sim && app.sim.mode);
+  return mode === 'play' || mode === 'boss' || (!!mode && mode !== 'gameover' && mode !== 'victory');
+}
+function syncHub(state) {
+  app.hub.kind = state.kind;
+  app.hub.label = state.label;
+  app.hub.balance = state.balance;
+  app.hub.confirming = !!state.confirming;
+  app.hub.message = state.message || '';
+}
+function requestHubReturn(live) {
+  const hub = window.CoopHub && window.CoopHub.session;
+  if (!hub) return;
+  const result = hub.requestReturn(!!live);
+  app.hub.confirming = !!(result && result.confirm);
+}
+function releaseForHub() {
+  if (app.net) { try { app.net.close(); } catch (err) { /* already closed */ } app.net = null; }
+  try {
+    const ctx = A.ensure && A.ensure();
+    if (ctx && ctx.close && ctx.state !== 'closed') ctx.close();
+  } catch (err) { /* audio already stopped */ }
+  removeEventListener('keydown', onKeyDown);
+  removeEventListener('resize', fit);
+}
 function localDevicesInput() {
   const devs = I.devices();
   const owner = app.role === 'guest' ? app.myId : 0;
+  if (app.hub.confirming) {
+    for (const d of devs) {
+      const p = I.pressed(d);
+      if (p.a || p.start) { requestHubReturn(true); return; }
+      if (p.j) {
+        const hub = window.CoopHub && window.CoopHub.session;
+        if (hub) hub.cancelReturn();
+        app.hub.confirming = false;
+        return;
+      }
+    }
+    return;
+  }
   for (const d of devs) {
     const p = I.pressed(d);
     const i = slotOf(owner, d);
@@ -172,6 +214,7 @@ function localDevicesInput() {
   }
 }
 function chooseMenu(k, dev) {
+  if (MENU[k] === 'RETURN TO BAR') { requestHubReturn(false); return; }
   if (k === 0) { app.role = 'local'; app.screen = 'lobby'; app.slots = defaultSlots(); claimSlot('local', 0, dev); }
   else if (k === 1) { hostOnline(); claimSlot('local', 0, dev); }
   else showJoin();
@@ -193,8 +236,16 @@ document.getElementById('cancelJoin').addEventListener('click', () => { joinBox.
 
 // God mode: press 9 twice within 0.75 s during a battle (same input as Sproto Arcade).
 let lastNine = -Infinity;
-addEventListener('keydown', e => {
+function onKeyDown(e) {
+  if (e.target && e.target.tagName === 'INPUT') return;
   if (app.screen === 'loading' && app.loadErr && !e.repeat && (e.code === 'Enter' || e.code === 'KeyF' || e.code === 'Space')) { bootAssets(); return; }
+  if (!e.repeat && e.code === 'KeyB') { requestHubReturn(runLive()); return; }
+  if (app.hub.confirming && e.code === 'Escape') {
+    const hub = window.CoopHub && window.CoopHub.session;
+    if (hub) hub.cancelReturn();
+    app.hub.confirming = false;
+    return;
+  }
   if ((e.code === 'Digit9' || e.code === 'Numpad9') && !e.repeat && app.screen === 'game') {
     if (e.timeStamp - lastNine <= 750) {
       lastNine = -Infinity;
@@ -206,7 +257,8 @@ addEventListener('keydown', e => {
   if (e.code === 'Escape' && app.screen === 'lobby') { if (app.net) app.net.close(); app.net = null; app.role = 'local'; app.screen = 'title'; }
   if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'local') app.paused = !app.paused;
   if (e.code === 'KeyM') A.toggle();
-});
+}
+addEventListener('keydown', onKeyDown);
 
 // ---------- drawing screens ----------
 const T = R.text;
@@ -221,15 +273,15 @@ function drawTitle() {
     R.drawFighter(g, o, 120 + i * 80, 268, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
   const items = MENU;
-  items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 70, 296 + i * 18, 10, app.menu === i ? '#ffd23d' : '#c8c6e0'));
-  T(g, 'WASD + F/G/H, R power  ·  ARROWS + , . /  \' power  ·  GAMEPADS', S.W / 2, 352, 6, '#9a98b8', 'center');
+  items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 90, 278 + i * 16, 9, app.menu === i ? '#ffd23d' : '#c8c6e0'));
+  T(g, 'WASD + F/G/H, R power  ·  ARROWS + , . /  \' power  ·  GAMEPADS', S.W / 2, 348, 6, '#9a98b8', 'center');
 }
 function drawLobby() {
   R.drawBackground(g, 4, app.t * 0.3);
   g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, S.H);
-  const title = app.role === 'host' ? 'ONLINE LOBBY' : app.role === 'guest' ? 'ONLINE LOBBY (GUEST)' : 'LOCAL LOBBY';
-  T(g, title, 12, 16, 12, '#ffd23d');
-  if (app.code) T(g, 'ROOM ' + app.code, S.W - 12, 16, 12, '#7aff8a', 'right');
+  const title = app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
+  T(g, title, 12, 22, 12, '#ffd23d');
+  if (app.code) T(g, 'ROOM ' + app.code, S.W - 12, 22, 12, '#7aff8a', 'right');
   const cw = 100;
   app.slots.forEach((s, i) => {
     const x = 8 + i * (cw + 4), y = 36;
@@ -257,13 +309,14 @@ function drawLobby() {
     g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 150, S.W, 40);
     T(g, 'HOST IS CHOOSING: STAGE ' + (app.hostChoosing + 1) + ' · ' + M.bosses[app.hostChoosing].stage.toUpperCase(), S.W / 2, 170, 8, '#ffd23d', 'center');
   }
-  if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 332, 6, '#7aff8a', 'center');
+  if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 328, 6, '#7aff8a', 'center');
+  T(g, 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
 }
 function drawStages() {
   R.drawBackground(g, app.stageSel, app.t * 0.4);
   g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
-  T(g, 'CHOOSE A STAGE', 12, 16, 12, '#ffd23d');
-  T(g, 'STAGE ' + (app.stageSel + 1) + ' OF 12', S.W - 12, 16, 8, '#c8c6e0', 'right');
+  T(g, 'CHOOSE A STAGE', 12, 22, 12, '#ffd23d');
+  T(g, 'STAGE ' + (app.stageSel + 1) + ' OF 12', S.W - 12, 22, 8, '#c8c6e0', 'right');
   const cw = 148, ch = 82;
   for (let i = 0; i < 12; i++) {
     const c = i % 4, r = Math.floor(i / 4), x = 8 + c * (cw + 8), y = 34 + r * (ch + 8), on = i === app.stageSel;
@@ -313,11 +366,11 @@ function frame(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
   I.endFrame();
-  if (app.screen === 'game' && app.role !== 'guest' && app.sim && !app.paused) {
+  if (app.screen === 'game' && app.role !== 'guest' && app.sim && !app.paused && !app.hub.confirming) {
     app.acc += dt;
     while (app.acc >= STEP) { hostStep(); app.acc -= STEP; }
   }
-  if (app.role === 'guest' && app.net && app.net.open && app.screen === 'game') {
+  if (app.role === 'guest' && app.net && app.net.open && app.screen === 'game' && !app.hub.confirming) {
     const inp = {}; for (const s of app.slots) if (s.ctrl === 'remote' && s.owner === app.myId) inp[s.dev] = I.pack(I.read(s.dev));
     app.net.send({ t: 'in', inp });
   }
@@ -336,6 +389,19 @@ function frame(now) {
   else if (app.screen === 'stages') drawStages();
   else if (app.screen === 'game') drawGame();
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
+  drawHubStatus();
+}
+function drawHubStatus() {
+  const h = app.hub;
+  const who = h.kind === 'account' ? 'ACCOUNT ' + h.label : h.kind === 'guest' ? 'GUEST' : h.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
+  const bal = (h.kind === 'account' || h.kind === 'guest') && typeof h.balance === 'number' ? '   TICKETS ' + h.balance : '';
+  g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
+  T(g, who + bal + '   ·   PRACTICE', 6, 4, 5, '#c8c6e0');
+  if (h.confirming) {
+    g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
+    T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');
+    T(g, 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
+  }
 }
 requestAnimationFrame(frame);
 const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
@@ -353,6 +419,7 @@ function bootAssets() {
     if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
   }, err => { app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading'; });
 }
+if (window.CoopHub) window.CoopHub.boot({ release: releaseForHub, onChange: syncHub });
 bootAssets();
 window.SprotoApp = app; // handy for debugging and browser tests
 })();
