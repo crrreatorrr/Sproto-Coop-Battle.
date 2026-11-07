@@ -852,7 +852,131 @@ function snapshot(state) {
   };
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, create, step, snapshot, toggleGod, startStage, alive, rng, clamp };
+// Full restart state. Sim.snapshot is render-only and cannot resume the sim.
+// Packing sorts keys, replaces enemy.target with a seat ref, and stores hit sets
+// as data. It does not change step(), RNG, or combat.
+const STATE_KIND = 'sproto-coop-battle-state';
+const STATE_VERSION = 1;
+const MAX_STATE_BYTES = 262144;
+
+function badStateKey(k) { return k === '__proto__' || k === 'constructor' || k === 'prototype'; }
+function cmpPacked(a, b) {
+  const as = (typeof a === 'number' ? '0' : '1') + String(a);
+  const bs = (typeof b === 'number' ? '0' : '1') + String(b);
+  return as < bs ? -1 : as > bs ? 1 : 0;
+}
+function packValue(v, seen) {
+  if (v === null) return null;
+  const ty = typeof v;
+  if (ty === 'number') {
+    if (!Number.isFinite(v)) throw new Error('nan');
+    return Object.is(v, -0) ? 0 : v;
+  }
+  if (ty === 'string' || ty === 'boolean') return v;
+  if (ty !== 'object') throw new Error('type');
+  if (seen.has(v)) throw new Error('cycle');
+  if (typeof Set !== 'undefined' && v instanceof Set) {
+    seen.add(v);
+    const arr = [];
+    v.forEach(item => arr.push(packValue(item, seen)));
+    arr.sort(cmpPacked);
+    return { $set: arr };
+  }
+  if (Array.isArray(v)) {
+    seen.add(v);
+    return v.map(item => packValue(item, seen));
+  }
+  seen.add(v);
+  const out = {};
+  const keys = Object.keys(v).sort();
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    if (badStateKey(k)) throw new Error('key');
+    const child = v[k];
+    if (child === undefined) continue;
+    if (k === 'target' && child && typeof child === 'object') {
+      if (!Number.isInteger(child.slot)) throw new Error('target');
+      out.target = { $ref: 'player', slot: child.slot };
+      continue;
+    }
+    out[k] = packValue(child, seen);
+  }
+  return out;
+}
+function assertPacked(v, seen) {
+  if (v === null || typeof v !== 'object') {
+    if (typeof v === 'number' && !Number.isFinite(v)) throw new Error('nan');
+    return;
+  }
+  if (typeof Set !== 'undefined' && v instanceof Set) throw new Error('unpacked');
+  if (seen.has(v)) throw new Error('cycle');
+  seen.add(v);
+  if (Array.isArray(v)) {
+    for (let i = 0; i < v.length; i++) assertPacked(v[i], seen);
+    return;
+  }
+  const keys = Object.keys(v);
+  for (let i = 0; i < keys.length; i++) {
+    if (badStateKey(keys[i])) throw new Error('key');
+    assertPacked(v[keys[i]], seen);
+  }
+}
+function revivePacked(v) {
+  if (v === null || typeof v !== 'object') return v;
+  if (Array.isArray(v)) return v.map(revivePacked);
+  const keys = Object.keys(v);
+  if (keys.length === 1 && Object.prototype.hasOwnProperty.call(v, '$set')) {
+    if (!Array.isArray(v.$set)) throw new Error('set');
+    return new Set(v.$set.map(revivePacked));
+  }
+  if (v.$ref === 'player' && keys.length === 2) {
+    if (!Number.isInteger(v.slot) || v.slot < 0 || v.slot >= SLOTS) throw new Error('target');
+    return { $ref: 'player', slot: v.slot };
+  }
+  const out = {};
+  for (let i = 0; i < keys.length; i++) {
+    if (badStateKey(keys[i])) throw new Error('key');
+    out[keys[i]] = revivePacked(v[keys[i]]);
+  }
+  return out;
+}
+function linkPackedPlayers(state) {
+  const players = state.players || [];
+  const enemies = state.enemies || [];
+  for (let i = 0; i < enemies.length; i++) {
+    const target = enemies[i].target;
+    if (target && target.$ref === 'player') {
+      const p = players[target.slot];
+      if (!p || p.slot !== target.slot) throw new Error('target');
+      enemies[i].target = p;
+    }
+  }
+}
+function exportState(state) {
+  const packed = { kind: STATE_KIND, version: STATE_VERSION, state: packValue(state, new Set()) };
+  const text = JSON.stringify(packed);
+  if (text.length > MAX_STATE_BYTES) throw new Error('oversized');
+  return JSON.parse(text);
+}
+function importState(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('schema');
+  if (data.kind !== STATE_KIND || data.version !== STATE_VERSION) throw new Error('version');
+  if (!data.state || typeof data.state !== 'object') throw new Error('schema');
+  assertPacked(data, new Set());
+  const text = JSON.stringify(data);
+  if (text.length > MAX_STATE_BYTES) throw new Error('oversized');
+  const state = revivePacked(JSON.parse(text).state);
+  if (!state || !Array.isArray(state.players) || state.players.length !== SLOTS) throw new Error('seats');
+  for (let i = 0; i < SLOTS; i++) {
+    if (!state.players[i] || state.players[i].slot !== i || state.players[i].id !== 'p' + i) throw new Error('seat');
+    if (!Array.isArray(state.players[i].powers)) throw new Error('powers');
+  }
+  if (!state.stage || !Array.isArray(state.enemies) || !Array.isArray(state.items) || !Array.isArray(state.projs)) throw new Error('schema');
+  linkPackedPlayers(state);
+  return state;
+}
+
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);
