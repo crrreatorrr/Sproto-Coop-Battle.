@@ -1,0 +1,44 @@
+{
+  "browser": "playwright-chromium",
+  "url": "localhost",
+  "runs": [
+    {
+      "transfer": 1388836,
+      "duration": 85.30000000004657,
+      "requests": 20
+    },
+    {
+      "transfer": 1388836,
+      "duration": 80.4000000001397,
+      "requests": 20
+    },
+    {
+      "transfer": 1388836,
+      "duration": 83.4000000001397,
+      "requests": 20
+    }
+  ],
+  "medianTransfer": 1388836,
+  "medianDurationMs": 83.4000000001397,
+  "throttled": [
+    {
+      "transfer": 1388836,
+      "duration": 1532.8000000000466,
+      "requests": 20
+    },
+    {
+      "transfer": 1388836,
+      "duration": 1535.5,
+      "requests": 20
+    },
+    {
+      "transfer": 1388836,
+      "duration": 1534.1999999999534,
+      "requests": 20
+    }
+  ],
+  "medianThrottledMs": 1534.1999999999534,
+  "throttle": "10 Mbps, 100 ms RTT, cache disabled, no CPU throttle",
+  "poseRequests": 0,
+  "cells": 240
+}

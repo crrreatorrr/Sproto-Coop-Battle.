@@ -103,7 +103,7 @@ function startGame() {
   const cfg = app.slots.map((s, i) => ({ fid: s.fid, weapon: s.weapon, ctrl: s.ctrl, owner: s.owner, name: fname(s.fid) }));
   app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0, app.stageSel);
   app.screen = 'game'; app.paused = false; app.acc = 0;
-  M.bosses.forEach((b, i) => { if (i < 2) R.bossImages(i); });
+  R.enterStage(app.sim.stageIdx); // C2: current stage + next, not the old eager pair
 }
 function hostStep() {
   const sim = app.sim;
@@ -194,6 +194,7 @@ document.getElementById('cancelJoin').addEventListener('click', () => { joinBox.
 // God mode: press 9 twice within 0.75 s during a battle (same input as Sproto Arcade).
 let lastNine = -Infinity;
 addEventListener('keydown', e => {
+  if (app.screen === 'loading' && app.loadErr && !e.repeat && (e.code === 'Enter' || e.code === 'KeyF' || e.code === 'Space')) { bootAssets(); return; }
   if ((e.code === 'Digit9' || e.code === 'Numpad9') && !e.repeat && app.screen === 'game') {
     if (e.timeStamp - lastNine <= 750) {
       lastNine = -Infinity;
@@ -324,7 +325,12 @@ function frame(now) {
 
   g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
   g.fillStyle = '#000'; g.fillRect(0, 0, S.W, S.H);
-  if (app.screen === 'loading') { T(g, 'LOADING SPROTOS…', S.W / 2, S.H / 2, 10, '#fff', 'center'); g.fillStyle = '#ffd23d'; g.fillRect(170, S.H / 2 + 16, 300 * (app.loadK || 0), 6); }
+  if (app.screen === 'loading') {
+    T(g, app.loadErr ? 'COULD NOT LOAD ART' : 'LOADING SPROTOS…', S.W / 2, S.H / 2 - 8, 10, '#fff', 'center');
+    g.fillStyle = '#3a3558'; g.fillRect(170, S.H / 2 + 16, 300, 6);
+    g.fillStyle = '#ffd23d'; g.fillRect(170, S.H / 2 + 16, 300 * (app.loadK || 0), 6);
+    if (app.loadErr) T(g, 'ATTACK OR ENTER RETRIES', S.W / 2, S.H / 2 + 40, 7, '#ff8a8a', 'center');
+  }
   else if (app.screen === 'title' || app.screen === 'join') drawTitle();
   else if (app.screen === 'lobby') drawLobby();
   else if (app.screen === 'stages') drawStages();
@@ -333,11 +339,20 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
-Promise.all([R.preload(k => (app.loadK = k)), fontReady]).then(() => {
-  app.screen = 'title';
-  const q = new URLSearchParams(location.search);
-  if (q.get('room')) showJoin();
-  if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
-});
+// C2 load boundary: title waits on lobby art; a failed critical file stays on this screen until retry.
+function bootAssets() {
+  app.loadErr = '';
+  app.loadK = 0;
+  app.screen = 'loading';
+  return Promise.all([R.preload(k => (app.loadK = k)), fontReady]).then(() => {
+    if (app.booted) return;
+    app.booted = true;
+    app.screen = 'title';
+    const q = new URLSearchParams(location.search);
+    if (q.get('room')) showJoin();
+    if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
+  }, err => { app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading'; });
+}
+bootAssets();
 window.SprotoApp = app; // handy for debugging and browser tests
 })();
