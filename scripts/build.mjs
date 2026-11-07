@@ -1,15 +1,41 @@
 // Deterministic copy of runtime public files into dist/. Authoring tools,
 // the practice server, tests, and secrets stay out of the static tree.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from './check-assets.mjs';
 
+const SDK_REL = 'vendor/hub-sdk/dist/hub-sdk.iife.js';
+const SDK_PIN = 'vendor/hub-sdk/SOURCE.pin.json';
+const SDK_IIFE_SHA256 = 'e23bbe9f6805cfd989a65d4279e56163e2d6f4497a0514c9c28ccc0f2adca2eb';
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
 const dist = path.join(root, 'dist');
 
+export function assertSdkPin() {
+  const pin = JSON.parse(fs.readFileSync(path.join(root, SDK_PIN), 'utf8'));
+  const bytes = fs.readFileSync(path.join(root, SDK_REL));
+  const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+  const text = bytes.toString('utf8');
+  const problems = [];
+  if (pin.package !== '@metaverse/hub-sdk' || pin.version !== '0.6.2' || pin.global !== 'HubSDK' || pin.format !== 'iife') {
+    problems.push('SOURCE.pin.json is not @metaverse/hub-sdk 0.6.2 IIFE global HubSDK');
+  }
+  if (pin.iifeSha256 !== SDK_IIFE_SHA256 || hash !== SDK_IIFE_SHA256) problems.push('iife sha256 does not match the H0 pin');
+  if (!text.includes('sproto-coop-battle') || !text.includes('Not a CDN import')) problems.push('iife is not the pinned classic build');
+  if (/NAKAMA_HTTP_KEY/i.test(text) || /http[_-]?key\s*[:=]\s*['"][A-Za-z0-9]{8,}['"]/i.test(text)) problems.push('iife contains an HTTP key');
+  if (problems.length) {
+    const error = new Error(problems.join('; '));
+    error.detail = { problems, hash };
+    throw error;
+  }
+  return { hash, bytes };
+}
+
 export function buildDist() {
+  const sdk = assertSdkPin();
   fs.rmSync(dist, { recursive: true, force: true });
   fs.mkdirSync(dist, { recursive: true });
   const files = walkFiles(pub);
@@ -21,6 +47,10 @@ export function buildDist() {
     fs.copyFileSync(file, target);
     copied.push(rel.split(path.sep).join('/'));
   }
+  const sdkTarget = path.join(dist, SDK_REL);
+  fs.mkdirSync(path.dirname(sdkTarget), { recursive: true });
+  fs.writeFileSync(sdkTarget, sdk.bytes);
+  copied.push(SDK_REL);
   const report = inventory();
   const manifestFiles = report.files.map(file => {
     const row = { path: file.path, bytes: file.bytes, sha256: file.sha256 };
