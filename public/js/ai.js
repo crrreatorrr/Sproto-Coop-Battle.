@@ -23,12 +23,12 @@ function think(state, p) {
     return;
   }
 
-  // Revive downed teammates first.
-  const downed = state.players.find(o => o.st === 'down' && Math.abs(o.x - p.x) < 260);
-  if (downed && (p.slot + state.t) % 3 !== 0 || (downed && !nearestFoe(state, p))) { go(downed.x, downed.y, 10); return; }
+  // CPU Sprotos revive human players only (never other CPUs), and only once per life.
+  const downed = state.players.find(o => o.st === 'down' && o.ctrl !== 'cpu' && !o.npcRevived && Math.abs(o.x - p.x) < 260);
+  if (downed) { go(downed.x, downed.y, 10); return; }
 
   // Grab the UFO or a snack when useful.
-  const item = state.items.find(i => (i.kind === 'ufo' || (i.kind === 'snack' && p.hp < 60) || i.kind === 'gem') && Math.abs(i.x - p.x) < 220);
+  const item = state.items.find(i => (i.kind === 'ufo' || (i.kind === 'snack' && p.hp < 35) || i.kind === 'gem') && Math.abs(i.x - p.x) < 160);
   if (item && !(item.kind === 'ufo' && state.players.some(o => o.ctrl !== 'cpu' && Math.abs(o.x - item.x) < 120))) { go(item.x, item.y, 6); return; }
 
   const foe = nearestFoe(state, p);
@@ -45,14 +45,14 @@ function think(state, p) {
   const side = p.x < foe.x ? -1 : 1;
   const laneOff = isBoss ? [-26, 26, -12, 12, 0, -20][p.slot] : 0;
   // Dodge incoming shots by jumping.
-  for (const pr of state.projs) if (pr.enemy && Math.abs(pr.y - p.y) < 12 && Math.sign(p.x - pr.x) === Math.sign(pr.vx) && Math.abs(pr.x - p.x) < 50 && p.st !== 'jump' && S.rng(state) < 0.25) { inp.j = 1; return; }
+  for (const pr of state.projs) if (pr.enemy && Math.abs(pr.y - p.y) < 12 && Math.sign(p.x - pr.x) === Math.sign(pr.vx) && Math.abs(pr.x - p.x) < 50 && p.st !== 'jump' && S.rng(state) < 0.06) { inp.j = 1; return; }
   const inPlace = go(foe.x + side * reach, foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0), isBoss ? 14 : 6);
   if (inPlace || (Math.abs(foe.x - p.x) < reach + 6 && Math.abs(foe.y + laneOff - p.y) < (isBoss ? 14 : 10))) {
     inp.l = inp.r = 0;
     if (p.face !== -side) { if (side < 0) inp.r = 1; else inp.l = 1; }
     const crowd = state.enemies.filter(e => !e.dead && Math.abs(e.x - p.x) < 50 && Math.abs(e.y - p.y) < 16).length;
-    if (crowd >= 3 && p.hp > 40 && S.rng(state) < 0.05) inp.s = 1;
-    else if ((ai.t + p.slot * 3) % 9 === 0) inp.a = 1;
+    if (crowd >= 3 && p.hp > 40 && S.rng(state) < 0.02) inp.s = 1;
+    else if ((ai.t + p.slot * 5) % 17 === 0 && S.rng(state) < 0.8) inp.a = 1;
   }
 }
 function nearestFoe(state, p) {

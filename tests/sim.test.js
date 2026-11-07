@@ -6,7 +6,7 @@ const Sim = require('../public/js/sim.js');
 require('../public/js/ai.js');
 const assert = require('assert');
 
-const slots = Array.from({ length: 6 }, (_, i) => ({ fid: i % 3, weapon: i, ctrl: 'cpu', name: 'CPU' + (i + 1) }));
+const slots = Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'cpu', name: 'CPU' + (i + 1) }));
 const s = Sim.create(slots, 42);
 let maxStage = 0, bossSeen = 0, ufoRides = 0, stageTicks = [0], last = 0;
 for (let i = 0; i < 60 * 60 * 40 && s.mode !== 'victory' && s.mode !== 'gameover'; i++) {
@@ -28,7 +28,7 @@ console.log('ok');
 
 // God mode: human Sprotos never lose health and attack twice as fast.
 {
-  const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i % 3, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
+  const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
   const g = Sim.create(cfg, 7);
   Sim.toggleGod(g);
   const p = g.players[0];

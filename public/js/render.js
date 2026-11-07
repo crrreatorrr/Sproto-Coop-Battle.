@@ -364,7 +364,7 @@ function drawHud(g, snap) {
     drawHead(g, p.f, variantOf(snap, p), x + 2, y + 5, 22);
     text(g, 'P' + (p.s + 1), x + 26, y + 9, 7, col);
     text(g, p.c === 'cpu' ? 'CPU' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 6, '#9a98b8');
-    text(g, String(p.n).slice(0, 8), x + 26, y + 18, 6, '#fff');
+    text(g, String(p.n).slice(0, 15), x + 26, y + 18, String(p.n).length > 8 ? 4.5 : 6, '#fff');
     if (p.st === 'out') {
       if (p.c === 'cpu') text(g, 'REBOOT', x + 26, y + 30, 6, '#9a98b8');
       else if (Math.floor(snap.t / 20) % 2) text(g, 'CONTINUE?', x + 26, y + 30, 6, '#ffd23d');
@@ -420,7 +420,8 @@ function drawWorld(g, snap) {
       if (p.st === 'down') {
         g.fillStyle = '#300'; g.fillRect(sx - 16, sy - 40, 32, 4);
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
-        if (Math.floor(snap.t / 15) % 2) text(g, 'REVIVE!', sx, sy - 50, 6, '#ffd23d', 'center');
+        const needHuman = p.c === 'cpu' || p.nr;
+        if (Math.floor(snap.t / 15) % 2) text(g, needHuman ? 'PLAYER REVIVE ONLY!' : 'REVIVE!', sx, sy - 50, 6, needHuman ? '#ff8a8a' : '#ffd23d', 'center');
       }
     } });
   }

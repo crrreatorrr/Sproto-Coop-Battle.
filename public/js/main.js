@@ -12,7 +12,7 @@ const app = {
   menu: 0, remoteIn: {}, guestNames: {}, lobbyDirty: true, paused: false, acc: 0, last: 0, sendTick: 0, pendingEv: [], t: 0,
 };
 function defaultSlots() {
-  return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % 3, weapon: i }));
+  return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
 }
 app.slots = defaultSlots();
 // Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
@@ -47,7 +47,7 @@ function releaseSlot(i) {
 }
 function cycle(i, key, d) {
   const s = app.slots[i];
-  if (key === 'fid') s.fid = (s.fid + d + 3) % 3; else s.weapon = (s.weapon + d + S.WEAPONS.length) % S.WEAPONS.length;
+  if (key === 'fid') s.fid = (s.fid + d + M.fighters.length) % M.fighters.length; else s.weapon = (s.weapon + d + S.WEAPONS.length) % S.WEAPONS.length;
   app.lobbyDirty = true; A.play('menu');
 }
 
@@ -207,8 +207,8 @@ function drawTitle() {
   T(g, 'COOP BATTLE', S.W / 2, 96, 22, '#ff5a5a', 'center');
   T(g, '6 armed Sprotos  vs  12 machine bosses', S.W / 2, 124, 7, '#fff', 'center');
   for (let i = 0; i < 6; i++) {
-    const o = { f: i % 3, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
-    R.drawFighter(g, o, 120 + i * 80, 268, i >= 3 ? i : 0, S.WEAPONS[i].id, S.WEAPONS[i]);
+    const o = { f: i % M.fighters.length, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
+    R.drawFighter(g, o, 120 + i * 80, 268, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
   const items = MENU;
   items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 70, 296 + i * 18, 10, app.menu === i ? '#ffd23d' : '#c8c6e0'));
@@ -232,7 +232,9 @@ function drawLobby() {
     T(g, String(who).slice(0, 14), x + 6, y + 30, 6, s.ctrl === 'cpu' ? '#8a88a8' : '#fff');
     let variant = 0; for (let k = 0; k < i; k++) if (app.slots[k].fid === s.fid) variant++;
     R.drawFighter(g, { f: s.fid, st: 'idle', t: app.t + i * 9, z: 0, fc: 1 }, x + cw / 2 - 4, y + 150, variant, S.WEAPONS[s.weapon].id, S.WEAPONS[s.weapon]);
-    T(g, '< ' + fname(s.fid) + ' >', x + cw / 2, y + 172, 7, '#fff', 'center');
+    const nm = fname(s.fid);
+    T(g, nm.length > 10 ? nm : '< ' + nm + ' >', x + cw / 2, y + 172, nm.length > 10 ? 6 : 7, '#fff', 'center');
+    if (nm.length > 10) { T(g, '<', x + 6, y + 150, 8, '#8a88a8'); T(g, '>', x + cw - 6, y + 150, 8, '#8a88a8', 'right'); }
     T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 190, 7, '#ffd23d', 'center');
     if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
     if (s.ctrl !== 'cpu') T(g, 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');

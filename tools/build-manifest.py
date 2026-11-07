@@ -51,7 +51,7 @@ def hands(fid, fb):
         out.append(list(best) if best else [(fb[0]+fb[2])//2 + 8, top + int(h*.45)])
     return out
 fighters = []
-for fid, name, color in [('mox','Yannix','#a49eff'),('vamp','VAMP','#5b83f4'),('guest09','Red Kev','#ff5a5a')]:
+for fid, name, color in [('sproto3106','Sproto Sheriff','#ff655e'),('vamp','VAMP','#5b83f4'),('guest09','Red Kev','#ff5a5a'),('guest10','Sprotel Bitcoin','#d9ccaa'),('rivet','Golden Sproto','#ffda55'),('dumpstar','Dumpstar','#77a9ff')]:
     im = Image.open(f'{O}fighters/{fid}/00.png').convert('RGBA')
     b = im.getchannel('A').getbbox()
     fighters.append({'id': fid, 'name': name, 'color': color, 'foot': [ (b[0]+b[2])//2, b[3] ], 'box': list(b), 'hands': hands(fid, b)})

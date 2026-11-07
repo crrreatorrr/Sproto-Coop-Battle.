@@ -34,7 +34,8 @@ Start / Enter begins the game from the lobby. In the lobby, LEFT/RIGHT changes y
 - **Every Sproto is armed:** Katana, Bo Staff, War Hammer, Spear, Battle Axe or Chain Flail. Each has its own reach, speed and damage.
 - **3-hit combo:** the last hit knocks the enemy down. Jump + Attack is a diving strike.
 - **Special** (or Attack + Jump together): a spinning weapon sweep that hits all around you and costs a little health.
-- **Revive:** a Sproto at 0 HP is down, not out. A teammate standing over them revives them before the timer runs out. Otherwise they lose a life and drop back in. Out of lives? Press ATTACK to continue.
+- **Revive:** a Sproto at 0 HP is down, not out. A human player standing over them revives them before the timer runs out. CPU Sprotos never revive other CPUs. They will revive a human player only **once per life**; the second time you go down, only another human can save you, or you lose a life and drop back in. Out of lives? Press ATTACK to continue.
+- **Difficulty:** four waves of 12+ Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on, with harder bosses that call in reinforcements. CPU teammates are deliberately weaker than humans (55% damage dealt, 135% damage taken), so the team will lose Sprotos.
 - **The UFO (from Sproto Arcade):** a UFO beacon drops mid-stage and when a boss changes phase. Whoever grabs it pilots the saucer for 12 seconds. Attack fires the green laser, Jump/Special drops the beach-ball bomb, and the saucer's shield absorbs 4 hits.
 - **Crates** hold health snacks and gems.
 - **Bosses:** every stage ends with a Sproto Arcade machine. Each has three weapon attacks and a homing heavy missile. At half HP it transforms into its phase-2 machine, which fires more and adds a charge rush. Jump over low shots.
@@ -47,7 +48,7 @@ Only these sprites are reused:
 
 - **Bosses:** the 24 boss phase sheets and 24 projectile sheets from [Sproto-Arcade](https://github.com/crrreatorrr/Sproto-Arcade) (`art/generated/bosses/*/p{1,2}.png`, `p{1,2}-projectiles.png`). They are downscaled to 1024² and palette-quantized in `public/assets/bosses/`. Row 0 is idle and rows 1–3 are the three firing weapons, which map to the boss's three attacks.
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
-- **Playable Sprotos:** three characters drawn at random from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (`public/fighters/poses/`). They are **Yannix** (`mox`), **VAMP** (`vamp`) and **Red Kev** (`guest09`), downscaled to 128². When two players pick the same Sproto, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same three.
+- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (`public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
 
 The weapons, backgrounds, items and effects are drawn in code (`public/js/render.js`). `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
 
