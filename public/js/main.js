@@ -15,6 +15,8 @@ function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % 3, weapon: i }));
 }
 app.slots = defaultSlots();
+// Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
+const MENU = window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE'];
 const fname = fid => M.fighters[fid].name;
 function toast(s) { app.msg = s; app.msgT = 240; }
 
@@ -128,8 +130,9 @@ function localDevicesInput() {
     const p = I.pressed(d);
     const i = slotOf(owner, d);
     if (app.screen === 'title') {
-      if (p.u) { app.menu = (app.menu + 2) % 3; A.play('menu'); }
-      if (p.d) { app.menu = (app.menu + 1) % 3; A.play('menu'); }
+      const n = MENU.length;
+      if (p.u) { app.menu = (app.menu + n - 1) % n; A.play('menu'); }
+      if (p.d) { app.menu = (app.menu + 1) % n; A.play('menu'); }
       if (p.a || p.start) { A.ensure(); chooseMenu(app.menu, d); return; }
     } else if (app.screen === 'lobby') {
       if (app.role === 'guest') {
@@ -197,7 +200,7 @@ function drawTitle() {
     const o = { f: i % 3, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
     R.drawFighter(g, o, 120 + i * 80, 268, i >= 3 ? i : 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
-  const items = ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE'];
+  const items = MENU;
   items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 70, 296 + i * 18, 10, app.menu === i ? '#ffd23d' : '#c8c6e0'));
   T(g, 'WASD+F/G/H  ·  ARROWS+,/./  ·  GAMEPADS', S.W / 2, 352, 6, '#9a98b8', 'center');
 }
