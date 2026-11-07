@@ -24,8 +24,21 @@ function think(state, p) {
   }
 
   // CPU Sprotos revive human players only (never other CPUs), and only once per life.
-  const downed = state.players.find(o => o.st === 'down' && o.ctrl !== 'cpu' && !o.npcRevived && Math.abs(o.x - p.x) < 260);
-  if (downed) { go(downed.x, downed.y, 10); return; }
+  // The first time a human goes down, the nearest CPU Sproto is sent to save them.
+  p.ai.rescue = false;
+  for (const o of state.players) {
+    if (o.st !== 'down' || o.ctrl === 'cpu' || o.npcRevived) continue;
+    let best = null, bd = 1e9;
+    for (const c of state.players) {
+      if (c.ctrl !== 'cpu' || !S.alive(c) || c.st === 'ufo') continue;
+      const dd = Math.abs(c.x - o.x) + Math.abs(c.y - o.y);
+      if (dd < bd) { bd = dd; best = c; }
+    }
+    if (best === p) {
+      if (o.rescuer !== p.slot) { o.rescuer = p.slot; state.fx.push({ id: state.nextId++, kind: 'text', x: p.x, y: p.y, z: 80, t: 0, text: 'ON MY WAY!' }); }
+      p.ai.rescue = true; go(o.x, o.y, 8); return;
+    }
+  }
 
   // Grab the UFO or a snack when useful.
   // CPUs never go for the UFO: it is for human players only.

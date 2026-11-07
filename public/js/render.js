@@ -17,7 +17,7 @@ const ready = im => im && im.complete && im.naturalWidth > 0;
 function preload(onProgress) {
   const list = [];
   for (const f of M.fighters) { for (let i = 0; i < 32; i++) list.push(`assets/fighters/${f.id}/${String(i).padStart(2, '0')}.png`); for (let i = 0; i < 8; i++) list.push(`assets/fighters/${f.id}/w0${i}.png`); }
-  for (const n of ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.jpg`); }
+  for (const n of ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.png`); }
   for (const n of ['cockpit-front', 'cockpit-rear', 'idle', 'laser', 'muzzle', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']) list.push(`assets/ufo/${n}.png`);
   let done = 0;
   return Promise.all(list.map(src => new Promise(res => { const im = img(src); const fin = () => { done++; onProgress && onProgress(done / list.length); res(); }; if (im.complete) fin(); else { im.onload = fin; im.onerror = fin; } })));
@@ -232,14 +232,14 @@ function mirrorTile(g, im, x0, y, h) {
 }
 function drawBackground(g, si, camX) {
   const n = String(si % 12 + 1).padStart(2, '0');
-  const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.jpg`);
+  const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.png`);
   if (ready(back) && ready(floor)) {
     mirrorTile(g, back, -camX * 0.5, 0, 226);
     mirrorTile(g, floor, -camX, FLOOR_TOP - 6, 150);
     const grd = g.createLinearGradient(0, FLOOR_TOP - 6, 0, FLOOR_TOP + 6);
     grd.addColorStop(0, 'rgba(0,0,0,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = grd; g.fillRect(0, FLOOR_TOP - 6, W, 12);
-    if (si < 11) { img(`assets/stages/${String(si + 2).padStart(2, '0')}-back.jpg`); img(`assets/stages/${String(si + 2).padStart(2, '0')}-floor.jpg`); }
+    if (si < 11) { img(`assets/stages/${String(si + 2).padStart(2, '0')}-back.jpg`); img(`assets/stages/${String(si + 2).padStart(2, '0')}-floor.png`); }
     return;
   }
   const bg = background(si); // drawn fallback while the stage art loads

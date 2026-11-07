@@ -172,7 +172,7 @@ function updatePlayer(state, p) {
     if (pressA) { setState(p, 'jumpatk'); p.hitDone = new Set(); ev(state, 'swing'); }
     if (p.z === 0 && p.t > 2) { setState(p, 'land'); p.vx = 0; p.vy = 0; }
   } else { // idle / walk
-    const sp = 2.3;
+    const sp = p.ctrl === 'cpu' && p.ai.rescue ? 3.6 : 2.3; // a rescuing CPU sprints
     let mx = (inp.r ? 1 : 0) - (inp.l ? 1 : 0), my = (inp.d ? 1 : 0) - (inp.u ? 1 : 0);
     p.vx = mx * sp; p.vy = my * sp * 0.62;
     if (mx) p.face = mx;
