@@ -1,0 +1,32 @@
+{
+  "description": "Deterministic six-seat hashes from the current sim. CPU uses the existing campaign loop (seed 42, all cpu) through its terminal state. Mixed and six-local runs apply the scripted device inputs below for 1800 ticks (30 sim seconds) and do not change the campaign test.",
+  "cpuSeed42Terminal": {
+    "seed": 42,
+    "slots": "6 cpu",
+    "mode": "gameover",
+    "stageReached": 1,
+    "t": 6957,
+    "players": 6,
+    "snapSha256": "c6ae6107e5bcbd4889664a9ce77c9426e154f35075b8065c2f813424347635d9"
+  },
+  "mixedSeed7Tick1800": {
+    "seed": 7,
+    "slots": ["local", "local", "cpu", "cpu", "cpu", "cpu"],
+    "ticks": 1800,
+    "input": "locals: right for 70 of every 100 ticks, attack every 10th tick, jump every 45th tick",
+    "mode": "play",
+    "stageReached": 1,
+    "t": 1800,
+    "snapSha256": "89ecbf4b26032462e367e666f5ebec9ca2853ca392d97461ec937a284818841b"
+  },
+  "sixLocalSeed99Tick1800": {
+    "seed": 99,
+    "slots": ["local", "local", "local", "local", "local", "local"],
+    "ticks": 1800,
+    "input": "each seat: right for 70 of every 100 ticks, lane nudge from slot parity, attack when tick % 12 === slot, jump when tick % 80 === slot * 3",
+    "mode": "play",
+    "stageReached": 1,
+    "t": 1800,
+    "snapSha256": "d753a4cd1c37252f9f6c1a1cf7e104095183191de865df54b78762f3990b36c2"
+  }
+}

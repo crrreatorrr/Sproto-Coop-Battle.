@@ -5,11 +5,20 @@
   "description": "6-player co-op pixel beat-'em-up: armed Sprotos vs. Sproto Arcade bosses",
   "scripts": {
     "start": "node server/server.js",
-    "test": "node tests/sim.test.js",
+    "test": "node tests/sim.test.js && node tests/relay-security.test.js && node tests/asset-manifest.test.js",
+    "test:browser": "node tests/browser-online.cjs",
+    "build": "node scripts/build.mjs",
+    "check:assets": "node scripts/check-assets.mjs",
+    "check:budgets": "node scripts/check-budgets.mjs",
     "manifest": "python3 tools/build-manifest.py"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "ws": "^8.18.0"
   },
-  "engines": { "node": ">=18" }
+  "devDependencies": {
+    "playwright": "^1.65.0"
+  }
 }

@@ -1,0 +1,29 @@
+{
+  "description": "C0 runtime snapshot of public/ on main 06669ce163e1ecb7c2f0f1f62fcce5bd19e26e64. 9.027457 MB is the decimal byte count, 8.609 MiB the binary count. Gzip-9 uses mtime 0 and can be larger than already-compressed PNG/JPEG bytes. Decoded cost is width * height * 4.",
+  "sourceCommit": "06669ce163e1ecb7c2f0f1f62fcce5bd19e26e64",
+  "assetCount": 324,
+  "assetBytes": 9027457,
+  "assetMegabytesDecimal": 9.027457,
+  "assetMebibytes": 8.609,
+  "publicFileCount": 333,
+  "publicBytes": 9155084,
+  "assetTreeSha256": "e6676387a4e92beae1d84b8515280eb3dbf7111ead4e9abcf84f72e097918f48",
+  "publicTreeSha256": "8be72c1792a5ca687176856daf3d2c37ff836c54518286ffb774b6b19a675d20",
+  "preloadCount": 274,
+  "preloadBytes": 2842143,
+  "preloadGzipBytes": 2831926,
+  "preloadDecodedBytes": 27107840,
+  "dynamicRefCount": 322,
+  "staticBudgetBytes": 10485760,
+  "sameOriginStartupRequests": 283,
+  "unused": [
+    "assets/ufo/red-laser.png",
+    "assets/ufo/thrust.png"
+  ],
+  "categories": {
+    "fighter": { "count": 240, "bytes": 1163757, "gzipBytes": 1155657, "decodedBytes": 15728640 },
+    "stage": { "count": 24, "bytes": 1519769, "gzipBytes": 1517486, "decodedBytes": 10655568 },
+    "ufo": { "count": 12, "bytes": 186245, "gzipBytes": 186462, "decodedBytes": 808156 },
+    "boss": { "count": 48, "bytes": 6157686, "gzipBytes": 6008693, "decodedBytes": 201326592 }
+  }
+}
