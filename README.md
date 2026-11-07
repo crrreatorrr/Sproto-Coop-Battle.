@@ -38,7 +38,7 @@ Start / Enter begins the game from the lobby. In the lobby, LEFT/RIGHT changes y
 - **Difficulty:** four waves of 12+ Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on, with harder bosses that call in reinforcements. CPU teammates are deliberately weaker than humans (55% damage dealt, 135% damage taken), so the team will lose Sprotos.
 - **The UFO (from Sproto Arcade):** a UFO beacon drops mid-stage and when a boss changes phase. Whoever grabs it pilots the saucer for 12 seconds. Attack fires the green laser, Jump/Special drops the beach-ball bomb, and the saucer's shield absorbs 4 hits.
 - **Crates** hold health snacks and gems.
-- **Bosses:** every stage ends with a Sproto Arcade machine. Each has three weapon attacks and a homing heavy missile. At half HP it transforms into its phase-2 machine, which fires more and adds a charge rush. Jump over low shots.
+- **Bosses:** every stage ends with a Sproto Arcade machine. Bosses are tough: 3,400 HP on stage 1, rising 400 per stage. Weapons A and C fire 3-shot bursts, weapon B fires a 5-lane spread, and every third attack launches a homing missile. Every fifth attack is a charge rush. At half HP the boss transforms into its phase-2 machine: it attacks 40% faster, fires 5-shot bursts and 7-lane spreads, launches missiles in pairs and charges more often. Below 25% HP it enrages and speeds up again. Jump over low shots.
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
 

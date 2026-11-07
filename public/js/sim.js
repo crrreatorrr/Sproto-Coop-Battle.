@@ -403,7 +403,7 @@ function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % 12] : nul
 function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
-  const hp = 1100 + state.stageIdx * 130;
+  const hp = 3400 + state.stageIdx * 400;
   state.boss = {
     bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
@@ -450,33 +450,36 @@ function updateBoss(state) {
     if (p.st !== 'ufo' && p.z < 40 && Math.abs(dx) < half && Math.abs(p.y - b.y) < 22) p.x = b.x + (dx < 0 ? -half : half);
   }
   const target = ps[Math.floor((b.cycle * 7 + b.t) % ps.length)];
-  const fast = b.phase === 1 ? 0.7 : 1;
+  // Faster in phase 2, and enraged below 25% HP.
+  const fast = (b.phase === 1 ? 0.6 : 1) * (b.hp < b.maxHp * 0.25 ? 0.75 : 1);
   // Periodic Shadow Sprotos keep six players busy.
   if (b.t % Math.floor(300 * fast) === 150 && state.enemies.length < 7) { spawnEnemy(state, 1); spawnEnemy(state, -1); spawnEnemy(state, 1); }
   // Contact damage.
-  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge') hurtPlayer(state, p, 12, Math.sign(p.x - b.x) || 1, true);
+  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge') hurtPlayer(state, p, 20 + state.stageIdx, Math.sign(p.x - b.x) || 1, true);
 
   if (b.st === 'idle') {
     // Drift toward a lane near the target, keep distance from the group.
     const avgX = ps.reduce((s, p) => s + p.x, 0) / ps.length;
     const wantX = avgX < (arenaL + arenaR) / 2 ? arenaR - 20 : arenaL + 20;
     b.x += clamp(wantX - b.x, -1.2, 1.2);
-    b.y += clamp(target.y - b.y, -0.8, 0.8);
+    b.y += clamp(target.y - b.y, -1.4, 1.4);
     b.face = avgX > b.x ? 1 : -1;
-    if (b.t > 52 * fast) {
+    if (b.t > 34 * fast) {
       b.cycle++;
-      const roll = b.cycle % (b.phase ? 5 : 4);
-      if (b.phase === 1 && roll === 4) { b.st = 'charge'; b.t = 0; b.tx = b.face; ev(state, 'charge'); }
-      else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 4 === 3; b.tx = target.x; b.ty = target.y; }
+      // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1).
+      const charge = b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
+      if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; ev(state, 'charge'); }
+      else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y; }
     }
   } else if (b.st === 'fire') {
     // 4-frame weapon animation: anticipation, locked, muzzle (fire), recoil.
-    const fireAt = 24;
-    if (b.t === fireAt || (b.phase && b.row === 3 && (b.t === fireAt + 10 || b.t === fireAt + 20))) bossShoot(state, b);
-    if (b.t > 48) { b.st = 'idle'; b.t = 0; }
+    // Weapons A and C fire bursts (3 shots, 5 in phase 2); weapon B fires one wide volley.
+    const fireAt = 24, burst = b.missile || b.row === 2 ? 1 : (b.phase ? 5 : 3);
+    if (b.t >= fireAt && (b.t - fireAt) % 6 === 0 && (b.t - fireAt) / 6 < burst) bossShoot(state, b);
+    if (b.t > 48 + (burst - 1) * 6) { b.st = 'idle'; b.t = 0; }
   } else if (b.st === 'charge') {
-    if (b.t < 30) { b.x += (rng(state) - 0.5) * 2; }
-    else { b.x += b.tx * 6.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20); } }
+    if (b.t < 24) { b.x += (rng(state) - 0.5) * 2; }
+    else { b.x += b.tx * 8.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20); } }
   }
 }
 
@@ -486,15 +489,16 @@ function bossShoot(state, b) {
   const bodyH = ph ? (ph.body[3] - ph.body[1]) * BOSS_SCALE : 120;
   const mz = bodyH * 0.45;
   const mx = b.x + b.face * b.w * 0.55;
-  const spd = b.phase ? 5.2 : 4.2;
-  const dmg = 12 + Math.floor(state.stageIdx / 2);
+  const spd = b.phase ? 6.2 : 5;
+  const dmg = 15 + Math.floor(state.stageIdx / 2);
   ev(state, 'bossfire');
   if (b.missile) {
-    state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: b.y, z: mz, vx: b.face * 1.8, vy: 0, vz: 0, dmg: dmg + 6, t: 0, life: 300, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
+    // Homing missiles: one in phase 1, a pair in phase 2.
+    for (const off of b.phase ? [-24, 24] : [0]) state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: clamp(b.y + off, 0, DEPTH), z: mz, vx: b.face * 2.2, vy: 0, vz: 0, dmg: dmg + 8, t: 0, life: 340, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
     return;
   }
   const r = b.row - 1; // projectile row 0..2 matches weapon A/B/C firing rows 1..3
-  const lanes = r === 1 ? (b.phase ? [-36, -12, 12, 36] : [-30, 0, 30]) : [0];
+  const lanes = r === 1 ? (b.phase ? [-48, -32, -16, 0, 16, 32, 48] : [-40, -20, 0, 20, 40]) : [0];
   for (const off of lanes) {
     const ty = clamp(b.ty + off, 0, DEPTH);
     const steps = Math.max(1, Math.abs(b.tx - mx) / spd);
@@ -511,7 +515,7 @@ function updateProjs(state) {
       let best = ps[0], bd = 1e9;
       for (const p of ps) { const d = Math.abs(p.x - pr.x) + Math.abs(p.y - pr.y); if (d < bd) { bd = d; best = p; } }
       pr.vx += Math.sign(best.x - pr.x) * 0.05; pr.vy += Math.sign(best.y - pr.y) * 0.03;
-      pr.vx = clamp(pr.vx, -2.2, 2.2); pr.vy = clamp(pr.vy, -1, 1);
+      pr.vx = clamp(pr.vx, -2.8, 2.8); pr.vy = clamp(pr.vy, -1.3, 1.3);
       pr.z += (24 - pr.z) * 0.02;
     }
     pr.x += pr.vx; pr.y += pr.vy; pr.z += pr.vz;
@@ -527,7 +531,7 @@ function updateProjs(state) {
           }
         }
       }
-      if (pr.homing && pr.t > 260) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
+      if (pr.homing && pr.t > 320) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
     } else if (pr.kind === 'laser') {
       for (const e of state.enemies) {
         if (e.hp <= 0 || pr.hit.includes(e.id)) continue;
