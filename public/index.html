@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sproto Coop Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #07060d; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; font-family: "Press Start 2P", ui-monospace, monospace; color: #fff; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; background: #000; }
+  #join { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.6); }
+  #join[hidden] { display: none; }
+  #join form { background: #14112a; border: 3px solid #ffd23d; padding: 22px; display: grid; gap: 12px; min-width: 280px; }
+  #join label { font-size: 10px; display: grid; gap: 6px; }
+  #join input { font: inherit; font-size: 16px; padding: 8px; background: #000; color: #ffd23d; border: 2px solid #555; text-transform: uppercase; }
+  #join button { font: inherit; font-size: 11px; padding: 10px; border: 0; cursor: pointer; background: #ffd23d; color: #000; }
+  #join button.alt { background: #333; color: #fff; }
+</style>
+</head>
+<body>
+<canvas id="game" width="640" height="360"></canvas>
+<div id="join" hidden>
+  <form id="joinForm">
+    <div style="font-size:12px;color:#ffd23d">JOIN ONLINE</div>
+    <label>Room code <input id="code" maxlength="4" autocomplete="off" required></label>
+    <label>Your name <input id="name" maxlength="12" autocomplete="off" placeholder="Guest"></label>
+    <button type="submit">Join</button>
+    <button type="button" class="alt" id="cancelJoin">Cancel</button>
+  </form>
+</div>
+<script src="js/manifest.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/input.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/net.js"></script>
+<script src="js/render.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
