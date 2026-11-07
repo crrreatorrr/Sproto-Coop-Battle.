@@ -317,6 +317,18 @@ function drawProj(g, p, camX) {
   }
 }
 
+// Power-up icons: Sproto Storm (ring), Meteor Rain (meteor), Chain Lightning (bolt).
+const POWER_COLORS = ['#ff9a3d', '#ff5a5a', '#5ad8ff'];
+function powerIcon(g, pt, x, y, r) {
+  const c = POWER_COLORS[pt] || '#fff';
+  g.fillStyle = '#14121c'; g.beginPath(); g.arc(x, y, r + 1.5, 0, 7); g.fill();
+  g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.arc(x - r * .3, y - r * .3, r * .35, 0, 7); g.fill();
+  g.strokeStyle = '#14121c'; g.fillStyle = '#14121c'; g.lineWidth = Math.max(1, r / 4);
+  if (pt === 0) { g.beginPath(); g.arc(x, y, r * .5, 0, 7); g.stroke(); g.beginPath(); g.arc(x, y, r * .15, 0, 7); g.fill(); }
+  else if (pt === 1) { g.beginPath(); g.arc(x + r * .2, y + r * .2, r * .35, 0, 7); g.fill(); g.beginPath(); g.moveTo(x - r * .6, y - r * .6); g.lineTo(x + r * .05, y + r * .05); g.stroke(); }
+  else { g.beginPath(); g.moveTo(x + r * .15, y - r * .7); g.lineTo(x - r * .35, y + r * .1); g.lineTo(x + r * .05, y + r * .1); g.lineTo(x - r * .15, y + r * .7); g.lineTo(x + r * .4, y - r * .15); g.lineTo(x, y - r * .15); g.closePath(); g.fill(); }
+}
 function drawItem(g, it, camX, t) {
   const sx = it.x - camX, sy = FLOOR_TOP + it.y;
   if (it.k === 'crate') {
@@ -330,6 +342,10 @@ function drawItem(g, it, camX, t) {
     g.fillStyle = '#14121c'; g.fillRect(sx - 7, sy - 18 + bob, 14, 16);
     g.fillStyle = '#e83a3a'; g.fillRect(sx - 6, sy - 17 + bob, 12, 14);
     g.fillStyle = '#fff'; g.fillRect(sx - 6, sy - 12 + bob, 12, 4); g.fillStyle = '#c8d0e0'; g.fillRect(sx - 5, sy - 19 + bob, 10, 2);
+  } else if (it.k === 'power') {
+    const bob = Math.sin(t / 7 + it.id) * 3; shadow(g, sx, sy, 8);
+    g.fillStyle = `rgba(255,255,255,${0.15 + 0.1 * Math.sin(t / 5)})`; g.beginPath(); g.arc(sx, sy - 16 + bob, 13, 0, 7); g.fill();
+    powerIcon(g, it.pt, sx, sy - 16 + bob, 8);
   } else if (it.k === 'gem') {
     const bob = Math.sin(t / 8) * 2; shadow(g, sx, sy, 6);
     g.fillStyle = '#3affc8'; g.beginPath(); g.moveTo(sx, sy - 20 + bob); g.lineTo(sx + 7, sy - 12 + bob); g.lineTo(sx, sy - 4 + bob); g.lineTo(sx - 7, sy - 12 + bob); g.fill();
@@ -360,6 +376,26 @@ function drawFx(g, f, camX) {
     g.strokeStyle = `rgba(255,255,255,${1 - f.t / 20})`; g.lineWidth = 3; g.beginPath(); g.ellipse(sx, sy, 10 + f.t * 4, 4 + f.t * 1.3, 0, 0, 7); g.stroke();
   } else if (f.k === 'text') {
     g.globalAlpha = Math.max(0, 1 - f.t / 60); text(g, f.tx, sx, sy - f.t * 0.6, 8, '#fff', 'center'); g.globalAlpha = 1;
+  } else if (f.k === 'nova') {
+    const r = 20 + f.t * 8, a = Math.max(0, 1 - f.t / 40);
+    g.strokeStyle = `rgba(255,170,60,${a})`; g.lineWidth = 6; g.beginPath(); g.ellipse(sx, sy, r, r * .35, 0, 0, 7); g.stroke();
+    g.strokeStyle = `rgba(255,255,200,${a})`; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, sy, r * .8, r * .28, 0, 0, 7); g.stroke();
+    if (f.t < 8) { g.fillStyle = `rgba(255,240,200,${0.35 * (1 - f.t / 8)})`; g.fillRect(0, 0, W, H); }
+  } else if (f.k === 'bolt') {
+    const a = Math.max(0, 1 - f.t / 18);
+    g.strokeStyle = `rgba(160,235,255,${a})`; g.lineWidth = 3; g.beginPath();
+    let bx = sx, by = 40; g.moveTo(bx, by);
+    for (let k = 1; k <= 6; k++) { by = 40 + (sy - 30 - 40) * k / 6; bx = sx + (k < 6 ? ((f.id * 37 + k * 53) % 21) - 10 : 0); g.lineTo(bx, by); }
+    g.stroke(); g.strokeStyle = `rgba(255,255,255,${a})`; g.lineWidth = 1; g.stroke();
+    g.fillStyle = `rgba(160,235,255,${a * .5})`; g.beginPath(); g.ellipse(sx, sy, 16, 5, 0, 0, 7); g.fill();
+  } else if (f.k === 'meteor') {
+    const left = f.sm - f.t; // ticks until impact
+    if (left > 0) {
+      const k = Math.min(1, left / 40), mx = sx + k * 120, my = sy - 20 - k * 260;
+      g.fillStyle = 'rgba(255,60,40,.25)'; g.beginPath(); g.ellipse(sx, FLOOR_TOP + f.y, Math.max(2, 14 * (1 - k * .5)), 5, 0, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(255,170,60,.7)'; g.lineWidth = 4; g.beginPath(); g.moveTo(mx + 20, my - 40); g.lineTo(mx, my); g.stroke();
+      g.fillStyle = '#5a3a2a'; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.fill(); g.fillStyle = '#ff8a3d'; g.beginPath(); g.arc(mx - 2, my - 2, 3, 0, 7); g.fill();
+    }
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
@@ -393,6 +429,7 @@ function drawHud(g, snap) {
       g.fillStyle = '#300'; g.fillRect(x + 26, y + 25, pw - 34, 5);
       g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * p.hp / S.MAX_HP, 5);
       if (p.c !== 'cpu') text(g, p.l > 1 ? '♥♥' : '♥', x + 3, y + 32, 6, '#ff5a7a');
+      (p.pw || []).forEach((pt, k) => powerIcon(g, pt, x + 76 + k * 9, y + 34, 3.5));
       text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 5, '#c8c6e0');
       if (p.st === 'down') text(g, 'DOWN ' + Math.ceil(p.dt / 60) + 's', x + 64, y + 9, 5, '#ff4d4d');
       if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
@@ -415,7 +452,7 @@ function drawBanner(g, snap) {
   const a = Math.min(1, bn.t / 20);
   g.globalAlpha = a;
   g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 128, W, bn.sub ? 62 : 44);
-  text(g, bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
+  text(g, bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.power ? '#8ef8ff' : bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
   if (bn.sub) text(g, bn.sub, W / 2, 176, 8, '#fff', 'center');
   g.globalAlpha = 1;
 }

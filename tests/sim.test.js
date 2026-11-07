@@ -99,3 +99,21 @@ console.log('ok');
   assert(me.st !== 'down' && me.st !== 'dead' && me.npcRevived, 'a CPU Sproto rescues a human on their first down');
   console.log('rescue ok');
 }
+
+// Power-ups: humans save up to 3; using one wipes out a crowd far wider than a normal attack.
+{
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i === 0 ? 'local' : 'cpu' })), 41);
+  for (let i = 0; i < 120; i++) { g.players[0].in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }; Sim.step(g); }
+  const me = g.players[0], cpu = g.players[1];
+  for (const p of [me, cpu]) for (let k = 0; k < 4; k++) g.items.push({ id: 9000 + k + p.slot * 10, kind: 'power', pt: 0, x: p.x, y: p.y, z: 0 });
+  me.in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }; Sim.step(g);
+  assert(me.powers.length === 3, 'a human holds at most 3 power-ups');
+  assert(cpu.powers.length === 0, 'CPU Sprotos do not pick up power-ups');
+  g.enemies.length = 0; g.items = g.items.filter(i => i.kind !== 'power');
+  for (let k = 0; k < 8; k++) g.enemies.push({ id: 8000 + k, fid: 0, weapon: 0, x: g.camX + 120 + k * 50, y: me.y + (k % 3) * 20 - 20, z: 0, vx: 0, vy: 0, vz: 0, face: 1, hp: 50, maxHp: 50, st: 'walk', t: 0, cd: 999, inv: 0, offY: 0 });
+  me.x = g.camX + 300; me.st = 'idle'; me.in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 1 }; Sim.step(g);
+  const hit = g.enemies.filter(e => e.hp < 50).length;
+  console.log('storm hit', hit, 'of 8 enemies; powers left', me.powers.length);
+  assert(hit >= 7 && me.powers.length === 2, 'Sproto Storm hits a wide crowd');
+  console.log('power-ups ok');
+}

@@ -3,7 +3,7 @@
 'use strict';
 function think(state, p) {
   const S = root.Sim, inp = p.in;
-  inp.l = inp.r = inp.u = inp.d = inp.a = inp.j = inp.s = 0;
+  inp.l = inp.r = inp.u = inp.d = inp.a = inp.j = inp.s = inp.p = 0;
   if (p.st === 'dead') return;
   if (p.st === 'down') return;
   const ai = p.ai;

@@ -19,11 +19,13 @@ npm start            # http://localhost:8080
 
 ## Controls
 
-| | Move | Attack | Jump | Special |
-|---|---|---|---|---|
-| Keys 1 | WASD | F | G | H |
-| Keys 2 | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 |
-| Gamepad | Stick / D-pad | X (or RB) | A | B / Y |
+| | Move | Attack | Jump | Special | Power |
+|---|---|---|---|---|---|
+| Keys 1 | WASD | F | G | H | R |
+| Keys 2 | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 |
+| Gamepad | Stick / D-pad | X (or RB) | A | B / LB | Y / LT / RT |
+
+Down + Special also fires a saved power-up.
 
 Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages with the arrows or stick, then Attack or Start to fight. The run continues from that stage. Jump or Esc goes back to the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
 
@@ -38,7 +40,12 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 - **Dodging:** before a boss fires, red stripes mark the lanes it will shoot along. Shots fly straight down those lanes and low to the ground: **stand in a stripe and you get hit; step out of it or jump over the shot and you don't.** Spreads always leave gaps. A weapon swing knocks thrown knives and homing missiles out of the air.
 - **Difficulty:** four waves of 12+ Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on, with harder bosses that call in reinforcements. CPU teammates are deliberately weaker than humans (55% damage dealt, 135% damage taken), so the team will lose Sprotos.
 - **The UFO (from Sproto Arcade):** an empty saucer drops mid-stage and when a boss changes phase. **Only human players can take it**; CPU Sprotos ignore it. The player who grabs it pilots the saucer for 12 seconds. Attack fires the green laser, Jump/Special drops the beach-ball bomb, and the saucer's shield absorbs 4 hits.
-- **Crates** hold health snacks and gems.
+- **Crates** hold health snacks, gems and power-ups.
+- **Power-ups (save them for big crowds):** human players can hold up to 3 (shown in the HUD) and fire one with the Power button. They drop from crates, every cleared wave, the boss phase change and the occasional defeated enemy. CPU Sprotos never take them.
+    - **Sproto Storm:** a shockwave around you that knocks down everything within about 260 px and wipes out enemy shots.
+    - **Meteor Rain:** 12 meteors land on the enemies across the whole screen over 1.5 seconds.
+    - **Chain Lightning:** lightning strikes the 10 nearest enemies on screen, and the boss.
+- **Rescue:** the first time a human player goes down, the nearest CPU Sproto sprints over to revive them.
 - **Bosses:** every stage ends with a Sproto Arcade machine. Bosses are tough: 3,400 HP on stage 1, rising 400 per stage. Weapons A and C fire 3-shot bursts, weapon B fires a 5-lane spread, and every third attack launches a homing missile. Every fifth attack is a charge rush. At half HP the boss transforms into its phase-2 machine: it attacks 40% faster, fires 5-shot bursts and 7-lane spreads, launches missiles in pairs and charges more often. Below 25% HP it enrages and speeds up again. Jump over low shots.
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
@@ -51,7 +58,7 @@ Only these sprites are reused:
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
 - **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (`public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
 
-- **Stages:** the backgrounds are Sproto Arcade's stage art (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, `art/codebreak/shaft.webp`). `tools/build-backgrounds.py` splits each panorama at its floor line into scenery that scrolls at half speed and a floor that scrolls with the fighters (`public/assets/stages/`). Rooftop Breakaway has no floor of its own, so it borrows Neon Tomorrow's street.
+- **Stages:** the scenery is Sproto Arcade's stage art (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, `art/codebreak/shaft.webp`), scrolling at half speed. The Arcade floors are thin side-on strips, so `tools/build-backgrounds.py` draws each fighting floor as pixel art in a style that fits the stage (pier planks, dance floor, mossy slabs, ranch dirt, wet neon street, steel plates, flagstones, tiles, hatchery stone, asteroid rock, rooftop), coloured from that stage's own Arcade floor. Codebreak's floor is its shaft's circuit traces laid flat.
 
 The weapons, items and effects are drawn in code (`public/js/render.js`). `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
 

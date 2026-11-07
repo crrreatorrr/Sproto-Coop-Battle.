@@ -61,7 +61,7 @@ function newPlayer(slot, cfg) {
     x: 80 + slot * 14, y: 18 + slot * 17, z: 0, vx: 0, vy: 0, vz: 0, face: 1,
     hp: MAX_HP, lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
     inv: 90, downT: 0, revive: 0, ufoT: 0, ufoShield: 0, shotCd: 0, ballCd: 0, out: false, contT: 0,
-    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0 }, prev: { a: 0, j: 0, s: 0 }, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
+    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0 }, powers: [], ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
   };
 }
 
@@ -109,8 +109,8 @@ function setState(p, st) { p.st = st; p.t = 0; }
 
 function updatePlayer(state, p) {
   const inp = p.in;
-  const pressA = inp.a && !p.prev.a, pressJ = inp.j && !p.prev.j, pressS = inp.s && !p.prev.s;
-  p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s;
+  const pressA = inp.a && !p.prev.a, pressJ = inp.j && !p.prev.j, pressS = inp.s && !p.prev.s, pressP = inp.p && !p.prev.p;
+  p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s; p.prev.p = inp.p;
   p.t++;
   const god = isGod(state, p);
   if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk')) p.t++; // 2x attack speed
@@ -177,7 +177,9 @@ function updatePlayer(state, p) {
     p.vx = mx * sp; p.vy = my * sp * 0.62;
     if (mx) p.face = mx;
     p.st = mx || my ? 'walk' : 'idle';
-    if (pressS || (pressA && pressJ)) {
+    if ((pressP || (pressS && inp.d)) && p.powers.length) {
+      usePower(state, p, p.powers.shift());
+    } else if (pressS || (pressA && pressJ)) {
       if (god || p.hp > SPECIAL_COST + 1) { if (!god) p.hp -= SPECIAL_COST; setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0); }
     } else if (pressJ) {
       setState(p, 'jump'); p.vz = 8.6; p.vx = mx * 2.6; p.vy = my * 1.4; ev(state, 'jump');
@@ -292,17 +294,70 @@ function respawn(state, p, cont) {
 function takeItem(state, p, it) {
   if (it.kind === 'snack') { p.hp = Math.min(MAX_HP, p.hp + 40); it.taken = true; ev(state, 'heal'); fx(state, 'text', p.x, p.y, 70, { text: '+40' }); }
   else if (it.kind === 'gem') { p.score += 1000; it.taken = true; ev(state, 'coin'); }
+  else if (it.kind === 'power') {
+    if (p.ctrl === 'cpu' || p.powers.length >= MAX_POWERS) return;
+    p.powers.push(it.pt); it.taken = true; ev(state, 'coin');
+    fx(state, 'text', p.x, p.y, 80, { text: ['STORM', 'METEOR', 'LIGHTNING'][it.pt] + ' SAVED' });
+  }
   else if (it.kind === 'ufo') {
     it.taken = true; setState(p, 'ufo'); p.ufoT = UFO_TICKS; p.ufoShield = 4; p.z = 46; p.inv = 30;
     ev(state, 'ufo'); fx(state, 'text', p.x, p.y, 110, { text: 'UFO!' });
   }
 }
 
+// ---------------- saved power-ups ----------------
+// Picked up by human players, held up to 3, fired with the Power button (or Down + Special).
+const POWERS = ['storm', 'meteor', 'bolt'];
+const MAX_POWERS = 3;
+function dropPower(state, x, y) {
+  state.items.push({ id: state.nextId++, kind: 'power', pt: Math.floor(rng(state) * POWERS.length), x: clamp(x, state.camX + 30, state.camX + W - 30), y: clamp(y, 6, DEPTH - 6), z: 0 });
+}
+function usePower(state, p, pt) {
+  setState(p, 'special'); p.hitDone = new Set(); p.inv = 70;
+  const owner = p, kind = POWERS[pt] || 'storm';
+  state.banner = { text: ['SPROTO STORM!', 'METEOR RAIN!', 'CHAIN LIGHTNING!'][pt] || 'POWER!', t: 50, power: 1 };
+  ev(state, 'transform');
+  const foes = state.enemies.filter(e => e.hp > 0 && e.x > state.camX - 20 && e.x < state.camX + W + 20);
+  const b = state.boss && state.boss.hp > 0 && state.boss.st !== 'enter' && state.boss.st !== 'transform' && state.boss.st !== 'dead' ? state.boss : null;
+  if (kind === 'storm') {
+    // A shockwave around you: huge radius, knocks everything down, wipes enemy shots.
+    fx(state, 'nova', p.x, p.y, 0);
+    for (const e of foes) if (Math.abs(e.x - p.x) < 260 && Math.abs(e.y - p.y) < 80) hurtEnemy(state, e, 55, true, Math.sign(e.x - p.x) || 1, 7, owner);
+    if (b && Math.abs(b.x - p.x) < 300) hurtBoss(state, b, 220, owner);
+    state.projs = state.projs.filter(pr => !(pr.enemy && Math.abs(pr.x - p.x) < 280));
+  } else if (kind === 'meteor') {
+    // Meteors rain on the enemies across the whole screen over 1.5 seconds.
+    const targets = foes.slice(0, 12).map(e => [e.x, e.y]);
+    while (targets.length < 12) targets.push([state.camX + 40 + rng(state) * (W - 80), rng(state) * DEPTH]);
+    if (b) targets.push([b.x, b.y], [b.x, b.y]);
+    state.strikes = (state.strikes || []).concat(targets.map(([x, y], k) => ({ x, y, at: state.t + 20 + k * 6, owner: p.slot })));
+    for (const st of state.strikes) fx(state, 'meteor', st.x, st.y, 0, { small: st.at - state.t });
+  } else {
+    // Lightning arcs to the 10 nearest enemies on screen.
+    foes.sort((a, c) => Math.abs(a.x - p.x) - Math.abs(c.x - p.x));
+    for (const e of foes.slice(0, 10)) { fx(state, 'bolt', e.x, e.y, 0); hurtEnemy(state, e, 60, true, Math.sign(e.x - p.x) || 1, 4, owner); }
+    if (b) { fx(state, 'bolt', b.x, b.y, 0); fx(state, 'bolt', b.x - 30, b.y, 0); hurtBoss(state, b, 200, owner); }
+  }
+}
+function updateStrikes(state) {
+  if (!state.strikes || !state.strikes.length) return;
+  for (const st of state.strikes) {
+    if (st.at !== state.t) continue;
+    fx(state, 'boom', st.x, st.y, 6); ev(state, 'boom');
+    const owner = state.players[st.owner];
+    for (const e of state.enemies) if (e.hp > 0 && Math.abs(e.x - st.x) < 52 && Math.abs(e.y - st.y) < 30) hurtEnemy(state, e, 45, true, Math.sign(e.x - st.x) || 1, 5, owner);
+    const b = state.boss;
+    if (b && b.hp > 0 && b.st !== 'enter' && b.st !== 'transform' && b.st !== 'dead' && Math.abs(b.x - st.x) < b.w / 2 + 40) hurtBoss(state, b, 70, owner);
+  }
+  state.strikes = state.strikes.filter(st => st.at > state.t);
+}
+
 function breakCrate(state, it) {
   it.taken = true; ev(state, 'crate');
   fx(state, 'boom', it.x, it.y, 10, { small: 1 });
   const r = rng(state);
-  state.items.push({ id: state.nextId++, kind: r < 0.65 ? 'snack' : 'gem', x: it.x, y: it.y, z: 0 });
+  if (r < 0.3) dropPower(state, it.x, it.y);
+  else state.items.push({ id: state.nextId++, kind: r < 0.75 ? 'snack' : 'gem', x: it.x, y: it.y, z: 0 });
 }
 
 // ---------------- UFO (from Sproto Arcade) ----------------
@@ -348,6 +403,7 @@ function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p) {
   ev(state, 'hit', e.x);
   if (e.hp <= 0) {
     e.st = 'knock'; e.t = 0; e.vx = dir * (knockF + 1); e.vz = 6; e.dead = true;
+    if (rng(state) < 0.04) dropPower(state, e.x, e.y);
     if (p) p.score += 200;
     return;
   }
@@ -438,6 +494,7 @@ function hurtBoss(state, b, dmg, p) {
     const info = bossInfo(b.bi); if (info) b.w = (info.phases[1].body[2] - info.phases[1].body[0]) * BOSS_SCALE * 0.85;
     state.banner = { text: info ? info.machines[1].toUpperCase() : 'PHASE 2', sub: 'phase 2', t: 120, boss: true };
     state.items.push({ id: state.nextId++, kind: 'ufo', x: state.camX + 120, y: DEPTH / 2, z: 0 });
+    dropPower(state, state.camX + 200, DEPTH / 2 + 30);
     ev(state, 'transform');
   }
   if (b.hp <= 0) { b.hp = 0; b.st = 'dead'; b.t = 0; ev(state, 'bossdown'); for (const pl of activePlayers(state)) pl.score += 5000; }
@@ -600,6 +657,7 @@ function updateWaves(state) {
       if (w.left === 0 && onScreen === 0) {
         w.done = true; w.active = false; state.lockX = null; state.banner = { text: 'GO!', arrow: true, t: 90 };
         if (w.ufo) state.items.push({ id: state.nextId++, kind: 'ufo', x: state.camX + W - 120, y: DEPTH / 2, z: 0 });
+        dropPower(state, state.camX + W / 2, 20 + rng(state) * (DEPTH - 40)); // every cleared wave leaves a power-up
         ev(state, 'go');
       }
     }
@@ -620,8 +678,9 @@ function step(state) {
   state.enemies = state.enemies.filter(e => !e.remove);
   updateBoss(state);
   updateProjs(state);
+  updateStrikes(state);
   for (const f of state.fx) f.t++;
-  state.fx = state.fx.filter(f => f.t < (f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : 14));
+  state.fx = state.fx.filter(f => f.t < (f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : f.kind === 'nova' ? 40 : f.kind === 'bolt' ? 18 : f.kind === 'meteor' ? f.small : 14));
   state.items = state.items.filter(i => !i.taken);
   if (state.mode === 'play') { updateCamera(state); updateWaves(state); }
   if (state.mode === 'clear' && ++state.clearT > 220) {
@@ -638,10 +697,10 @@ function snapshot(state) {
   return {
     t: state.t, god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
-    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0 })),
+    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice() })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0 })),
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
-    items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y })),
+    items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
     boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0 },
   };

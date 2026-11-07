@@ -221,7 +221,7 @@ function drawTitle() {
   }
   const items = MENU;
   items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 70, 296 + i * 18, 10, app.menu === i ? '#ffd23d' : '#c8c6e0'));
-  T(g, 'WASD+F/G/H  ·  ARROWS+,/./  ·  GAMEPADS', S.W / 2, 352, 6, '#9a98b8', 'center');
+  T(g, 'WASD + F/G/H, R power  ·  ARROWS + , . /  \' power  ·  GAMEPADS', S.W / 2, 352, 6, '#9a98b8', 'center');
 }
 function drawLobby() {
   R.drawBackground(g, 4, app.t * 0.3);
@@ -250,7 +250,7 @@ function drawLobby() {
   });
   const lines = app.role === 'guest'
     ? ['ATTACK: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon', 'Waiting for the host to start…']
-    : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: begin — empty slots are CPU Sprotos. ESC: back'];
+    : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: choose a stage — empty slots are CPU Sprotos. ESC: back'];
   lines.forEach((l, k) => T(g, l, S.W / 2, 292 + k * 14, 6, '#c8c6e0', 'center'));
   if (app.role === 'guest' && app.hostChoosing != null) {
     g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 150, S.W, 40);
