@@ -27,6 +27,8 @@ npm start            # http://localhost:8080
 
 Start / Enter begins the game from the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
 
+**God mode:** press **9 twice** quickly during a battle, the same input as Sproto Arcade. Human Sprotos get unlimited health and attack twice as fast (UFO lasers and bombs too). CPU teammates are unaffected. Press 9 twice again to turn it off. Online guests can toggle it too, and it applies to the whole team.
+
 ## How it plays
 
 - **Every Sproto is armed:** Katana, Bo Staff, War Hammer, Spear, Battle Axe or Chain Flail. Each has its own reach, speed and damage.

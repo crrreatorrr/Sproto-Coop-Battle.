@@ -70,6 +70,7 @@ function onHostMessage(m) {
   else if (m.t === 'leave') { const i = slotOf(m.from, String(m.dev)); if (i >= 0 && app.screen === 'lobby') releaseSlot(i); }
   else if (m.t === 'pick') { const i = slotOf(m.from, String(m.dev)); if (i >= 0 && app.screen === 'lobby') cycle(i, m.key === 'fid' ? 'fid' : 'weapon', m.d > 0 ? 1 : -1); }
   else if (m.t === 'in') { app.remoteIn[m.from] = m.inp || {}; }
+  else if (m.t === 'god' && app.sim) S.toggleGod(app.sim);
 }
 function joinOnline(code, name) {
   app.net = Net.connect({
@@ -182,7 +183,16 @@ document.getElementById('joinForm').addEventListener('submit', e => {
 });
 document.getElementById('cancelJoin').addEventListener('click', () => { joinBox.hidden = true; app.screen = 'title'; });
 
+// God mode: press 9 twice within 0.75 s during a battle (same input as Sproto Arcade).
+let lastNine = -Infinity;
 addEventListener('keydown', e => {
+  if ((e.code === 'Digit9' || e.code === 'Numpad9') && !e.repeat && app.screen === 'game') {
+    if (e.timeStamp - lastNine <= 750) {
+      lastNine = -Infinity;
+      if (app.role === 'guest') app.net && app.net.send({ t: 'god' });
+      else if (app.sim) S.toggleGod(app.sim);
+    } else lastNine = e.timeStamp;
+  } else if (!e.repeat) lastNine = -Infinity;
   if (e.code === 'Escape' && app.screen === 'lobby') { if (app.net) app.net.close(); app.net = null; app.role = 'local'; app.screen = 'title'; }
   if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'local') app.paused = !app.paused;
   if (e.code === 'KeyM') A.toggle();

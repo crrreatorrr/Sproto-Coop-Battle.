@@ -377,6 +377,7 @@ function drawHud(g, snap) {
       if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
     }
   });
+  if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 48, 7, '#8ef8d6', 'center');
   const b = snap.boss;
   if (b) {
     const info = M.bosses[b.bi];

@@ -61,7 +61,7 @@ function create(slots, seed) {
   const state = {
     t: 0, seed: seed >>> 0 || 1234567, mode: 'play', stageIdx: 0, stage: null, camX: 0, lockX: null,
     players: slots.map((c, i) => newPlayer(i, c)), enemies: [], projs: [], items: [], fx: [], boss: null,
-    banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0,
+    banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0, god: false,
   };
   startStage(state, 0);
   return state;
@@ -85,6 +85,15 @@ function ev(state, name, x) { state.events.push(x === undefined ? name : name + 
 function fx(state, kind, x, y, z, extra) { state.fx.push(Object.assign({ id: state.nextId++, kind, x, y, z, t: 0 }, extra || {})); }
 
 // ---------------- players ----------------
+// God mode (toggled by pressing 9 twice, as in Sproto Arcade): human Sprotos take no damage
+// and their weapon attacks run at double speed. CPU teammates are unaffected.
+const isGod = (state, p) => state.god && p.ctrl !== 'cpu';
+function toggleGod(state) {
+  state.god = !state.god;
+  state.banner = { text: state.god ? 'GOD MODE ON' : 'GOD MODE OFF', sub: state.god ? 'Unlimited health · 2x attack speed' : '', t: 90 };
+  if (state.god) for (const p of state.players) if (p.ctrl !== 'cpu' && p.st !== 'out') p.hp = MAX_HP;
+  ev(state, state.god ? 'ufo' : 'shield');
+}
 const alive = p => p.st !== 'down' && p.st !== 'out' && p.st !== 'dead';
 function activePlayers(state) { return state.players.filter(alive); }
 
@@ -95,7 +104,9 @@ function updatePlayer(state, p) {
   const pressA = inp.a && !p.prev.a, pressJ = inp.j && !p.prev.j, pressS = inp.s && !p.prev.s;
   p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s;
   p.t++;
-  if (p.inv > 0) p.inv--;
+  const god = isGod(state, p);
+  if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk')) p.t++; // 2x attack speed
+  if (god && p.st !== 'down' && p.st !== 'out') p.hp = MAX_HP;  if (p.inv > 0) p.inv--;
   if (p.comboT > 0 && --p.comboT === 0) p.combo = 0;
 
   if (p.st === 'out') {
@@ -166,7 +177,7 @@ function updatePlayer(state, p) {
     if (mx) p.face = mx;
     p.st = mx || my ? 'walk' : 'idle';
     if (pressS || (pressA && pressJ)) {
-      if (p.hp > SPECIAL_COST + 1) { p.hp -= SPECIAL_COST; setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0); }
+      if (god || p.hp > SPECIAL_COST + 1) { if (!god) p.hp -= SPECIAL_COST; setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0); }
     } else if (pressJ) {
       setState(p, 'jump'); p.vz = 8.6; p.vx = mx * 2.6; p.vy = my * 1.4; ev(state, 'jump');
     } else if (pressA) startAttack(state, p);
@@ -225,6 +236,7 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around) {
 
 function hurtPlayer(state, p, dmg, dir, knock) {
   if (p.inv > 0 || !alive(p) || p.st === 'special') return false;
+  if (isGod(state, p)) { fx(state, 'shield', p.x, p.y, 30 + p.z); return false; } // unlimited health
   if (p.st === 'ufo') {
     p.ufoShield--; p.inv = 40; fx(state, 'shield', p.x, p.y, 50); ev(state, 'shield');
     if (p.ufoShield <= 0) ejectUfo(state, p);
@@ -280,11 +292,11 @@ function updateUfoPilot(state, p, pressA, pressS) {
   if (p.ballCd > 0) p.ballCd--;
   if ((inp.a) && p.shotCd === 0) {
     state.projs.push({ id: state.nextId++, kind: 'laser', owner: p.slot, x: p.x + p.face * 40, y: p.y, z: p.z + 6, vx: p.face * 9, vy: 0, vz: 0, dmg: 5, t: 0, life: 70, pierce: true, hit: [] });
-    p.shotCd = 8; ev(state, 'laser');
+    p.shotCd = isGod(state, p) ? 4 : 8; ev(state, 'laser');
   }
   if ((pressS || inp.j) && p.ballCd === 0) {
     state.projs.push({ id: state.nextId++, kind: 'ball', owner: p.slot, x: p.x + p.face * 20, y: p.y, z: p.z, vx: p.face * 3.2, vy: 0, vz: 3, dmg: 22, t: 0, life: 120, hit: [] });
-    p.ballCd = 70; ev(state, 'ball');
+    p.ballCd = isGod(state, p) ? 35 : 70; ev(state, 'ball');
   }
   if (--p.ufoT <= 0) ejectUfo(state, p);
 }
@@ -595,7 +607,7 @@ function step(state) {
 const r1 = v => Math.round(v * 10) / 10;
 function snapshot(state) {
   return {
-    t: state.t, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
+    t: state.t, god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
     players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.combo, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, ct: p.contT })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0 })),
@@ -606,7 +618,7 @@ function snapshot(state) {
   };
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, create, step, snapshot, startStage, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, create, step, snapshot, toggleGod, startStage, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -25,3 +25,17 @@ console.log({ mode: s.mode, stageReached: maxStage + 1, bossSeen, ufoTicks: ufoR
 assert(maxStage >= 2, 'CPU team clears at least two stages');
 assert(ufoRides > 0, 'the UFO gets used');
 console.log('ok');
+
+// God mode: human Sprotos never lose health and attack twice as fast.
+{
+  const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i % 3, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
+  const g = Sim.create(cfg, 7);
+  Sim.toggleGod(g);
+  const p = g.players[0];
+  for (let i = 0; i < 3000; i++) { p.in = { l: 0, r: i % 2, u: 0, d: 0, a: i % 3 === 0 ? 1 : 0, j: 0, s: 0 }; Sim.step(g); g.events.length = 0; assert(p.hp === Sim.MAX_HP, 'god mode keeps full health'); }
+  const timeAttack = god => { const s2 = Sim.create(cfg, 9); if (god) Sim.toggleGod(s2); const q = s2.players[0]; q.in = { l: 0, r: 0, u: 0, d: 0, a: 1, j: 0, s: 0 }; let n = 0; Sim.step(s2); q.in.a = 0; while (q.st === 'attack' && n < 200) { Sim.step(s2); n++; } return n; };
+  const normal = timeAttack(false), fast = timeAttack(true);
+  console.log('attack ticks normal/god:', normal, fast);
+  assert(fast <= Math.ceil(normal / 2) + 1, 'god mode attacks about 2x faster');
+  console.log('god mode ok');
+}
