@@ -5,8 +5,8 @@
   "description": "6-player co-op pixel beat-'em-up: armed Sprotos vs. Sproto Arcade bosses",
   "scripts": {
     "start": "node server/server.js",
-    "test": "node tests/sim.test.js && node tests/relay-security.test.js && node tests/asset-manifest.test.js && node tests/server-sim.test.js && node tests/protocol.test.js && node tests/goja-goldens.test.js",
-    "test:browser": "node tests/browser-online.cjs && node tests/goja-goldens.test.js --browser",
+    "test": "node tests/sim.test.js && node tests/relay-security.test.js && node tests/asset-manifest.test.js && node tests/server-sim.test.js && node tests/protocol.test.js && node tests/goja-goldens.test.js && node tests/atlas.test.js && node tests/loading.test.js && node tests/budgets.test.js",
+    "test:browser": "node tests/browser-online.cjs && node tests/atlas-visual.cjs && node tests/goja-goldens.test.js --browser",
     "build": "node scripts/build.mjs && node scripts/build-server-sim.mjs",
     "build:server-sim": "node scripts/build-server-sim.mjs",
     "check:assets": "node scripts/check-assets.mjs",

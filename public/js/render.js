@@ -8,21 +8,34 @@ const FS = 0.92;           // fighter draw scale (sprites are 128px cells)
 const BS = S.BOSS_SCALE;   // boss draw scale (sheets are 4x4 cells of 256px)
 const FONT = '"Press Start 2P", ui-monospace, monospace';
 
-const images = {};
-function img(src) {
-  if (!images[src]) { const im = new Image(); im.src = src; images[src] = im; }
-  return images[src];
-}
-const ready = im => im && im.complete && im.naturalWidth > 0;
+if (!root.AssetLoader) throw new Error('asset-loader.js must load before render.js');
+const Cells = root.AssetLoader.lru(96);
+const Tints = root.AssetLoader.lru(96);
+const atlasBuffers = new Map();
+function loader() { return root.AssetLoader.shared(); }
+function img(src) { return loader().image(src); }
+const ready = im => !!(im && im.complete && im.naturalWidth > 0);
+let ufoQueued = false;
 function preload(onProgress) {
-  const list = [];
-  for (const f of M.fighters) { for (let i = 0; i < 32; i++) list.push(`assets/fighters/${f.id}/${String(i).padStart(2, '0')}.png`); for (let i = 0; i < 8; i++) list.push(`assets/fighters/${f.id}/w0${i}.png`); }
-  for (const n of ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']) { list.push(`assets/stages/${n}-back.jpg`); list.push(`assets/stages/${n}-floor.png`); }
-  for (const n of ['cockpit-front', 'cockpit-rear', 'idle', 'laser', 'muzzle', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']) list.push(`assets/ufo/${n}.png`);
-  let done = 0;
-  return Promise.all(list.map(src => new Promise(res => { const im = img(src); const fin = () => { done++; onProgress && onProgress(done / list.length); res(); }; if (im.complete) fin(); else { im.onload = fin; im.onerror = fin; } })));
+  return loader().preload(root.AssetLoader.groups(M).startup, onProgress);
+}
+function enterStage(i) {
+  const L = loader();
+  L.enterStage(i, M);
+  // UFO art is part of the first stage, not the title waterfall.
+  if (!ufoQueued) { ufoQueued = true; L.prefetch(root.AssetLoader.groups(M).ufo); }
 }
 function bossImages(bi) { const b = M.bosses[bi]; return b.phases.map(p => [img(p.sheet), img(p.proj)]); }
+function loadStatus() {
+  const stat = loader().status();
+  stat.cells = Cells.size;
+  stat.tints = Tints.size;
+  stat.atlasBuffers = atlasBuffers.size;
+  stat.cellBytes = Cells.size * 128 * 128 * 4;
+  stat.tintBytes = Tints.size * 128 * 128 * 4;
+  stat.atlasBufferBytes = atlasBuffers.size * 1024 * 640 * 4;
+  return stat;
+}
 
 // ---------- tinted fighter frames ----------
 let filterOK = null;
@@ -31,14 +44,44 @@ function canFilter() {
   return filterOK;
 }
 const HUES = [0, 150, 235, 300, 60, 190];
-const tintCache = {};
-function frameCanvas(fid, pose, variant) { // variant: 0 = original, 1..5 = alt palette, 'shadow' = enemy
+// Copy one atlas cell with getImageData so the 128 canvas matches the pose PNG.
+// The atlas image stays resident; cell and tint canvases are capped.
+function atlasContext(fid) {
+  const cached = atlasBuffers.get(fid);
+  if (cached) return cached;
   const f = M.fighters[fid];
-  const src = img(typeof pose === 'number' ? `assets/fighters/${f.id}/${String(pose).padStart(2, '0')}.png` : `assets/fighters/${f.id}/${pose}.png`);
+  const sheet = img(root.AssetLoader.atlasPath(f.id));
+  if (!ready(sheet)) return null;
+  const c = document.createElement('canvas');
+  c.width = sheet.naturalWidth; c.height = sheet.naturalHeight;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.imageSmoothingEnabled = false;
+  g.drawImage(sheet, 0, 0);
+  atlasBuffers.set(fid, g);
+  return g;
+}
+function cellCanvas(fid, pose) {
+  const rect = root.AssetLoader.frameRect(pose);
+  if (!rect) return null;
+  const key = fid + '|' + rect.i;
+  const hit = Cells.get(key);
+  if (hit) return hit;
+  const sheet = atlasContext(fid);
+  if (!sheet) return null;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.putImageData(sheet.getImageData(rect.x, rect.y, rect.w, rect.h), 0, 0);
+  Cells.set(key, c);
+  return c;
+}
+function frameCanvas(fid, pose, variant) { // variant: 0 = original, 1..5 = alt palette, 'shadow' = enemy
+  const src = cellCanvas(fid, pose);
+  if (!src) return null;
   if (!variant) return src;
   const key = fid + '|' + pose + '|' + variant;
-  if (tintCache[key]) return tintCache[key];
-  if (!ready(src)) return src;
+  const hit = Tints.get(key);
+  if (hit) return hit;
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   if (variant === 'shadow') {
@@ -47,7 +90,7 @@ function frameCanvas(fid, pose, variant) { // variant: 0 = original, 1..5 = alt 
     g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(110,30,140,0.35)'; g.fillRect(0, 0, 128, 128);
   } else if (canFilter()) { g.filter = `hue-rotate(${HUES[variant]}deg) saturate(1.2)`; g.drawImage(src, 0, 0); }
   else { g.drawImage(src, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = S.SLOT_COLORS[variant] + '66'; g.fillRect(0, 0, 128, 128); }
-  tintCache[key] = c;
+  Tints.set(key, c);
   return c;
 }
 
@@ -147,10 +190,11 @@ function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
     g.restore();
   };
   const behind = P.ang < -100 || P.ang > 200;
-  if (behind) drawW();
-  if (ready(fr) || fr.getContext) g.drawImage(fr, 0, 0);
-  if (!behind) drawW();
-  if (P.swoosh && wpnId) {
+  const show = fr && (ready(fr) || fr.getContext);
+  if (show && behind) drawW();
+  if (show) g.drawImage(fr, 0, 0);
+  if (show && !behind) drawW();
+  if (show && P.swoosh && wpnId) {
     const len = weapon(wpnId).c.width - weapon(wpnId).gx;
     g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = 3 / FS;
     g.beginPath(); const a = P.ang * Math.PI / 180;
@@ -245,7 +289,6 @@ function drawBackground(g, si, camX) {
     const grd = g.createLinearGradient(0, FLOOR_TOP - 6, 0, FLOOR_TOP + 6);
     grd.addColorStop(0, 'rgba(0,0,0,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = grd; g.fillRect(0, FLOOR_TOP - 6, W, 12);
-    if (si < 11) { img(`assets/stages/${String(si + 2).padStart(2, '0')}-back.jpg`); img(`assets/stages/${String(si + 2).padStart(2, '0')}-floor.png`); }
     return;
   }
   const bg = background(si); // drawn fallback while the stage art loads
@@ -272,7 +315,7 @@ function drawUfo(g, p, sx, sy) {
   const f = M.fighters[p.f], src = frameCanvas(p.f, 0, 0);
   const [sx0, sy0, sw, sh] = [f.foot[0] - 18, f.box[1] - 3, 40, 32];
   const scale = Math.min(53 / sw, 43 / sh) * 1.05, w = sw * scale, h = sh * scale;
-  if (ready(src)) g.drawImage(src, sx0, sy0, sw, sh, 100 - w / 2, 55 - h, w, h);
+  if (src && (ready(src) || src.getContext)) g.drawImage(src, sx0, sy0, sw, sh, 100 - w / 2, 55 - h, w, h);
   g.drawImage(front, 0, 0);
   g.restore();
   if (p.inv > 0 && p.inv % 8 < 5) { const sh = img('assets/ufo/shield' + (1 + (Math.floor(p.t / 4) % 4)) + '.png'); if (ready(sh)) g.drawImage(sh, sx - sh.width * 0.35, sy - sh.height * 0.35, sh.width * 0.7, sh.height * 0.7); }
@@ -424,7 +467,7 @@ function text(g, s, x, y, size, color, align) {
 
 function drawHead(g, fid, variant, x, y, size) {
   const f = M.fighters[fid], src = frameCanvas(fid, 0, variant);
-  if (!ready(src) && !src.getContext) return;
+  if (!src || (!ready(src) && !src.getContext)) return;
   g.drawImage(src, f.foot[0] - 18, f.box[1] - 3, 36, 30, x, y, size, size * 30 / 36);
 }
 
@@ -473,6 +516,7 @@ function drawBanner(g, snap) {
 }
 
 function drawWorld(g, snap) {
+  enterStage(snap.si);
   const camX = snap.camX;
   const sk = snap.sk || 0;
   g.save();
@@ -532,5 +576,5 @@ function drawWorld(g, snap) {
   drawBanner(g, snap);
 }
 
-root.Render = { W, H, img, ready, preload, bossImages, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT };
+root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT };
 })(window);

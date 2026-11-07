@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { inventory, scanTree, walkFiles } from './check-assets.mjs';
+import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from './check-assets.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
@@ -49,6 +49,7 @@ export function buildDist() {
     preloadDecodedBytes: report.preloadCost.decodedBytes,
     dynamicRefCount: report.dynamicRefCount,
     unused: report.unused,
+    startup: loadAssetLoader().groups(loadManifest()).startup,
     files: manifestFiles,
   };
   const body = JSON.stringify(manifest, null, 2) + '\n';

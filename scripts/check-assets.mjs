@@ -80,42 +80,23 @@ export function loadManifest() {
   return sandbox.window.MANIFEST;
 }
 
-function quotedList(source) {
-  return [...source.matchAll(/'([^']+)'/g)].map(match => match[1]);
+export function loadAssetLoader() {
+  const sandbox = { window: {}, URL, performance };
+  vm.runInNewContext(fs.readFileSync(path.join(pub, 'js', 'asset-loader.js'), 'utf8'), sandbox, { filename: 'asset-loader.js' });
+  if (!sandbox.window.AssetLoader) throw new Error('asset-loader.js did not set AssetLoader');
+  return sandbox.window.AssetLoader;
 }
 
-export function preloadList(renderSource, manifest) {
-  const pose = renderSource.match(/for \(let i = 0; i < (\d+); i\+\+\) list\.push\(`assets\/fighters\/\$\{f\.id\}\/\$\{String\(i\)\.padStart\(2, '0'\)\}\.png`\)/);
-  const weapon = renderSource.match(/for \(let i = 0; i < (\d+); i\+\+\) list\.push\(`assets\/fighters\/\$\{f\.id\}\/w0\$\{i\}\.png`\)/);
-  const stages = renderSource.match(/for \(const n of \[([^\]]+)\]\) \{ list\.push\(`assets\/stages\/\$\{n\}-back\.jpg`\); list\.push\(`assets\/stages\/\$\{n\}-floor\.png`\); \}/);
-  const ufos = renderSource.match(/for \(const n of \[([^\]]+)\]\) list\.push\(`assets\/ufo\/\$\{n\}\.png`\)/);
-  if (!pose || !weapon || !stages || !ufos) {
-    throw new Error('render.js preload pattern changed; asset check failed closed');
-  }
-  const poseCount = Number(pose[1]);
-  const weaponCount = Number(weapon[1]);
-  const list = [];
-  for (const fighter of manifest.fighters) {
-    for (let i = 0; i < poseCount; i++) list.push(`assets/fighters/${fighter.id}/${String(i).padStart(2, '0')}.png`);
-    for (let i = 0; i < weaponCount; i++) list.push(`assets/fighters/${fighter.id}/w0${i}.png`);
-  }
-  for (const n of quotedList(stages[1])) {
-    list.push(`assets/stages/${n}-back.jpg`);
-    list.push(`assets/stages/${n}-floor.png`);
-  }
-  for (const n of quotedList(ufos[1])) list.push(`assets/ufo/${n}.png`);
-  return list;
+export function loadPlan(manifest) {
+  return loadAssetLoader().groups(manifest || loadManifest());
 }
 
-export function dynamicRefs(renderSource, manifest) {
-  const refs = new Set(preloadList(renderSource, manifest));
-  for (const boss of manifest.bosses) {
-    for (const phase of boss.phases) {
-      refs.add(phase.sheet);
-      refs.add(phase.proj);
-    }
-  }
-  return refs;
+export function preloadList(_renderSource, manifest) {
+  return loadPlan(manifest).startup.slice();
+}
+
+export function dynamicRefs(_renderSource, manifest) {
+  return new Set(loadPlan(manifest).all);
 }
 
 export function literalAssetRefs(sources) {
@@ -158,6 +139,9 @@ function addCost(bucket, bytes, gzipBytes, decoded) {
 export function inventory() {
   const manifest = loadManifest();
   const renderSource = fs.readFileSync(path.join(pub, 'js', 'render.js'), 'utf8');
+  if (/for \(let i = 0; i < 32; i\+\+\) list\.push\(/.test(renderSource)) {
+    throw new Error('274-image fighter preload returned');
+  }
   const jsDir = path.join(pub, 'js');
   const sources = fs.readdirSync(jsDir).filter(name => name.endsWith('.js')).sort().map(name => fs.readFileSync(path.join(jsDir, name), 'utf8'));
   sources.push(fs.readFileSync(path.join(pub, 'index.html'), 'utf8'));
