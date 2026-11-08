@@ -404,6 +404,13 @@
       return state;
     }
 
+    function openRealtime() {
+      var live = readLive();
+      if (!live || !sdk || !root.HubSDK || !root.HubSDK.realtimeFromSdk) return null;
+      var serverUrl = config.serverUrl != null ? config.serverUrl : '';
+      return root.HubSDK.realtimeFromSdk(sdk, { serverUrl: serverUrl });
+    }
+
     function connect() {
       if (pending) return pending;
       pending = doConnect().catch(function () {
@@ -431,6 +438,7 @@
       markNavigated: markNavigated,
       exitUrl: exitTarget,
       leave: leave,
+      openRealtime: openRealtime,
     };
   }
 

@@ -576,5 +576,22 @@ function drawWorld(g, snap) {
   drawBanner(g, snap);
 }
 
-root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT };
+// Render-only blend between two Sim.snapshot views. A snapshot is not restart state.
+function interpolateSnapshot(a, b, k) {
+  if (!b) return a;
+  if (!a || k >= 1) return b;
+  const L = (x, y) => x + (y - x) * k;
+  const byId = (arr, key) => { const m = new Map(); for (const o of arr || []) m.set(o[key], o); return m; };
+  const pa = byId(a.players, 's'), ea = byId(a.enemies, 'id'), ra = byId(a.projs, 'id');
+  const mix = (o, p) => (p ? Object.assign({}, o, { x: L(p.x, o.x), y: L(p.y, o.y), z: L(p.z, o.z) }) : o);
+  return Object.assign({}, b, {
+    camX: a.si === b.si ? L(a.camX, b.camX) : b.camX,
+    players: (b.players || []).map(o => mix(o, pa.get(o.s))),
+    enemies: (b.enemies || []).map(o => mix(o, ea.get(o.id))),
+    projs: (b.projs || []).map(o => mix(o, ra.get(o.id))),
+    boss: b.boss && a.boss ? Object.assign({}, b.boss, { x: L(a.boss.x, b.boss.x), y: L(a.boss.y, b.boss.y) }) : b.boss,
+  });
+}
+
+root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT, interpolateSnapshot };
 })(window);

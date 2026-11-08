@@ -23,8 +23,9 @@
 <canvas id="game" width="640" height="360"></canvas>
 <div id="join" hidden>
   <form id="joinForm">
-    <div style="font-size:12px;color:#ffd23d">JOIN ONLINE</div>
-    <label>Room code <input id="code" maxlength="4" autocomplete="off" required></label>
+    <div id="joinTitle" style="font-size:12px;color:#ffd23d">JOIN ONLINE</div>
+    <div id="joinNote" style="font-size:8px;color:#c8c6e0;max-width:280px;line-height:1.5">Practice relay. No hub rewards.</div>
+    <label>Room code <input id="code" maxlength="12" autocomplete="off" required></label>
     <label>Your name <input id="name" maxlength="12" autocomplete="off" placeholder="Guest"></label>
     <button type="submit">Join</button>
     <button type="button" class="alt" id="cancelJoin">Cancel</button>
@@ -40,6 +41,7 @@
 <script src="js/render.js"></script>
 <script src="js/hub-config.js"></script>
 <script src="js/hub-link.js"></script>
+<script src="js/net-hub.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
