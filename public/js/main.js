@@ -371,7 +371,7 @@ function drawTitle() {
 function drawLobby() {
   R.drawBackground(g, 4, app.t * 0.3);
   g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, S.H);
-  const title = app.role === 'banked' ? 'SERVER LOBBY — REWARDS 0' : app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
+  const title = app.role === 'banked' ? 'SERVER LOBBY' : app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
   T(g, title, 12, 22, 12, '#ffd23d');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 12, 22, 12, '#7aff8a', 'right');
   const cw = 100;
@@ -405,7 +405,7 @@ function drawLobby() {
   }
   if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 328, 6, '#7aff8a', 'center');
   if (app.role === 'banked' && app.code) T(g, 'Share the 12-character code. It finds the room. It does not sign anyone in.', S.W / 2, 328, 6, '#7aff8a', 'center');
-  T(g, app.role === 'banked' ? 'BANKED CANDIDATE — NO PAYOUT UNTIL H3-C. B RETURNS TO THE BAR.' : 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
+  T(g, app.role === 'banked' ? bankedPayLine() + '. B RETURNS TO THE BAR.' : 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
 }
 function drawStages() {
   R.drawBackground(g, app.stageSel, app.t * 0.4);
@@ -446,6 +446,7 @@ function drawGame() {
   R.bossImages(snap.si);
   R.drawWorld(g, snap);
   if (app.role === 'banked' && banked) {
+    T(g, banked.payout || bankedPayLine(), S.W / 2, 28, 6, '#ffd23d', 'center');
     const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST' : '';
     if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
@@ -490,12 +491,17 @@ function frame(now) {
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
   drawHubStatus();
 }
+function bankedPayLine() {
+  const view = app.authority && app.authority.view && app.authority.view();
+  if (window.NetHub && window.NetHub.payoutCopy) return window.NetHub.payoutCopy(view && view.receipt);
+  return 'TICKETS PAID BY SERVER, SEE BALANCE';
+}
 function drawHubStatus() {
   const h = app.hub;
   const who = h.kind === 'account' ? 'ACCOUNT ' + h.label : h.kind === 'guest' ? 'GUEST' : h.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
   const bal = (h.kind === 'account' || h.kind === 'guest') && typeof h.balance === 'number' ? '   TICKETS ' + h.balance : '';
   g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
-  const mode = app.role === 'banked' ? '   ·   BANKED CANDIDATE · REWARDS 0' : '   ·   PRACTICE';
+  const mode = app.role === 'banked' ? '   ·   ' + bankedPayLine() : '   ·   PRACTICE';
   T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
   if (h.confirming) {
     g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
