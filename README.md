@@ -11,7 +11,7 @@ npm start            # http://localhost:8080
 
 `npm start` serves `public/` and runs the WebSocket relay for practice online play. Local play also works from any static host that serves `public/`. Relay play needs the Node server.
 
-`npm start` does not serve `vendor/`, so the hub SDK (`vendor/hub-sdk/dist/hub-sdk.iife.js`) returns 404 there and the hub link stays offline. `npm run build` writes `dist/`, which is `public/` plus that SDK file. Serve `dist/` to try the hub link (for example `python3 -m http.server -d dist 8081`).
+`npm start` does not serve `vendor/`, so the hub SDK (`vendor/hub-sdk/dist/hub-sdk.iife.js`) returns 404 there and the hub link stays offline. `npm run build` writes `dist/`: `public/`, that SDK file and `asset-manifest.json`. Serve `dist/` to try the hub link (for example `python3 -m http.server -d dist 8081`).
 
 - **Local Play:** up to six people on one machine (two keyboard layouts plus up to four gamepads).
 - **Host Online:** creates a 4-letter room code. The host's own local players join as usual.

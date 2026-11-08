@@ -13,17 +13,20 @@ and no bundler. `README.md` describes the modes and controls. `docs/` holds the 
   change.
 - Re-pin, only for an intended change:
   1. `npm run build:server-sim` rewrites `build/coop-sim.js` and `build/coop-sim.pin.json`.
-  2. If behaviour changed, `UPDATE_GOLDENS=1 node tests/goja-goldens.test.js` rewrites
-     `tests/fixtures/sim-goldens.json`. Say so in the PR.
+  2. If `contentSha256` or behaviour changed, `UPDATE_GOLDENS=1 node tests/goja-goldens.test.js`
+     rewrites `tests/fixtures/sim-goldens.json`. That file stores `content`, so a new
+     `contentSha256` always needs it. Say so in the PR.
   3. If `contentSha256` changed, update `FINGERPRINT` in `public/js/net-hub.js` and
      `tests/browser-hub-online.cjs`. If `bundleSha256` changed, update `SIM` in `tests/hub.test.js`.
   4. After the merge, metaverse-hub copies the bundle and pin into `server/modules/vendor/`,
      updates the `CoopProto` constants in `server/modules/src/games/coop_protocol.ts` and runs
      `node scripts/check-coop-sim-version.mjs`. Until then, hub CI fails its comparison with this
-     repo's `main`, and the live match refuses new clients with `version_mismatch`.
+     repo's `main` whenever `bundleSha256` changed, even for a comment-only edit. Clients are
+     refused with `version_mismatch` only when `contentSha256` (`FINGERPRINT`) changed.
 - `npm start` serves `public/` only. `vendor/` is outside it, so the hub SDK
   (`vendor/hub-sdk/dist/hub-sdk.iife.js`) returns 404 there and the hub link stays offline. To try
-  the hub link, run `npm run build` and serve `dist/`.
+  the hub link, run `npm run build` and serve `dist/` (`public/`, the SDK IIFE and
+  `asset-manifest.json`).
 - `vendor/hub-sdk` comes from `metaverse-hub`. It is the IIFE build (global `HubSDK`), recorded in
   `vendor/hub-sdk/SOURCE.pin.json`. `npm run build` refuses a copy whose hash or version differs
   from that pin, so update the pin, `scripts/build.mjs` and `docs/coop-hub.md` together when you
@@ -41,8 +44,9 @@ npm run test:e2e
 
 `npm test` runs the goja goldens with `go run`, so it needs Go. The runner's `go.mod` asks for Go
 1.26; an older Go downloads 1.26 by itself unless `GOTOOLCHAIN=local` is set. `npm test` stops at
-its first failing file. The goja p95 timing assertion in `tests/goja-goldens.test.js` can fail on a
-busy machine; when it does, run the remaining files one by one. `test:browser` and `test:e2e` need
+its first failing file. The goja speed budget (p95 ≤ 25 ms) depends on the machine and can fail
+on a busy one; run the remaining files one by one when it does. TODO: once PR #11 merges, this
+budget moves out of `npm test` into `npm run bench:goja`; update this paragraph then. `test:browser` and `test:e2e` need
 Playwright's Chromium and Firefox (`npx playwright install chromium firefox`).
 
 ## Art generation
