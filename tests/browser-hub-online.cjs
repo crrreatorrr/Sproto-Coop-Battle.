@@ -1022,7 +1022,10 @@ async function runReal(nakama) {
   }
 }
 
-module.exports = { loadGame, createAuthorityMatch, createStandin, tokenFor, normalizeCode, OP, FINGERPRINT, PROTOCOL, runReal };
+module.exports = {
+  loadGame, createAuthorityMatch, createStandin, tokenFor, normalizeCode, OP, FINGERPRINT, PROTOCOL, runReal,
+  startStatic, stopChild, probe, delay, openPlayer, choose,
+};
 
 if (require.main === module) {
   const real = process.env.NAKAMA_URL;

@@ -1,0 +1,45 @@
+{
+  "ms": 1200000,
+  "samples": 40,
+  "first": 2217956,
+  "last": 4887960,
+  "peak": 5962636,
+  "growth": 2670004,
+  "hardware": {
+    "host": "cursor",
+    "platform": "linux 6.12.113+",
+    "cpu": "Intel(R) Xeon(R) Processor",
+    "cores": 4,
+    "memoryBytes": 16780623872,
+    "node": "v22.23.4"
+  },
+  "tail": [
+    {
+      "t": 1111208,
+      "jsHeap": 3030308,
+      "nodes": 303,
+      "screen": "game",
+      "mode": "play",
+      "stage": 0,
+      "tick": 5404
+    },
+    {
+      "t": 1141235,
+      "jsHeap": 3555204,
+      "nodes": 303,
+      "screen": "game",
+      "mode": "gameover",
+      "stage": 0,
+      "tick": 7206
+    },
+    {
+      "t": 1171272,
+      "jsHeap": 4887960,
+      "nodes": 303,
+      "screen": "game",
+      "mode": "play",
+      "stage": 0,
+      "tick": 1802
+    }
+  ]
+}
