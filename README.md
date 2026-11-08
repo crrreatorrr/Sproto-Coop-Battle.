@@ -56,6 +56,10 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
 
+## Server loop budget
+
+The hub runs the pinned sim in a 20 Hz loop (50 ms), and one loop's three 60 Hz substeps should take under 25 ms in goja at p95. That budget is enforced only by `npm run bench:goja` (ten parallel goja VMs; needs Go, with `GOTOOLCHAIN=auto` to fetch the 1.26 toolchain), not by `npm test` or CI: the number depends on the machine and its load, so `npm test` only logs it and warns when it is over. Run the bench on an otherwise idle machine before and after changing a pinned file.
+
 ## Art sources
 
 Only these sprites are reused:
