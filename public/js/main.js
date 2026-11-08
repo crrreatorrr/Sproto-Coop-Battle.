@@ -17,8 +17,8 @@ function defaultSlots() {
 }
 app.slots = defaultSlots();
 // Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
-// RETURN TO BAR stays last so LOCAL / HOST / JOIN keep their original indexes.
-const MENU = (window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE']).concat(['RETURN TO BAR']);
+// LOCAL / HOST / JOIN keep their original indexes. Hub items sit between them and the Bar return.
+const MENU = (window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE']).concat(['HUB QUICK', 'HUB ROOM', 'JOIN HUB', 'RETURN TO BAR']);
 const fname = fid => M.fighters[fid].name;
 function toast(s) { app.msg = s; app.msgT = 240; }
 
@@ -137,6 +137,16 @@ function syncHub(state) {
   app.hub.balance = state.balance;
   app.hub.confirming = !!state.confirming;
   app.hub.message = state.message || '';
+  if (app.authority) app.authority.setConfirming(!!state.confirming);
+  if (app._hubPlayer && state.playerId && app._hubPlayer !== state.playerId && app.role === 'banked') {
+    if (app.authority) app.authority.leave();
+    app.authority = null;
+    app.role = 'local';
+    app.screen = 'title';
+    app.sim = null;
+    toast('Hub account changed. The server kept the run.');
+  }
+  app._hubPlayer = state.playerId || '';
 }
 function requestHubReturn(live) {
   const hub = window.CoopHub && window.CoopHub.session;
@@ -145,6 +155,7 @@ function requestHubReturn(live) {
   app.hub.confirming = !!(result && result.confirm);
 }
 function releaseForHub() {
+  if (app.authority) { try { app.authority.leave(); } catch (err) { /* already leaving */ } app.authority = null; }
   if (app.net) { try { app.net.close(); } catch (err) { /* already closed */ } app.net = null; }
   try {
     const ctx = A.ensure && A.ensure();
@@ -153,9 +164,46 @@ function releaseForHub() {
   removeEventListener('keydown', onKeyDown);
   removeEventListener('resize', fit);
 }
+function hubReady() {
+  const session = window.CoopHub && window.CoopHub.session && window.CoopHub.session.state;
+  if (session && (session.kind === 'account' || session.kind === 'guest')) return true;
+  return typeof window.SPROTO_COOP_REALTIME === 'function';
+}
+function startHub(item, dev) {
+  if (!window.NetHub) { toast('Hub client missing'); return; }
+  if (!hubReady()) { toast('Hub session required — local play stays practice'); return; }
+  app.role = 'banked';
+  app.sim = null;
+  app.snap = null;
+  app.slots = defaultSlots();
+  app.screen = 'lobby';
+  const ctl = NetHub.attach(app, { toast, accountId: app._hubPlayer || '' });
+  ctl.claim(dev);
+  const job = item === 'HUB QUICK' ? ctl.quickQueue() : item === 'HUB ROOM' ? ctl.createRoom() : Promise.resolve();
+  if (item === 'JOIN HUB') { showJoin('hub'); return; }
+  job.catch(err => {
+    toast((err && err.message) || 'Hub match failed');
+    if (app.role === 'banked' && (!app.authority || !app.authority.view().matchId)) {
+      app.role = 'local';
+      app.screen = 'title';
+      app.authority = null;
+    }
+  });
+}
+function abandonBanked() {
+  if (app.authority) app.authority.abandonToPractice();
+  app.authority = null;
+  app.role = 'local';
+  app.sim = null;
+  app.snap = null;
+  app.code = '';
+  app.screen = 'lobby';
+  app.slots = defaultSlots();
+  toast('New practice run. The server match was not taken over.');
+}
 function localDevicesInput() {
   const devs = I.devices();
-  const owner = app.role === 'guest' ? app.myId : 0;
+  const owner = app.role === 'guest' ? app.myId : app.role === 'banked' && app.authority ? app.authority.accountId() : 0;
   if (app.hub.confirming) {
     for (const d of devs) {
       const p = I.pressed(d);
@@ -178,6 +226,18 @@ function localDevicesInput() {
       if (p.d) { app.menu = (app.menu + 1) % n; A.play('menu'); }
       if (p.a || p.start) { A.ensure(); chooseMenu(app.menu, d); return; }
     } else if (app.screen === 'lobby') {
+      if (app.role === 'banked' && app.authority) {
+        const view = app.authority.view();
+        if (view.offerPractice && p.start) { abandonBanked(); return; }
+        if (i < 0 && p.a) { app.authority.claim(d); continue; }
+        if (i >= 0) {
+          if (p.l || p.r) app.authority.cycle(d, 'fid', p.r ? 1 : -1);
+          if (p.u || p.d) app.authority.cycle(d, 'weapon', p.d ? 1 : -1);
+          if (p.j) app.authority.release(d);
+        }
+        if (p.start) { app.authority.ready(); return; }
+        continue;
+      }
       if (app.role === 'guest') {
         if (i < 0 && p.a) app.net && app.net.send({ t: 'want', dev: d });
         if (i >= 0) {
@@ -195,6 +255,7 @@ function localDevicesInput() {
         if (p.start) { app.screen = 'stages'; app.msgT = 0; app.lobbyDirty = true; A.play('menu'); return; }
       }
     } else if (app.screen === 'stages') {
+      if (app.role === 'banked') { app.screen = 'lobby'; return; }
       // Stage select: 4 x 3 grid of the twelve Sproto Arcade stages.
       const sel = app.stageSel;
       if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
@@ -203,6 +264,13 @@ function localDevicesInput() {
       if (p.a || p.start) { startGame(); return; }
       if (p.j) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
     } else if (app.screen === 'game') {
+      if (app.role === 'banked' && app.authority) {
+        const view = app.authority.view();
+        if (view.offerPractice && p.start) { abandonBanked(); return; }
+        if (i < 0 && p.a && view.phase === 'playing') app.authority.claim(d);
+        if (i >= 0 && p.j && view.phase === 'playing') app.authority.release(d);
+        continue;
+      }
       // Drop-in: any unassigned device presses ATTACK to take over a CPU Sproto.
       if (i < 0 && p.a) {
         if (app.role === 'guest') app.net && app.net.send({ t: 'want', dev: d });
@@ -214,23 +282,41 @@ function localDevicesInput() {
   }
 }
 function chooseMenu(k, dev) {
-  if (MENU[k] === 'RETURN TO BAR') { requestHubReturn(false); return; }
-  if (k === 0) { app.role = 'local'; app.screen = 'lobby'; app.slots = defaultSlots(); claimSlot('local', 0, dev); }
-  else if (k === 1) { hostOnline(); claimSlot('local', 0, dev); }
-  else showJoin();
+  const item = MENU[k];
+  if (item === 'RETURN TO BAR') { requestHubReturn(false); return; }
+  if (item === 'LOCAL PLAY') { app.role = 'local'; app.screen = 'lobby'; app.slots = defaultSlots(); claimSlot('local', 0, dev); }
+  else if (item === 'HOST ONLINE') { hostOnline(); claimSlot('local', 0, dev); }
+  else if (item === 'JOIN ONLINE') showJoin('practice');
+  else if (item === 'HUB QUICK' || item === 'HUB ROOM' || item === 'JOIN HUB') startHub(item, dev);
 }
 
 // ---------- join dialog (DOM) ----------
 const joinBox = document.getElementById('join');
-function showJoin() {
+function showJoin(kind) {
+  app.joinKind = kind === 'hub' ? 'hub' : 'practice';
   joinBox.hidden = false; app.screen = 'join';
-  const code = document.getElementById('code'); code.value = new URLSearchParams(location.search).get('room') || ''; code.focus();
+  const code = document.getElementById('code');
+  const title = document.getElementById('joinTitle');
+  const note = document.getElementById('joinNote');
+  code.maxLength = app.joinKind === 'hub' ? 12 : 4;
+  code.value = app.joinKind === 'hub' ? '' : (new URLSearchParams(location.search).get('room') || '');
+  if (title) title.textContent = app.joinKind === 'hub' ? 'JOIN HUB ROOM' : 'JOIN ONLINE';
+  if (note) note.textContent = app.joinKind === 'hub' ? '12-character code. It finds the match. It does not sign you in.' : 'Practice relay. No hub rewards.';
+  code.focus();
 }
 document.getElementById('joinForm').addEventListener('submit', e => {
   e.preventDefault();
   const code = document.getElementById('code').value.trim().toUpperCase(), name = document.getElementById('name').value.trim() || 'Guest';
   if (!code) return;
-  joinBox.hidden = true; A.ensure(); joinOnline(code, name);
+  joinBox.hidden = true; A.ensure();
+  if (app.joinKind === 'hub' && app.authority) {
+    app.authority.joinCode(code).catch(err => {
+      toast((err && err.message) || 'Room not found');
+      if (!app.authority || !app.authority.view().matchId) { app.role = 'local'; app.screen = 'title'; }
+    });
+    return;
+  }
+  joinOnline(code, name);
 });
 document.getElementById('cancelJoin').addEventListener('click', () => { joinBox.hidden = true; app.screen = 'title'; });
 
@@ -249,12 +335,18 @@ function onKeyDown(e) {
   if ((e.code === 'Digit9' || e.code === 'Numpad9') && !e.repeat && app.screen === 'game') {
     if (e.timeStamp - lastNine <= 750) {
       lastNine = -Infinity;
-      if (app.role === 'guest') app.net && app.net.send({ t: 'god' });
+      if (app.role === 'banked' && app.authority) app.authority.command('god');
+      else if (app.role === 'guest') app.net && app.net.send({ t: 'god' });
       else if (app.sim) S.toggleGod(app.sim);
     } else lastNine = e.timeStamp;
   } else if (!e.repeat) lastNine = -Infinity;
   if (e.code === 'Escape' && app.screen === 'stages') { app.screen = 'lobby'; app.lobbyDirty = true; return; }
-  if (e.code === 'Escape' && app.screen === 'lobby') { if (app.net) app.net.close(); app.net = null; app.role = 'local'; app.screen = 'title'; }
+  if (e.code === 'Escape' && app.screen === 'lobby') {
+    if (app.role === 'banked' && app.authority) { app.authority.leave(); app.authority = null; }
+    if (app.net) app.net.close();
+    app.net = null; app.role = 'local'; app.screen = 'title';
+  }
+  if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'banked' && app.authority) { app.authority.toggleHold(); return; }
   if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'local') app.paused = !app.paused;
   if (e.code === 'KeyM') A.toggle();
 }
@@ -270,16 +362,16 @@ function drawTitle() {
   T(g, '6 armed Sprotos  vs  12 machine bosses', S.W / 2, 124, 7, '#fff', 'center');
   for (let i = 0; i < 6; i++) {
     const o = { f: i % M.fighters.length, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
-    R.drawFighter(g, o, 120 + i * 80, 268, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
+    R.drawFighter(g, o, 120 + i * 80, 214, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
   const items = MENU;
-  items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 90, 278 + i * 16, 9, app.menu === i ? '#ffd23d' : '#c8c6e0'));
+  items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 110, 236 + i * 14, 8, app.menu === i ? '#ffd23d' : '#c8c6e0'));
   T(g, 'WASD + F/G/H, R power  ·  ARROWS + , . /  \' power  ·  GAMEPADS', S.W / 2, 348, 6, '#9a98b8', 'center');
 }
 function drawLobby() {
   R.drawBackground(g, 4, app.t * 0.3);
   g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, S.H);
-  const title = app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
+  const title = app.role === 'banked' ? 'SERVER LOBBY — REWARDS 0' : app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
   T(g, title, 12, 22, 12, '#ffd23d');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 12, 22, 12, '#7aff8a', 'right');
   const cw = 100;
@@ -301,7 +393,9 @@ function drawLobby() {
     if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
     if (s.ctrl !== 'cpu') T(g, 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');
   });
-  const lines = app.role === 'guest'
+  const lines = app.role === 'banked'
+    ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']
+    : app.role === 'guest'
     ? ['ATTACK: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon', 'Waiting for the host to start…']
     : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: choose a stage — empty slots are CPU Sprotos. ESC: back'];
   lines.forEach((l, k) => T(g, l, S.W / 2, 292 + k * 14, 6, '#c8c6e0', 'center'));
@@ -310,7 +404,8 @@ function drawLobby() {
     T(g, 'HOST IS CHOOSING: STAGE ' + (app.hostChoosing + 1) + ' · ' + M.bosses[app.hostChoosing].stage.toUpperCase(), S.W / 2, 170, 8, '#ffd23d', 'center');
   }
   if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 328, 6, '#7aff8a', 'center');
-  T(g, 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
+  if (app.role === 'banked' && app.code) T(g, 'Share the 12-character code. It finds the room. It does not sign anyone in.', S.W / 2, 328, 6, '#7aff8a', 'center');
+  T(g, app.role === 'banked' ? 'BANKED CANDIDATE — NO PAYOUT UNTIL H3-C. B RETURNS TO THE BAR.' : 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
 }
 function drawStages() {
   R.drawBackground(g, app.stageSel, app.t * 0.4);
@@ -335,26 +430,26 @@ function drawStages() {
   T(g, 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
-  if (!a || k >= 1) return b;
-  const L = (x, y) => x + (y - x) * k;
-  const byId = (arr, key) => { const m = new Map(); for (const o of arr) m.set(o[key], o); return m; };
-  const pa = byId(a.players, 's'), ea = byId(a.enemies, 'id'), ra = byId(a.projs, 'id');
-  const mix = (o, p) => (p ? Object.assign({}, o, { x: L(p.x, o.x), y: L(p.y, o.y), z: L(p.z, o.z) }) : o);
-  return Object.assign({}, b, {
-    camX: a.si === b.si ? L(a.camX, b.camX) : b.camX,
-    players: b.players.map(o => mix(o, pa.get(o.s))), enemies: b.enemies.map(o => mix(o, ea.get(o.id))), projs: b.projs.map(o => mix(o, ra.get(o.id))),
-    boss: b.boss && a.boss ? Object.assign({}, b.boss, { x: L(a.boss.x, b.boss.x), y: L(a.boss.y, b.boss.y) }) : b.boss,
-  });
+  return R.interpolateSnapshot(a, b, k);
 }
 function drawGame() {
   let snap;
-  if (app.role === 'guest') {
+  let banked = null;
+  if (app.role === 'banked') {
+    banked = app.authority ? app.authority.view() : null;
+    if (!banked || !banked.snapshot) return;
+    snap = lerpSnap(banked.prevSnapshot, banked.snapshot, (performance.now() - banked.snapAt) / (banked.snapGap || 100));
+  } else if (app.role === 'guest') {
     if (!app.snap) return;
     snap = lerpSnap(app.prevSnap, app.snap, (performance.now() - app.snapAt) / app.snapGap);
   } else snap = S.snapshot(app.sim);
   R.bossImages(snap.si);
   R.drawWorld(g, snap);
-  if (app.paused) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
+  if (app.role === 'banked' && banked) {
+    const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST' : '';
+    if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
+    if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
+  } else if (app.paused) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
   const free = app.slots.some(s => s.ctrl === 'cpu');
   if (free && Math.floor(app.t / 40) % 2) T(g, 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 6, S.H - 6, 6, '#7aff8a', 'right');
@@ -366,9 +461,13 @@ function frame(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
   I.endFrame();
-  if (app.screen === 'game' && app.role !== 'guest' && app.sim && !app.paused && !app.hub.confirming) {
+  if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.hub.confirming) {
     app.acc += dt;
     while (app.acc >= STEP) { hostStep(); app.acc -= STEP; }
+  }
+  if (app.role === 'banked' && app.authority) {
+    app.authority.setBackground(document.visibilityState === 'hidden');
+    app.authority.pump(now);
   }
   if (app.role === 'guest' && app.net && app.net.open && app.screen === 'game' && !app.hub.confirming) {
     const inp = {}; for (const s of app.slots) if (s.ctrl === 'remote' && s.owner === app.myId) inp[s.dev] = I.pack(I.read(s.dev));
@@ -396,7 +495,8 @@ function drawHubStatus() {
   const who = h.kind === 'account' ? 'ACCOUNT ' + h.label : h.kind === 'guest' ? 'GUEST' : h.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
   const bal = (h.kind === 'account' || h.kind === 'guest') && typeof h.balance === 'number' ? '   TICKETS ' + h.balance : '';
   g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
-  T(g, who + bal + '   ·   PRACTICE', 6, 4, 5, '#c8c6e0');
+  const mode = app.role === 'banked' ? '   ·   BANKED CANDIDATE · REWARDS 0' : '   ·   PRACTICE';
+  T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
   if (h.confirming) {
     g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
     T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');

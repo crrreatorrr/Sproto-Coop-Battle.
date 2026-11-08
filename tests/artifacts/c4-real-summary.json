@@ -1,0 +1,88 @@
+{
+  "nakama": "http://127.0.0.1:7350",
+  "version": {
+    "enabled": true,
+    "protocol": 1,
+    "fingerprint": "f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e",
+    "rewards": 0
+  },
+  "ledger": {
+    "ada": {
+      "before": 0,
+      "after": 0
+    },
+    "bea": {
+      "before": 0,
+      "after": 0
+    },
+    "rewards": 0
+  },
+  "room": "LFZVTEMS6S4V",
+  "reconnect": {
+    "before": [
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      }
+    ],
+    "after": [
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      },
+      {
+        "hp": 100,
+        "lives": 2,
+        "powers": []
+      }
+    ],
+    "generation": 2
+  }
+}
