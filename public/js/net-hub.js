@@ -62,6 +62,7 @@
       banked: false,
       practiceFallback: false,
       rewards: 0,
+      receipt: null,
       hostTakeover: 0,
       acceptClientState: 0,
       importedRestart: 0,
@@ -191,9 +192,21 @@
     if (reason === 'future') { state.bias -= 1; state.lastBias = now; }
     else if (reason === 'stale') { state.bias += 1; state.lastBias = now; }
   }
+  // The match opcode rewards field stays 0 and is not a receipt. A message that
+  // claims rewards cannot become a displayed award. payoutCopy only names +20
+  // or a zero when a receipt object is passed in by a test or a future reader.
+  function payoutCopy(receipt) {
+    if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) return 'TICKETS PAID BY SERVER, SEE BALANCE';
+    var reason = String(receipt.reason || '');
+    if (reason === 'already_paid') return 'ALREADY CLAIMED TODAY';
+    if (receipt.paid === true && receipt.tickets === 20 && reason === 'clear') return '+20 TICKETS';
+    if (receipt.paid === false) return '0 TICKETS';
+    return 'TICKETS PAID BY SERVER, SEE BALANCE';
+  }
   function applyMessage(state, op, msg, now) {
     msg = msg || {};
     if (msg.rewards) state.rewards = 0;
+    if (msg.receipt) state.receipt = null;
     if (msg.hostTakeover) state.hostTakeover = 0;
     if (op === OP.WELCOME || op === OP.RESUME) {
       state.generation = msg.generation | 0;
@@ -221,7 +234,7 @@
       state.seq = 0;
       state.lastSentFrame = typeof msg.tick === 'number' ? msg.tick : 0;
       takeRender(state, msg.snapshot, now);
-      state.message = 'Server run, stage 1. Rewards 0.';
+      state.message = 'Server run, stage 1. TICKETS PAID BY SERVER, SEE BALANCE.';
       return;
     }
     if (op === OP.SNAPSHOT) {
@@ -248,7 +261,7 @@
       state.rewards = 0;
       state.message = state.resume === 'server'
         ? 'Server restart. Rejoining from the server checkpoint.'
-        : 'Match ended (' + (state.endReason || 'done') + '). Rewards 0.';
+        : 'Match ended (' + (state.endReason || 'done') + '). TICKETS PAID BY SERVER, SEE BALANCE.';
       return;
     }
     if (op === OP.PONG) {
@@ -298,6 +311,8 @@
       banked: state.banked && !state.practiceFallback && !state.replaced,
       practiceFallback: state.practiceFallback,
       rewards: 0,
+      receipt: null,
+      payout: payoutCopy(state.receipt),
       hostTakeover: 0,
       acceptClientState: 0,
       importedRestart: state.importedRestart,
@@ -646,7 +661,7 @@
         state.rewards = 0;
         state.hostTakeover = 0;
         await join(created.matchId);
-        state.message = 'Room ' + state.code + ' — rewards 0';
+        state.message = 'Room ' + state.code + ' — TICKETS PAID BY SERVER, SEE BALANCE';
         emit();
         return state;
       },
@@ -727,6 +742,7 @@
     DEVICES: DEVICES,
     RECONNECT_MS: RECONNECT_MS,
     normalizeCode: normalizeCode,
+    payoutCopy: payoutCopy,
     createState: createState,
     applyMessage: applyMessage,
     buildInput: buildInput,

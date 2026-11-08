@@ -99,7 +99,7 @@ Do not treat ten six-seat matches as proven headroom on a 4-core VM. H5 should r
 
 ## Flags and open issues
 
-- Banked HUD copy still says `REWARDS 0` and `NO PAYOUT UNTIL H3-C`. The opcode field `rewards` is specified to stay 0. The balance chip is the payout (`ACCOUNT … TICKETS n`). The lobby sentence is stale and is outside this phase's file list.
+- Banked HUD copy says `TICKETS PAID BY SERVER, SEE BALANCE`. The match opcode `rewards` stays 0 and is not shown as an award. `+20 TICKETS` and `ALREADY CLAIMED TODAY` appear only for a receipt object, which this client does not receive. Practice still says no hub rewards.
 - The hub compose Nakama service did not become healthy on this VM. Published ports came up, then `nakama migrate` did not finish, matching the bridge failure noted in C4. Evidence used the image built from hub `server/Dockerfile` (`heroiclabs/nakama:3.41.0` plus that commit's runtime) with host networking against the compose Postgres on `127.0.0.1:5432`.
 - Ten-match p95 on this VM missed 25 ms by one match, under soak load, at one seat. See Capacity limit.
 - No phone, console, or named GPU was available. The browsers above are the hardware evidence.
