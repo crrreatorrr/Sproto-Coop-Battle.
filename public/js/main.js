@@ -5,6 +5,8 @@ const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST;
 const cv = document.getElementById('game'), g = cv.getContext('2d');
 g.imageSmoothingEnabled = false;
 const STEP = 1000 / 60;
+// crash.js (loaded first) counts uncaught errors and opens the "Something broke" panel.
+const C = window.CrashGuard, crash = C.guard;
 
 const app = {
   screen: 'loading', role: 'local', net: null, myId: 0, code: '', msg: '', msgT: 0,
@@ -457,8 +459,9 @@ function drawGame() {
 }
 
 // ---------- main loop ----------
-function frame(now) {
-  requestAnimationFrame(frame);
+// Runs through the crash guard: it always reschedules, a throw ends that frame (no further fixed
+// steps), and after three failing frames in a row the game pauses behind the panel.
+function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
   I.endFrame();
@@ -509,10 +512,12 @@ function drawHubStatus() {
     T(g, 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
   }
 }
+const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
 const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
 // C2 load boundary: title waits on lobby art; a failed critical file stays on this screen until retry.
 function bootAssets() {
+  if (app.loadErr) C.dismiss();
   app.loadErr = '';
   app.loadK = 0;
   app.screen = 'loading';
@@ -523,8 +528,12 @@ function bootAssets() {
     const q = new URLSearchParams(location.search);
     if (q.get('room')) showJoin();
     if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
-  }, err => { app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading'; });
+  }, err => {
+    app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading';
+    crash.report(err, 'boot'); // the same panel, with Retry
+  });
 }
+C.setRetry(bootAssets);
 if (window.CoopHub) window.CoopHub.boot({ release: releaseForHub, onChange: syncHub });
 bootAssets();
 window.SprotoApp = app; // handy for debugging and browser tests
