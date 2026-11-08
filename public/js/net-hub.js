@@ -453,6 +453,7 @@
         },
         removeMatchmaker: function (id) { return rt.removeMatchmaker(id); },
         onMatched: function (fn) { matched.push(fn); },
+        connect: function () { return rt.connect ? rt.connect() : Promise.resolve(); },
         disconnect: function () { if (rt.disconnect) rt.disconnect(); },
       };
     }
@@ -670,6 +671,13 @@
         return state;
       },
       cancel: async function () { await leave(); },
+      rejoin: async function () {
+        if (!state.matchId) throw new Error('no match');
+        leaving = false;
+        var opened = await openTransport();
+        if (opened.connect) await opened.connect();
+        return join(state.matchId);
+      },
       resume: resume,
     };
   }

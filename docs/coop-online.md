@@ -47,4 +47,10 @@ Key P and a background tab hold this client's inputs. The match keeps simulating
 
 `node tests/browser-hub-online.cjs` drives Chromium through the SDK client. Two browsers moved on stage 1. A dropped socket rejoined at generation 2 with the same lives, hp, and powers. One account held `k1`, `k2`, and `gp0` beside a remote account. Six accounts filled six seats. A second tab with the same account replaced the first. Measured ping after the samples were cleared: about 104 ms at a 100 ms delay (jitter 2) and about 205 ms at a 200 ms delay (jitter 2). Ledger writes were 0. Screenshots are `tests/artifacts/c4-*.png`.
 
-`npm test` does not invoke the new files. The phase file list does not include `package.json` or the CI workflow. Run the three commands above in addition to `npm test`.
+`npm test` runs the seat and reconnect files. `npm run test:browser` runs `tests/browser-hub-online.cjs` after Chromium is installed, against the stand-in. CI already calls both scripts.
+
+## Real Nakama
+
+Hub main `469a69a52b029b6b7b431187ea779b988af56a89`, image `heroiclabs/nakama:3.41.0` with that commit's runtime module. The compose bridge could not complete a TCP handshake to Postgres (SYN_SENT, nftables delete failed in this VM), so Nakama was started from the same image on the host network against the compose Postgres on `127.0.0.1:5432`. No hub file was edited.
+
+`coop.version` returned `enabled: true`, protocol 1, fingerprint `f8705ec4…`, `rewards: 0`. Two device accounts redeemed `portal.enter` tickets for `sproto-coop-battle` and joined room `LFZVTEMS6S4V`. A reset of the socket, then a new join of the same match, came back at generation 2 with the same lives, hp, and powers. `tickets.balance` stayed 0 for both accounts. `game.tickets_ledger` had 0 nonzero rows in that window.

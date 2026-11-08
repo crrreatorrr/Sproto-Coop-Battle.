@@ -701,9 +701,9 @@ async function openPlayer(browser, pageUrl, nakama, user, errs) {
     window.SPROTO_COOP_REALTIME = () => window.HubSDK.createRealtime({
       serverUrl: spec.nakama,
       getToken: async () => spec.token,
-      reconnect: { baseDelayMs: 40, maxDelayMs: 200, maxAttempts: 30 },
+      reconnect: spec.reconnect === false ? false : { baseDelayMs: 40, maxDelayMs: 200, maxAttempts: 30 },
     });
-  }, { nakama: nakama, token: tokenFor(user.id, user.name) });
+  }, { nakama: nakama, token: user.token || tokenFor(user.id, user.name), reconnect: user.reconnect !== false });
   page.on('pageerror', err => errs.push(user.id + ': ' + err.message));
   await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForFunction(() => window.SprotoApp && window.SprotoApp.screen === 'title', null, { timeout: 45000 });
@@ -898,10 +898,136 @@ async function main() {
   }
 }
 
-module.exports = { loadGame, createAuthorityMatch, createStandin, tokenFor, normalizeCode, OP, FINGERPRINT, PROTOCOL };
+function basicAuth() {
+  return 'Basic ' + Buffer.from((process.env.NAKAMA_SERVER_KEY || 'defaultkey') + ':').toString('base64');
+}
+
+async function nakamaRpc(base, name, body, token) {
+  const params = new URLSearchParams({ unwrap: 'true' });
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = 'Bearer ' + token;
+  const response = await fetch(base.replace(/\/$/, '') + '/v2/rpc/' + encodeURIComponent(name) + '?' + params, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body || {}),
+  });
+  const text = await response.text();
+  let parsed = {};
+  try { parsed = text ? JSON.parse(text) : {}; } catch (err) { parsed = { message: text }; }
+  if (!response.ok || parsed.error) throw new Error(name + ' ' + response.status + ' ' + text.slice(0, 240));
+  return parsed;
+}
+
+async function gameLogin(base, label) {
+  const auth = await fetch(base.replace(/\/$/, '') + '/v2/account/authenticate/device?create=true', {
+    method: 'POST',
+    headers: { Authorization: basicAuth(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: 'c4-' + label + '-' + require('crypto').randomUUID() }),
+  });
+  const authBody = await auth.json();
+  if (!auth.ok || !authBody.token) throw new Error('device auth ' + auth.status);
+  const opened = await nakamaRpc(base, 'portal.enter', { game: 'sproto-coop-battle', ranked: false }, authBody.token);
+  const redeemed = await fetch(base.replace(/\/$/, '') + '/v2/account/authenticate/custom?create=false', {
+    method: 'POST',
+    headers: { Authorization: basicAuth(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: 't:' + opened.ticket, vars: { game: 'sproto-coop-battle' } }),
+  });
+  const game = await redeemed.json();
+  if (!redeemed.ok || !game.token) throw new Error('redeem ' + redeemed.status + ' ' + JSON.stringify(game).slice(0, 200));
+  const payload = JSON.parse(Buffer.from(game.token.split('.')[1], 'base64url').toString());
+  return { id: payload.uid, name: label, token: game.token };
+}
+
+async function runReal(nakama) {
+  const out = path.resolve(process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : path.join(__dirname, 'artifacts'));
+  fs.mkdirSync(out, { recursive: true });
+  const versionProbe = await gameLogin(nakama, 'probe');
+  const version = await nakamaRpc(nakama, 'coop.version', {}, versionProbe.token);
+  if (version.enabled !== true) throw new Error('coop.version enabled is not true: ' + JSON.stringify(version));
+  const ada = await gameLogin(nakama, 'ada');
+  const bea = await gameLogin(nakama, 'bea');
+  const beforeAda = await nakamaRpc(nakama, 'tickets.balance', { game: 'sproto-coop-battle' }, ada.token);
+  const beforeBea = await nakamaRpc(nakama, 'tickets.balance', { game: 'sproto-coop-battle' }, bea.token);
+  const { chromium } = require('playwright');
+  const staticServer = await startStatic();
+  if (!await probe(staticServer.url + 'healthz')) throw new Error('static server did not start');
+  const errs = [];
+  let browser;
+  const summary = { nakama: nakama.replace(/\/$/, ''), version: { enabled: version.enabled, protocol: version.protocol, fingerprint: version.fingerprint, rewards: version.rewards }, ledger: {} };
+  try {
+    browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+    ada.reconnect = false;
+    bea.reconnect = false;
+    const host = await openPlayer(browser, staticServer.url, nakama, ada, errs);
+    const guest = await openPlayer(browser, staticServer.url, nakama, bea, errs);
+    await choose(host, 'HUB ROOM');
+    await host.waitForFunction(() => window.SprotoApp && window.SprotoApp.code && window.SprotoApp.code.length === 12, null, { timeout: 20000 });
+    const code = await host.evaluate(() => window.SprotoApp.code);
+    summary.room = code;
+    await choose(guest, 'JOIN HUB');
+    await guest.fill('#code', code);
+    await guest.click('#joinForm button[type=submit]');
+    await guest.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'lobby', null, { timeout: 20000 });
+    await host.keyboard.press('Enter');
+    await guest.keyboard.press('Enter');
+    await host.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'playing', null, { timeout: 20000 });
+    await guest.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'playing', null, { timeout: 20000 });
+    await delay(800);
+    await host.screenshot({ path: path.join(out, 'c4-real-two-browser.png') });
+    const before = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
+    const { execFileSync } = require('child_process');
+    const block = ['-n', 'iptables', '-I', 'OUTPUT', '-p', 'tcp', '--dport', '7350', '-j', 'REJECT', '--reject-with', 'tcp-reset'];
+    const unblock = ['-n', 'iptables', '-D', 'OUTPUT', '-p', 'tcp', '--dport', '7350', '-j', 'REJECT', '--reject-with', 'tcp-reset'];
+    execFileSync('sudo', block, { stdio: 'ignore' });
+    try {
+      await host.waitForFunction(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        return view && (view.phase === 'reconnecting' || view.generation > 1);
+      }, null, { timeout: 15000 });
+    } finally {
+      execFileSync('sudo', unblock, { stdio: 'ignore' });
+    }
+    await delay(300);
+    await host.evaluate(() => window.SprotoApp.authority.rejoin());
+    try {
+      await host.waitForFunction(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        return view && view.phase === 'playing' && view.generation > 1;
+      }, null, { timeout: 20000 });
+    } catch (err) {
+      const stuck = await host.evaluate(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        return view ? { phase: view.phase, generation: view.generation, message: view.message, rejects: view.rejects.slice(-6), replaced: view.replaced, matchId: view.matchId } : null;
+      });
+      console.log('reconnect stuck', JSON.stringify(stuck));
+      throw err;
+    }
+    const after = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
+    summary.reconnect = { before: before, after: after, generation: await host.evaluate(() => window.SprotoApp.authority.view().generation) };
+    const refilled = after.some((row, i) => !before[i] || row.lives > before[i].lives || row.hp > before[i].hp + 1 || JSON.stringify(row.powers) !== JSON.stringify(before[i].powers));
+    if (refilled) throw new Error('real reconnect refilled lives, hp, or powers ' + JSON.stringify(summary.reconnect));
+    await host.screenshot({ path: path.join(out, 'c4-real-reconnect.png') });
+    const afterAda = await nakamaRpc(nakama, 'tickets.balance', { game: 'sproto-coop-battle' }, ada.token);
+    const afterBea = await nakamaRpc(nakama, 'tickets.balance', { game: 'sproto-coop-battle' }, bea.token);
+    summary.ledger = { ada: { before: beforeAda.balance, after: afterAda.balance }, bea: { before: beforeBea.balance, after: afterBea.balance }, rewards: version.rewards };
+    if (beforeAda.balance !== afterAda.balance || beforeBea.balance !== afterBea.balance) {
+      throw new Error('ticket balance changed ' + JSON.stringify(summary.ledger));
+    }
+    if (errs.length) throw new Error(errs.join(' | '));
+    fs.writeFileSync(path.join(out, 'c4-real-summary.json'), JSON.stringify(summary, null, 2) + '\n');
+    console.log('real nakama ok', JSON.stringify(summary));
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+    await stopChild(staticServer.child);
+  }
+}
+
+module.exports = { loadGame, createAuthorityMatch, createStandin, tokenFor, normalizeCode, OP, FINGERPRINT, PROTOCOL, runReal };
 
 if (require.main === module) {
-  main().catch(err => {
+  const real = process.env.NAKAMA_URL;
+  const job = real ? runReal(real) : main();
+  job.catch(err => {
     console.error(err);
     process.exit(1);
   });
