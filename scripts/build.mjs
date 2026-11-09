@@ -8,7 +8,7 @@ import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from '.
 
 const SDK_REL = 'vendor/hub-sdk/dist/hub-sdk.iife.js';
 const SDK_PIN = 'vendor/hub-sdk/SOURCE.pin.json';
-const SDK_IIFE_SHA256 = 'e23bbe9f6805cfd989a65d4279e56163e2d6f4497a0514c9c28ccc0f2adca2eb';
+const SDK_IIFE_SHA256 = '4ceb36321fc09820c4ef6292b8bd31ebaa198f0a9b90d38bcbd458505222df76';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
@@ -20,8 +20,8 @@ export function assertSdkPin() {
   const hash = crypto.createHash('sha256').update(bytes).digest('hex');
   const text = bytes.toString('utf8');
   const problems = [];
-  if (pin.package !== '@metaverse/hub-sdk' || pin.version !== '0.6.2' || pin.global !== 'HubSDK' || pin.format !== 'iife') {
-    problems.push('SOURCE.pin.json is not @metaverse/hub-sdk 0.6.2 IIFE global HubSDK');
+  if (pin.package !== '@metaverse/hub-sdk' || pin.version !== '0.6.3' || pin.global !== 'HubSDK' || pin.format !== 'iife') {
+    problems.push('SOURCE.pin.json is not @metaverse/hub-sdk 0.6.3 IIFE global HubSDK');
   }
   if (pin.iifeSha256 !== SDK_IIFE_SHA256 || hash !== SDK_IIFE_SHA256) problems.push('iife sha256 does not match the H0 pin');
   if (!text.includes('sproto-coop-battle') || !text.includes('Not a CDN import')) problems.push('iife is not the pinned classic build');
