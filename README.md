@@ -21,15 +21,35 @@ npm start            # http://localhost:8080
 
 ## Controls
 
-| | Move | Attack | Jump | Special | Power |
-|---|---|---|---|---|---|
-| Keys 1 | WASD | F | G | H | R |
-| Keys 2 | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 |
-| Gamepad | Stick / D-pad | X (or RB) | A | B / LB | Y / LT / RT |
+| | Move | Attack | Jump | Special / block | Power | Pause menu |
+|---|---|---|---|---|---|---|
+| Keys 1 (left side) | WASD | F | G or Space | H | R | Esc or P |
+| Keys 2 (right side) | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 | Esc or P |
+| Gamepad | Left stick / D-pad | X (or RB) | A | B (or LB) | Y (or LT / RT) | Start |
 
-Down + Special also fires a saved power-up.
+Two people can share one keyboard, so WASD and the arrows are two separate players: the arrows never move the WASD player. Down + Special also fires a saved power-up. Dash is a double tap of left or right on any device. M mutes sound. B (the key) returns to the Bar from any screen; a live run asks first.
 
-Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages with the arrows or stick, then Attack or Start to fight. The run continues from that stage. Jump or Esc goes back to the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
+Any standard controller works with no setup (Xbox names; PlayStation and Switch pads work by button position). The pad shows up on its first press. Buttons held when a pad connects, such as the A that picked this game in the hub, are ignored until released. The prompts on screen follow the last device used.
+
+| Screen | Keyboard | Gamepad |
+|---|---|---|
+| Menus (all) | W/S or arrows move, Enter / Space / Attack confirm, Esc or Jump back | D-pad or left stick move (held repeats), A confirms, B backs out |
+| Title | RETURN TO BAR is the last item | same |
+| Lobby | Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage |
+| Stage select | Enter / Space / Attack fight, Esc or Jump back | A or Start fight, B back |
+| Battle | Attack on a free keyboard side drops in | A or X on a free pad drops in |
+| Pause menu (Resume, Sound, Return to Bar) | Esc or P opens and closes, Enter / Space selects | Start opens, A selects, B or Start resumes |
+| Game over / victory | Enter back to the lobby (host) | Start back to the lobby (host) |
+| Join dialog | type the code, Enter joins, Esc cancels | up/down change the letter, left/right move, X deletes, A joins, B cancels |
+| Return to the Bar? | Attack, Enter or B again confirms; Jump or Esc cancels | A or Start confirms, B cancels |
+
+Online guests wait for the host to pick the stage. In a server match Start / Enter in the lobby means ready. Local play pauses under the pause menu. Online and server matches keep running; the menu only holds the inputs of the device that opened it (both keyboard sides for the keyboard).
+
+**Local multiplayer:** the device that picks LOCAL PLAY or HOST ONLINE is P1. Every other keyboard side or pad presses Attack (A on a pad) to take the next free slot, so pad 1 is P1 and pad 2 is P2 when they join in that order. Any pad can drive the menus.
+
+**Why this pad layout:** A is jump, the most frequent button, and X attack sits right next to it, so the right thumb rolls between attack, jump and B block the way most beat-'em-ups play. Holding block on B while attacking on X is awkward on one thumb, so LB also blocks and RB also attacks for players who like the shoulders. Power-ups are rare and deliberate, so they go on Y and both triggers. Start is the only menu button; View and Home are unused.
+
+Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages, then fight. The run continues from that stage.
 
 **God mode:** press **9 twice** quickly during a battle, the same input as Sproto Arcade. Human Sprotos get unlimited health and attack twice as fast (UFO lasers and bombs too). CPU teammates are unaffected. Press 9 twice again to turn it off. Online guests can toggle it too, and it applies to the whole team.
 
@@ -85,7 +105,7 @@ The weapons, items and effects are drawn in code (`public/js/render.js`). `tools
 | `public/js/render.js` | Canvas renderer; draws snapshots only, so every client looks identical |
 | `public/js/main.js` | Title, lobby, drop-in, game loop, relay netcode glue |
 | `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
-| `public/js/input.js`, `audio.js`, `net.js` | Devices, synthesized SFX, relay WebSocket client |
+| `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices; pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX; relay WebSocket client |
 | `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
 | `public/js/net-hub.js` | Client for the hub's authoritative `sproto_coop` match (banked play) |
 | `server/server.js` | Practice static server and room relay |

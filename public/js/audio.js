@@ -43,5 +43,5 @@ function play(name) {
   if (budget++ > 5) return; // avoid stacking dozens of hits on one frame
   const fn = SFX[name.split(':')[0]]; if (fn) fn();
 }
-root.Audio2 = { play, ensure, toggle: () => (muted = !muted) };
+root.Audio2 = { play, ensure, toggle: () => (muted = !muted), isMuted: () => muted };
 })(window);

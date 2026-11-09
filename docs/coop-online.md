@@ -31,7 +31,7 @@ START is stage 0 with the server seed and a render snapshot. SNAPSHOT and the RE
 
 Six seats. One account may hold several devices. The server assigns the seat, the character, and the weapon. Releasing a device gives it to server AI and does not refill lives, hp, powers, or items. A dropped socket keeps the seat for 15 seconds under server AI. A new socket bumps the generation and the previous socket's input is rejected. Server restart is `coop.resume` only. `hostTakeover` is always 0.
 
-Key P and a background tab hold this client's inputs. The match keeps simulating. Held input is neutral, so a long hold can look idle to H3-C. Esc leaves the match. Start, while reconnecting or after the match ends, begins a new local practice run. That run is not the banked one.
+The pause menu (Esc or P on the keyboard, Start on a pad) and a background tab hold this client's inputs: the keyboard's when the keyboard opened it, that pad's when a pad did. The match keeps simulating. Held input is neutral, so a long hold can look idle to H3-C. Esc in the lobby leaves the match. Jump in a running match is only a jump; it no longer releases the seat. Start, while reconnecting or after the match ends, begins a new local practice run. That run is not the banked one.
 
 ## What H3-C needs
 
