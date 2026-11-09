@@ -5,7 +5,7 @@
   "description": "6-player co-op pixel beat-'em-up: armed Sprotos vs. Sproto Arcade bosses",
   "scripts": {
     "start": "node server/server.js",
-    "test": "node tests/sim.test.js && node tests/relay-security.test.js && node tests/asset-manifest.test.js && node tests/server-sim.test.js && node tests/protocol.test.js && node tests/goja-goldens.test.js && node tests/atlas.test.js && node tests/loading.test.js && node tests/budgets.test.js && node tests/hub.test.js && node tests/seat-ownership.test.js && node tests/reconnect.test.js && node tests/hud-copy.test.js",
+    "test": "node tests/sim.test.js && node tests/relay-security.test.js && node tests/asset-manifest.test.js && node tests/server-sim.test.js && node tests/protocol.test.js && node tests/goja-goldens.test.js && node tests/atlas.test.js && node tests/loading.test.js && node tests/budgets.test.js && node tests/hub.test.js && node tests/seat-ownership.test.js && node tests/reconnect.test.js && node tests/hud-copy.test.js && node tests/gamepad.test.js && node tests/input.test.js",
     "test:browser": "node tests/browser-online.cjs && node tests/atlas-visual.cjs && node tests/goja-goldens.test.js --browser && node tests/browser-hub-online.cjs",
     "test:e2e": "node tests/e2e/hub-roundtrip.spec.js && node tests/e2e/coop-authority.spec.js && node tests/e2e/rewards.spec.js && node tests/e2e/reconnect.spec.js",
     "build": "node scripts/build.mjs && node scripts/build-server-sim.mjs",

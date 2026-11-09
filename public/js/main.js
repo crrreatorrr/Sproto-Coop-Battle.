@@ -11,6 +11,8 @@ const app = {
   slots: [], sim: null, snap: null, prevSnap: null, snapAt: 0, snapGap: 33,
   menu: 0, stageSel: 0, remoteIn: {}, guestNames: {}, lobbyDirty: true, paused: false, acc: 0, last: 0, sendTick: 0, pendingEv: [], t: 0,
   hub: { kind: 'offline', label: 'OFFLINE', balance: null, confirming: false, message: '' },
+  pauseMenu: null, // pause menu while open: { dev: pad id or 'keys', sel, held }
+  joinCursor: 0,
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -207,8 +209,8 @@ function localDevicesInput() {
   if (app.hub.confirming) {
     for (const d of devs) {
       const p = I.pressed(d);
-      if (p.a || p.start) { requestHubReturn(true); return; }
-      if (p.j) {
+      if (p.ok || p.start) { requestHubReturn(true); return; }
+      if (p.back) {
         const hub = window.CoopHub && window.CoopHub.session;
         if (hub) hub.cancelReturn();
         app.hub.confirming = false;
@@ -217,40 +219,55 @@ function localDevicesInput() {
     }
     return;
   }
+  const menu = app.pauseMenu;
+  if (menu && (app.screen !== 'game' || (menu.dev !== 'keys' && devs.indexOf(menu.dev) < 0))) closePauseMenu();
+  const keysMenu = !!(app.pauseMenu && app.pauseMenu.dev === 'keys');
+  if (keysMenu) {
+    // Both keyboard layouts drive the menu as one device, so a shared Enter counts once.
+    const a = I.pressed('k1'), b = I.pressed('k2'), p = {};
+    for (const k in a) p[k] = a[k] | b[k];
+    pauseMenuInput(p, true);
+  }
+  const ctx = app.screen === 'game' ? 'game' : 'menu';
   for (const d of devs) {
-    const p = I.pressed(d);
+    if (keysMenu && !I.isPad(d)) continue; // the keyboard already spent this frame on the menu
+    const p = I.pressed(d, ctx);
     const i = slotOf(owner, d);
+    if (app.pauseMenu && app.pauseMenu.dev === d) { pauseMenuInput(p, false); continue; }
     if (app.screen === 'title') {
       const n = MENU.length;
       if (p.u) { app.menu = (app.menu + n - 1) % n; A.play('menu'); }
       if (p.d) { app.menu = (app.menu + 1) % n; A.play('menu'); }
-      if (p.a || p.start) { A.ensure(); chooseMenu(app.menu, d); return; }
+      if (p.ok || p.start) { A.ensure(); chooseMenu(app.menu, d); return; }
     } else if (app.screen === 'lobby') {
       if (app.role === 'banked' && app.authority) {
         const view = app.authority.view();
         if (view.offerPractice && p.start) { abandonBanked(); return; }
-        if (i < 0 && p.a) { app.authority.claim(d); continue; }
+        if (i < 0 && (p.a || p.ok)) { app.authority.claim(d); continue; }
+        if (i < 0 && I.isPad(d) && p.back) { leaveLobby(); return; }
         if (i >= 0) {
           if (p.l || p.r) app.authority.cycle(d, 'fid', p.r ? 1 : -1);
           if (p.u || p.d) app.authority.cycle(d, 'weapon', p.d ? 1 : -1);
-          if (p.j) app.authority.release(d);
+          if (p.back) app.authority.release(d);
         }
         if (p.start) { app.authority.ready(); return; }
         continue;
       }
       if (app.role === 'guest') {
-        if (i < 0 && p.a) app.net && app.net.send({ t: 'want', dev: d });
+        if (i < 0 && (p.a || p.ok)) app.net && app.net.send({ t: 'want', dev: d });
+        if (i < 0 && I.isPad(d) && p.back) { leaveLobby(); return; }
         if (i >= 0) {
           if (p.l || p.r) app.net.send({ t: 'pick', dev: d, key: 'fid', d: p.r ? 1 : -1 });
           if (p.u || p.d) app.net.send({ t: 'pick', dev: d, key: 'weapon', d: p.d ? 1 : -1 });
-          if (p.j) app.net.send({ t: 'leave', dev: d });
+          if (p.back) app.net.send({ t: 'leave', dev: d });
         }
       } else {
-        if (i < 0 && p.a) { A.ensure(); claimSlot('local', 0, d); continue; }
+        if (i < 0 && (p.a || p.ok)) { A.ensure(); claimSlot('local', 0, d); continue; }
+        if (i < 0 && I.isPad(d) && p.back) { leaveLobby(); return; }
         if (i >= 0) {
           if (p.l || p.r) cycle(i, 'fid', p.r ? 1 : -1);
           if (p.u || p.d) cycle(i, 'weapon', p.d ? 1 : -1);
-          if (p.j) releaseSlot(i);
+          if (p.back) releaseSlot(i);
         }
         if (p.start) { app.screen = 'stages'; app.msgT = 0; app.lobbyDirty = true; A.play('menu'); return; }
       }
@@ -261,26 +278,107 @@ function localDevicesInput() {
       if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
       if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
       if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
-      if (p.a || p.start) { startGame(); return; }
-      if (p.j) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
+      if (p.ok || p.start) { startGame(); return; }
+      if (p.back) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
     } else if (app.screen === 'game') {
       if (app.role === 'banked' && app.authority) {
         const view = app.authority.view();
         if (view.offerPractice && p.start) { abandonBanked(); return; }
-        if (i < 0 && p.a && view.phase === 'playing') app.authority.claim(d);
-        if (i >= 0 && p.j && view.phase === 'playing') app.authority.release(d);
+        if (I.isPad(d) && p.start) { openPauseMenu(d); return; }
+        if (i < 0 && (p.a || (I.isPad(d) && p.ok)) && view.phase === 'playing') { app.authority.claim(d); I.latch(d); }
+        // Jump is only a jump here. It used to release the seat to the AI mid-match.
         continue;
       }
       // Drop-in: any unassigned device presses ATTACK to take over a CPU Sproto.
-      if (i < 0 && p.a) {
+      // A pad can also press A: a fresh pad has nothing else to do here.
+      if (i < 0 && (p.a || (I.isPad(d) && p.ok))) {
         if (app.role === 'guest') app.net && app.net.send({ t: 'want', dev: d });
         else claimSlot('local', 0, d);
+        I.latch(d); // the join press must not also swing or jump
       }
       const mode = app.role === 'guest' ? app.snap && app.snap.mode : app.sim && app.sim.mode;
-      if (p.start && (mode === 'gameover' || mode === 'victory') && app.role !== 'guest') { app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; }
+      const over = mode === 'gameover' || mode === 'victory';
+      if (p.start && over && app.role !== 'guest') { app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; return; }
+      if (I.isPad(d) && p.start) { openPauseMenu(d); return; }
     }
   }
 }
+// Lobby -> title (Esc on a keyboard, B on a pad that holds no slot).
+function leaveLobby() {
+  if (app.role === 'banked' && app.authority) { app.authority.leave(); app.authority = null; }
+  if (app.net) app.net.close();
+  app.net = null; app.role = 'local'; app.screen = 'title';
+}
+
+// ---------- pause menu ----------
+// Start on a pad, or Esc / P on the keyboard, during a run. Local play pauses. Online and server
+// matches keep running, so the opener's inputs are held instead (both keyboard layouts when the
+// keyboard opened it: it is one shared keyboard). dev is a pad id or 'keys'.
+const KEY_DEVS = ['k1', 'k2'];
+const menuDevs = dev => (dev === 'keys' ? KEY_DEVS : [dev]);
+function pauseMenuItems() {
+  return ['RESUME', A.isMuted && A.isMuted() ? 'SOUND: OFF' : 'SOUND: ON', 'RETURN TO BAR'];
+}
+function openPauseMenu(dev) {
+  if (app.pauseMenu || app.hub.confirming || app.screen !== 'game') return;
+  const m = { dev, sel: 0, held: false };
+  if (app.role === 'local') app.paused = true;
+  else if (app.role === 'banked' && app.authority && !app.authority.view().held) { app.authority.toggleHold(); m.held = true; }
+  for (const d of menuDevs(dev)) I.setMuted(d, true);
+  app.pauseMenu = m;
+  A.play('menu');
+}
+function closePauseMenu() {
+  const m = app.pauseMenu;
+  if (!m) return;
+  app.pauseMenu = null;
+  if (app.role === 'local') app.paused = false;
+  else if (m.held && app.role === 'banked' && app.authority && app.authority.view().held) app.authority.toggleHold();
+  for (const d of menuDevs(m.dev)) { I.setMuted(d, false); I.latch(d); } // the A that picked RESUME must not also jump
+}
+// p: one frame of menu edges. Pads: A selects, B or Start resumes. Keyboard: Enter / Space or
+// Attack selects, Jump resumes (Esc and P resume from onKeyDown).
+function pauseMenuInput(p, keyboard) {
+  const m = app.pauseMenu, n = pauseMenuItems().length;
+  if (p.u) { m.sel = (m.sel + n - 1) % n; A.play('menu'); }
+  if (p.d) { m.sel = (m.sel + 1) % n; A.play('menu'); }
+  if (p.back || (!keyboard && p.start)) { closePauseMenu(); return; }
+  if (!(p.ok || (keyboard && p.start))) return;
+  const item = pauseMenuItems()[m.sel];
+  if (item === 'RESUME') closePauseMenu();
+  else if (item.startsWith('SOUND')) { A.toggle(); A.play('menu'); }
+  else if (item === 'RETURN TO BAR') { closePauseMenu(); requestHubReturn(runLive()); }
+}
+
+// ---------- gamepad on the join dialog and the load-error screen ----------
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // relay and hub room codes use the same set
+function joinPadInput() {
+  const code = document.getElementById('code');
+  for (const d of I.devices()) {
+    if (!I.isPad(d)) continue;
+    const p = I.pressed(d);
+    if (p.back) { document.getElementById('cancelJoin').click(); return; }
+    if (p.ok || p.start) {
+      if (code.value.trim()) document.getElementById('joinForm').requestSubmit();
+      else toast('Enter the room code first');
+      return;
+    }
+    if (p.u || p.d || p.l || p.r || p.a) {
+      const r = PadMap.editCode(code.value, app.joinCursor, { u: p.u, d: p.d, l: p.l, r: p.r, del: p.a }, CODE_ALPHABET, code.maxLength);
+      code.value = r.value; app.joinCursor = r.cursor;
+      code.focus();
+      code.setSelectionRange(r.cursor, Math.min(r.value.length, r.cursor + 1));
+    }
+  }
+}
+function loadErrorPadInput() {
+  for (const d of I.devices()) {
+    if (!I.isPad(d)) continue;
+    const p = I.pressed(d);
+    if (p.ok || p.a || p.start) { bootAssets(); return; }
+  }
+}
+
 function chooseMenu(k, dev) {
   const item = MENU[k];
   if (item === 'RETURN TO BAR') { requestHubReturn(false); return; }
@@ -302,13 +400,16 @@ function showJoin(kind) {
   code.value = app.joinKind === 'hub' ? '' : (new URLSearchParams(location.search).get('room') || '');
   if (title) title.textContent = app.joinKind === 'hub' ? 'JOIN HUB ROOM' : 'JOIN ONLINE';
   if (note) note.textContent = app.joinKind === 'hub' ? '12-character code. It finds the match. It does not sign you in.' : 'Practice relay. No hub rewards.';
+  app.joinCursor = Math.min(code.value.length, code.maxLength - 1);
+  const padHint = document.getElementById('joinPad');
+  if (padHint) padHint.hidden = !I.devices().some(I.isPad);
   code.focus();
 }
 document.getElementById('joinForm').addEventListener('submit', e => {
   e.preventDefault();
   const code = document.getElementById('code').value.trim().toUpperCase(), name = document.getElementById('name').value.trim() || 'Guest';
   if (!code) return;
-  joinBox.hidden = true; A.ensure();
+  hideJoin(); A.ensure();
   if (app.joinKind === 'hub' && app.authority) {
     app.authority.joinCode(code).catch(err => {
       toast((err && err.message) || 'Room not found');
@@ -318,7 +419,19 @@ document.getElementById('joinForm').addEventListener('submit', e => {
   }
   joinOnline(code, name);
 });
-document.getElementById('cancelJoin').addEventListener('click', () => { joinBox.hidden = true; app.screen = 'title'; });
+document.getElementById('cancelJoin').addEventListener('click', () => { hideJoin(); app.screen = 'title'; });
+// Esc backs out of the dialog. The page key handler skips text fields, so it is caught here.
+joinBox.addEventListener('keydown', e => {
+  if (e.code !== 'Escape') return;
+  e.preventDefault();
+  document.getElementById('cancelJoin').click();
+});
+// Give the keyboard back to the game once the dialog closes.
+function hideJoin() {
+  joinBox.hidden = true;
+  const el = document.activeElement;
+  if (el && joinBox.contains(el) && el.blur) el.blur();
+}
 
 // God mode: press 9 twice within 0.75 s during a battle (same input as Sproto Arcade).
 let lastNine = -Infinity;
@@ -341,19 +454,20 @@ function onKeyDown(e) {
     } else lastNine = e.timeStamp;
   } else if (!e.repeat) lastNine = -Infinity;
   if (e.code === 'Escape' && app.screen === 'stages') { app.screen = 'lobby'; app.lobbyDirty = true; return; }
-  if (e.code === 'Escape' && app.screen === 'lobby') {
-    if (app.role === 'banked' && app.authority) { app.authority.leave(); app.authority = null; }
-    if (app.net) app.net.close();
-    app.net = null; app.role = 'local'; app.screen = 'title';
+  if (e.code === 'Escape' && app.screen === 'lobby') leaveLobby();
+  // Esc or P opens the pause menu in a run and closes any open one. Local play pauses; online and
+  // server matches keep running with the keyboard's inputs held (what P alone used to do there).
+  if ((e.code === 'Escape' || e.code === 'KeyP') && !e.repeat && app.screen === 'game') {
+    if (app.pauseMenu) closePauseMenu(); else openPauseMenu('keys');
+    return;
   }
-  if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'banked' && app.authority) { app.authority.toggleHold(); return; }
-  if (e.code === 'KeyP' && app.screen === 'game' && app.role === 'local') app.paused = !app.paused;
   if (e.code === 'KeyM') A.toggle();
 }
 addEventListener('keydown', onKeyDown);
 
 // ---------- drawing screens ----------
 const T = R.text;
+const padUI = () => I.lastKind() === 'pad'; // the last device used picks the prompts
 function drawTitle() {
   R.drawBackground(g, Math.floor(app.t / 600) % 12, app.t * 0.6);
   g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, S.W, S.H);
@@ -366,7 +480,7 @@ function drawTitle() {
   }
   const items = MENU;
   items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 110, 236 + i * 14, 8, app.menu === i ? '#ffd23d' : '#c8c6e0'));
-  T(g, 'WASD + F/G/H, R power  ·  ARROWS + , . /  \' power  ·  GAMEPADS', S.W / 2, 348, 6, '#9a98b8', 'center');
+  T(g, padUI() ? 'PAD: A SELECT  ·  IN BATTLE  X ATTACK  A JUMP  B SPECIAL  Y POWER  START MENU' : 'WASD + F ATTACK  G/SPACE JUMP  H SPECIAL  R POWER  ·  ARROWS + , . /  \'  ·  ESC PAUSE', S.W / 2, 348, 6, '#9a98b8', 'center');
 }
 function drawLobby() {
   R.drawBackground(g, 4, app.t * 0.3);
@@ -390,10 +504,10 @@ function drawLobby() {
     T(g, nm.length > 10 ? nm : '< ' + nm + ' >', x + cw / 2, y + 172, nm.length > 10 ? 6 : 7, '#fff', 'center');
     if (nm.length > 10) { T(g, '<', x + 6, y + 150, 8, '#8a88a8'); T(g, '>', x + cw - 6, y + 150, 8, '#8a88a8', 'right'); }
     T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 190, 7, '#ffd23d', 'center');
-    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
-    if (s.ctrl !== 'cpu') T(g, 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');
+    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
+    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');
   });
-  const lines = app.role === 'banked'
+  const lines = padUI() ? padLobbyLines() : app.role === 'banked'
     ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']
     : app.role === 'guest'
     ? ['ATTACK: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon', 'Waiting for the host to start…']
@@ -405,7 +519,13 @@ function drawLobby() {
   }
   if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 328, 6, '#7aff8a', 'center');
   if (app.role === 'banked' && app.code) T(g, 'Share the 12-character code. It finds the room. It does not sign anyone in.', S.W / 2, 328, 6, '#7aff8a', 'center');
-  T(g, app.role === 'banked' ? bankedPayLine() + '. B RETURNS TO THE BAR.' : 'PRACTICE — NO HUB REWARDS. B RETURNS TO THE BAR.', S.W / 2, 346, 6, '#9a98b8', 'center');
+  const back = padUI() ? ' PAD: B WITH NO SLOT FOR TITLE, THEN RETURN TO BAR.' : ' B RETURNS TO THE BAR.';
+  T(g, app.role === 'banked' ? bankedPayLine() + '.' + back : 'PRACTICE — NO HUB REWARDS.' + back, S.W / 2, 346, 6, '#9a98b8', 'center');
+}
+function padLobbyLines() {
+  if (app.role === 'banked') return ['A: take a pad   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. B with no seat leaves.'];
+  if (app.role === 'guest') return ['A: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'Waiting for the host to start…'];
+  return ['A: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'START: choose a stage — empty slots are CPU Sprotos. B with no slot: back'];
 }
 function drawStages() {
   R.drawBackground(g, app.stageSel, app.t * 0.4);
@@ -427,7 +547,7 @@ function drawStages() {
   }
   const b = M.bosses[app.stageSel];
   T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 318, 8, '#ff8a8a', 'center');
-  T(g, 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
+  T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
   return R.interpolateSnapshot(a, b, k);
@@ -450,17 +570,34 @@ function drawGame() {
     const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST' : '';
     if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
-  } else if (app.paused) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
+  } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
+  if (app.pauseMenu) drawPauseMenu();
   const free = app.slots.some(s => s.ctrl === 'cpu');
-  if (free && Math.floor(app.t / 40) % 2) T(g, 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
+  if (free && Math.floor(app.t / 40) % 2) T(g, padUI() ? 'PRESS A TO JOIN' : 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 6, S.H - 6, 6, '#7aff8a', 'right');
+}
+
+function drawPauseMenu() {
+  const m = app.pauseMenu, items = pauseMenuItems();
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
+  const w = 260, h = 64 + items.length * 18, x = (S.W - w) / 2, y = (S.H - h) / 2;
+  g.fillStyle = 'rgba(10,8,22,.95)'; g.fillRect(x, y, w, h);
+  g.fillStyle = '#ffd23d'; g.fillRect(x, y, w, 3);
+  T(g, app.role === 'local' ? 'PAUSED' : 'MENU', S.W / 2, y + 18, 12, '#ffd23d', 'center');
+  const held = app.role === 'banked' ? 'YOUR INPUTS ARE HELD' : (m.dev === 'keys' ? 'KEYBOARD' : I.DEVICE_NAMES[m.dev] || m.dev).toUpperCase() + ' IS HELD';
+  if (app.role !== 'local') T(g, 'THE MATCH CONTINUES · ' + held, S.W / 2, y + 34, 5, '#c8c6e0', 'center');
+  items.forEach((s, i) => T(g, (m.sel === i ? '> ' : '  ') + s, x + 70, y + 50 + i * 18, 8, m.sel === i ? '#ffd23d' : '#c8c6e0'));
+  T(g, m.dev === 'keys' ? 'ENTER SELECT   ESC RESUME' : 'A SELECT   B / START RESUME', S.W / 2, y + h - 10, 5, '#9a98b8', 'center');
 }
 
 // ---------- main loop ----------
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
-  if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
+  I.poll(now);
+  if (app.screen === 'join') joinPadInput();
+  else if (app.screen === 'loading') { if (app.loadErr) loadErrorPadInput(); }
+  else localDevicesInput();
   I.endFrame();
   if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.hub.confirming) {
     app.acc += dt;
@@ -482,7 +619,7 @@ function frame(now) {
     T(g, app.loadErr ? 'COULD NOT LOAD ART' : 'LOADING SPROTOS…', S.W / 2, S.H / 2 - 8, 10, '#fff', 'center');
     g.fillStyle = '#3a3558'; g.fillRect(170, S.H / 2 + 16, 300, 6);
     g.fillStyle = '#ffd23d'; g.fillRect(170, S.H / 2 + 16, 300 * (app.loadK || 0), 6);
-    if (app.loadErr) T(g, 'ATTACK OR ENTER RETRIES', S.W / 2, S.H / 2 + 40, 7, '#ff8a8a', 'center');
+    if (app.loadErr) T(g, padUI() ? 'A RETRIES' : 'ATTACK OR ENTER RETRIES', S.W / 2, S.H / 2 + 40, 7, '#ff8a8a', 'center');
   }
   else if (app.screen === 'title' || app.screen === 'join') drawTitle();
   else if (app.screen === 'lobby') drawLobby();
@@ -506,7 +643,7 @@ function drawHubStatus() {
   if (h.confirming) {
     g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
     T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');
-    T(g, 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
+    T(g, padUI() ? 'A CONFIRMS    B CANCELS' : 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
   }
 }
 requestAnimationFrame(frame);
