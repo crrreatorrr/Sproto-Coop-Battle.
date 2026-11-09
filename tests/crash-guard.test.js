@@ -176,4 +176,123 @@ function fakeDocument() {
   assert.strictEqual(scripts[0], 'js/crash.js');
 }
 
+// Review fixes: a throwing fixed step drops the backlog instead of rerunning on a half-applied tick.
+{
+  const app = { acc: 0 };
+  let ticks = 0, throwing = true;
+  const hostStep = () => { ticks++; if (throwing) throw new Error('boss AI threw'); };
+  assert.throws(() => C.fixedSteps(app, 1000 / 60, 60, hostStep), /boss AI threw/);
+  assert.strictEqual(ticks, 1, 'the rest of that frame does not run');
+  assert.strictEqual(app.acc, 0, 'the backlog is dropped');
+  throwing = false;
+  assert.strictEqual(C.fixedSteps(app, 1000 / 60, 8, hostStep), 0, 'the failed tick is not rerun at once');
+  assert.strictEqual(C.fixedSteps(app, 1000 / 60, 10, hostStep), 1);
+  // main.js steps the host sim through it and returns whether the frame counts as good.
+  const main = fs.readFileSync(path.join(root, 'public/js/main.js'), 'utf8');
+  assert.ok(/C\.fixedSteps\(app, STEP, dt, hostStep\) > 0/.test(main));
+  assert.ok(/return judged;\n}/.test(main));
+}
+
+// A step that always throws still trips the panel at 144 Hz, where most frames run no step.
+{
+  const guard = C.create({ threshold: 3, log: () => {}, surface: null });
+  const app = { acc: 0 };
+  const queue = [];
+  C.frameLoop(() => C.fixedSteps(app, 1000 / 60, 1000 / 144, () => { throw new Error('step'); }) > 0, guard, cb => queue.push(cb))(0);
+  for (let i = 0; i < 200 && !guard.paused; i++) queue.shift()(i);
+  assert.strictEqual(guard.paused, true);
+}
+
+// A step that returns false neither grows nor resets the streak.
+{
+  const guard = C.create({ threshold: 3, log: () => {}, surface: null });
+  const queue = [];
+  let n = 0;
+  C.frameLoop(() => { n++; if (n % 10 === 0) throw new Error('step'); return false; }, guard, cb => queue.push(cb))(0);
+  for (let i = 0; i < 25; i++) queue.shift()(i);
+  assert.strictEqual(guard.consecutive, 2);
+  assert.strictEqual(guard.paused, false);
+  for (let i = 0; i < 5; i++) queue.shift()(i);
+  assert.strictEqual(guard.paused, true);
+}
+
+const errorEvent = init => Object.assign(new Event('error'), init);
+const rejection = reason => Object.assign(new Event('unhandledrejection'), { reason });
+
+// Page errors with no failing frame never pause the game (boot, hidden tab).
+{
+  const guard = C.create({ threshold: 3, log: () => {}, surface: null, origin: 'https://game.test' });
+  const fatal = [];
+  guard.onFatal(r => fatal.push(r));
+  const target = new EventTarget();
+  guard.install(target);
+  for (let i = 0; i < 10; i++) {
+    target.dispatchEvent(errorEvent({ error: new Error('e' + i), message: 'e' + i }));
+    target.dispatchEvent(rejection('r' + i));
+  }
+  assert.strictEqual(guard.errors, 20, 'still counted');
+  assert.strictEqual(guard.consecutive, 0);
+  assert.strictEqual(fatal.length, 0);
+  guard.report(new Error('frame'), 'frame');
+  assert.strictEqual(guard.consecutive, 1, 'one failing frame after them is one, not a pause');
+  assert.strictEqual(guard.paused, false);
+}
+
+// Page errors extend a streak that a failing frame started.
+{
+  const guard = C.create({ threshold: 3, log: () => {}, surface: null, origin: 'https://game.test' });
+  const target = new EventTarget();
+  guard.install(target);
+  guard.report(new Error('frame'), 'frame');
+  target.dispatchEvent(rejection('a'));
+  assert.strictEqual(guard.paused, false);
+  target.dispatchEvent(rejection('b'));
+  assert.strictEqual(guard.paused, true);
+}
+
+// Cross-origin and muted errors are ignored.
+{
+  const guard = C.create({ log: () => {}, surface: null, origin: 'https://game.test' });
+  const target = new EventTarget();
+  guard.install(target);
+  target.dispatchEvent(errorEvent({ error: null, message: 'Script error.' }));
+  target.dispatchEvent(errorEvent({ error: new Error('ext'), message: 'ext', filename: 'chrome-extension://abc/content.js' }));
+  target.dispatchEvent(errorEvent({ error: new Error('ad'), message: 'ad', filename: 'https://ads.example/x.js' }));
+  assert.strictEqual(guard.errors, 0);
+  target.dispatchEvent(errorEvent({ error: new Error('ours'), message: 'ours', filename: 'https://game.test/js/main.js' }));
+  assert.strictEqual(guard.errors, 1);
+  target.dispatchEvent(errorEvent({ error: new Error('inline'), message: 'inline', filename: '' }));
+  assert.strictEqual(guard.errors, 2);
+}
+
+// AbortError and NotAllowedError rejections are ignored.
+{
+  const guard = C.create({ log: () => {}, surface: null });
+  const target = new EventTarget();
+  guard.install(target);
+  target.dispatchEvent(rejection(new DOMException('The user aborted a request.', 'AbortError')));
+  target.dispatchEvent(rejection(new DOMException('play() failed', 'NotAllowedError')));
+  assert.strictEqual(guard.errors, 0);
+  target.dispatchEvent(rejection(new DOMException('bad', 'NotFoundError')));
+  assert.strictEqual(guard.errors, 1);
+}
+
+// A visibility change resets the streak.
+{
+  const guard = C.create({ threshold: 3, log: () => {}, surface: null });
+  const target = new EventTarget();
+  const doc = new EventTarget();
+  const uninstall = guard.install(target, doc);
+  guard.report(new Error('a'), 'frame');
+  guard.report(new Error('b'), 'frame');
+  doc.dispatchEvent(new Event('visibilitychange'));
+  assert.strictEqual(guard.consecutive, 0);
+  guard.report(new Error('c'), 'frame');
+  assert.strictEqual(guard.paused, false);
+  uninstall();
+  guard.report(new Error('d'), 'frame');
+  doc.dispatchEvent(new Event('visibilitychange'));
+  assert.strictEqual(guard.consecutive, 2);
+}
+
 console.log('crash guard ok');

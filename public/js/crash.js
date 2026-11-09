@@ -7,12 +7,32 @@
 //   listening for page errors) still see it as uncaught.
 // - After `threshold` failing frames in a row (or a boot failure) the game pauses and the fatal
 //   handlers run (the "Something broke" panel).
-// - Global error / unhandledrejection events feed the same counter.
+// - Global error / unhandledrejection events are counted and logged, but they only extend a
+//   streak that a failing frame started, so with no frames running (boot, hidden tab) unrelated
+//   page errors never pause the game. Cross-origin errors (extensions, a bare "Script error.") and
+//   AbortError / NotAllowedError rejections are ignored. A visibility change resets the streak.
+// - A step may return false for "nothing to judge this frame" (no fixed step was due): the streak
+//   neither grows nor resets, so a step that throws every time it runs still pauses the game at
+//   120/144 Hz, where many frames run no step.
 // - onCrash(fn) is the hook for the opt-in Diagnostics crash reporter. Nothing is sent anywhere.
 (function (root) {
   'use strict';
   // Browser noise that is not a game error (Chrome reports it through window.onerror).
   const BENIGN = /ResizeObserver loop/;
+  // Rejections the browser raises for cancelled fetches and refused autoplay or fullscreen.
+  const BENIGN_REJECTIONS = ['AbortError', 'NotAllowedError'];
+
+  // An error event that is not the game's: a muted cross-origin "Script error." with no error
+  // object, or one raised by a script on another origin (an extension, an ad blocker).
+  function isForeignError(e, origin) {
+    if (e.error == null && /^Script error\.?$/i.test(e.message || '')) return true;
+    if (!e.filename || !origin) return false;
+    try { return new URL(e.filename, origin).origin !== origin; } catch (err) { return false; }
+  }
+
+  function isBenignRejection(reason) {
+    return !!reason && typeof reason === 'object' && BENIGN_REJECTIONS.indexOf(reason.name) >= 0;
+  }
 
   function describeError(err) {
     if (err instanceof Error) return { message: err.message || err.name, stack: err.stack || '' };
@@ -33,6 +53,7 @@
     const log = opts.log || function () { console.error.apply(console, arguments); };
     const nativeReport = typeof root.reportError === 'function' ? e => root.reportError(e) : null;
     const surface = opts.surface !== undefined ? opts.surface : nativeReport;
+    const origin = opts.origin !== undefined ? opts.origin : (root.location && root.location.origin) || null;
     const seen = new Set();
     const surfaced = new WeakSet();
     const listeners = new Set();
@@ -46,11 +67,14 @@
       paused: false,
       suppressed: 0,
       frameOk() { guard.consecutive = 0; },
+      // Forget the current run of failures (the tab was hidden or shown, so frames stopped).
+      resetStreak() { guard.consecutive = 0; },
       report(err, source) {
         const d = describeError(err);
         if (source !== 'frame' && source !== 'boot' && BENIGN.test(d.message)) return;
         guard.errors++;
-        guard.consecutive++;
+        // A page error only extends a streak that a failing frame started.
+        if (source === 'frame' || guard.consecutive > 0) guard.consecutive++;
         const firstFrame = d.stack.split('\n').find(l => /\d:\d/.test(l)) || '';
         const sig = d.message + '\n' + firstFrame;
         if (!seen.has(sig)) {
@@ -74,17 +98,26 @@
       resume() { guard.paused = false; guard.consecutive = 0; },
       onCrash(fn) { listeners.add(fn); return () => listeners.delete(fn); },
       onFatal(fn) { fatalHandlers.add(fn); return () => fatalHandlers.delete(fn); },
-      install(target) {
+      // Feed the page's uncaught errors and rejections into this guard, and reset the streak when
+      // doc changes visibility. Returns an uninstall function.
+      install(target, doc) {
         const onError = e => {
           if (e.error && typeof e.error === 'object' && surfaced.has(e.error)) return;
+          if (isForeignError(e, origin)) return;
           guard.report(e.error != null ? e.error : e.message, 'error');
         };
-        const onRejection = e => guard.report(e.reason, 'unhandledrejection');
+        const onRejection = e => {
+          if (isBenignRejection(e.reason)) return;
+          guard.report(e.reason, 'unhandledrejection');
+        };
+        const onVisibility = () => guard.resetStreak();
         target.addEventListener('error', onError);
         target.addEventListener('unhandledrejection', onRejection);
+        if (doc) doc.addEventListener('visibilitychange', onVisibility);
         return () => {
           target.removeEventListener('error', onError);
           target.removeEventListener('unhandledrejection', onRejection);
+          if (doc) doc.removeEventListener('visibilitychange', onVisibility);
         };
       },
     };
@@ -92,14 +125,14 @@
   }
 
   // A rAF loop that survives exceptions: step(now) runs inside try/catch, the next frame is
-  // always scheduled in finally, and nothing runs while the guard is paused.
+  // always scheduled in finally, and nothing runs while the guard is paused. A step that returns
+  // false did no work worth judging (no fixed step was due), so it does not reset the streak.
   function frameLoop(step, guard, raf) {
     raf = raf || (cb => root.requestAnimationFrame(cb));
     const frame = now => {
       try {
         if (guard.paused) return;
-        step(now);
-        guard.frameOk();
+        if (step(now) !== false) guard.frameOk();
       } catch (err) {
         guard.report(err, 'frame');
       } finally {
@@ -107,6 +140,21 @@
       }
     };
     return frame;
+  }
+
+  // Run the fixed steps that dt makes due on state.acc and return how many ran. A throwing step
+  // drops the backlog (state.acc = 0), so it is not rerun next frame on top of the half-applied
+  // tick, and the error goes on to the frame guard.
+  function fixedSteps(state, stepMs, dt, run) {
+    state.acc += dt;
+    let steps = 0;
+    try {
+      while (state.acc >= stepMs) { run(); state.acc -= stepMs; steps++; }
+    } catch (e) {
+      state.acc = 0;
+      throw e;
+    }
+    return steps;
   }
 
   // The small "Something broke" panel, in the join-form style. Reload after a runtime crash;
@@ -158,12 +206,15 @@
   }
   // In the page this script loads first, so errors in every later script are counted too.
   if (typeof window !== 'undefined' && root.document) {
-    shared.install(root);
+    shared.install(root, root.document);
     shared.onFatal(report => showPanel(report, { onRetry: retry && (() => { dismiss(); retry(); }) }));
   }
   const CrashGuard = {
     create: create,
     frameLoop: frameLoop,
+    fixedSteps: fixedSteps,
+    isForeignError: isForeignError,
+    isBenignRejection: isBenignRejection,
     showPanel: showPanel,
     describeError: describeError,
     // The page-wide guard: the loop, the page listeners and the panel all share it.

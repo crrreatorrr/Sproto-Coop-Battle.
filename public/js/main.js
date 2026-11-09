@@ -465,9 +465,12 @@ function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
   I.endFrame();
+  // Whether the crash guard counts this frame as good: while the host sim runs, only a frame in
+  // which a fixed step ran cleanly does, so a step that always throws still trips the panel at
+  // 120/144 Hz. A throwing step drops the backlog instead of rerunning on a half-applied tick.
+  let judged = true;
   if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.hub.confirming) {
-    app.acc += dt;
-    while (app.acc >= STEP) { hostStep(); app.acc -= STEP; }
+    judged = C.fixedSteps(app, STEP, dt, hostStep) > 0 || dt === 0;
   }
   if (app.role === 'banked' && app.authority) {
     app.authority.setBackground(document.visibilityState === 'hidden');
@@ -493,6 +496,7 @@ function frameStep(now) {
   else if (app.screen === 'game') drawGame();
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
   drawHubStatus();
+  return judged;
 }
 function bankedPayLine() {
   const view = app.authority && app.authority.view && app.authority.view();
