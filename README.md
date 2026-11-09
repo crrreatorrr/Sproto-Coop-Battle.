@@ -9,7 +9,9 @@ npm install
 npm start            # http://localhost:8080
 ```
 
-`npm start` serves the game and runs the WebSocket relay for online play. Local play also works from any static host that serves `public/`. Online play needs the Node server.
+`npm start` serves `public/` and runs the WebSocket relay for practice online play. Local play also works from any static host that serves `public/`. Relay play needs the Node server.
+
+`npm start` does not serve `vendor/`, so the hub SDK (`vendor/hub-sdk/dist/hub-sdk.iife.js`) returns 404 there and the hub link stays offline. `npm run build` writes `dist/`: `public/`, that SDK file and `asset-manifest.json`. Serve `dist/` to try the hub link (for example `python3 -m http.server -d dist 8081`).
 
 - **Local Play:** up to six people on one machine (two keyboard layouts plus up to four gamepads).
 - **Host Online:** creates a 4-letter room code. The host's own local players join as usual.
@@ -19,15 +21,35 @@ npm start            # http://localhost:8080
 
 ## Controls
 
-| | Move | Attack | Jump | Special | Power |
-|---|---|---|---|---|---|
-| Keys 1 | WASD | F | G | H | R |
-| Keys 2 | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 |
-| Gamepad | Stick / D-pad | X (or RB) | A | B / LB | Y / LT / RT |
+| | Move | Attack | Jump | Special / block | Power | Pause menu |
+|---|---|---|---|---|---|---|
+| Keys 1 (left side) | WASD | F | G or Space | H | R | Esc or P |
+| Keys 2 (right side) | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 | Esc or P |
+| Gamepad | Left stick / D-pad | X (or RB) | A | B (or LB) | Y (or LT / RT) | Start |
 
-Down + Special also fires a saved power-up.
+Two people can share one keyboard, so WASD and the arrows are two separate players: the arrows never move the WASD player. Down + Special also fires a saved power-up. Dash is a double tap of left or right on any device. M mutes sound. B (the key) returns to the Bar from any screen; a live run asks first.
 
-Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages with the arrows or stick, then Attack or Start to fight. The run continues from that stage. Jump or Esc goes back to the lobby. In the lobby, LEFT/RIGHT changes your Sproto, UP/DOWN changes your weapon and JUMP leaves the slot. P pauses local games and M mutes sound.
+Any standard controller works with no setup (Xbox names; PlayStation and Switch pads work by button position). The pad shows up on its first press. Buttons held when a pad connects, such as the A that picked this game in the hub, are ignored until released. The prompts on screen follow the last device used.
+
+| Screen | Keyboard | Gamepad |
+|---|---|---|
+| Menus (all) | W/S or arrows move, Enter / Space / Attack confirm, Esc or Jump back | D-pad or left stick move (held repeats), A confirms, B backs out |
+| Title | RETURN TO BAR is the last item | same |
+| Lobby | Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage |
+| Stage select | Enter / Space / Attack fight, Esc or Jump back | A or Start fight, B back |
+| Battle | Attack on a free keyboard side drops in | A or X on a free pad drops in |
+| Pause menu (Resume, Sound, Return to Bar) | Esc or P opens and closes, Enter / Space selects | Start opens, A selects, B or Start resumes |
+| Game over / victory | Enter back to the lobby (host) | Start back to the lobby (host) |
+| Join dialog | type the code, Enter joins, Esc cancels | up/down change the letter, left/right move, X deletes, A joins, B cancels |
+| Return to the Bar? | Attack, Enter or B again confirms; Jump or Esc cancels | A or Start confirms, B cancels |
+
+Online guests wait for the host to pick the stage. In a server match Start / Enter in the lobby means ready. Local play pauses under the pause menu. Online and server matches keep running; the menu only holds the inputs of the device that opened it (both keyboard sides for the keyboard).
+
+**Local multiplayer:** the device that picks LOCAL PLAY or HOST ONLINE is P1. Every other keyboard side or pad presses Attack (A on a pad) to take the next free slot, so pad 1 is P1 and pad 2 is P2 when they join in that order. Any pad can drive the menus.
+
+**Why this pad layout:** A is jump, the most frequent button, and X attack sits right next to it, so the right thumb rolls between attack, jump and B block the way most beat-'em-ups play. Holding block on B while attacking on X is awkward on one thumb, so LB also blocks and RB also attacks for players who like the shoulders. Power-ups are rare and deliberate, so they go on Y and both triggers. Start is the only menu button; View and Home are unused.
+
+Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages, then fight. The run continues from that stage.
 
 **God mode:** press **9 twice** quickly during a battle, the same input as Sproto Arcade. Human Sprotos get unlimited health and attack twice as fast (UFO lasers and bombs too). CPU teammates are unaffected. Press 9 twice again to turn it off. Online guests can toggle it too, and it applies to the whole team.
 
@@ -56,13 +78,17 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
 
+## Server loop budget
+
+The hub runs the pinned sim in a 20 Hz loop (50 ms), and one loop's three 60 Hz substeps should take under 25 ms in goja at p95. That budget is enforced only by `npm run bench:goja` (ten parallel goja VMs; needs Go, with `GOTOOLCHAIN=auto` to fetch the 1.26 toolchain), not by `npm test` or CI: the number depends on the machine and its load, so `npm test` only logs it and warns when it is over. Run the bench on an otherwise idle machine before and after changing a pinned file.
+
 ## Art sources
 
 Only these sprites are reused:
 
 - **Bosses:** the 24 boss phase sheets and 24 projectile sheets from [Sproto-Arcade](https://github.com/crrreatorrr/Sproto-Arcade) (`art/generated/bosses/*/p{1,2}.png`, `p{1,2}-projectiles.png`). They are downscaled to 1024² and palette-quantized in `public/assets/bosses/`. Row 0 is idle and rows 1–3 are the three firing weapons, which map to the boss's three attacks.
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
-- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (`public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
+- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (Sproto-Fighter `public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Here they live in `public/assets/fighters/<id>/`. The game loads one `atlas.png` per character (`tools/pack-fighter-atlases.py`); the 40 single-pose PNGs next to it are the atlas sources and are not requested. Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
 
 - **Stages:** the half-speed scenery comes from Sproto Arcade (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, and `art/codebreak/shaft.webp`). The shipped fighting floors in `public/assets/stages/` were generated with Higgsfield using each backdrop and original floor as references, then sized and color-matched for the game. `tools/build-backgrounds.py` regenerates the original procedural floor art and overwrites these assets.
 
@@ -72,18 +98,33 @@ The weapons, items and effects are drawn in code (`public/js/render.js`). `tools
 
 | File | Role |
 |---|---|
-| `public/js/sim.js` | Authoritative simulation: players, Shadow Sprotos, bosses, UFO, waves, snapshots |
-| `public/js/ai.js` | CPU teammates |
-| `public/js/render.js` | Canvas renderer; draws snapshots only, so host and guests look identical |
-| `public/js/main.js` | Title, lobby, drop-in, game loop, netcode glue |
-| `public/js/input.js`, `audio.js`, `net.js` | Devices, synthesized SFX, WebSocket client |
-| `server/server.js` | Static server and room relay |
+| `public/js/sim.js` | Simulation: players, Shadow Sprotos, bosses, UFO, waves, snapshots, restart state. **Pinned** |
+| `public/js/ai.js` | CPU teammates. **Pinned** |
+| `public/js/net-protocol.js` | Banked-match rules (seats, input limits, terminal facts). Runs only inside the server bundle; `index.html` does not load it. **Pinned** |
+| `public/js/manifest.js` | Sprite bounds and hand positions, generated by `tools/build-manifest.py`. **Pinned** |
+| `public/js/render.js` | Canvas renderer; draws snapshots only, so every client looks identical |
+| `public/js/main.js` | Title, lobby, drop-in, game loop, relay netcode glue |
+| `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
+| `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices; pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX; relay WebSocket client |
+| `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
+| `public/js/net-hub.js` | Client for the hub's authoritative `sproto_coop` match (banked play) |
+| `server/server.js` | Practice static server and room relay |
+| `scripts/build.mjs`, `build-server-sim.mjs` | `dist/` build; the server bundle `build/coop-sim.js` and its pin |
+| `scripts/check-assets.mjs`, `check-budgets.mjs` | Asset inventory and transfer budgets |
 
-Netcode is host-authoritative. Guests send packed input bits every frame. The host simulates at 60 Hz and broadcasts ~1.2 KB snapshots at 30 Hz, which guests interpolate between.
+The four **pinned** files are hashed into `build/coop-sim.pin.json`, which the hub vendors. See `AGENTS.md` before editing them.
+
+There are two kinds of online play:
+
+- **Practice relay** (`npm start`): host-authoritative. Guests send packed input bits every frame. The host simulates at 60 Hz and sends snapshots at 30 Hz, which guests interpolate between. A snapshot is usually 1.5–3.5 KB of JSON (about 2 KB typical), with busy moments near 4 KB. It never pays Tickets.
+- **Banked** (from the hub's Bar cabinet): the hub's Nakama match `sproto_coop` runs the pinned sim at 60 Hz in a 20 Hz loop and sends snapshots at 10 Hz. Verified boss clears pay Tickets on the server. See `docs/coop-online.md`.
 
 ## Tests
 
 ```bash
-npm test                              # headless: six CPU Sprotos clear all 12 stages
-npm start & node tests/browser-online.cjs   # host + guest in Chromium via Playwright
+npm test                 # sim, relay, protocol, goja goldens, assets, hub link (needs Go)
+npm run test:browser     # relay host + guest, atlas visuals, browser goldens, banked client (Playwright)
+npm run test:e2e         # hub round trip, authority, rewards, reconnect
 ```
+
+The headless campaign check runs six CPU Sprotos on seed 42 until the run ends. CPU teammates are deliberately weak, so that team reaches game over on stage 1 (tick 6957 in `tests/fixtures/gameplay-hashes.json`); it does not clear the 12 stages. `AGENTS.md` lists the full check order.

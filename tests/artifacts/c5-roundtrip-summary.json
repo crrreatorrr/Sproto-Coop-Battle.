@@ -1,0 +1,84 @@
+{
+  "hardware": {
+    "host": "cursor",
+    "platform": "linux 6.12.113+",
+    "cpu": "Intel(R) Xeon(R) Processor",
+    "cores": 4,
+    "memoryBytes": 16780623872,
+    "node": "v22.23.4"
+  },
+  "screenshots": [
+    "c5-title-chromium.png",
+    "c5-practice-lobby-chromium.png",
+    "c5-return-confirm-chromium.png",
+    "c5-return-landed-chromium.png",
+    "c5-title-firefox.png",
+    "c5-practice-lobby-firefox.png",
+    "c5-return-confirm-firefox.png",
+    "c5-return-landed-firefox.png",
+    "c5-bar-login.png",
+    "c5-bar-cabinet.png",
+    "c5-bar-picker.png",
+    "c5-bar-entered.png",
+    "c5-bar-returned.png"
+  ],
+  "profile": {
+    "cold": {
+      "ms": 209,
+      "requests": 24,
+      "transfer": 1442285
+    },
+    "warm": {
+      "ms": 127,
+      "requests": 24,
+      "transfer": 1441453
+    }
+  },
+  "browsers": {
+    "chromium": {
+      "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.18 Safari/537.36",
+      "landed": {
+        "href": "http://127.0.0.1:41819/hub/#from=sproto-coop-battle",
+        "hash": "#from=sproto-coop-battle",
+        "text": "#from=sproto-coop-battle"
+      }
+    },
+    "firefox": {
+      "ua": "Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0",
+      "landed": {
+        "href": "http://127.0.0.1:41819/hub/#from=sproto-coop-battle",
+        "hash": "#from=sproto-coop-battle",
+        "text": "#from=sproto-coop-battle"
+      }
+    }
+  },
+  "bar": {
+    "username": "c5mw7ywnyk",
+    "hint": "Click to look  ·  Press E · Choose Sproto Arcade, Sproto Fighter or Sproto Coop Battle",
+    "choices": [
+      "1  Sproto ArcadeThe Long Way Home · ten giant bosses, a rooftop chase and the code shaft",
+      "2  Sproto FighterStory mode and online 1v1 duels",
+      "3  Sproto Coop BattleSix players across twelve stages"
+    ],
+    "entered": {
+      "href": "http://127.0.0.1:5173/play/sproto-coop-battle/index.html",
+      "hash": "",
+      "kind": "account",
+      "label": "c5mw7ywnyk",
+      "balance": 0
+    },
+    "returned": {
+      "href": "http://127.0.0.1:5173/hub/#from=sproto-coop-battle",
+      "hash": "#from=sproto-coop-battle",
+      "hint": "Click to look  ·  Press E · Choose Sproto Arcade, Sproto Fighter or Sproto Coop Battle"
+    },
+    "shots": [
+      "c5-bar-login.png",
+      "c5-bar-cabinet.png",
+      "c5-bar-picker.png",
+      "c5-bar-entered.png",
+      "c5-bar-returned.png"
+    ],
+    "loginError": ""
+  }
+}
