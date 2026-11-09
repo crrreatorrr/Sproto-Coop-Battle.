@@ -1,4 +1,4 @@
-/*! @metaverse/hub-sdk 0.6.2 IIFE global HubSDK. Built from packages/hub-sdk/src. Not a CDN import. */
+/*! @metaverse/hub-sdk 0.6.3 IIFE global HubSDK. Built from packages/hub-sdk/src. Not a CDN import. */
 "use strict";
 var HubSDK = (() => {
   var __defProp = Object.defineProperty;
@@ -559,7 +559,7 @@ var HubSDK = (() => {
         body: JSON.stringify(body)
       });
       const text = await response.text();
-      if (!response.ok) throw new HubSdkError("auth_failed", text || `HTTP ${response.status}`);
+      if (!response.ok) throw new HubSdkError("auth_failed", text || `HTTP ${response.status}`, response.status);
       const parsed = JSON.parse(text);
       if (!parsed.token) throw new HubSdkError("auth_failed", "Auth did not return a token");
       return {
@@ -710,6 +710,16 @@ var HubSDK = (() => {
     if (error.code === "session_closed" || error.code === "unauthorized" || error.code === "not_game_session") return true;
     return error.code === "rpc_failed" && error.status === 401;
   }
+  function expiredToken(error) {
+    if (!(error instanceof HubSdkError)) return false;
+    return error.code === "unauthorized" || error.code === "rpc_failed" && error.status === 401;
+  }
+  function refreshRefused(error) {
+    if (!(error instanceof HubSdkError)) return false;
+    if (error.status === 408 || error.status === 429) return false;
+    if (error.status !== void 0) return error.status >= 400 && error.status < 500;
+    return error.code === "auth_failed" || error.code === "bad_token" || error.code === "unauthorized";
+  }
   var RETRY_CODES = /* @__PURE__ */ new Set(["rate_limited", "missing_ticket_key", "missing_recovery_pepper"]);
   function finalRefusal(error) {
     if (!(error instanceof HubSdkError)) return false;
@@ -854,16 +864,58 @@ var HubSDK = (() => {
       const row = await rebind(await remember({ rpc, body, key, token: session.token, gameId: session.game }));
       return transmit(row);
     }
-    async function drain() {
-      const rows = await listWrites();
+    function dropActive() {
+      if (active) resolved.session.removeItem(sessionKey(active.game));
+      active = null;
+      shownItems = void 0;
+      shownGates = void 0;
+    }
+    let refreshing = null;
+    function refreshShared(refreshToken) {
+      if (refreshing && refreshing.refreshToken === refreshToken) return refreshing.promise;
+      if (!client.sessionRefresh) return Promise.reject(new HubSdkError("auth_failed", "Session refresh is unavailable"));
+      const promise = client.sessionRefresh(refreshToken).finally(() => {
+        if (refreshing && refreshing.promise === promise) refreshing = null;
+      });
+      refreshing = { refreshToken, promise };
+      return promise;
+    }
+    function newerSession(game, staleToken) {
+      if (active && active.game === game && active.token !== staleToken) return active;
+      const cached = readCached(game);
+      return cached && cached.token !== staleToken ? cached : null;
+    }
+    function warnRow(what, error) {
+      if (error instanceof HubSdkError) return;
+      console.warn(`hub-sdk: ${what}; left queued`, error);
+    }
+    async function drain(game) {
+      let rows;
+      try {
+        rows = await listWrites();
+      } catch (error) {
+        console.warn("hub-sdk: could not read the outbox; queued writes wait for the next init", error);
+        return;
+      }
+      let deadToken = null;
       for (const queued of rows) {
-        const row = await rebind(queued);
+        const own = typeof queued.gameId === "string" && canonicalGameId(queued.gameId) === game;
+        if (!own) {
+          const expiresAt = tokenExpiryMs(queued.token);
+          if (expiresAt && expiresAt <= resolved.now()) continue;
+        }
+        let row = queued;
         try {
+          if (own) row = await rebind(queued);
+          if (deadToken !== null && row.token === deadToken) continue;
           await transmit(row);
         } catch (error) {
-          if (finalRefusal(error)) continue;
-          if (row.token !== active?.token && deadSession(error)) continue;
-          throw error;
+          if (own && active && row.token === active.token && deadSession(error)) {
+            deadToken = active.token;
+            dropActive();
+            continue;
+          }
+          warnRow(`outbox row ${queued.key} failed`, error);
         }
       }
     }
@@ -933,20 +985,58 @@ var HubSDK = (() => {
           if (!cached) {
             active = null;
           } else {
+            const loadProfile = (sessionToken) => client.rpc("profile.get", {}, { token: sessionToken });
+            let profile = null;
+            let dead = false;
+            let current = cached;
+            const retryProfile = async () => {
+              try {
+                profile = await loadProfile(current.token);
+              } catch (retryError) {
+                dead = deadSession(retryError);
+              }
+            };
             try {
-              const profile = await client.rpc("profile.get", {}, { token: cached.token });
-              cached.relics = asRelics(profile.relics);
-              readInventory(profile);
-              if (profile.playerId) cached.playerId = profile.playerId;
-              if (typeof profile.ticketsCapLeft === "number") cached.ticketsCapLeft = profile.ticketsCapLeft;
-              serverTime = clockMs(profile.serverTime);
-              writeCached(cached);
-            } catch {
-              active = cached;
+              profile = await loadProfile(current.token);
+            } catch (error) {
+              if (expiredToken(error) && current.refreshToken && client.sessionRefresh) {
+                const staleToken = current.token;
+                try {
+                  const fresh = await refreshShared(current.refreshToken);
+                  current.token = fresh.token;
+                  current.refreshToken = fresh.refreshToken || current.refreshToken;
+                  writeCached(current);
+                  await retryProfile();
+                } catch (refreshError) {
+                  const newer = refreshRefused(refreshError) ? newerSession(game, staleToken) : null;
+                  if (newer) {
+                    current = newer;
+                    await retryProfile();
+                  } else {
+                    dead = refreshRefused(refreshError);
+                  }
+                }
+              } else {
+                dead = deadSession(error);
+              }
+            }
+            if (dead) {
+              resolved.session.removeItem(sessionKey(game));
+              active = null;
+            } else if (profile) {
+              const loaded = profile;
+              current.relics = asRelics(loaded.relics);
+              readInventory(loaded);
+              if (loaded.playerId) current.playerId = loaded.playerId;
+              if (typeof loaded.ticketsCapLeft === "number") current.ticketsCapLeft = loaded.ticketsCapLeft;
+              serverTime = clockMs(loaded.serverTime);
+              writeCached(current);
+            } else {
+              active = current;
             }
           }
         }
-        await drain();
+        await drain(game);
         return withInventory(active ? profileOf(active, serverTime) : standalone(serverTime));
       },
       async reportEvent(eventId, data, key) {
@@ -975,8 +1065,17 @@ var HubSDK = (() => {
         const expiresAt = tokenExpiryMs(session.token);
         if (!expiresAt || expiresAt - resolved.now() > 3e5) return sessionInfo(session);
         if (!client.sessionRefresh || !session.refreshToken) return sessionInfo(session);
-        const fresh = await client.sessionRefresh(session.refreshToken);
+        const staleToken = session.token;
+        let fresh;
+        try {
+          fresh = await refreshShared(session.refreshToken);
+        } catch (error) {
+          const newer = active ? newerSession(active.game, staleToken) : null;
+          if (newer) return sessionInfo(newer);
+          throw error;
+        }
         if (active !== session) return active ? sessionInfo(active) : null;
+        if (session.token !== staleToken) return sessionInfo(session);
         session.token = fresh.token;
         session.refreshToken = fresh.refreshToken;
         writeCached(session);
@@ -1681,6 +1780,14 @@ var HubSDK = (() => {
     let reconnectTimer = null;
     let connecting = null;
     let lastToken = "";
+    let generation = 0;
+    let abortConnect = null;
+    function isCurrent(gen) {
+      return gen === generation && wanted;
+    }
+    function superseded() {
+      return new HubSdkError("rt_closed", "Realtime connection was closed");
+    }
     const pending = /* @__PURE__ */ new Map();
     const orphans = /* @__PURE__ */ new Map();
     let joinsInFlight = 0;
@@ -1872,8 +1979,9 @@ var HubSDK = (() => {
         }
       }
     }
-    async function openSocket() {
+    async function openSocket(gen) {
       const token = await options.getToken();
+      if (!isCurrent(gen)) throw superseded();
       lastToken = token;
       const Impl = options.WebSocketImpl ?? globalThis.WebSocket;
       if (!Impl) throw new HubSdkError("rt_unavailable", "WebSocket is not available");
@@ -1906,12 +2014,21 @@ var HubSDK = (() => {
           onEnvelope(env);
         };
       });
+      if (!isCurrent(gen) || socket !== ws) {
+        if (socket === ws) socket = null;
+        try {
+          ws.close(1e3, "client disconnect");
+        } catch {
+        }
+        throw superseded();
+      }
       self = presenceFromToken(token);
     }
-    async function restore() {
+    async function restore(gen) {
       for (const entry of [...matches.values()]) {
         try {
           const env = await joinRequest({ match_id: entry.matchId, metadata: entry.metadata ?? {} });
+          if (!isCurrent(gen)) throw superseded();
           const m = env.match ?? {};
           const held = takeOrphans(entry.matchId);
           if (entry.message.size === 0) entry.early.push(...held);
@@ -1929,6 +2046,7 @@ var HubSDK = (() => {
       for (const entry of [...channels.values()]) {
         try {
           const env = await request({ channel_join: channelJoinBody(entry.target, entry.persistence, entry.hidden) });
+          if (!isCurrent(gen)) throw superseded();
           entry.presences = (env.channel?.presences ?? []).map(presenceFromWire);
           if (env.channel?.self?.session_id) self = presenceFromWire(env.channel.self);
         } catch (error) {
@@ -1939,6 +2057,7 @@ var HubSDK = (() => {
       for (const entry of [...matchmaker.values()]) {
         try {
           const env = await request({ matchmaker_add: matchmakerBody(entry.request) });
+          if (!isCurrent(gen)) throw superseded();
           entry.current = env.matchmaker_ticket?.ticket ?? entry.current;
         } catch (error) {
           if (error instanceof HubSdkError && (error.code === "rt_disconnected" || error.code === "rt_closed")) throw error;
@@ -1947,11 +2066,13 @@ var HubSDK = (() => {
         }
       }
     }
-    async function establish(isReconnect) {
-      await openSocket();
+    async function establish(isReconnect, gen) {
+      if (!isCurrent(gen)) throw superseded();
+      await openSocket(gen);
+      if (!isCurrent(gen)) throw superseded();
       attempt = 0;
       setState("open");
-      if (isReconnect) await restore();
+      if (isReconnect) await restore(gen);
     }
     function scheduleReconnect(code, reason) {
       if (!reconnectCfg || !wanted || attempt >= reconnectCfg.maxAttempts) {
@@ -1966,8 +2087,9 @@ var HubSDK = (() => {
       reconnectTimer = timers.setTimeout(() => {
         reconnectTimer = null;
         if (!wanted) return;
-        establish(true).catch((error) => {
-          if (!wanted) return;
+        const gen = generation;
+        establish(true, gen).catch((error) => {
+          if (!isCurrent(gen)) return;
           if (reconnectTimer || socket && socket.readyState === OPEN) return;
           socket = null;
           scheduleReconnect(void 0, error instanceof Error ? error.message : String(error));
@@ -2113,19 +2235,41 @@ var HubSDK = (() => {
         }
         wanted = true;
         attempt = 0;
-        setState("connecting");
-        connecting = establish(false).catch((error) => {
+        generation += 1;
+        const gen = generation;
+        let abort;
+        const aborted = new Promise((_, reject) => {
+          abort = () => reject(superseded());
+        });
+        abortConnect = abort;
+        const attemptPromise = Promise.race([
+          // Starts after 'connecting' is announced and `connecting` is set, so a state
+          // listener that calls connect() joins this attempt instead of replacing it.
+          Promise.resolve().then(() => establish(false, gen)),
+          aborted
+        ]).catch((error) => {
+          if (!isCurrent(gen)) throw superseded();
           socket = null;
           wanted = false;
           setState("closed", { reason: error instanceof Error ? error.message : String(error) });
           throw error instanceof HubSdkError ? error : new HubSdkError("rt_connect_failed", String(error));
         }).finally(() => {
-          connecting = null;
+          if (connecting === attemptPromise) connecting = null;
+          if (abortConnect === abort) abortConnect = null;
         });
-        return connecting;
+        connecting = attemptPromise;
+        setState("connecting");
+        return attemptPromise;
       },
       disconnect() {
         wanted = false;
+        generation += 1;
+        connecting = null;
+        if (abortConnect) {
+          const abort = abortConnect;
+          abortConnect = null;
+          abort();
+        }
         if (reconnectTimer) {
           timers.clearTimeout(reconnectTimer);
           reconnectTimer = null;

@@ -790,6 +790,24 @@ async function main() {
     await host.screenshot({ path: path.join(out, 'c4-two-browser.png') });
     summary.screenshots.push('c4-two-browser.png');
 
+    // Dash ends one tick before an overlapped power is picked up, and only while
+    // idle or walking. Wait until that seat has been idle with the same powers
+    // for several ticks, then require reconnect to leave hp, lives, and powers unchanged.
+    await host.waitForFunction(() => {
+      const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+      const player = view && view.snapshot && view.snapshot.players[0];
+      if (!view || view.phase !== 'playing' || !player || player.st !== 'idle') {
+        window.__coopSettle = null;
+        return false;
+      }
+      const powers = JSON.stringify(player.pw || []);
+      const mark = window.__coopSettle;
+      if (!mark || mark.powers !== powers) {
+        window.__coopSettle = { tick: view.snapshot.t, powers: powers };
+        return false;
+      }
+      return view.snapshot.t >= mark.tick + 6;
+    }, null, { timeout: 4000 });
     const beforeDrop = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
     standin.drop('acct-ada');
     await host.waitForFunction(() => {
