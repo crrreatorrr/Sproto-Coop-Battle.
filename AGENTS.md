@@ -44,10 +44,12 @@ npm run test:e2e
 
 `npm test` runs the goja goldens with `go run`, so it needs Go. The runner's `go.mod` asks for Go
 1.26; an older Go downloads 1.26 by itself unless `GOTOOLCHAIN=local` is set. `npm test` stops at
-its first failing file. The goja speed budget (p95 ≤ 25 ms) depends on the machine and can fail
-on a busy one; run the remaining files one by one when it does. TODO: once PR #11 merges, this
-budget moves out of `npm test` into `npm run bench:goja`; update this paragraph then. `test:browser` and `test:e2e` need
-Playwright's Chromium and Firefox (`npx playwright install chromium firefox`).
+its first failing file. It runs `tests/committed-pin.test.js` first, which fails when
+`build/coop-sim.pin.json` or `build/coop-sim.js` is stale; run `npm run build:server-sim`, commit
+`build/`, and re-pin the hub. The goja speed (p95 of one loop's substeps) is only logged by `npm test`, with a warning
+when it is over 25 ms; `npm run bench:goja` enforces the 25 ms budget, so run it on an idle machine
+before and after changing a pinned file. `test:browser` and `test:e2e` need Playwright's Chromium
+and Firefox (`npx playwright install chromium firefox`).
 
 ## Art generation
 
