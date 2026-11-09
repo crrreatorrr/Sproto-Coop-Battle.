@@ -15,6 +15,19 @@
   var RPC_OK = { 'coop.version': 1, 'coop.room_create': 1, 'coop.room_join': 1, 'coop.queue_cancel': 1, 'coop.resume': 1, 'coop.metrics': 1 };
   var SIM_MS = 1000 / 60;
   var RECONNECT_MS = 15000;
+  // After a server restart, coop.resume is retried with backoff for this long. A
+  // maintenance answer with retryAt can stretch the window, up to RESUME_MAINT_MAX_MS.
+  var RESUME_WINDOW_MS = 180000;
+  var RESUME_BASE_MS = 1000;
+  var RESUME_CAP_MS = 15000;
+  var RESUME_MAINT_MAX_MS = 20 * 60000;
+  // coop.resume answers that will not change on a retry.
+  var RESUME_FINAL = {
+    checkpoint_missing: 1, match_finished: 1, not_in_roster: 1, version_mismatch: 1,
+    rejected: 1, capacity_dark: 1, wrong_scope: 1, bad_json: 1, blocked: 1,
+  };
+  var RESUME_FAILED = 'Server checkpoint could not resume. This tab did not become host.';
+  var RESTARTING = 'Server restarting — reconnecting…';
   var ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 
   function fighterId(fid) {
@@ -100,8 +113,33 @@
       livesAtDrop: null,
       enabled: null,
       reconnectUntil: 0,
+      restarting: false,
+      resumeAt: 0,
       stageIndex: 0,
     };
+  }
+  function resumeDelay(attempt) {
+    return Math.min(RESUME_CAP_MS, RESUME_BASE_MS * Math.pow(2, Math.max(0, attempt | 0)));
+  }
+  function errorCode(err) {
+    if (!err) return '';
+    return String(err.code || err.error || err.message || '');
+  }
+  // retryAt from a maintenance error, as unix ms. Accepts ms, seconds or an ISO date,
+  // on the error itself, its details, or as "retryAt=<n>" in the message.
+  function retryAtMs(err) {
+    if (!err) return 0;
+    var raw = err.retryAt;
+    if (raw == null && err.details) raw = err.details.retryAt;
+    if (raw == null && err.data) raw = err.data.retryAt;
+    if (raw == null) {
+      var m = /retryAt["=:\s]+([0-9TZ:.+-]+)/.exec(String(err.message || ''));
+      if (m) raw = m[1];
+    }
+    if (raw == null || raw === '') return 0;
+    var n = typeof raw === 'number' ? raw : /^\d+(\.\d+)?$/.test(String(raw)) ? Number(raw) : Date.parse(String(raw));
+    if (!isFinite(n) || n <= 0) return 0;
+    return n < 1e12 ? n * 1000 : n;
   }
   function leadTicks(state) {
     // Round trip in 60 Hz ticks, minus the loop that checks input before it steps.
@@ -208,6 +246,10 @@
     if (msg.rewards) state.rewards = 0;
     if (msg.receipt) state.receipt = null;
     if (msg.hostTakeover) state.hostTakeover = 0;
+    // A match that has ended stays ended. A late WELCOME, RESUME or START from it
+    // (a socket that rejoined after END) is dropped. A resume joins a new match and
+    // leaves 'ended' before its messages arrive.
+    if ((op === OP.WELCOME || op === OP.RESUME || op === OP.START) && state.phase === 'ended') return;
     if (op === OP.WELCOME || op === OP.RESUME) {
       state.generation = msg.generation | 0;
       state.yours = Array.isArray(msg.yours) ? msg.yours.slice() : [];
@@ -341,6 +383,8 @@
       livesAtDrop: state.livesAtDrop,
       enabled: state.enabled,
       reconnectMs: state.reconnectUntil && now ? Math.max(0, state.reconnectUntil - now) : 0,
+      restarting: state.restarting,
+      resumeMs: state.restarting && state.resumeAt ? Math.max(0, state.resumeAt - now) : 0,
       stageIndex: state.stageIndex,
       offerPractice: state.phase === 'reconnecting' || state.phase === 'replaced' || state.phase === 'ended' || state.phase === 'dark',
     };
@@ -355,8 +399,18 @@
     var ticket = '';
     var subs = [];
     var leaving = false;
-    var resumeJob = null;
+    var retry = null;
+    var expiryTimer = null;
     function now() { return opts.now ? opts.now() : Date.now(); }
+    function wallNow() { return opts.wallNow ? opts.wallNow() : Date.now(); }
+    function later(fn, ms) {
+      var set = opts.setTimeout || root.setTimeout;
+      return set ? set(fn, ms) : null;
+    }
+    function cancel(timer) {
+      var clear = opts.clearTimeout || root.clearTimeout;
+      if (timer != null && clear) clear(timer);
+    }
     function emit() {
       var view = viewOf(state, now());
       for (var i = 0; i < subs.length; i++) subs[i](view);
@@ -404,19 +458,97 @@
       if (body && (body.phase === 'playing' || body.phase === 'lobby')) state.serverPhase = body.phase;
       if (op === OP.START) state.serverPhase = 'playing';
       if (op === OP.END && state.resume === 'server' && !leaving) {
-        var prior = state.matchId;
-        resumeJob = resume(prior).catch(function () {
-          state.resume = '';
-          state.message = 'Server checkpoint could not resume. This tab did not become host.';
-          emit();
-        });
+        // The server that sent this is shutting down. Do not ask it; retry the restarted one.
+        match = null;
+        startResume(state.matchId);
       }
       emit();
     }
+    // Retry coop.resume with backoff (1, 2, 4, 8, 15, 15 … s) until it places us, the
+    // server gives a final answer, the player leaves, or the window closes.
+    function startResume(matchId) {
+      if (!matchId || leaving || retry) return;
+      var t = now();
+      retry = { matchId: matchId, started: t, until: t + RESUME_WINDOW_MS, attempt: 0, timer: null };
+      cancel(expiryTimer);
+      expiryTimer = null;
+      state.phase = 'reconnecting';
+      state.restarting = true;
+      state.reconnectUntil = 0;
+      state.resume = 'server';
+      state.message = RESTARTING;
+      scheduleResume(retry, resumeDelay(0));
+    }
+    function scheduleResume(job, ms) {
+      state.resumeAt = now() + ms;
+      job.timer = later(function () {
+        job.timer = null;
+        attemptResume(job);
+      }, ms);
+    }
+    function stopResume() {
+      if (!retry) return;
+      cancel(retry.timer);
+      retry = null;
+      state.restarting = false;
+      state.resumeAt = 0;
+    }
+    function giveUpResume(job) {
+      if (retry !== job) return;
+      stopResume();
+      state.phase = 'ended';
+      state.resume = '';
+      state.endReason = state.endReason || 'resume_failed';
+      state.message = RESUME_FAILED;
+      emit();
+    }
+    function attemptResume(job) {
+      if (retry !== job || leaving) return;
+      job.attempt += 1;
+      state.resumeAt = 0;
+      emit();
+      resume(job.matchId).then(function (handle) {
+        if (retry !== job) return;
+        if (!handle) { giveUpResume(job); return; }
+        stopResume();
+        emit();
+      }, function (err) {
+        if (retry !== job || leaving) return;
+        var code = errorCode(err);
+        if (RESUME_FINAL[code]) { giveUpResume(job); return; }
+        var t = now();
+        var wait = resumeDelay(job.attempt);
+        if (code === 'maintenance') {
+          var at = retryAtMs(err);
+          if (at) {
+            wait = Math.max(RESUME_BASE_MS, at - wallNow());
+            job.until = Math.max(job.until, Math.min(job.started + RESUME_MAINT_MAX_MS, t + wait + RESUME_CAP_MS));
+          }
+        }
+        if (t >= job.until) { giveUpResume(job); return; }
+        if (t + wait > job.until) wait = job.until - t;
+        scheduleResume(job, wait);
+        emit();
+      });
+    }
+    // A plain drop: the server holds the seats for RECONNECT_MS. After that this tab is out.
+    function expireReconnect(t) {
+      if (state.phase !== 'reconnecting' || retry || !state.reconnectUntil || t < state.reconnectUntil) return false;
+      cancel(expiryTimer);
+      expiryTimer = null;
+      state.phase = 'ended';
+      state.endReason = 'reconnect_timeout';
+      state.reconnectUntil = 0;
+      state.message = 'Reconnect timed out. The server run went on without this tab.';
+      emit();
+      return true;
+    }
     function bind(handle) {
       match = handle;
-      if (handle.onMessage) handle.onMessage(onMatchMessage);
-      if (handle.onClose) handle.onClose(function (reason) { onClose(reason); });
+      // Only the current match handle speaks. A stale one (the match before a resume)
+      // can still close or deliver late; that must not touch the new match.
+      if (handle.onMessage) handle.onMessage(function (msg) { if (match === handle) onMatchMessage(msg); });
+      if (handle.onClose) handle.onClose(function (reason) { if (match === handle) onClose(reason); });
       if (handle.onRejoin) handle.onRejoin(function () { sendHello(); });
       if (handle.self && handle.self.userId && !state.accountId) state.accountId = handle.self.userId;
       sendHello();
@@ -424,17 +556,27 @@
     function onClose(reason) {
       match = null;
       if (leaving) return;
+      var live = state.phase === 'playing' || state.phase === 'lobby' || state.phase === 'reconnecting';
       if (reason === 'kicked' || reason === 'replaced') {
+        stopResume();
         state.replaced = true;
         state.banked = false;
         state.phase = 'replaced';
         state.message = 'Another tab took this account. This tab cannot host the banked run.';
-      } else if (state.phase === 'playing' || state.phase === 'lobby' || state.phase === 'reconnecting') {
+      } else if (retry) {
+        // A resume is in progress and owns the phase.
+      } else if ((reason === 'rejoin_failed' || reason === 'ended') && live && state.matchId) {
+        // The socket came back but the match did not (match_not_found): the server restarted.
+        state.livesAtDrop = lifeRows(state);
+        startResume(state.matchId);
+      } else if (live) {
         state.livesAtDrop = lifeRows(state);
         state.phase = 'reconnecting';
         state.reconnectUntil = now() + RECONNECT_MS;
         state.banked = true;
         state.message = 'Reconnecting. The server holds your seats for 15s. This is not a local host.';
+        cancel(expiryTimer);
+        expiryTimer = later(function () { expiryTimer = null; expireReconnect(now()); }, RECONNECT_MS);
       }
       emit();
     }
@@ -507,8 +649,14 @@
     }
     async function resume(matchId) {
       if (!matchId || leaving) return null;
-      var opened = await openTransport();
+      await openTransport();
       var placed = await rpc('coop.resume', { matchId: matchId });
+      if (placed && typeof placed.error === 'string') {
+        var failed = new Error(placed.message || placed.error);
+        failed.code = placed.error;
+        if (placed.retryAt != null) failed.retryAt = placed.retryAt;
+        throw failed;
+      }
       if (!placed || !placed.matchId) throw new Error('checkpoint');
       if (placed.hostTakeover) state.hostTakeover = 0;
       return join(placed.matchId);
@@ -540,6 +688,7 @@
       emit();
     }
     function pump(t) {
+      if (state.phase === 'reconnecting') expireReconnect(t);
       if (state.phase !== 'playing' || state.replaced || leaving) return;
       if (!state.yours.length) return;
       if (state.lastBurst && t - state.lastBurst < 50) return;
@@ -567,6 +716,14 @@
     async function leave() {
       leaving = true;
       state.banked = false;
+      if (retry || state.phase === 'reconnecting') {
+        stopResume();
+        state.phase = 'ended';
+        state.endReason = state.endReason || 'left';
+        state.reconnectUntil = 0;
+      }
+      cancel(expiryTimer);
+      expiryTimer = null;
       var opened = transport;
       if (ticket && opened && opened.removeMatchmaker) {
         try { await opened.removeMatchmaker(ticket); } catch (err) { /* already gone */ }
@@ -741,6 +898,9 @@
     OP: OP,
     DEVICES: DEVICES,
     RECONNECT_MS: RECONNECT_MS,
+    RESUME_WINDOW_MS: RESUME_WINDOW_MS,
+    resumeDelay: resumeDelay,
+    retryAtMs: retryAtMs,
     normalizeCode: normalizeCode,
     payoutCopy: payoutCopy,
     createState: createState,
