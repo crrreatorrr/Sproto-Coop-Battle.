@@ -5,6 +5,8 @@ const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST;
 const cv = document.getElementById('game'), g = cv.getContext('2d');
 g.imageSmoothingEnabled = false;
 const STEP = 1000 / 60;
+// crash.js (loaded first) counts uncaught errors and opens the "Something broke" panel.
+const C = window.CrashGuard, crash = C.guard;
 
 const app = {
   screen: 'loading', role: 'local', net: null, myId: 0, code: '', msg: '', msgT: 0,
@@ -457,14 +459,18 @@ function drawGame() {
 }
 
 // ---------- main loop ----------
-function frame(now) {
-  requestAnimationFrame(frame);
+// Runs through the crash guard: it always reschedules, a throw ends that frame (no further fixed
+// steps), and after three failing frames in a row the game pauses behind the panel.
+function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   if (app.screen !== 'loading' && app.screen !== 'join') localDevicesInput();
   I.endFrame();
+  // Whether the crash guard counts this frame as good: while the host sim runs, only a frame in
+  // which a fixed step ran cleanly does, so a step that always throws still trips the panel at
+  // 120/144 Hz. A throwing step drops the backlog instead of rerunning on a half-applied tick.
+  let judged = true;
   if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.hub.confirming) {
-    app.acc += dt;
-    while (app.acc >= STEP) { hostStep(); app.acc -= STEP; }
+    judged = C.fixedSteps(app, STEP, dt, hostStep) > 0 || dt === 0;
   }
   if (app.role === 'banked' && app.authority) {
     app.authority.setBackground(document.visibilityState === 'hidden');
@@ -490,6 +496,7 @@ function frame(now) {
   else if (app.screen === 'game') drawGame();
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
   drawHubStatus();
+  return judged;
 }
 function bankedPayLine() {
   const view = app.authority && app.authority.view && app.authority.view();
@@ -509,10 +516,12 @@ function drawHubStatus() {
     T(g, 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
   }
 }
+const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
 const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
 // C2 load boundary: title waits on lobby art; a failed critical file stays on this screen until retry.
 function bootAssets() {
+  if (app.loadErr) C.dismiss();
   app.loadErr = '';
   app.loadK = 0;
   app.screen = 'loading';
@@ -523,8 +532,12 @@ function bootAssets() {
     const q = new URLSearchParams(location.search);
     if (q.get('room')) showJoin();
     if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
-  }, err => { app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading'; });
+  }, err => {
+    app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading';
+    crash.report(err, 'boot'); // the same panel, with Retry
+  });
 }
+C.setRetry(bootAssets);
 if (window.CoopHub) window.CoopHub.boot({ release: releaseForHub, onChange: syncHub });
 bootAssets();
 window.SprotoApp = app; // handy for debugging and browser tests
