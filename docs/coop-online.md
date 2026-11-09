@@ -13,13 +13,13 @@ Game id: `sproto-coop-battle`. Entry remains the Bar cabinet. This phase does no
 | Bundle sha256 | `28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac` |
 | Hub match | `sproto_coop` (H2-C merge `469a69a52b029b6b7b431187ea779b988af56a89`) |
 | Loop | 20 Hz, 3 substeps, snapshot every 2nd loop (10 Hz) |
-| SDK | `@metaverse/hub-sdk` 0.6.3, IIFE `4ceb36321fc09820c4ef6292b8bd31ebaa198f0a9b90d38bcbd458505222df76` |
+| SDK | `@metaverse/hub-sdk` 0.6.4, IIFE `e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6` |
 
 `public/js/net-protocol.js`, `sim.js`, `ai.js`, and `manifest.js` were not edited, so the C3 pin still matches the vendored hub bundle. `coop.version` on that hub commit returns `enabled: true` (`CoopMatch.ENABLED`). This environment did not call a deployed Nakama. The source on hub main is the check.
 
 ## Wire
 
-RPCs, game-scoped: `coop.version`, `coop.room_create`, `coop.room_join`, `coop.queue_cancel`, `coop.resume`, `coop.metrics`. No earn, score, or `session.event` call exists in this client.
+RPCs, game-scoped: `coop.version`, `coop.room_create`, `coop.room_join`, `coop.queue_cancel`, `coop.resume`, `coop.metrics`. No earn, score, or `session.event` call exists in this client. The banked run's Marina Anchor Relic is granted on the server; only local and relay play report it from the page (`docs/coop-hub.md`).
 
 Quick queue matchmaker properties: `game=sproto-coop-battle`, `v=1`, `sim=<fingerprint>`, count 1–6. Room codes are 12 characters from the server alphabet. A code locates a match for 600 seconds. It does not sign anyone in.
 

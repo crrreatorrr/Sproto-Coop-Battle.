@@ -31,7 +31,8 @@ assert.strictEqual(view.receipt, null);
 assert.strictEqual(view.payout, NEUTRAL);
 assert.strictEqual(state.receipt, null);
 
-assert.ok(main.includes('PRACTICE — NO HUB REWARDS'));
+assert.ok(main.includes('PRACTICE — NO TICKETS'));
+assert.ok(!main.includes('NO HUB REWARDS'));
 assert.ok(main.includes(NEUTRAL));
 assert.ok(!main.includes('NO PAYOUT UNTIL H3-C'));
 assert.ok(!main.includes('REWARDS 0'));

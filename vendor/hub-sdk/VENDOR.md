@@ -2,15 +2,15 @@
 
 - repo: https://github.com/crrreatorrr/metaverse-hub
 - branch: main
-- sha: 5cc4e48
-- package: packages/hub-sdk @ 0.6.3
+- sha: a1281c9
+- package: packages/hub-sdk @ 0.6.4
 - built with: `node scripts/vendor-sdk.mjs`
 - iife: dist/hub-sdk.iife.js (global HubSDK; classic script, not a CDN import)
-- iife sha256: 4ceb36321fc09820c4ef6292b8bd31ebaa198f0a9b90d38bcbd458505222df76
+- iife sha256: e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6
 - source src/createHubSdk.ts: 9f7e0ba81d728cf011fe996ec424b38c882717b4883e5032031e34a22940a655
 - source src/env.ts: c3a8eb38ea73539fa4d971da705e004355bed8258079a73a2ecbda912c35ef46
 - source src/errors.ts: 4eaba836a4dfad994b3926d90b66a158c4384ce6f100bf8a0791877c0646b541
-- source src/events.ts: 982ae3376590c85933f9e54b2b93edef11a7cf68ab4b072c9a69838ad92d74b8
+- source src/events.ts: 584d264acb48d7e63746bc63b56767577dd4370a0b5fbdf4ddd73fc0fd2b9f64
 - source src/index.ts: a3721b5d01e8e9b7a00c78d88848602e213717132e65cb7db63e54ef055a8d91
 - source src/live.ts: f203c2ab652b3cd1c303cb221cd361590e3ba0855f18bac1d36da64fa9cc1e04
 - source src/nakama.ts: 67a701b47178244f1a63b433f8d715aea824b1599a49f140b35b401950ee266a
@@ -24,4 +24,4 @@
 - source src/save.ts: 098fb0a6834e43bdad620c2729b0abf28a9551b8c4ab8cc7cb3428ebba8aea98
 - source src/storage.ts: 7a1f52e2f432026590ed99e85c318ea21ef10c6fe83b9e0c1ebe8c173ced5344
 - source src/ticket.ts: b01e1635c7031dd0e6855ecb22b99af1654395c41f0296863b627a31ded41033
-- source src/types.ts: d826fbade3dd59646ffa409e2dc2b79a9128d66aaeededf37795f6be5fcbb011
+- source src/types.ts: 1437f754551ac2f6e623d0507512ac0edab986b7c06f1d1943314fd451fe1b2a

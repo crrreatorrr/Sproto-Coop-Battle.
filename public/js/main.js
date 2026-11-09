@@ -15,6 +15,7 @@ const app = {
   hub: { kind: 'offline', label: 'OFFLINE', balance: null, confirming: false, message: '' },
   pauseMenu: null, // pause menu while open: { dev: pad id or 'keys', sel, held }
   joinCursor: 0,
+  runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -25,6 +26,19 @@ app.slots = defaultSlots();
 const MENU = (window.SPROTO_OFFLINE ? ['LOCAL PLAY'] : ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE']).concat(['HUB QUICK', 'HUB ROOM', 'JOIN HUB', 'RETURN TO BAR']);
 const fname = fid => M.fighters[fid].name;
 function toast(s) { app.msg = s; app.msgT = 240; }
+const newRunId = () => Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+// Marina Anchor Relic: a stage 1 clear in local, hosted or relay play is reported once per run
+// through the hub link, only when the hub opened this page and this device has a human in the run.
+// No Tickets. Banked runs never get here: the hub's server grants the Relic for them.
+function stageClear(stageIdx, god) {
+  const hub = window.CoopHub && window.CoopHub.session;
+  if (!hub || !hub.reportStageClear || app.role === 'banked' || !app.runId) return;
+  const mine = app.role === 'guest' ? s => s.ctrl === 'remote' && s.owner === app.myId : s => s.ctrl === 'local';
+  if (!app.slots.some(mine)) return;
+  try {
+    hub.reportStageClear(stageIdx, !!god, app.runId).then(r => { if (r && r.granted === 'marina_anchor') toast('Relic: Marina Anchor'); });
+  } catch (err) { console.warn('[hub] stage clear report failed', err); }
+}
 
 // ---------- canvas sizing ----------
 function fit() {
@@ -94,8 +108,9 @@ function onGuestMessage(m) {
   else if (m.t === 'snap') {
     app.prevSnap = app.snap; app.snap = m.s; const now = performance.now();
     app.snapGap = app.snapAt ? Math.min(100, Math.max(16, now - app.snapAt)) : 33; app.snapAt = now;
+    if (app.screen !== 'game') app.runId = newRunId();
     app.slots = m.slots || app.slots; app.screen = 'game';
-    for (const e of m.ev || []) A.play(e);
+    for (const e of m.ev || []) { A.play(e); if (e === 'clear' && m.s) stageClear(m.s.si, m.s.god === 1); }
   }
 }
 function broadcastLobby() {
@@ -108,6 +123,7 @@ function broadcastLobby() {
 function startGame() {
   const cfg = app.slots.map((s, i) => ({ fid: s.fid, weapon: s.weapon, ctrl: s.ctrl, owner: s.owner, name: fname(s.fid) }));
   app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0, app.stageSel);
+  app.runId = newRunId();
   app.screen = 'game'; app.paused = false; app.acc = 0;
   R.enterStage(app.sim.stageIdx); // C2: current stage + next, not the old eager pair
 }
@@ -122,7 +138,7 @@ function hostStep() {
   S.step(sim);
   // Preload the next bosses' sheets as the campaign advances.
   R.bossImages(sim.stageIdx); if (sim.stageIdx < 11) R.bossImages(sim.stageIdx + 1);
-  for (const e of sim.events) { A.play(e); app.pendingEv.push(e); }
+  for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'clear') stageClear(sim.stageIdx, sim.god); }
   sim.events.length = 0;
   if (app.role === 'host' && app.net && app.net.open && ++app.sendTick % 2 === 0) {
     app.net.send({ t: 'snap', s: S.snapshot(sim), ev: app.pendingEv.splice(0), slots: app.slots });
@@ -401,7 +417,7 @@ function showJoin(kind) {
   code.maxLength = app.joinKind === 'hub' ? 12 : 4;
   code.value = app.joinKind === 'hub' ? '' : (new URLSearchParams(location.search).get('room') || '');
   if (title) title.textContent = app.joinKind === 'hub' ? 'JOIN HUB ROOM' : 'JOIN ONLINE';
-  if (note) note.textContent = app.joinKind === 'hub' ? '12-character code. It finds the match. It does not sign you in.' : 'Practice relay. No hub rewards.';
+  if (note) note.textContent = app.joinKind === 'hub' ? '12-character code. It finds the match. It does not sign you in.' : 'Practice relay. No Tickets.';
   app.joinCursor = Math.min(code.value.length, code.maxLength - 1);
   const padHint = document.getElementById('joinPad');
   if (padHint) padHint.hidden = !I.devices().some(I.isPad);
@@ -522,7 +538,7 @@ function drawLobby() {
   if (app.role === 'host' && app.code) T(g, 'Friends open this page, pick JOIN ONLINE and enter ' + app.code, S.W / 2, 328, 6, '#7aff8a', 'center');
   if (app.role === 'banked' && app.code) T(g, 'Share the 12-character code. It finds the room. It does not sign anyone in.', S.W / 2, 328, 6, '#7aff8a', 'center');
   const back = padUI() ? ' PAD: B WITH NO SLOT FOR TITLE, THEN RETURN TO BAR.' : ' B RETURNS TO THE BAR.';
-  T(g, app.role === 'banked' ? bankedPayLine() + '.' + back : 'PRACTICE — NO HUB REWARDS.' + back, S.W / 2, 346, 6, '#9a98b8', 'center');
+  T(g, app.role === 'banked' ? bankedPayLine() + '.' + back : 'PRACTICE — NO TICKETS.' + back, S.W / 2, 346, 6, '#9a98b8', 'center');
 }
 function padLobbyLines() {
   if (app.role === 'banked') return ['A: take a pad   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. B with no seat leaves.'];

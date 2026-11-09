@@ -1,6 +1,7 @@
 // Hub session for Sproto Coop Battle. Classic script. Loads vendor/hub-sdk (global HubSDK),
 // never a CDN. Redeems #t= once, then the game can play with or without a hub account.
-// Local play and the old relay stay practice: this file never calls earn, score, or event writes.
+// Local play and the old relay stay practice: this file never calls earn or score. Its one event
+// write is the Marina Anchor Relic for a stage 1 clear (reportStageClear below), which pays no Tickets.
 (function (root) {
   'use strict';
   var GAME_ID = 'sproto-coop-battle';
@@ -411,6 +412,41 @@
       return root.HubSDK.realtimeFromSdk(sdk, { serverUrl: serverUrl });
     }
 
+    // Marina Anchor Relic (hub SDK 0.6.4). The game calls this when the sim's 'clear' event fires in
+    // local, hosted or relay play. Only stage 1 (stageIdx 0, Tidebreak Marina) counts, God Mode too.
+    // It reports at most once per run id, and only when the hub opened this page (a redeemed ticket
+    // or the saved hub session); standalone play does nothing. The key is unique per run and the body
+    // is fixed for it, so a retry is idempotent. It never throws or rejects: errors resolve null.
+    // Banked runs do not call it; the hub's server grants the Relic for them.
+    var reportedRuns = {};
+    function warnReport(err) {
+      try { if (root.console) root.console.warn('[hub] stage clear report failed', (err && (err.code || err.message)) || String(err)); } catch (e) { /* no console */ }
+    }
+    function reportStageClear(stageIdx, godMode, runId) {
+      try {
+        var run = String(runId || '');
+        if (stageIdx !== 0 || !run || state.left) return Promise.resolve(null);
+        if (reportedRuns[run]) return reportedRuns[run];
+        if (state.kind !== 'account' && state.kind !== 'guest') return Promise.resolve(null);
+        if (!sdk || !readLive()) return Promise.resolve(null);
+        var body = { stage: 1, godMode: godMode === true };
+        var key = 'coop.stage_clear:1:' + run;
+        var job = Promise.resolve().then(function () {
+          return sdk.reportEvent('coop.stage_clear', body, key);
+        }).then(function (result) {
+          return result && typeof result === 'object' ? result : {};
+        }, function (err) {
+          warnReport(err);
+          return null;
+        });
+        reportedRuns[run] = job;
+        return job;
+      } catch (err) {
+        warnReport(err);
+        return Promise.resolve(null);
+      }
+    }
+
     function connect() {
       if (pending) return pending;
       pending = doConnect().catch(function () {
@@ -439,6 +475,7 @@
       exitUrl: exitTarget,
       leave: leave,
       openRealtime: openRealtime,
+      reportStageClear: reportStageClear,
     };
   }
 

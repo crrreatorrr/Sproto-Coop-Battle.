@@ -116,8 +116,8 @@ The four **pinned** files are hashed into `build/coop-sim.pin.json`, which the h
 
 There are two kinds of online play:
 
-- **Practice relay** (`npm start`): host-authoritative. Guests send packed input bits every frame. The host simulates at 60 Hz and sends snapshots at 30 Hz, which guests interpolate between. A snapshot is usually 1.5–3.5 KB of JSON (about 2 KB typical), with busy moments near 4 KB. It never pays Tickets.
-- **Banked** (from the hub's Bar cabinet): the hub's Nakama match `sproto_coop` runs the pinned sim at 60 Hz in a 20 Hz loop and sends snapshots at 10 Hz. Verified boss clears pay Tickets on the server. See `docs/coop-online.md`.
+- **Practice relay** (`npm start`): host-authoritative. Guests send packed input bits every frame. The host simulates at 60 Hz and sends snapshots at 30 Hz, which guests interpolate between. A snapshot is usually 1.5–3.5 KB of JSON (about 2 KB typical), with busy moments near 4 KB. It never pays Tickets. When the hub opened the page, clearing stage 1 in local or relay play earns the hub's Marina Anchor Relic (God Mode counts); see `docs/coop-hub.md`.
+- **Banked** (from the hub's Bar cabinet): the hub's Nakama match `sproto_coop` runs the pinned sim at 60 Hz in a 20 Hz loop and sends snapshots at 10 Hz. Verified boss clears pay Tickets on the server, and a stage 1 clear grants the Marina Anchor there. See `docs/coop-online.md`.
 
 ## Tests
 

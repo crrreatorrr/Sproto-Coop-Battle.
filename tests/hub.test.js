@@ -11,7 +11,7 @@ const { spawnSync } = require('child_process');
 const root = path.join(__dirname, '..');
 const IIFE = path.join(root, 'vendor/hub-sdk/dist/hub-sdk.iife.js');
 const PIN = path.join(root, 'vendor/hub-sdk/SOURCE.pin.json');
-const EXPECTED = '4ceb36321fc09820c4ef6292b8bd31ebaa198f0a9b90d38bcbd458505222df76';
+const EXPECTED = 'e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6';
 const SIM = '28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac';
 
 function memory() {
@@ -76,7 +76,7 @@ async function main() {
   const pin = JSON.parse(fs.readFileSync(PIN, 'utf8'));
   const iife = fs.readFileSync(IIFE);
   const hash = crypto.createHash('sha256').update(iife).digest('hex');
-  assert.strictEqual(pin.version, '0.6.3');
+  assert.strictEqual(pin.version, '0.6.4');
   assert.strictEqual(pin.global, 'HubSDK');
   assert.strictEqual(pin.iifeSha256, EXPECTED);
   assert.strictEqual(hash, EXPECTED);
@@ -92,6 +92,12 @@ async function main() {
   assert.ok(mainJs.includes("['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE']"));
   assert.ok(mainJs.includes('length: 6'));
   assert.ok(!mainJs.includes('earnTickets') && !mainJs.includes('reportEvent'));
+  assert.ok(mainJs.includes('hub.reportStageClear('));
+  // The only event write is the Marina Anchor stage clear in hub-link.js. No earn, no score.
+  const linkJs = fs.readFileSync(path.join(root, 'public/js/hub-link.js'), 'utf8');
+  assert.ok(!linkJs.includes('earnTickets') && !linkJs.includes('submitScore') && !linkJs.includes('tickets.earn'));
+  assert.strictEqual(linkJs.split('reportEvent').length - 1, 1);
+  assert.strictEqual(linkJs.split("sdk.reportEvent('coop.stage_clear', body, key)").length - 1, 1);
 
   const HubSDK = loadSdk();
   const CoopHub = loadLink();
@@ -130,10 +136,16 @@ async function main() {
       assign,
     });
     const earns = { n: 0 };
+    const relics = [];
     const origEarn = sdk.earnTickets.bind(sdk);
     sdk.earnTickets = function () { earns.n += 1; return origEarn.apply(sdk, arguments); };
     const origEvent = sdk.reportEvent.bind(sdk);
-    sdk.reportEvent = function () { earns.n += 1; return origEvent.apply(sdk, arguments); };
+    // The Marina Anchor stage clear is the one allowed event; anything else counts as an earn.
+    sdk.reportEvent = function (eventId, data, key) {
+      if (eventId === 'coop.stage_clear') relics.push(JSON.parse(JSON.stringify([eventId, data, key])));
+      else earns.n += 1;
+      return origEvent.apply(sdk, arguments);
+    };
     link = CoopHub.createSession({
       sdk,
       location: loc,
@@ -148,7 +160,7 @@ async function main() {
       now: () => loc.now || Date.now(),
     });
     await link.connect();
-    return { link, assigned, hash, sdk, earns, released: () => released, events, sessionStore };
+    return { link, assigned, hash, sdk, earns, relics, released: () => released, events, sessionStore };
   }
 
   const now = Date.now();
@@ -226,6 +238,33 @@ async function main() {
   assert.deepStrictEqual(alone.assigned, ['/hub/#from=sproto-coop-battle']);
   assert.strictEqual(alone.link.state.confirmCount, 0);
 
+  // Marina Anchor: a stage 1 clear (stageIdx 0) reports once per run, God Mode included.
+  const clearTicket = await HubSDK.mintMockTicket({ game: 'sproto-coop-battle', playerId: 'relic-a', now, jti: 'relic-a' });
+  const clearRun = await openReal(play, clearTicket);
+  assert.strictEqual(clearRun.link.state.kind, 'guest');
+  assert.strictEqual(await clearRun.link.reportStageClear(1, false, 'run-1'), null);
+  assert.strictEqual(await clearRun.link.reportStageClear(0, false, ''), null);
+  assert.deepStrictEqual(clearRun.relics, []);
+  const firstClear = clearRun.link.reportStageClear(0, false, 'run-1');
+  assert.strictEqual(clearRun.link.reportStageClear(0, false, 'run-1'), firstClear);
+  assert.strictEqual((await firstClear).granted, 'marina_anchor');
+  assert.deepStrictEqual(clearRun.relics, [['coop.stage_clear', { stage: 1, godMode: false }, 'coop.stage_clear:1:run-1']]);
+  const ownedClear = await clearRun.link.reportStageClear(0, true, 'run-2');
+  assert.strictEqual(ownedClear.granted, undefined);
+  assert.deepStrictEqual(clearRun.relics[1], ['coop.stage_clear', { stage: 1, godMode: true }, 'coop.stage_clear:1:run-2']);
+  assert.strictEqual(clearRun.earns.n, 0);
+  const godTicket = await HubSDK.mintMockTicket({ game: 'sproto-coop-battle', playerId: 'relic-god', now, jti: 'relic-god' });
+  const godRun = await openReal(play, godTicket);
+  assert.strictEqual((await godRun.link.reportStageClear(0, true, 'run-god')).granted, 'marina_anchor');
+  assert.deepStrictEqual(godRun.relics, [['coop.stage_clear', { stage: 1, godMode: true }, 'coop.stage_clear:1:run-god']]);
+  const standalone = await openReal({ protocol: 'http:', hostname: '127.0.0.1', port: '8080', now });
+  assert.strictEqual(standalone.link.state.kind, 'offline');
+  assert.strictEqual(await standalone.link.reportStageClear(0, false, 'run-solo'), null);
+  assert.deepStrictEqual(standalone.relics, []);
+  clearRun.link.leave();
+  assert.strictEqual(await clearRun.link.reportStageClear(0, false, 'run-3'), null);
+  assert.strictEqual(clearRun.relics.length, 2);
+
   const events = emitter();
   const pending = [];
   let session = {
@@ -291,6 +330,10 @@ async function main() {
   await account.refreshBalance();
   assert.strictEqual(account.state.balance, 7);
   assert.strictEqual(calls.earn + calls.event + calls.score, 0);
+  // A failing report resolves null and never throws into the game loop.
+  assert.strictEqual(await account.reportStageClear(0, false, 'run-fail'), null);
+  assert.strictEqual(calls.event, 1);
+  assert.strictEqual(calls.earn + calls.score, 0);
 
   const asked = account.requestReturn(true);
   assert.strictEqual(asked.confirm, true);
