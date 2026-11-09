@@ -8,11 +8,11 @@ This phase is session init, Ticket balance, and return only. It does not award T
 
 | Item | Value |
 |---|---|
-| Package | `@metaverse/hub-sdk` 0.6.3 |
-| Hub commit | `5cc4e4809180f5bc0b016301d9222c26a80e6d4c` (PR #90, branch `main`) |
+| Package | `@metaverse/hub-sdk` 0.6.4 |
+| Hub commit | `a1281c93b113d5cb1d9418d61c25b945f7e265de` (branch `relics-coop-shooter`, vendored as `main` ahead of its merge) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
-| IIFE sha256 | `4ceb36321fc09820c4ef6292b8bd31ebaa198f0a9b90d38bcbd458505222df76` |
+| IIFE sha256 | `e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6` |
 | Pin | `vendor/hub-sdk/SOURCE.pin.json` |
 
 Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
