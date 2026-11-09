@@ -2,7 +2,7 @@
 
 Game id `sproto-coop-battle` (no trailing dot). The GitHub repo name still ends with a dot. Coop Battle is a Bar cabinet game, the same kind of entry as Sproto Fighter and Sproto Arcade. There is no plaza portal. Return goes to the hub Bar at `#from=sproto-coop-battle`.
 
-This phase is session init, Ticket balance, and return only. It does not award Tickets, submit scores, or report earn events.
+This phase is session init, Ticket balance, and return only. It does not award Tickets, submit scores, or report earn events. The one event report, added later, is the Marina Anchor Relic (see below).
 
 ## SDK pin
 
@@ -46,7 +46,16 @@ Exit closes the practice socket, the audio context, and the page listeners, then
 
 ## Practice
 
-Local play and the old relay are practice. The lobby says so. Room messages stay `economy: "none"`. This client does not call `earnTickets`, `reportEvent`, or `submitScore`. Banked writes from this page are 0.
+Local play and the old relay are practice. The lobby says `PRACTICE — NO TICKETS`. Room messages stay `economy: "none"`. This client does not call `earnTickets` or `submitScore`, and its only `reportEvent` is the Marina Anchor report below. Banked writes from this page are 0.
+
+## Marina Anchor Relic (SDK 0.6.4)
+
+Clearing stage 1 (Tidebreak Marina, boss `01-marina-bront`, `stageIdx` 0) grants the `marina_anchor` Relic. God Mode counts, and so does a run started on stage 1 from stage select. It pays no Tickets and does not count toward the Four Lights.
+
+- Banked runs (the hub's `sproto_coop` match) are granted on the server. `net-hub.js` reports nothing.
+- Local, hosted and relay-guest runs report from the page. When the sim's `'clear'` event fires with `stageIdx` 0, `main.js` calls `CoopHub.session.reportStageClear(stageIdx, godMode, runId)`, which sends `reportEvent('coop.stage_clear', { stage: 1, godMode }, 'coop.stage_clear:1:<runId>')` once per run. The host and local roles watch `sim.events` in `hostStep`. A relay guest watches the snapshot's `ev` list with `si` 0 and `god` from the same snapshot, so each hub account on its own device earns its own Relic.
+- Nothing is sent unless the hub opened the page (a redeemed `#t=` ticket or the saved hub session) and this device has a human in the run, so standalone play and the all-CPU demo report nothing. The run id is new for each `startGame` (local, host) and each run a guest enters, so the key is unique per run and its body never changes.
+- A failed report is logged and resolves `null`. It never throws into the game loop. A first grant shows the toast `Relic: Marina Anchor`.
 
 ## Hub status (updated 2026-11-08)
 

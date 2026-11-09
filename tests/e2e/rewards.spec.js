@@ -28,7 +28,11 @@ function clientCannotMint() {
   for (const file of files) {
     const text = fs.readFileSync(path.join(root, file), 'utf8');
     assert.ok(!text.includes('earnTickets'), file);
-    assert.ok(!text.includes('reportEvent'), file);
+    // The one allowed event is the Marina Anchor Relic report in hub-link.js. It pays no Tickets.
+    const events = text.split('reportEvent').length - 1;
+    const relic = text.split("reportEvent('coop.stage_clear', body, key)").length - 1;
+    assert.strictEqual(events, file === 'public/js/hub-link.js' ? 1 : 0, file);
+    assert.strictEqual(relic, events, file);
     assert.ok(!text.includes('submitScore'), file);
     assert.ok(!text.includes('tickets.earn'), file);
     assert.ok(!text.includes(REASON), file);

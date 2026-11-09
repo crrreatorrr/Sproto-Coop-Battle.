@@ -19,7 +19,7 @@ Game id: `sproto-coop-battle`. Entry remains the Bar cabinet. This phase does no
 
 ## Wire
 
-RPCs, game-scoped: `coop.version`, `coop.room_create`, `coop.room_join`, `coop.queue_cancel`, `coop.resume`, `coop.metrics`. No earn, score, or `session.event` call exists in this client.
+RPCs, game-scoped: `coop.version`, `coop.room_create`, `coop.room_join`, `coop.queue_cancel`, `coop.resume`, `coop.metrics`. No earn, score, or `session.event` call exists in this client. The banked run's Marina Anchor Relic is granted on the server; only local and relay play report it from the page (`docs/coop-hub.md`).
 
 Quick queue matchmaker properties: `game=sproto-coop-battle`, `v=1`, `sim=<fingerprint>`, count 1–6. Room codes are 12 characters from the server alphabet. A code locates a match for 600 seconds. It does not sign anyone in.
 
