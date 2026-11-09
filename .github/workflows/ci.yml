@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # tests/goja-goldens.test.js replays the goldens on goja; the runner's go.mod sets the version.
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: scripts/goja-runner/go.mod
+          cache-dependency-path: scripts/goja-runner/go.sum
       - name: Clean install
         run: npm ci
       - name: Sim, relay, and asset tests

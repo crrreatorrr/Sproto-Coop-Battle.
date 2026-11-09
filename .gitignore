@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+# Test and benchmark output (tests/goja-goldens.test.js, browser checks). Files already
+# committed here stay tracked; add new evidence with git add -f.
+tests/artifacts/

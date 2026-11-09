@@ -48,6 +48,11 @@ Exit closes the practice socket, the audio context, and the page listeners, then
 
 Local play and the old relay are practice. The lobby says so. Room messages stay `economy: "none"`. This client does not call `earnTickets`, `reportEvent`, or `submitScore`. Banked writes from this page are 0.
 
-## Still blocked
+## Hub status (updated 2026-11-08)
 
-The Bar cabinet menu does not list Coop Battle until hub phase H1. This game can redeem a ticket and return to the cabinet hash, but nothing in the hub menu launches it yet.
+This page described phase C1. Since then:
+
+- The hub's Bar cabinet lists Coop Battle next to Sproto Fighter and Sproto Arcade (metaverse-hub `apps/hub/src/realms/plaza/config.ts`), so the hub menu launches it.
+- Banked play in the hub's `sproto_coop` match landed in C4 (`docs/coop-online.md`). Verified boss clears there pay 20 Tickets on the server (hub H3-C, migration `0041_coop_boss_receipt`; see `docs/coop-release.md`).
+
+Practice play on this page still pays nothing.
