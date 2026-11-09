@@ -21,7 +21,9 @@ function sha256(buf) {
   return crypto.createHash('sha256').update(buf).digest('hex');
 }
 
-export function buildServerSim() {
+// Builds the bundle and pin in memory without writing anything. Tests use this to compare a
+// fresh build with the committed build/coop-sim.js and build/coop-sim.pin.json.
+export function composeServerSim() {
   const files = {};
   const body = [];
   for (const rel of parts) {
@@ -61,10 +63,15 @@ export function buildServerSim() {
     goja: 'github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc',
     node: '>=22',
   };
+  return { bundlePath, pinPath, pin, bundle, pinText: JSON.stringify(pin, null, 2) + '\n' };
+}
+
+export function buildServerSim() {
+  const built = composeServerSim();
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(bundlePath, bundle);
-  fs.writeFileSync(pinPath, JSON.stringify(pin, null, 2) + '\n');
-  return { bundlePath, pinPath, pin, bundle };
+  fs.writeFileSync(bundlePath, built.bundle);
+  fs.writeFileSync(pinPath, built.pinText);
+  return { bundlePath, pinPath, pin: built.pin, bundle: built.bundle };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
