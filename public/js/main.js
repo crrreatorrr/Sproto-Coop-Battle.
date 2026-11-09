@@ -449,7 +449,7 @@ function drawGame() {
   R.drawWorld(g, snap);
   if (app.role === 'banked' && banked) {
     T(g, banked.payout || bankedPayLine(), S.W / 2, 28, 6, '#ffd23d', 'center');
-    const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST' : '';
+    const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? (banked.restarting ? 'SERVER RESTARTING — RECONNECTING' + (banked.resumeMs > 0 ? ' IN ' + Math.ceil(banked.resumeMs / 1000) + 's' : '…') : 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST') : '';
     if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
   } else if (app.paused) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
