@@ -29,6 +29,8 @@ npm start            # http://localhost:8080
 
 Two people can share one keyboard, so WASD and the arrows are two separate players: the arrows never move the WASD player. Down + Special also fires a saved power-up. Dash is a double tap of left or right on any device. M mutes sound. B (the key) returns to the Bar from any screen; a live run asks first.
 
+**N twice: send feedback.** When the hub opened the game and you are signed in, pressing N twice (or SEND FEEDBACK in the pause menu) opens the hub's feedback window with a screenshot. Local play freezes and resumes exactly where it was; online and server matches keep running. Without the hub it does nothing. See `docs/coop-hub.md`.
+
 Any standard controller works with no setup (Xbox names; PlayStation and Switch pads work by button position). The pad shows up on its first press. Buttons held when a pad connects, such as the A that picked this game in the hub, are ignored until released. The prompts on screen follow the last device used.
 
 | Screen | Keyboard | Gamepad |
@@ -38,7 +40,7 @@ Any standard controller works with no setup (Xbox names; PlayStation and Switch 
 | Lobby | Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage |
 | Stage select | Enter / Space / Attack fight, Esc or Jump back | A or Start fight, B back |
 | Battle | Attack on a free keyboard side drops in | A or X on a free pad drops in |
-| Pause menu (Resume, Sound, Return to Bar) | Esc or P opens and closes, Enter / Space selects | Start opens, A selects, B or Start resumes |
+| Pause menu (Resume, Sound, Send Feedback when signed in to the hub, Return to Bar) | Esc or P opens and closes, Enter / Space selects | Start opens, A selects, B or Start resumes |
 | Game over / victory | Enter back to the lobby (host) | Start back to the lobby (host) |
 | Join dialog | type the code, Enter joins, Esc cancels | up/down change the letter, left/right move, X deletes, A joins, B cancels |
 | Return to the Bar? | Attack, Enter or B again confirms; Jump or Esc cancels | A or Start confirms, B cancels |
@@ -107,6 +109,7 @@ The weapons, items and effects are drawn in code (`public/js/render.js`). `tools
 | `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
 | `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices; pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX; relay WebSocket client |
 | `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
+| `public/js/feedback-link.js` | Adapter for the hub's feedback window (N twice): freeze, context, theme |
 | `public/js/net-hub.js` | Client for the hub's authoritative `sproto_coop` match (banked play) |
 | `server/server.js` | Practice static server and room relay |
 | `scripts/build.mjs`, `build-server-sim.mjs` | `dist/` build; the server bundle `build/coop-sim.js` and its pin |

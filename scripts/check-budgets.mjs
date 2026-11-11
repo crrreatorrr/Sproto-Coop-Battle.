@@ -29,6 +29,7 @@ const SYNTAX = [
   'public/js/net.js',
   'public/js/asset-loader.js',
   'public/js/crash.js',
+  'public/js/feedback-link.js',
   'public/js/render.js',
   'public/js/sim.js',
   'tests/sim.test.js',

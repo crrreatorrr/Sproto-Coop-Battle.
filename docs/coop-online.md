@@ -13,7 +13,7 @@ Game id: `sproto-coop-battle`. Entry remains the Bar cabinet. This phase does no
 | Bundle sha256 | `28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac` |
 | Hub match | `sproto_coop` (H2-C merge `469a69a52b029b6b7b431187ea779b988af56a89`) |
 | Loop | 20 Hz, 3 substeps, snapshot every 2nd loop (10 Hz) |
-| SDK | `@metaverse/hub-sdk` 0.6.4, IIFE `e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6` |
+| SDK | `@metaverse/hub-sdk` 0.7.0, IIFE `092603b61a3511fbbcaa3b674b16f02b24d581752e1fa1dc69eeb577bc5ae5e8` |
 
 `public/js/net-protocol.js`, `sim.js`, `ai.js`, and `manifest.js` were not edited, so the C3 pin still matches the vendored hub bundle. `coop.version` on that hub commit returns `enabled: true` (`CoopMatch.ENABLED`). This environment did not call a deployed Nakama. The source on hub main is the check.
 
