@@ -582,12 +582,15 @@ function drawGame() {
     snap = lerpSnap(app.prevSnap, app.snap, (performance.now() - app.snapAt) / app.snapGap);
   } else snap = S.snapshot(app.sim);
   R.bossImages(snap.si);
-  R.drawWorld(g, snap);
+  // Seats played on this device get a marker so they can be found in a crowd.
+  const mine = [];
+  app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });
+  R.drawWorld(g, snap, { local: mine });
   if (app.role === 'banked' && banked) {
-    T(g, banked.payout || bankedPayLine(), S.W / 2, 28, 6, '#ffd23d', 'center');
+    T(g, banked.payout || bankedPayLine(), S.W / 2, 46, 6, '#ffd23d', 'center'); // under the player panels
     const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? (banked.restarting ? 'SERVER RESTARTING — RECONNECTING' + (banked.resumeMs > 0 ? ' IN ' + Math.ceil(banked.resumeMs / 1000) + 's' : '…') : 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST') : '';
-    if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
-    if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
+    if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 64, S.W, 16); T(g, note, S.W / 2, 72, 6, '#ffd23d', 'center'); }
+    if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 88, 6, '#fff', 'center');
   } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
   if (app.pauseMenu) drawPauseMenu();
   const free = app.slots.some(s => s.ctrl === 'cpu');
@@ -660,9 +663,17 @@ function drawHubStatus() {
   const h = app.hub;
   const who = h.kind === 'account' ? 'ACCOUNT ' + h.label : h.kind === 'guest' ? 'GUEST' : h.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
   const bal = (h.kind === 'account' || h.kind === 'guest') && typeof h.balance === 'number' ? '   TICKETS ' + h.balance : '';
-  g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
   const mode = app.role === 'banked' ? '   ·   ' + bankedPayLine() : '   ·   PRACTICE';
-  T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
+  if (app.screen === 'game') {
+    // In a run the strip is a short tag under the player panels, so it never hides the P1-P6 labels.
+    // The banked payout line is already drawn by drawGame.
+    const line = who + bal + (app.role === 'banked' ? '' : mode);
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 41, line.length * 5 + 12, 10);
+    T(g, line, 6, 46, 5, '#c8c6e0');
+  } else {
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
+    T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
+  }
   if (h.confirming) {
     g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
     T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');

@@ -378,6 +378,11 @@ function powerIcon(g, pt, x, y, r) {
   else if (pt === 1) { g.beginPath(); g.arc(x + r * .2, y + r * .2, r * .35, 0, 7); g.fill(); g.beginPath(); g.moveTo(x - r * .6, y - r * .6); g.lineTo(x + r * .05, y + r * .05); g.stroke(); }
   else { g.beginPath(); g.moveTo(x + r * .15, y - r * .7); g.lineTo(x - r * .35, y + r * .1); g.lineTo(x + r * .05, y + r * .1); g.lineTo(x - r * .15, y + r * .7); g.lineTo(x + r * .4, y - r * .15); g.lineTo(x, y - r * .15); g.closePath(); g.fill(); }
 }
+// A down-pointing arrow in the slot colour over a Sproto played on this device.
+function localMarker(g, x, y, col) {
+  const tri = (w, h, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(x - w, y - h); g.lineTo(x + w, y - h); g.lineTo(x, y); g.fill(); };
+  tri(8, 10, '#000'); tri(6, 8, '#fff'); tri(4, 6, col);
+}
 function drawItem(g, it, camX, t) {
   const sx = it.x - camX, sy = FLOOR_TOP + it.y;
   if (it.k === 'crate') {
@@ -493,7 +498,7 @@ function drawHud(g, snap) {
       if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
     }
   });
-  if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 48, 7, '#8ef8d6', 'center');
+  if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 58, 7, '#8ef8d6', 'center');
   const b = snap.boss;
   if (b) {
     const info = M.bosses[b.bi];
@@ -515,7 +520,10 @@ function drawBanner(g, snap) {
   g.globalAlpha = 1;
 }
 
-function drawWorld(g, snap) {
+// opts.local: slots played on this device (they get a marker). opts.noBanner: the caller draws
+// its own end-of-run panel instead of the banner.
+function drawWorld(g, snap, opts) {
+  const mine = (opts && opts.local) || [];
   enterStage(snap.si);
   const camX = snap.camX;
   const sk = snap.sk || 0;
@@ -536,7 +544,9 @@ function drawWorld(g, snap) {
         const blink = p.inv > 0 && p.st !== 'attack' && Math.floor(p.inv / 3) % 2;
         drawFighter(g, p, sx, sy - p.z, variantOf(snap, p), S.WEAPONS[p.w].id, S.WEAPONS[p.w], blink ? 0.45 : 1);
       }
-      text(g, 'P' + (p.s + 1), sx, sy - p.z - (p.st === 'ufo' ? 60 : 72), 6, S.SLOT_COLORS[p.s], 'center');
+      const tagY = sy - p.z - (p.st === 'ufo' ? 60 : 72);
+      text(g, 'P' + (p.s + 1), sx, tagY, 6, S.SLOT_COLORS[p.s], 'center');
+      if (mine.indexOf(p.s) >= 0) localMarker(g, sx, tagY - 8 - (Math.floor(snap.t / 10) % 2), S.SLOT_COLORS[p.s]);
       if (p.st === 'down') {
         g.fillStyle = '#300'; g.fillRect(sx - 16, sy - 40, 32, 4);
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
@@ -561,8 +571,12 @@ function drawWorld(g, snap) {
     const k = bw.t / 30, x0 = bw.x - camX;
     for (const ly of bw.wl) {
       const y = FLOOR_TOP + ly;
-      g.fillStyle = `rgba(255,40,40,${0.18 + 0.25 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
-      if (bw.fc < 0) g.fillRect(0, y - 6, x0, 12); else g.fillRect(x0, y - 6, W - x0, 12);
+      // Starts at 40% and is edged in a light colour so it reads on dark and light floors alike.
+      const lx = bw.fc < 0 ? 0 : x0, lw = bw.fc < 0 ? x0 : W - x0;
+      g.fillStyle = `rgba(255,40,40,${0.4 + 0.2 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
+      g.fillRect(lx, y - 6, lw, 12);
+      g.fillStyle = `rgba(255,236,170,${0.75 + 0.25 * k})`;
+      g.fillRect(lx, y - 7, lw, 1); g.fillRect(lx, y + 6, lw, 1);
     }
     if (Math.floor(bw.t / 6) % 2) text(g, 'MOVE!', x0 + bw.fc * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
   }
@@ -573,7 +587,7 @@ function drawWorld(g, snap) {
   for (const f of snap.fx) drawFx(g, f, camX);
   g.restore();
   drawHud(g, snap);
-  drawBanner(g, snap);
+  if (!(opts && opts.noBanner)) drawBanner(g, snap);
 }
 
 // Render-only blend between two Sim.snapshot views. A snapshot is not restart state.
