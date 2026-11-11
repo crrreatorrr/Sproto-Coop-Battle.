@@ -50,10 +50,12 @@ function think(state, p) {
 
   const foe = nearestFoe(state, p);
   if (!foe) {
-    // Advance with the team, spread across the belt, but never far ahead of the humans: the
-    // screen follows the leader, and CPUs must not start the next wave for an idle player.
+    // Advance with the team, spread across the belt, but never far ahead of a human who is
+    // playing: the screen follows the leader, and CPUs must not start the next wave under them.
+    // A human who has pressed nothing for five seconds is not waited for, so a run with only idle
+    // humans still moves on and ends like an all-CPU run.
     let lead = -1e9;
-    for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && o.x > lead) lead = o.x;
+    for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && (o.idle || 0) < S.IDLE_AFTER && o.x > lead) lead = o.x;
     const ahead = lead > -1e9 ? lead + 50 + p.slot * 18 : 1e9;
     const crate = state.items.find(i => i.kind === 'crate' && i.x > p.x - 20 && i.x - p.x < 160 && i.x < ahead + 40);
     if (crate) { if (go(crate.x - 30, crate.y, 6)) { p.face = 1; inp.a = ai.t % 14 === 0 ? 1 : 0; } return; }
@@ -102,7 +104,7 @@ function think(state, p) {
   const rim = isBoss ? 16 : 34 + p.slot * 13;
   // Never line up inside a burning lane: stand just beside it instead.
   let ty = foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0);
-  for (const h of state.hazards || []) if (Math.abs(ty - h.y) < h.half + 4 && p.x > h.x0 - 30 && p.x < h.x1 + 30) ty = h.y + (p.y >= h.y && h.y < S.DEPTH - 24 || h.y < 24 ? 1 : -1) * (h.half + 5);
+  for (const h of state.hazards || []) if (Math.abs(ty - h.y) < h.half + 4 && p.x > h.x0 - 30 && p.x < h.x1 + 30) ty = h.y + (p.y >= h.y && h.y < S.DEPTH - 24 || h.y < 24 ? 1 : -1) * (h.half + 7);
   const inPlace = go(S.clamp(foe.x + side * reach, state.camX + rim, state.camX + S.W - rim), ty, isBoss ? 14 : 6);
   if (inPlace || (Math.abs(foe.x - p.x) < reach + 6 && Math.abs(ty - p.y) < (isBoss ? 14 : 10))) {
     inp.l = inp.r = 0;

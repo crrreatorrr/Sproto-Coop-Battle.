@@ -1,9 +1,9 @@
-// Local progress (public/js/progress.js): best run, stage unlocks, free play, damaged saves.
+// Local progress (the Progress module at the end of public/js/audio.js): best run, stage unlocks, free play, damaged saves.
 'use strict';
 
 const assert = require('assert');
 const path = require('path');
-const P = require(path.join(__dirname, '..', 'public', 'js', 'progress.js'));
+const P = require(path.join(__dirname, '..', 'public', 'js', 'audio.js'));
 
 function fakeStore(initial) {
   const map = new Map(initial ? [[P.KEY, initial]] : []);

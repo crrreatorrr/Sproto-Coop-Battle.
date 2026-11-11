@@ -11,11 +11,11 @@ Game id: `sproto-coop-battle` (no terminal dot). Practice play, God Mode, and st
 | Gameplay base | `ef1f35a1311bd611f08eebd1ad9725fbdeb569bb` (C0) |
 | Protocol / state version | 1 |
 | Bundle | `build/coop-sim.js` |
-| Bundle sha256 | `bb02957d4a6fda819dec4e42cd856a26f14f55e82b193d520bc4db4948193483` |
+| Bundle sha256 | `a9034b346fced4a1c963dc70133549d7444d61acdb6b844d873aa8a89c0f4cb5` |
 | Content sha256 | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
-| `sim.js` | `e3c3f49b26ae460207bb1fc8a4978b7e205514cef64bfad764a29ef282173754` |
-| `ai.js` | `91460a3d48009191790d97a6ab6997aa339f3733ae1d04e8be9b4a1ae5d3b86a` |
-| `net-protocol.js` | `2549e8311ae65cd462a4167b06b579005f9ab2d7a0314a393068ad654efb1acd` |
+| `sim.js` | `9cd4dd723427d81ef19ec3bb17921bec8534d5a43e3592247b1212be03524fe6` |
+| `ai.js` | `d582e77a0f6162969ec3927e65e7be5d6fa78355b5ba77a04e5b7b3b22a49b97` |
+| `net-protocol.js` | `2be827ea6fefc3da16d6711b7fe111cc307221bc0f58089c8c58c0b38c61484b` |
 | `manifest.js` | `76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a` |
 | Goja | `github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc` (Go 1.26) |
 | Node | `>=22` |
@@ -62,7 +62,7 @@ Phase 1 and phase 2 are one canonical clear. Ids are the shipped manifest keys:
 | 11 | `11-rooftop-sproto1668` | Rooftop Breakaway | sproto1668 | Pursuit Jetpack / Intercept Glider |
 | 12 | `12-codebreak-sproto3106` | Codebreak Ascent | sproto3106 | Warrant Rig / Summit Lockdown |
 
-`terminalFacts` and `participationFacts` always report `tickets: 0` and `scoreSubmitted: 0`. One account controlling six local seats is one participation row. A late join after the first tick of the encounter is not present at the start. AFK means no non-neutral input and at least 300 alive ticks of neutral input after a 180-tick grace. Time spent down or dead does not count as that idle time, so a downed teammate is not marked AFK. These are facts for H3-C. This bundle cannot pay them.
+`terminalFacts` and `participationFacts` always report `tickets: 0` and `scoreSubmitted: 0`. One account controlling six local seats is one participation row. A late join after the first tick of the encounter is not present at the start. AFK means no non-neutral input and at least 300 alive ticks of neutral input after a 180-tick grace. Time spent down or dead does not count as that idle time, so a downed teammate is not marked AFK. Since a human's second death now puts only that human out, each row also carries `out`: 1 when every seat of that account was dead at the moment the boss fell (latched once per encounter, on the first tick the boss is `dead` or the stage is `clear`). `eligible` is `presentAtStart && !afk && !out`, so an account that was out for the kill is not eligible for that boss; a seat that was only down is. The seat returns at the next stage and starts the next encounter clean. These are facts for H3-C. This bundle cannot pay them.
 
 ## Goldens and goja
 

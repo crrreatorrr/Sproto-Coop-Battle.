@@ -394,7 +394,8 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
       g.enemies.length = 0; g.stage.waves.forEach(x => (x.done = true));
       g.camX = g.stage.len; g.lockX = null;
       for (let i = 0; i < 400 && !g.boss; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
-      assert.strictEqual(g.boss.maxHp, Math.round((2600 + 480 * stage) * Sim.BOSS_HP_SCALE(want)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
+      // Chargers (stages 2, 6, 10) have half the health: they spend the fight rushing out of reach.
+      assert.strictEqual(g.boss.maxHp, Math.round((2600 + 480 * stage) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
     }
   }
   // Fewer humans means smaller waves and softer enemies; six humans face the largest of everything.
@@ -725,8 +726,10 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   // Gunner: the original script. No adds, no fire, no bombs, a charge every fifth attack.
   assert(gunner.charges > 0 && gunner.charges * 3 < gunner.fires, 'gunner mostly shoots: ' + [gunner.charges, gunner.fires]);
   assert.deepStrictEqual([gunner.addsSeen, gunner.hazards, gunner.lobs], [0, 0, 0]);
-  // Charger: every second attack is a charge, and its lane burns (never more than two lanes).
-  assert(Math.abs(charger.charges - charger.fires) <= 1, 'charger alternates: ' + [charger.charges, charger.fires]);
+  // Charger: every third attack is a charge in phase 1 (every second in phase 2), far more often
+  // than the gunner, and its lane burns (never more than two lanes).
+  assert(Math.abs(charger.charges * 2 - charger.fires) <= 2, 'charger rushes every third attack: ' + [charger.charges, charger.fires]);
+  assert(charger.charges / charger.attacks > 1.4 * gunner.charges / gunner.attacks, 'more often than a gunner');
   assert(charger.hazards >= 1 && charger.hazards <= 2, 'burning lanes: ' + charger.hazards);
   // Summoner: keeps Shadow Sprotos on the field (up to humans + 1 before it calls more) and fires single shots.
   assert(summoner.addsSeen >= 2 && summoner.addsSeen <= 8, 'summoner adds: ' + summoner.addsSeen);
@@ -769,4 +772,53 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
     assert(me.hp < 100, 'the rush itself hits');
   }
   console.log('D1 archetypes ok');
+}
+
+// QA follow-up: an idle human must not hold a run open. CPU teammates wait for a human who is
+// playing, but not for one who has pressed nothing for five seconds.
+{
+  for (const humans of [1, 2]) {
+    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < humans ? 'local' : 'cpu' })), 91);
+    let t = 0;
+    for (; t < 60 * 60 * 12 && g.mode !== 'gameover' && g.mode !== 'victory'; t++) { g.players.forEach(p => { if (p.ctrl !== 'cpu') p.in = { ...PN }; }); Sim.step(g); g.events.length = 0; }
+    assert(g.mode === 'gameover' || g.mode === 'victory', 'a run with ' + humans + ' idle human(s) ends (mode ' + g.mode + ', camX ' + Math.round(g.camX) + ')');
+    assert(g.stage.waves[0].active || g.stage.waves[0].done, 'the CPUs went on and started the first wave');
+  }
+  // A human who is playing still sets the pace: CPUs do not run ahead and start the wave for them.
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 91);
+  for (let t = 0; t < 1500; t++) { g.players[0].in = { ...PN, j: t % 120 === 0 ? 1 : 0 }; Sim.step(g); g.events.length = 0; } // hops on the spot
+  assert(!g.stage.waves[0].active && !g.stage.waves[0].done, 'an active human who stays put is waited for');
+  assert(g.players.slice(1).every(p => p.x < g.players[0].x + 180), 'and the CPUs stay near them');
+  console.log('idle human ok');
+}
+
+// QA follow-up: a local drop-in after the human count was taken grows what is left of the stage.
+{
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 93);
+  g.camX = g.stage.waves[0].x;
+  const hold = () => g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; p.x = g.camX + 100; });
+  for (let i = 0; i < 40; i++) { hold(); Sim.step(g); }
+  assert.strictEqual(g.humans, 1);
+  const w = g.stage.waves[0], left = w.left, e = g.enemies.find(x => !x.dead), ehp = e.maxHp;
+  assert.strictEqual(Sim.rescaleHumans(g), false, 'nothing changes while the count is the same');
+  for (let k = 1; k < 6; k++) g.players[k].ctrl = 'local'; // five friends pick up pads
+  assert.strictEqual(Sim.rescaleHumans(g), true);
+  assert.strictEqual(g.humans, 6);
+  assert.strictEqual(w.left, Math.round(left * Sim.WAVE_SCALE(6) / Sim.WAVE_SCALE(1)), 'the rest of the wave grows');
+  assert.strictEqual(e.maxHp, Math.round(ehp * Sim.GRUNT_HP_SCALE(6) / Sim.GRUNT_HP_SCALE(1)), 'Shadow Sprotos on screen grow');
+  // Boss: joined mid-fight at 60% health, it keeps 60% of the six-human boss.
+  const b = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 94);
+  b.stage.waves.forEach(x => (x.done = true)); b.camX = b.stage.len; b.lockX = null;
+  for (let i = 0; i < 400 && !b.boss; i++) { b.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(b); }
+  assert.strictEqual(b.boss.maxHp, 1300);
+  b.boss.hp = 780;
+  for (let k = 1; k < 6; k++) b.players[k].ctrl = 'local';
+  Sim.rescaleHumans(b);
+  assert.deepStrictEqual([b.boss.maxHp, b.boss.hp], [3250, 1950], 'the boss grows to the six-human size, keeping its share of health');
+  // It never shrinks when seats go back to the CPU, and a banked match never calls it: there the
+  // count stays as locked (assignSeat mid-stage is covered in tests/protocol.test.js).
+  for (let k = 1; k < 6; k++) b.players[k].ctrl = 'cpu';
+  assert.strictEqual(Sim.rescaleHumans(b), false);
+  assert.strictEqual(b.boss.maxHp, 3250);
+  console.log('drop-in rescale ok');
 }

@@ -30,7 +30,7 @@ Local and relay play stay practice and write 0 Tickets. A banked Nakama match is
 | `manifest.js` | `76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a` |
 | `net-protocol.js` | `c8a09e9ffd76d0f852242262bcb57d62fda3e322bb45c4b0809986958a1a25b4` |
 | Golden (hub match) | tick `7734`, state `3ec543448ecd6aafb53de3056c2425955733d2002ef65bfc117b11d531255494`, end `gameover`. This is the hub's seed-3 run through the 20 Hz match, not this repo's offline `human-seed3-stage1` fixture (tick 7154); see `docs/coop-server-contract.md` § Goldens and goja |
-| SDK | `@metaverse/hub-sdk` 0.6.4, IIFE `e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6` |
+| SDK | `@metaverse/hub-sdk` 0.7.0, IIFE `092603b61a3511fbbcaa3b674b16f02b24d581752e1fa1dc69eeb577bc5ae5e8` |
 | Nakama image | `heroiclabs/nakama:3.41.0` (`3.41.0+cab8af5`, Go 1.27.1 in that image) |
 | Postgres | `postgres:16.8-alpine` |
 | Migration | `0041_coop_boss_receipt` |
@@ -95,7 +95,7 @@ Do not treat ten six-seat matches as proven headroom on a 4-core VM. H5 should r
 1. Stop new bankable runs first. Leave login, the cabinet, and practice up.
 2. Drain or end matches already running. `hostTakeover` stays 0. A client snapshot is not a resume (`coop.resume` with client `hp`/`lives` returned `rejected`).
 3. Keep `game.coop_receipt`, `game.coop_eligibility`, and `game.tickets_ledger`. A Nakama process restart did not drop them. There is no down migration.
-4. Ship this bundle hash, protocol 1, and SDK 0.6.4 together. A different fingerprint is `version_mismatch` and pays nothing.
+4. Ship this bundle hash, protocol 1, and SDK 0.7.0 together. A different fingerprint is `version_mismatch` and pays nothing.
 5. Leave the 200 session cap and the 1,000 daily cap where they are. A 12-boss sweep is 240 on paper and 200 in one session.
 6. Practice, God Mode, stage select, AFK, late join, and CPU-only play stay at 0 Tickets.
 

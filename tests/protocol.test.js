@@ -262,4 +262,48 @@ function input(session, seq, generation, mask, extra) {
   console.log('cpu-only encounter has no eligible account');
 }
 
+// A seat that was out (dead) when the boss fell is not eligible for that boss, however active it
+// was earlier; a seat that was only down is. Mid-stage seats never change the locked human count.
+{
+  const session = banked(41);
+  seat(session, 0, 'k1');
+  const bea = CoopProtocol.assignSeat(session, { slot: 1, accountId: 'acct-bea', device: 'k1', generation: 1 });
+  assert.strictEqual(bea.ok, true);
+  const cy = CoopProtocol.assignSeat(session, { slot: 2, accountId: 'acct-cy', device: 'k1', generation: 1 });
+  assert.strictEqual(cy.ok, true);
+  CoopProtocol.beginEncounter(session);
+  const state = session.state;
+  const row = id => CoopProtocol.participationFacts(session).accounts.find(a => a.accountId === id);
+  const press = (frame, now) => CoopProtocol.stepLoop(session, [{ t: 'input', accountId: 'acct-bea', generation: 1, seq: frame, frame: state.t + 1, seats: [{ slot: 1, device: 'k1', mask: 16 }] }, null, null], now);
+  assert.strictEqual(press(1, 10).ok, true); // bea is active: one input would defeat the AFK test
+  for (let n = 0; n < 5; n++) CoopProtocol.stepLoop(session, [null, null, null], 20 + n);
+  assert.strictEqual(row('acct-bea').eligible, 1, 'eligible while the fight is on');
+  assert.strictEqual(row('acct-bea').out, 0);
+  // bea is put out (second death), cy is merely down, ken stands. Then the boss falls.
+  Object.assign(state.players[1], { st: 'dead', dead: true, lives: 0, hp: 0 });
+  Object.assign(state.players[2], { st: 'down', hp: 0, downT: 500 });
+  state.enemies = []; state.stage.waves.forEach(w => { w.done = true; w.active = false; });
+  state.boss = { bi: 0, phase: 1, hp: 0, maxHp: 2600, x: state.camX + 400, y: 60, z: 0, face: -1, st: 'dead', t: 0, row: 0, w: 150, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0, arch: 0, addT: 0 };
+  assert.strictEqual(row('acct-bea').eligible, 0, 'out on the very tick the boss fell: not eligible');
+  for (let n = 0; n < 150 && state.mode !== 'clear'; n++) CoopProtocol.stepLoop(session, [null, null, null], 100 + n);
+  assert.strictEqual(state.mode, 'clear');
+  for (const [id, out, eligible] of [['ken', 0, 1], ['acct-bea', 1, 0], ['acct-cy', 0, 1]]) {
+    assert.strictEqual(row(id).out, out, id + ' out');
+    assert.strictEqual(row(id).eligible, eligible, id + ' eligible');
+  }
+  // The latch holds: the next stage brings bea back, but this boss's facts do not change.
+  for (let n = 0; n < 120 && state.stageIdx === 0; n++) CoopProtocol.stepLoop(session, [null, null, null], 400 + n);
+  assert.strictEqual(state.stageIdx, 1);
+  assert.notStrictEqual(state.players[1].st, 'dead', 'bea returns for the next stage');
+  assert.strictEqual(row('acct-bea').eligible, 0, 'still not eligible for the boss she was out for');
+  const closed = CoopProtocol.endEncounter(session);
+  assert.strictEqual(closed.accounts.find(a => a.accountId === 'acct-bea').eligible, 0);
+  // A new encounter starts clean.
+  CoopProtocol.beginEncounter(session);
+  CoopProtocol.stepLoop(session, [null, null, null], 900);
+  assert.strictEqual(row('acct-bea').out, 0);
+  assert.strictEqual(row('acct-bea').eligible, 1);
+  console.log('a seat that was out for the kill is not eligible for that boss');
+}
+
 console.log('protocol ok');

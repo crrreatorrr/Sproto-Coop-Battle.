@@ -38,6 +38,8 @@ const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 2;
 const DASH_TICKS = 14, DOUBLE_TAP = 14, SPIN_TAP = 6, PARRY_WINDOW = 8, PARRY_LOCK = 24, GRAB_TICKS = 150;
 // An Attack press is remembered for this many ticks, so one made late in a swing still comes out.
 const ATTACK_BUFFER = 6;
+// A human who has pressed nothing for this long no longer holds the CPU teammates back.
+const IDLE_AFTER = 300;
 // A downed Sproto that nobody revives within 10 seconds dies.
 const UFO_TICKS = 720, DOWN_TICKS = 600, REVIVE_TICKS = 70;
 // CPU teammates are deliberately weaker than humans so the team can lose Sprotos. With one or two
@@ -64,7 +66,7 @@ const maxHp = p => MAX_HP + (has(p, 'tough') ? 10 : 0);
 // Boss scripts, by boss index % 4. Elite Shadow Sprotos: a guard that stops frontal hits.
 const BOSS_ARCHETYPES = ['gunner', 'charger', 'summoner', 'bomber'];
 const ELITE_FROM_STAGE = 1, ELITE_MAX = 2, GUARD_HITS = 6, GUARD_REGEN = 300;
-const BOMB_FLIGHT = 48, FIRE_LIFE = 200, CHARGER_WINDUP = 36, SUMMON_EVERY = 220;
+const BOMB_FLIGHT = 48, FIRE_LIFE = 200, CHARGER_WINDUP = 36, CHARGER_HP = 0.5, SUMMON_EVERY = 220;
 
 function rng(state) { // mulberry32 stored in state.seed
   let t = (state.seed = (state.seed + 0x6D2B79F5) | 0);
@@ -76,6 +78,19 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 function seatedHumans(state) { let n = 0; for (const p of state.players) if (p.ctrl !== 'cpu') n++; return clamp(n, 1, SLOTS); }
 const humansOf = state => state.humans || seatedHumans(state);
 function lockHumans(state) { if (!state.humans) state.humans = seatedHumans(state); }
+// Local and relay drop-in: when more humans are seated than the stage was counted for, what is left
+// of the stage grows to the new count (boss, Shadow Sprotos on screen, the rest of the wave). It
+// never shrinks, and nothing calls this for banked matches, whose count stays as locked.
+function rescaleHumans(state) {
+  const was = state.humans, now = seatedHumans(state);
+  if (!was || now <= was) return false;
+  state.humans = now;
+  const b = state.boss, kb = BOSS_HP_SCALE(now) / BOSS_HP_SCALE(was), kg = GRUNT_HP_SCALE(now) / GRUNT_HP_SCALE(was), kw = WAVE_SCALE(now) / WAVE_SCALE(was);
+  if (b && b.hp > 0) { b.hp = Math.round(b.hp * kb); b.maxHp = Math.round(b.maxHp * kb); }
+  for (const e of state.enemies) if (!e.dead && e.hp > 0) { e.hp = Math.round(e.hp * kg); e.maxHp = Math.round(e.maxHp * kg); }
+  for (const w of state.stage.waves) if (w.active && w.left > 0) w.left = Math.round(w.left * kw);
+  return true;
+}
 const cpuDmg = state => (humansOf(state) <= 2 ? CPU_DMG_FEW : CPU_DMG);
 const cpuTaken = state => (humansOf(state) <= 2 ? CPU_TAKEN_FEW : CPU_TAKEN);
 const pick = (s, arr) => arr[Math.floor(rng(s) * arr.length)];
@@ -164,6 +179,8 @@ function updatePlayer(state, p) {
     if (inp[k] && !p.prev[k]) { if (p.tapDir === d && state.t - p.tapT <= DOUBLE_TAP) dash = d; p.tapDir = d; p.tapT = state.t; }
   }
   p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s; p.prev.p = inp.p; p.prev.l = inp.l; p.prev.r = inp.r; p.prev.d = inp.d;
+  // Ticks since this seat last pressed anything (CPU teammates stop waiting for an idle human).
+  p.idle = inp.l || inp.r || inp.u || inp.d || inp.a || inp.j || inp.s || inp.p ? 0 : (p.idle || 0) + 1;
   p.t++;
   const god = isGod(state, p);
   if (god && (p.st === 'attack' || p.st === 'special' || p.st === 'jumpatk' || p.st === 'dashatk')) p.t++; // 2x attack speed
@@ -739,8 +756,10 @@ function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
   lockHumans(state);
-  // 2,600 on stage 1 up to 7,880 on stage 12 for six humans; 54% of that for one.
-  const hp = Math.round((2600 + state.stageIdx * 480) * BOSS_HP_SCALE(state.humans));
+  // (2,600 on stage 1 up to 7,880 on stage 12) x the human scale: 1,300 to 3,940 for one human,
+  // 3,250 to 9,850 for six. One human faces 40% of the six-human boss.
+  // The charger spends much of its fight rushing out of reach, so it has less health to compensate.
+  const hp = Math.round((2600 + state.stageIdx * 480) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
   state.boss = {
     bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
@@ -831,8 +850,8 @@ function updateBoss(state) {
     } else if (b.t > wait) {
       b.cycle++;
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1); the
-      // charger rushes every second attack.
-      const charge = arch === 'charger' ? b.cycle % 2 === 1 : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
+      // charger rushes every third attack, and every second one in phase 2.
+      const charge = arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
       if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; b.cx = b.x; ev(state, 'charge'); }
       else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y;
         b.lob = arch === 'bomber' && b.row === 1;
@@ -871,7 +890,7 @@ function updateBoss(state) {
     if (b.t < windup) { b.x += (rng(state) - 0.5) * 2; } // the charger winds up longer
     else { b.x += b.tx * 8.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20);
       // The charger's lane keeps burning where it drove (at most two fires at once).
-      if (arch === 'charger') { if (!state.hazards) state.hazards = []; state.hazards.push({ id: state.nextId++, y: Math.round(b.y), x0: Math.min(b.cx, b.x), x1: Math.max(b.cx, b.x), t: 0, life: FIRE_LIFE + (b.phase ? 60 : 0), half: b.phase ? 15 : 11 }); if (state.hazards.length > 2) state.hazards.shift(); } } }
+      if (arch === 'charger') { if (!state.hazards) state.hazards = []; const stop = b.x - b.tx * (b.w / 2 + 80); /* the fire ends short of the machine, so the fight at its side goes on */ state.hazards.push({ id: state.nextId++, y: Math.round(b.y), x0: Math.min(b.cx, stop), x1: Math.max(b.cx, stop), t: 0, life: FIRE_LIFE + (b.phase ? 60 : 0), half: b.phase ? 15 : 11 }); if (state.hazards.length > 2) state.hazards.shift(); } } }
   }
 }
 
@@ -1186,7 +1205,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -1243,10 +1262,12 @@ function think(state, p) {
 
   const foe = nearestFoe(state, p);
   if (!foe) {
-    // Advance with the team, spread across the belt, but never far ahead of the humans: the
-    // screen follows the leader, and CPUs must not start the next wave for an idle player.
+    // Advance with the team, spread across the belt, but never far ahead of a human who is
+    // playing: the screen follows the leader, and CPUs must not start the next wave under them.
+    // A human who has pressed nothing for five seconds is not waited for, so a run with only idle
+    // humans still moves on and ends like an all-CPU run.
     let lead = -1e9;
-    for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && o.x > lead) lead = o.x;
+    for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && (o.idle || 0) < S.IDLE_AFTER && o.x > lead) lead = o.x;
     const ahead = lead > -1e9 ? lead + 50 + p.slot * 18 : 1e9;
     const crate = state.items.find(i => i.kind === 'crate' && i.x > p.x - 20 && i.x - p.x < 160 && i.x < ahead + 40);
     if (crate) { if (go(crate.x - 30, crate.y, 6)) { p.face = 1; inp.a = ai.t % 14 === 0 ? 1 : 0; } return; }
@@ -1295,7 +1316,7 @@ function think(state, p) {
   const rim = isBoss ? 16 : 34 + p.slot * 13;
   // Never line up inside a burning lane: stand just beside it instead.
   let ty = foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0);
-  for (const h of state.hazards || []) if (Math.abs(ty - h.y) < h.half + 4 && p.x > h.x0 - 30 && p.x < h.x1 + 30) ty = h.y + (p.y >= h.y && h.y < S.DEPTH - 24 || h.y < 24 ? 1 : -1) * (h.half + 5);
+  for (const h of state.hazards || []) if (Math.abs(ty - h.y) < h.half + 4 && p.x > h.x0 - 30 && p.x < h.x1 + 30) ty = h.y + (p.y >= h.y && h.y < S.DEPTH - 24 || h.y < 24 ? 1 : -1) * (h.half + 7);
   const inPlace = go(S.clamp(foe.x + side * reach, state.camX + rim, state.camX + S.W - rim), ty, isBoss ? 14 : 6);
   if (inPlace || (Math.abs(foe.x - p.x) < reach + 6 && Math.abs(ty - p.y) < (isBoss ? 14 : 10))) {
     inp.l = inp.r = 0;
@@ -1575,10 +1596,26 @@ function applyButtons(session, applied) {
   }
 }
 
+function latchKill(session, enc) {
+  const boss = session.state.boss, mode = session.state.mode;
+  if (enc.killTick || !((boss && boss.st === 'dead') || mode === 'clear' || mode === 'victory')) return;
+  enc.killTick = session.state.t;
+  const standing = {};
+  for (let i = 0; i < session.seats.length; i++) {
+    const seat = session.seats[i];
+    if (seat.human && session.state.players[seat.slot].st !== 'dead') standing[seat.accountId] = 1;
+  }
+  const ids = Object.keys(enc.accounts);
+  for (let i = 0; i < ids.length; i++) enc.accounts[ids[i]].out = !standing[ids[i]];
+}
 function notePresence(session) {
   const enc = session.encounter;
   if (!enc) return;
   const age = session.state.t - enc.startTick;
+  // The moment the boss falls (or the stage clears) is latched once per encounter. An account all
+  // of whose seats are dead at that moment was out for the kill and is not eligible for this boss.
+  // A downed seat is not out: it is revived by the clear.
+  latchKill(session, enc);
   for (let i = 0; i < session.seats.length; i++) {
     const seat = session.seats[i];
     if (!seat.human) continue;
@@ -1623,6 +1660,7 @@ function beginEncounter(session) {
 function participationFacts(session) {
   const enc = session.encounter || session.closedEncounter;
   if (!enc) return { canonicalBossId: null, accounts: [], tickets: 0 };
+  if (enc === session.encounter) latchKill(session, enc); // also when asked on the very tick the boss fell
   const accounts = [];
   const ids = Object.keys(enc.accounts).sort();
   for (let i = 0; i < ids.length; i++) {
@@ -1636,7 +1674,8 @@ function participationFacts(session) {
       neutralAlive: row.neutralAlive,
       downTicks: row.downTicks,
       afk: afk ? 1 : 0,
-      eligible: row.presentAtStart && !afk ? 1 : 0,
+      out: row.out ? 1 : 0,
+      eligible: row.presentAtStart && !afk && !row.out ? 1 : 0,
     });
   }
   return {

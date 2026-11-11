@@ -242,10 +242,26 @@ function applyButtons(session, applied) {
   }
 }
 
+function latchKill(session, enc) {
+  const boss = session.state.boss, mode = session.state.mode;
+  if (enc.killTick || !((boss && boss.st === 'dead') || mode === 'clear' || mode === 'victory')) return;
+  enc.killTick = session.state.t;
+  const standing = {};
+  for (let i = 0; i < session.seats.length; i++) {
+    const seat = session.seats[i];
+    if (seat.human && session.state.players[seat.slot].st !== 'dead') standing[seat.accountId] = 1;
+  }
+  const ids = Object.keys(enc.accounts);
+  for (let i = 0; i < ids.length; i++) enc.accounts[ids[i]].out = !standing[ids[i]];
+}
 function notePresence(session) {
   const enc = session.encounter;
   if (!enc) return;
   const age = session.state.t - enc.startTick;
+  // The moment the boss falls (or the stage clears) is latched once per encounter. An account all
+  // of whose seats are dead at that moment was out for the kill and is not eligible for this boss.
+  // A downed seat is not out: it is revived by the clear.
+  latchKill(session, enc);
   for (let i = 0; i < session.seats.length; i++) {
     const seat = session.seats[i];
     if (!seat.human) continue;
@@ -290,6 +306,7 @@ function beginEncounter(session) {
 function participationFacts(session) {
   const enc = session.encounter || session.closedEncounter;
   if (!enc) return { canonicalBossId: null, accounts: [], tickets: 0 };
+  if (enc === session.encounter) latchKill(session, enc); // also when asked on the very tick the boss fell
   const accounts = [];
   const ids = Object.keys(enc.accounts).sort();
   for (let i = 0; i < ids.length; i++) {
@@ -303,7 +320,8 @@ function participationFacts(session) {
       neutralAlive: row.neutralAlive,
       downTicks: row.downTicks,
       afk: afk ? 1 : 0,
-      eligible: row.presentAtStart && !afk ? 1 : 0,
+      out: row.out ? 1 : 0,
+      eligible: row.presentAtStart && !afk && !row.out ? 1 : 0,
     });
   }
   return {

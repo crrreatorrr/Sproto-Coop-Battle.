@@ -7,6 +7,9 @@ g.imageSmoothingEnabled = false;
 const STEP = 1000 / 60;
 // crash.js (loaded first) counts uncaught errors and opens the "Something broke" panel.
 const C = window.CrashGuard, crash = C.guard;
+// feedback-link.js: the hub's feedback window (N twice). Absent or not installed, these do nothing.
+const F = window.CoopFeedback || null;
+const crumb = (type, data) => { if (F) F.breadcrumb(type, data); };
 
 const app = {
   screen: 'loading', role: 'local', net: null, myId: 0, code: '', msg: '', msgT: 0,
@@ -18,6 +21,8 @@ const app = {
   runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
   progress: P.load(), // local best run and stage unlocks (this browser only)
   summary: null, godSeen: false, // end-of-run panel for the run on screen
+  frozen: false, // the feedback window is open over local play: no sim step, no menu input
+  view: null, // the snapshot drawGame last drew, for the feedback note's context
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -57,7 +62,8 @@ function claimSlot(ctrl, owner, dev) {
   const i = app.slots.findIndex(s => s.ctrl === 'cpu');
   if (i < 0) return -1;
   Object.assign(app.slots[i], { ctrl, owner, dev, label: ctrl === 'remote' ? (app.guestNames[owner] || 'Online') + ' · ' + (I.DEVICE_NAMES[dev] || dev) : I.DEVICE_NAMES[dev] });
-  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); }
+  // A drop-in after the stage's human count was taken grows what is left of the stage to match.
+  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); S.rescaleHumans(app.sim); }
   app.lobbyDirty = true; A.play('join');
   toast(`P${i + 1} joined (${ctrl === 'remote' ? (app.guestNames[owner] || 'online') : I.DEVICE_NAMES[dev]})`);
   return i;
@@ -343,7 +349,9 @@ function leaveLobby() {
 const KEY_DEVS = ['k1', 'k2'];
 const menuDevs = dev => (dev === 'keys' ? KEY_DEVS : [dev]);
 function pauseMenuItems() {
-  return ['RESUME', A.isMuted && A.isMuted() ? 'SOUND: OFF' : 'SOUND: ON', 'RETURN TO BAR'];
+  const items = ['RESUME', A.isMuted && A.isMuted() ? 'SOUND: OFF' : 'SOUND: ON'];
+  if (F && F.ready() && app.hub.kind === 'account') items.push('SEND FEEDBACK'); // signed-in hub players only
+  return items.concat(['RETURN TO BAR']);
 }
 function openPauseMenu(dev) {
   if (app.pauseMenu || app.hub.confirming || app.screen !== 'game') return;
@@ -373,7 +381,54 @@ function pauseMenuInput(p, keyboard) {
   const item = pauseMenuItems()[m.sel];
   if (item === 'RESUME') closePauseMenu();
   else if (item.startsWith('SOUND')) { A.toggle(); A.play('menu'); }
+  else if (item === 'SEND FEEDBACK') {
+    // Close the menu so the screenshot shows the game, and put it back when the window closes.
+    const dev = m.dev;
+    closePauseMenu();
+    if (!F.open(() => openPauseMenu(dev))) openPauseMenu(dev);
+  }
   else if (item === 'RETURN TO BAR') { closePauseMenu(); requestHubReturn(runLive()); }
+}
+
+// ---------- feedback breadcrumbs ----------
+// A few run events for the feedback note, read off the snapshot being drawn, so every role
+// (local, host, guest, server match) reports the same way. A handful of compares per frame.
+const seen = { role: 'local', run: false, si: -1, mode: '', lock: 0, boss: -1, down: false };
+function noteRole() {
+  if (app.role === seen.role) return;
+  crumb('role_change', { from: seen.role, to: app.role });
+  seen.role = app.role;
+}
+function noteRun(snap) {
+  if (!seen.run || snap.si !== seen.si) {
+    crumb('stage_start', { stage: snap.si + 1, name: M.bosses[snap.si] ? M.bosses[snap.si].stage : '', role: app.role });
+    Object.assign(seen, { run: true, si: snap.si, mode: '', lock: 0, boss: -1, down: false });
+  }
+  if (snap.mode !== seen.mode) {
+    if (snap.mode === 'clear') crumb('stage_clear', { stage: snap.si + 1 });
+    else if (snap.mode === 'gameover' || snap.mode === 'victory') crumb('run_end', { result: snap.mode, stage: snap.si + 1 });
+    seen.mode = snap.mode;
+  }
+  const boss = snap.boss ? snap.boss.ph : -1;
+  if (boss !== seen.boss) {
+    if (boss >= 0) crumb(seen.boss < 0 ? 'boss_start' : 'boss_phase', { stage: snap.si + 1, phase: boss + 1 });
+    seen.boss = boss;
+  }
+  const lock = snap.lock ? 1 : 0;
+  if (lock !== seen.lock) {
+    if (lock && !snap.boss) crumb('wave_start', { stage: snap.si + 1, x: Math.round(snap.camX) });
+    seen.lock = lock;
+  }
+  const acct = app.role === 'banked' && app.authority ? app.authority.accountId() : null;
+  const down = snap.players.some(p => {
+    const s = app.slots[p.s];
+    const mine = !!s && (app.role === 'guest' ? s.ctrl === 'remote' && s.owner === app.myId : app.role === 'banked' ? s.ctrl !== 'cpu' && s.owner === acct : s.ctrl === 'local');
+    return mine && p.st === 'down';
+  });
+  if (down !== seen.down) {
+    if (down) crumb('player_down', { stage: snap.si + 1 });
+    seen.down = down;
+  }
 }
 
 // ---------- gamepad on the join dialog and the load-error screen ----------
@@ -597,6 +652,8 @@ function drawGame() {
     if (!app.snap) return;
     snap = lerpSnap(app.prevSnap, app.snap, (performance.now() - app.snapAt) / app.snapGap);
   } else snap = S.snapshot(app.sim);
+  app.view = snap;
+  noteRun(snap);
   R.bossImages(snap.si);
   // Seats played on this device get a marker so they can be found in a crowd.
   const mine = [];
@@ -657,8 +714,11 @@ function drawPauseMenu() {
 function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   I.poll(now);
-  if (app.screen !== 'game') { app.summary = null; app.godSeen = false; A.music(app.screen === 'loading' ? '' : 'menu'); }
-  if (app.screen === 'join') joinPadInput();
+  noteRole();
+  if (app.screen !== 'game') { seen.run = false; app.summary = null; app.godSeen = false; A.music(app.screen === 'loading' ? '' : 'menu'); }
+  // The feedback window is open over local play: the game holds still and reads no input.
+  if (app.frozen) { /* frozen */ }
+  else if (app.screen === 'join') joinPadInput();
   else if (app.screen === 'loading') { if (app.loadErr) loadErrorPadInput(); }
   else localDevicesInput();
   I.endFrame();
@@ -666,7 +726,7 @@ function frameStep(now) {
   // which a fixed step ran cleanly does, so a step that always throws still trips the panel at
   // 120/144 Hz. A throwing step drops the backlog instead of rerunning on a half-applied tick.
   let judged = true;
-  if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.hub.confirming) {
+  if (app.screen === 'game' && app.role !== 'guest' && app.role !== 'banked' && app.sim && !app.paused && !app.frozen && !app.hub.confirming) {
     judged = C.fixedSteps(app, STEP, dt, hostStep) > 0 || dt === 0;
   }
   if (app.role === 'banked' && app.authority) {
@@ -743,7 +803,8 @@ function bootAssets() {
   });
 }
 C.setRetry(bootAssets);
-if (window.CoopHub) window.CoopHub.boot({ release: releaseForHub, onChange: syncHub });
+const hubJob = window.CoopHub ? window.CoopHub.boot({ release: releaseForHub, onChange: syncHub }) : null;
+if (F && hubJob) F.boot(app, hubJob);
 bootAssets();
 window.SprotoApp = app; // handy for debugging and browser tests
 })();

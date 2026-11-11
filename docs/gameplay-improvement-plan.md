@@ -348,7 +348,7 @@ hardware.
 | B3 | Partly | Much better, not at the target. See the crowd numbers below. |
 | B4 | Done | Recommended option taken. A human who is put out returns at the next stage on one life, as dead CPUs already did. |
 | B5 | Done | Rear sweep after 3 s with two Sprotos behind, 5 s with one (the observed exploit was one human). |
-| C1 | Done | `public/js/progress.js`; KOs, revives and parries are counted in the sim. |
+| C1 | Done | The `Progress` module at the end of `public/js/audio.js`; KOs, revives and parries are counted in the sim. |
 | C2 | Done | Three synthesized loops and a boss klaxon. Nobody has listened to them: they were only checked for scheduling in `tests/audio.test.js` and for errors in headless Chromium. |
 | C3 | Done | Power on the stage screen toggles free play. |
 | D1 | Done | Existing sheets only. The summoner's adds are the old "periodic adds", which could never fire (`b.t` never reached 150). |
@@ -420,6 +420,7 @@ longer fights for six (below).
 | 1 (A1 to A3) | `22a104e0c3a41e62318aab8f2e5cbc4f802a8cf98170cc46888ed6ce668f1c31` | unchanged |
 | 2 (B1 to B5) | `1c344819e8dd5bf9d1fd34cf1c469a2cf6e064c83d0d1332bf44662e3b49a1a4` | unchanged |
 | 3 (D1 to D3) | `bb02957d4a6fda819dec4e42cd856a26f14f55e82b193d520bc4db4948193483` | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
+| 4 (QA follow-up, after merging main) | `a9034b346fced4a1c963dc70133549d7444d61acdb6b844d873aa8a89c0f4cb5` | unchanged from batch 3 |
 
 `contentSha256` changed in batch 3 because `contentManifest` now lists each stage's boss script and
 each fighter's passive. The hub has to copy `build/coop-sim.js` and its pin, update `CoopProto`, and
@@ -430,8 +431,29 @@ record its own seed-3 golden again. B1 changes how fast bosses fall (section 7).
 - No human has played any of this. Section 9's playtest checklist is still open, and the bot never
   blocks, so block-on-press, the parry lock and the elite guard are only covered by unit tests.
 - The music and the klaxon have not been heard by anyone.
-- `public/js/progress.js` is the 30th startup script: the critical-request cap of 30 is now exactly
-  met, and the title transfer is 1,514,129 of 1,572,864 bytes.
+- The page is at its cap of 30 startup requests (main added `feedback-link.js`), so `Progress` was
+  folded into `audio.js`, and the title transfer is 1,530,607 of 1,572,864 bytes.
 - Firefox, gamepads, online relay play with real latency and banked play against a live hub were
   not run. The Chromium browser and e2e suites pass.
+
+### QA follow-up (same day, one more re-pin)
+
+- **Idle humans.** CPUs waited for the lead human for ever, so a run with only idle humans never
+  started wave 1. Each seat now counts ticks since its last input, and CPUs stop waiting for a human
+  who has pressed nothing for 300 ticks. `tests/sim.test.js` checks that runs with one and two idle
+  humans end, and that an active human who stays put is still waited for.
+- **Charger.** Its fight took about three times as long as its neighbours, mostly because the team
+  was chasing it. It now rushes every third attack in phase 1 (every second in phase 2), its fire
+  ends 80 px short of the machine, and it has half the health. Boss fight length in ticks inside
+  runs from stage 1, twelve seeds, median [range], all cleared: one human, stage 1 1,038 [714-1,264],
+  stage 2 1,375 [1,150-1,560], stage 3 1,305 [799-1,603]; two humans, 1,230 [831-1,350], 1,170
+  [449-1,672], 1,774 [1,118-2,542]. Two humans, four seeds: stage 6 took 2,343 between stage 5
+  (2,602) and stage 7 (4,204); stage 10 took 3,938 against 4,099 on stage 9. Sweep after the retune,
+  six seeds: one human 8 7 8 8 7 8, two humans 10 10 9 11 10 10, six humans W 10 11 11 W 12.
+- **Eligibility.** `participationFacts` rows carry `out` (every seat of the account dead when the
+  boss fell, latched once per encounter) and `eligible` requires `!out`. The field is new; the hub
+  only has to keep reading `eligible`.
+- **Drop-in.** `Sim.rescaleHumans` grows the boss, the Shadow Sprotos on screen and the rest of the
+  active wave when a local or relay drop-in raises the human count mid-stage. Only `main.js` calls
+  it, so banked matches keep the locked count.
 

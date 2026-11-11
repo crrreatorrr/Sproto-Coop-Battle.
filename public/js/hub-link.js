@@ -476,6 +476,8 @@
       leave: leave,
       openRealtime: openRealtime,
       reportStageClear: reportStageClear,
+      // The SDK instance once it has loaded, else null. feedback-link.js builds its transport on it.
+      sdk: function () { return sdk; },
     };
   }
 
