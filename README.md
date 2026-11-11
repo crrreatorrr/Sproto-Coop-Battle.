@@ -74,7 +74,7 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
     - **Meteor Rain:** 12 meteors land on the enemies across the whole screen over 1.5 seconds.
     - **Chain Lightning:** lightning strikes the 10 nearest enemies on screen, and the boss.
 - **Rescue:** the first time a human player goes down, the nearest CPU Sproto sprints over to revive them.
-- **Bosses:** every stage ends with a Sproto Arcade machine. Bosses are tough: 3,400 HP on stage 1, rising 400 per stage. Weapons A and C fire 3-shot bursts, weapon B fires a 5-lane spread, and every third attack launches a homing missile. Every fifth attack is a charge rush. At half HP the boss transforms into its phase-2 machine: it attacks 40% faster, fires 5-shot bursts and 7-lane spreads, launches missiles in pairs and charges more often. Below 25% HP it enrages and speeds up again. Jump over low shots.
+- **Bosses:** every stage ends with a Sproto Arcade machine. Bosses are tough: 2,600 HP on stage 1, rising 480 per stage to 7,880 on stage 12. Weapons A and C fire 2-shot bursts, weapon B fires a 3-lane spread, and every third attack launches a homing missile. Every fifth attack is a charge rush. At half HP the boss transforms into its phase-2 machine: it attacks 40% faster, fires 3-shot bursts and 5-lane spreads, launches missiles in pairs and charges every fourth attack. Below 25% HP it enrages and speeds up again. Jump over low shots.
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
 
