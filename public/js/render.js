@@ -333,7 +333,7 @@ function drawBoss(g, b, camX) {
   g.save();
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   if (b.st === 'transform' && b.t % 8 < 4) g.globalAlpha = 0.4;
-  const shake = (b.st === 'charge' && b.t < 30) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) ? (b.t % 4 < 2 ? 2 : -2) : 0;
+  const shake = (b.st === 'charge' && b.t < (b.ar === 1 ? 40 : 30)) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
   g.scale(b.fc > 0 ? -BS : BS, BS);
   const cx = (ph.body[0] + ph.body[2]) / 2, by = ph.body[3];
@@ -459,6 +459,12 @@ function drawFx(g, f, camX) {
       g.strokeStyle = 'rgba(255,170,60,.7)'; g.lineWidth = 4; g.beginPath(); g.moveTo(mx + 20, my - 40); g.lineTo(mx, my); g.stroke();
       g.fillStyle = '#5a3a2a'; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.fill(); g.fillStyle = '#ff8a3d'; g.beginPath(); g.arc(mx - 2, my - 2, 3, 0, 7); g.fill();
     }
+  } else if (f.k === 'mark') {
+    // Where a bomber's bomb will land: a red ring that closes in until impact.
+    const k = Math.min(1, f.t / (f.sm || 1)), gy = FLOOR_TOP + f.y;
+    g.fillStyle = `rgba(255,40,40,${0.25 + 0.3 * k})`; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.stroke();
+    g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
@@ -490,7 +496,7 @@ function drawHud(g, snap) {
       text(g, 'DEAD', x + 26, y + 30, 7, '#ff4d4d');
     } else {
       g.fillStyle = '#300'; g.fillRect(x + 26, y + 25, pw - 34, 5);
-      g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * p.hp / S.MAX_HP, 5);
+      g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * Math.min(1, p.hp / (p.mh || S.MAX_HP)), 5);
       if (p.c !== 'cpu') text(g, p.l > 1 ? '♥♥' : '♥', x + 3, y + 32, 6, '#ff5a7a');
       (p.pw || []).forEach((pt, k) => powerIcon(g, pt, x + 76 + k * 9, y + 34, 3.5));
       text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 5, '#c8c6e0');
@@ -562,8 +568,28 @@ function drawWorld(g, snap, opts) {
       shadow(g, sx, sy, 12);
       const st = e.st === 'grabbed' ? 'hit' : e.st;
       drawFighter(g, { f: e.f, st, t: e.st === 'attack' ? e.t * (8 / wpn.startup) : e.t, z: e.z, fc: e.fc, cb: 1 }, sx, sy - e.z, 'shadow', wpn.thrower && e.st === 'attack' && e.t > wpn.startup ? null : wpn.id, { startup: 8, active: 4, recovery: 10 }, e.d && e.st === 'lying' && e.t > 20 ? (e.t % 6 < 3 ? 0.3 : 1) : 1);
-      if (!e.d && e.hp < e.mh) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
+      if (!e.d && (e.hp < e.mh || e.el)) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = e.el ? '#ffd23d' : '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
+      // Elite: a gold bar, and a shield on the side it guards while the guard is up.
+      if (e.el && !e.d) {
+        text(g, 'ELITE', sx, sy - 76 - e.z, 5, '#ffd23d', 'center');
+        if (e.el === 2 && (e.st === 'walk' || e.st === 'idle' || e.st === 'attack')) {
+          const hx = sx + e.fc * 13, hy = sy - 30 - e.z;
+          g.fillStyle = 'rgba(150,215,255,.45)'; g.strokeStyle = '#e8f6ff'; g.lineWidth = 2;
+          g.beginPath(); g.ellipse(hx, hy, 6, 16, 0, 0, 7); g.fill(); g.stroke();
+        }
+      }
     } });
+  }
+  // Burning lanes left by a charger: they flicker, and fade as they burn out.
+  for (const h of snap.hz || []) {
+    const a = Math.min(1, (h.l - h.t) / 40), x = h.x0 - camX, w = h.x1 - h.x0, y = FLOOR_TOP + h.y;
+    g.fillStyle = `rgba(255,90,20,${0.45 * a})`; g.fillRect(x, y - h.hf, w, h.hf * 2);
+    g.fillStyle = `rgba(255,236,170,${0.8 * a})`; g.fillRect(x, y - h.hf - 1, w, 1); g.fillRect(x, y + h.hf, w, 1);
+    g.fillStyle = `rgba(255,210,61,${0.75 * a})`;
+    for (let fxn = x + ((h.id * 7) % 12); fxn < x + w; fxn += 12) {
+      const fh = 6 + ((fxn * 13 + snap.t * 3 + h.id) % 9);
+      g.beginPath(); g.moveTo(fxn - 4, y + 2); g.lineTo(fxn + 4, y + 2); g.lineTo(fxn + ((snap.t >> 2) % 3) - 1, y + 2 - fh); g.fill();
+    }
   }
   // Boss lane warnings: a red stripe along each lane about to be shot.
   const bw = snap.boss;

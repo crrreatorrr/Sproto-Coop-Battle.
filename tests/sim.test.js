@@ -389,7 +389,7 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
       assert(g.enemies.length >= 4);
       for (const e of g.enemies) {
         const base = (26 + stage * 4 + (e.weapon === 0 ? 14 : 0)) * (1 + 0.09 * stage);
-        assert.strictEqual(e.maxHp, Math.round(base * Sim.GRUNT_HP_SCALE(want)), 'Shadow Sproto health for ' + h + ' humans on stage ' + (stage + 1));
+        assert.strictEqual(e.maxHp, Math.round(base * Sim.GRUNT_HP_SCALE(want) * (e.elite ? 1.6 : 1)), 'Shadow Sproto health for ' + h + ' humans on stage ' + (stage + 1));
       }
       g.enemies.length = 0; g.stage.waves.forEach(x => (x.done = true));
       g.camX = g.stage.len; g.lockX = null;
@@ -451,7 +451,8 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   assert.strictEqual(me.st, 'block', 'block rises on press');
   // A hit 3 ticks after the press is parried: the parry window is the first 8 ticks from the press.
   const parryAt = n => {
-    const a = arena(); const e = foe(a.g, a.me.x + 28, 60, { st: 'attack', t: 10 - n + 1, face: -1, weapon: 1 }); // knife lands on tick n
+    const a = arena(); a.me.fid = 3; // not the Duelist, whose window is longer
+    const e = foe(a.g, a.me.x + 28, 60, { st: 'attack', t: 10 - n + 1, face: -1, weapon: 1 }); // knife lands on tick n
     drive(a.g, a.me, Array(n).fill({ s: 1 }));
     return { hp: a.me.hp, dazed: e.st === 'hit' && e.stun >= 2, parries: a.me.parries };
   };
@@ -573,4 +574,199 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   const none = sweep([-120, -130, -140, -150, -160, -170]);
   assert.strictEqual(none.saw, 0, 'nobody behind, no sweep');
   console.log('B5 rear sweep ok');
+}
+
+// A knee that kills must let go: the dead enemy used to be put back on its feet as a Shadow
+// Sproto that attacked but could never be hit or counted.
+{
+  const { g, me } = arena();
+  const e = foe(g, g.camX + 222, 60, { st: 'hit', stun: 3, hp: 5, maxHp: 5 });
+  drive(g, me, [{ r: 1 }]);
+  assert.strictEqual(me.st, 'grab');
+  drive(g, me, [{ a: 1 }]);
+  assert(e.dead && e.st !== 'grabbed', 'the knee killed it and it is not held');
+  for (let i = 0; i < 200; i++) drive(g, me, [{}]);
+  assert(me.st === 'idle' && me.grab === null, 'the grabber is free');
+  assert.strictEqual(g.enemies.length, 0, 'the body is removed like any other, not walking around dead');
+  console.log('grab kill ok');
+}
+
+// D3: each Sproto has one small passive.
+{
+  assert.strictEqual(Sim.PASSIVES.length, MANIFEST.fighters.length, 'one passive per Sproto');
+  assert.strictEqual(new Set(Sim.PASSIVES.map(p => p.id)).size, 6);
+  const withFid = fid => { const a = arena(); a.me.fid = fid; return a; };
+  const fidOf = id => Sim.PASSIVES.findIndex(p => p.id === id);
+  // Tough: 110 health from the start, on the HUD scale, on respawn and from a snack.
+  {
+    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: 0, ctrl: 'local' })), 5);
+    const t = g.players[fidOf('tough')], n = g.players[fidOf('duelist')];
+    assert.strictEqual(t.hp, 110); assert.strictEqual(n.hp, 100);
+    assert.strictEqual(Sim.snapshot(g).players[t.slot].mh, 110);
+    t.hp = 90; g.items.push({ id: 9500, kind: 'snack', x: t.x, y: t.y, z: 0 });
+    g.players.forEach(p => (p.in = { ...PN })); Sim.step(g);
+    assert.strictEqual(t.hp, 110, 'a snack fills to the higher maximum');
+  }
+  // Duelist: the parry window is 4 ticks longer.
+  const lateParry = fid => { const a = withFid(fid); const e = foe(a.g, a.me.x + 28, 60, { st: 'attack', t: 10 - 11 + 1, face: -1, weapon: 1 }); drive(a.g, a.me, Array(11).fill({ s: 1 })); return a.me.hp; };
+  assert.strictEqual(lateParry(fidOf('duelist')), 100, 'Duelist parries on tick 11');
+  assert(lateParry(fidOf('medic')) < 100, 'anyone else only blocks that late');
+  // Brawler: +10% weapon damage. Leech: +2 health per KO.
+  const firstHit = fid => { const a = withFid(fid); const e = foe(a.g, a.me.x + 30, 60, { hp: 500, maxHp: 500 }); drive(a.g, a.me, [{ a: 1 }, ...Array(6).fill({})]); return 500 - e.hp; };
+  assert.strictEqual(firstHit(fidOf('medic')), 9);
+  assert.strictEqual(firstHit(fidOf('brawler')), 10);
+  {
+    const a = withFid(fidOf('leech')); a.me.hp = 50;
+    foe(a.g, a.me.x + 30, 60, { hp: 5, maxHp: 5 });
+    drive(a.g, a.me, [{ a: 1 }, ...Array(6).fill({})]);
+    assert.strictEqual(a.me.hp, 52, 'Leech heals 2 per KO');
+  }
+  // Medic: revives in 50 ticks instead of 70. Sprinter: walks 10% faster.
+  const reviveTicks = fid => {
+    const a = arena({ humans: 2 }); const h = a.g.players[0], d = a.g.players[1]; h.fid = fid; d.fid = fidOf('duelist');
+    Object.assign(d, { x: h.x + 5, y: h.y, hp: 0, st: 'down', downT: Sim.DOWN_TICKS, revive: 0, z: 0 });
+    let n = 0; for (; n < 200 && d.st === 'down'; n++) { a.g.players.forEach(p => (p.in = { ...PN })); Sim.step(a.g); }
+    return n;
+  };
+  assert.strictEqual(reviveTicks(fidOf('duelist')), Sim.REVIVE_TICKS);
+  assert.strictEqual(reviveTicks(fidOf('medic')), 50);
+  const walked = fid => { const a = withFid(fid); const x0 = a.me.x; drive(a.g, a.me, Array(20).fill({ r: 1 })); return a.me.x - x0; };
+  assert(Math.abs(walked(fidOf('sprinter')) / walked(fidOf('duelist')) - 1.1) < 0.01, 'Sprinter is 10% faster');
+  console.log('D3 passives ok');
+}
+
+// D2: elite Shadow Sprotos guard their front.
+{
+  const elite = (g, x, y, extra) => foe(g, x, y, { elite: true, guard: Sim.GUARD_HITS, guardT: 0, hp: 300, maxHp: 300, face: -1, ...extra });
+  // Frontal hits are stopped; the guard breaks after GUARD_HITS of them and the elite is dazed.
+  let { g, me } = arena();
+  let e = elite(g, me.x + 30, 60);
+  me.inv = 99999;
+  let swings = 0;
+  for (let i = 0; i < 600 && e.guard > 0; i++) { e.x = me.x + 30; e.y = me.y; e.face = -1; e.cd = 999; const g0 = e.guard; drive(g, me, [{ a: i % 4 === 0 ? 1 : 0 }]); if (e.guard < g0) swings++; if (e.guard > 0) assert.strictEqual(e.hp, 300, 'no damage through the guard'); }
+  assert.strictEqual(swings, Sim.GUARD_HITS, 'the guard takes ' + Sim.GUARD_HITS + ' blocked hits');
+  assert(e.st === 'hit' && e.stun >= 2, 'a broken guard leaves the elite dazed (and open to a grab)');
+  for (let i = 0; i < 40 && e.hp === 300; i++) { e.x = me.x + 30; drive(g, me, [{ a: i % 4 === 0 ? 1 : 0 }]); }
+  assert(e.hp < 300, 'with the guard down it can be hurt from the front');
+  e.st = 'walk'; e.z = 0; e.hs = 0;
+  for (let i = 0; i < Sim.GUARD_REGEN + 5; i++) { e.x = me.x + 200; e.cd = 999; if (e.st !== 'walk' && e.st !== 'idle') { e.st = 'walk'; e.z = 0; } drive(g, me, [{}]); }
+  assert.strictEqual(e.guard, Sim.GUARD_HITS, 'the guard comes back after ' + Sim.GUARD_REGEN + ' ticks');
+  // From behind there is no guard.
+  ({ g, me } = arena());
+  e = elite(g, me.x + 30, 60, { face: 1, target: g.players[1] }); // looking away from the attacker
+  Object.assign(me, { st: 'attack', t: 4, combo: 1, launch: false, hitDone: new Set() });
+  me.in = { ...PN }; Sim.step(g);
+  assert(e.hp < 300 && e.guard === Sim.GUARD_HITS, 'a hit in the back lands');
+  // The launcher goes under the guard and breaks it.
+  ({ g, me } = arena());
+  e = elite(g, me.x + 30, 60);
+  drive(g, me, [{ u: 1, a: 1 }, ...Array(8).fill({})]);
+  assert(e.hp < 300 && e.st === 'knock' && e.guard === 0, 'Up + Attack launches a guarding elite');
+  // A parry breaks the guard too.
+  ({ g, me } = arena());
+  e = elite(g, me.x + 28, 60, { st: 'attack', t: 9, weapon: 1 });
+  drive(g, me, [{ s: 1 }, { s: 1 }]);
+  assert(e.st === 'hit' && e.guard === 0, 'a parry drops the guard');
+  // Power-ups ignore the guard.
+  ({ g, me } = arena());
+  e = elite(g, me.x + 60, 60);
+  me.powers.push(0);
+  drive(g, me, [{ p: 1 }]);
+  assert(e.hp < 300, 'a power-up goes straight through');
+  // Spawning: none on stage 1, never more than two at once later, and they carry club or pike.
+  const count = stage => {
+    const s = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 77, stage);
+    s.camX = s.stage.waves[0].x; let most = 0, seen = 0;
+    for (let i = 0; i < 4000; i++) {
+      s.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; p.x = s.camX + 100; });
+      for (const en of s.enemies) if (!en.dead && i % 40 === 39) en.hp = 0, en.dead = true, en.st = 'knock', en.t = 0; // keep the wave moving
+      Sim.step(s);
+      const live = s.enemies.filter(en => en.elite && !en.dead);
+      for (const en of live) { assert(en.weapon === 0 || en.weapon === 2, 'elites carry a club or a pike'); assert(en.maxHp > 0); }
+      most = Math.max(most, live.length); seen += live.length;
+    }
+    return { most, seen };
+  };
+  assert.strictEqual(count(0).seen, 0, 'no elites on stage 1');
+  const later = count(8);
+  assert(later.seen > 0 && later.most <= 2, 'elites appear later, at most two at once (' + later.most + ')');
+  const snap = Sim.snapshot((() => { const a = arena(); elite(a.g, a.me.x + 100, 60); elite(a.g, a.me.x + 140, 60, { guard: 0, guardT: 100 }); return a.g; })());
+  assert.deepStrictEqual(snap.enemies.map(x => x.el), [2, 1], 'the snapshot says elite, and whether the guard is up');
+  console.log('D2 elite ok');
+}
+
+// D1: four boss scripts by boss index.
+{
+  assert.deepStrictEqual(Sim.BOSS_ARCHETYPES, ['gunner', 'charger', 'summoner', 'bomber']);
+  const fight = (stage, ticks, each) => {
+    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 81, stage);
+    g.stage.waves.forEach(w => (w.done = true)); g.camX = g.stage.len; g.lockX = null;
+    const out = { g, charges: 0, fires: 0, shots: 0, lobs: 0, marks: 0, addsSeen: 0, hazards: 0, attacks: 0 };
+    let last = '';
+    for (let i = 0; i < ticks; i++) {
+      g.players.forEach((p, k) => { p.in = { ...PN }; p.inv = 9999; p.hp = 100; if (g.boss) { p.x = g.boss.x - 200 + k * 10; p.y = 10 + k * 18; } });
+      Sim.step(g); g.events.length = 0;
+      const b = g.boss; if (!b) continue;
+      if (!out.banner && g.banner && g.banner.boss) out.banner = g.banner.sub;
+      if (b.st !== last) { if (b.st === 'charge') { out.charges++; out.attacks++; } if (b.st === 'fire') { out.fires++; out.attacks++; } last = b.st; }
+      out.addsSeen = Math.max(out.addsSeen, g.enemies.filter(e => !e.dead).length);
+      out.hazards = Math.max(out.hazards, g.hazards.length);
+      out.lobs = Math.max(out.lobs, g.projs.filter(pr => pr.lob).length);
+      out.shots += g.projs.filter(pr => pr.kind === 'boss' && pr.enemy && pr.t === 1).length;
+      out.marks = Math.max(out.marks, g.fx.filter(f => f.kind === 'mark').length);
+      if (each) each(g, b, i);
+    }
+    return out;
+  };
+  const gunner = fight(0, 2400), charger = fight(1, 2400), summoner = fight(2, 2400), bomber = fight(3, 2400);
+  for (const [r, arch] of [[gunner, 0], [charger, 1], [summoner, 2], [bomber, 3]]) assert.strictEqual(r.g.boss.arch, arch);
+  assert.strictEqual(fight(4, 400).g.boss.arch, 0, 'the scripts repeat every four stages');
+  assert(/GUNNER/.test(gunner.banner) && /CHARGER/.test(charger.banner) && /SUMMONER/.test(summoner.banner) && /BOMBER/.test(bomber.banner), 'the entrance banner names the script');
+  // Gunner: the original script. No adds, no fire, no bombs, a charge every fifth attack.
+  assert(gunner.charges > 0 && gunner.charges * 3 < gunner.fires, 'gunner mostly shoots: ' + [gunner.charges, gunner.fires]);
+  assert.deepStrictEqual([gunner.addsSeen, gunner.hazards, gunner.lobs], [0, 0, 0]);
+  // Charger: every second attack is a charge, and its lane burns (never more than two lanes).
+  assert(Math.abs(charger.charges - charger.fires) <= 1, 'charger alternates: ' + [charger.charges, charger.fires]);
+  assert(charger.hazards >= 1 && charger.hazards <= 2, 'burning lanes: ' + charger.hazards);
+  // Summoner: keeps Shadow Sprotos on the field (up to humans + 1 before it calls more) and fires single shots.
+  assert(summoner.addsSeen >= 2 && summoner.addsSeen <= 8, 'summoner adds: ' + summoner.addsSeen);
+  assert(summoner.shots / summoner.fires < gunner.shots / gunner.fires, 'summoner fires fewer shots per attack');
+  assert.strictEqual(summoner.g.enemies.filter(e => e.elite).length, 0, 'its adds are never elites');
+  // Bomber: lobbed bombs at marked spots.
+  assert(bomber.lobs >= 2 && bomber.marks >= 2, 'bomber lobs at marks: ' + [bomber.lobs, bomber.marks]);
+  // A bomb hurts whoever stays on its mark, and nobody on the way.
+  const bombed = stay => {
+    const a = arena(); const g = a.g, me = a.me;
+    g.boss = { bi: 3, phase: 0, hp: 9000, maxHp: 9000, x: g.camX + 520, y: 60, z: 0, face: -1, st: 'fire', t: 29, row: 1, w: 150, cycle: 3, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0, arch: 3, addT: 0, lob: true, marks: [[me.x, me.y]] };
+    me.inv = 0; me.hp = 100;
+    for (let i = 0; i < Sim.BOMB_FLIGHT + 6; i++) { const b = g.boss; if (b.st !== 'fire' || b.t > 31) { b.st = 'idle'; b.t = 0; } drive(g, me, [stay ? {} : { u: i > 10 && i < 34 ? 1 : 0 }]); if (i < Sim.BOMB_FLIGHT - 2) assert.strictEqual(me.hp, 100, 'no damage while the bomb is in the air'); }
+    return me.hp;
+  };
+  assert(bombed(true) < 100, 'standing on the mark is hit');
+  assert.strictEqual(bombed(false), 100, 'stepping off the mark is safe');
+  // A burning lane hurts on the ground, not in the air, and burns out.
+  {
+    const a = arena(); const g = a.g, me = a.me;
+    g.hazards.push({ id: 9900, y: 60, x0: me.x - 100, x1: me.x + 100, t: 0, life: 120, half: 11 });
+    me.inv = 0;
+    for (let i = 0; i < 40; i++) drive(g, me, [{}]);
+    assert(me.hp < 100, 'standing in the fire costs health');
+    const hp = me.hp; me.y = 60 + 20; me.st = 'idle'; me.inv = 0;
+    for (let i = 0; i < 40; i++) drive(g, me, [{}]);
+    assert.strictEqual(me.hp, hp, 'beside the lane is safe');
+    for (let i = 0; i < 60; i++) drive(g, me, [{}]);
+    assert.strictEqual(g.hazards.length, 0, 'the fire burns out');
+    assert.deepStrictEqual(Sim.snapshot(g).hz, []);
+  }
+  // The wind-up of a charge is a warning, not a hit: contact only hurts once the boss moves.
+  {
+    const a = arena(); const g = a.g, me = a.me;
+    g.boss = { bi: 0, phase: 0, hp: 9000, maxHp: 9000, x: g.camX + 320, y: 60, z: 0, face: -1, st: 'charge', t: 0, row: 0, w: 150, cycle: 4, flash: 0, tx: -1, ty: 0, hitCd: 0, adds: 0, arch: 0, addT: 0, cx: g.camX + 320 };
+    Object.assign(me, { x: g.boss.x - 40, y: 60, inv: 0, hp: 100 });
+    for (let i = 0; i < 22; i++) { drive(g, me, [{}]); me.x = g.boss.x - 40; }
+    assert.strictEqual(me.hp, 100, 'no damage during the wind-up');
+    for (let i = 0; i < 10; i++) drive(g, me, [{}]);
+    assert(me.hp < 100, 'the rush itself hits');
+  }
+  console.log('D1 archetypes ok');
 }

@@ -71,6 +71,8 @@ function think(state, p) {
     const pref = p.slot % 2 ? 1 : -1, px = foe.x + pref * reach;
     if (px > state.camX + 24 && px < state.camX + S.W - 24) side = pref;
   }
+  // A guarding elite is attacked from behind when a teammate holds its attention.
+  if (foe.guard && foe.aim !== p.slot) side = -foe.face;
   const laneOff = isBoss ? [-26, 26, -12, 12, 0, -20][p.slot] : [-6, 6, -3, 3, 0, -5][p.slot];
   // Step out of a warned boss lane (CPUs react late, so they still get caught sometimes).
   const bs = state.boss;
@@ -78,20 +80,37 @@ function think(state, p) {
     const inLane = bs.warn.find(ly => Math.abs(ly - p.y) < 12);
     if (inLane !== undefined) { if (p.y > inLane || inLane < 18) inp.d = 1; else inp.u = 1; return; }
   }
+  // Get out of the lane of a boss that is winding up a charge (not every time).
+  // Each CPU decides once per charge whether it saw it coming.
+  if (bs && bs.st === 'charge') {
+    if (ai.charge !== bs.cycle) { ai.charge = bs.cycle; ai.dodge = S.rng(state) < 0.75; }
+    // Out of its lane, and stay out until it has gone past.
+    if (ai.dodge && (p.x - bs.x) * bs.tx > -40) { if (Math.abs(bs.y - p.y) < 26) { if (p.y > bs.y || bs.y < 28) inp.d = 1; else inp.u = 1; } return; }
+  }
+  // Step out of a burning lane or off a bomb mark (late, and not every time).
+  for (const h of state.hazards || []) {
+    if (p.x > h.x0 - 6 && p.x < h.x1 + 6 && Math.abs(p.y - h.y) < h.half + 2 && S.rng(state) < 0.7) { if (p.y > h.y || h.y < 20) inp.d = 1; else inp.u = 1; return; }
+  }
+  for (const pr of state.projs) {
+    if (pr.lob && pr.t > 14 && Math.abs(pr.tx - p.x) < 34 && Math.abs(pr.ty - p.y) < 16 && S.rng(state) < 0.7) { if (p.x < pr.tx) inp.l = 1; else inp.r = 1; return; }
+  }
   // Jump the boss's rear sweep when caught behind it (late, like every CPU reaction).
   if (bs && bs.st === 'sweep' && (p.x - bs.x) * bs.tx > 0 && bs.t >= S.SWEEP_WARN - 8 && bs.t <= S.SWEEP_WARN - 4 && p.st !== 'jump' && S.rng(state) < 0.35) { inp.j = 1; return; }
   // Dodge incoming shots by jumping.
   for (const pr of state.projs) if (pr.enemy && Math.abs(pr.y - p.y) < 12 && Math.sign(p.x - pr.x) === Math.sign(pr.vx) && Math.abs(pr.x - p.x) < 50 && p.st !== 'jump' && S.rng(state) < 0.06) { inp.j = 1; return; }
   // Wait a little inside the screen edge, each seat at its own depth, rather than all on the rim.
   const rim = isBoss ? 16 : 34 + p.slot * 13;
-  const inPlace = go(S.clamp(foe.x + side * reach, state.camX + rim, state.camX + S.W - rim), foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0), isBoss ? 14 : 6);
-  if (inPlace || (Math.abs(foe.x - p.x) < reach + 6 && Math.abs(foe.y + laneOff - p.y) < (isBoss ? 14 : 10))) {
+  // Never line up inside a burning lane: stand just beside it instead.
+  let ty = foe.y + laneOff + (isBoss ? ai.jitter * 0.2 : 0);
+  for (const h of state.hazards || []) if (Math.abs(ty - h.y) < h.half + 4 && p.x > h.x0 - 30 && p.x < h.x1 + 30) ty = h.y + (p.y >= h.y && h.y < S.DEPTH - 24 || h.y < 24 ? 1 : -1) * (h.half + 5);
+  const inPlace = go(S.clamp(foe.x + side * reach, state.camX + rim, state.camX + S.W - rim), ty, isBoss ? 14 : 6);
+  if (inPlace || (Math.abs(foe.x - p.x) < reach + 6 && Math.abs(ty - p.y) < (isBoss ? 14 : 10))) {
     inp.l = inp.r = 0;
     const at = p.x < foe.x ? -1 : 1; // the side this Sproto is actually on
     if (p.face !== -at) { if (at < 0) inp.r = 1; else inp.l = 1; }
     const crowd = state.enemies.filter(e => !e.dead && Math.abs(e.x - p.x) < 50 && Math.abs(e.y - p.y) < 16).length;
     if (crowd >= 3 && p.hp > 40 && S.rng(state) < 0.02) inp.s = 1;
-    else if ((ai.t + p.slot * 5) % 17 === 0 && S.rng(state) < 0.8) inp.a = 1;
+    else if ((ai.t + p.slot * 5) % 17 === 0 && S.rng(state) < 0.8) { inp.a = 1; if (foe.guard && (p.x - foe.x) * foe.face >= 0) { inp.u = 1; inp.d = 0; } } // launcher: under the guard
   }
 }
 function nearestFoe(state, p) {
@@ -107,7 +126,7 @@ function nearestFoe(state, p) {
     if (d < bd) { bd = d; best = e; }
   }
   p.ai.foe = best ? best.id : 0;
-  if (best) best = { x: best.x, y: best.y, id: best.id, mates: taken[best.id] || 0 };
+  if (best) best = { x: best.x, y: best.y, id: best.id, mates: taken[best.id] || 0, face: best.face, guard: best.elite && best.guard > 0 ? 1 : 0, aim: best.target ? best.target.slot : -1 };
   const b = state.boss;
   if (b && b.hp > 0 && b.st !== 'enter' && b.st !== 'dead') {
     const d = Math.abs(b.x - p.x) * 0.8 + 40;

@@ -66,12 +66,13 @@ function contentManifest(manifest) {
       phaseCount: 2,
       oneClear: true,
       length: sim.stageLength(i),
+      archetype: sim.BOSS_ARCHETYPES[i % sim.BOSS_ARCHETYPES.length],
     });
   }
   return {
     gameId: GAME_ID,
     stages: stages,
-    fighters: fighters.map(f => ({ id: f.id, name: f.name })),
+    fighters: fighters.map((f, i) => ({ id: f.id, name: f.name, passive: sim.PASSIVES[i % sim.PASSIVES.length].id })),
     weapons: sim.WEAPONS.map(w => w.id),
   };
 }

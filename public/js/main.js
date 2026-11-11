@@ -529,9 +529,12 @@ function drawLobby() {
     const nm = fname(s.fid);
     T(g, nm.length > 10 ? nm : '< ' + nm + ' >', x + cw / 2, y + 172, nm.length > 10 ? 6 : 7, '#fff', 'center');
     if (nm.length > 10) { T(g, '<', x + 6, y + 150, 8, '#8a88a8'); T(g, '>', x + cw - 6, y + 150, 8, '#8a88a8', 'right'); }
-    T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 190, 7, '#ffd23d', 'center');
-    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
-    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');
+    T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 188, 7, '#ffd23d', 'center');
+    const pv = S.PASSIVES[s.fid % S.PASSIVES.length]; // each Sproto's passive
+    T(g, pv.name.toUpperCase(), x + cw / 2, y + 200, 5, '#8ef8d6', 'center');
+    T(g, pv.text, x + cw / 2, y + 208, 4.5, '#c8c6e0', 'center');
+    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 222, 6, '#7aff8a', 'center');
+    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 222, 5, '#8a88a8', 'center');
   });
   const lines = padUI() ? padLobbyLines() : app.role === 'banked'
     ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']

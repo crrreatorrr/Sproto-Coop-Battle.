@@ -4,10 +4,10 @@
     "seed": 42,
     "slots": "6 cpu",
     "mode": "gameover",
-    "stageReached": 4,
-    "t": 19918,
+    "stageReached": 2,
+    "t": 11743,
     "players": 6,
-    "snapSha256": "50d147d51f4fffc66b19ae357ad6498b9af10372e5ff1472f88842eacecdbed8"
+    "snapSha256": "76085edd3026ad70765ec4859166c17557fc826bf17c320e898500f1fb6402fc"
   },
   "mixedSeed7Tick1800": {
     "seed": 7,
@@ -17,7 +17,7 @@
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "92f4cf6cf604e54bd28ad326a1a0875b03b6ec7b6a95adf5a3d573686c01909c"
+    "snapSha256": "022c8d9aec65da5a2dd89631281ac34f8383124fc549317d1d1781b882698f22"
   },
   "sixLocalSeed99Tick1800": {
     "seed": 99,
@@ -27,6 +27,6 @@
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "5da0d595ccecc4a145366d43ddf3a8e8c97d20f32df6a8d427137eff2c18b293"
+    "snapSha256": "723629a031eec5d292e6afd02b68017de89bc4d2b5b3bbb0162ddfb632497583"
   }
 }

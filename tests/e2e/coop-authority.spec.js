@@ -135,6 +135,7 @@ function authority() {
   }
   down.session.state.players[0].st = 'down';
   down.session.state.players[0].downT = 5000;
+  down.session.state.players[0].lives = 1; // no spare life: with one, the last human drops back in at once (plan A3)
   down.session.state.players[0].x = 80;
   stepNeutral(CoopProtocol, down.session, 200);
   const downRow = CoopProtocol.participationFacts(down.session).accounts[0];

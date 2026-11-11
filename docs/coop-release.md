@@ -2,7 +2,7 @@
 
 Prepared for H5. This document does not deploy, flip a public flag, or change gameplay. The sim bytes below are the bytes on game main `171a7e9` and they still match the hub pin.
 
-**Superseded pins.** The gameplay improvement plan (`docs/gameplay-improvement-plan.md`) changed the sim after this release, so the sim hashes in the matrix below are the C5 record, not the current pin. The current pin is `build/coop-sim.pin.json` (also quoted in `docs/coop-server-contract.md`), and the hub must re-vendor it before banked play matches again.
+**Superseded pins.** The gameplay improvement plan (`docs/gameplay-improvement-plan.md`) changed the sim after this release, so the sim hashes, the content fingerprint and the hub golden in the matrix below are the C5 record, not the current pin. The current pin is `build/coop-sim.pin.json` (also quoted in `docs/coop-server-contract.md`), and the hub must re-vendor it before banked play matches again.
 
 ## What was exercised
 
