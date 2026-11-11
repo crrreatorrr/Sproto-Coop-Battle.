@@ -53,7 +53,8 @@ console.log('ok');
   console.log('god mode ok');
 }
 
-// Death rules: no auto revive; 10 s to revive; a human's second death or a fully downed team loses.
+// Death rules: no auto revive; 10 s to revive; a human's second death puts them out for the stage;
+// the run is lost when no human is left or the whole team is down.
 {
   const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
   const g = Sim.create(cfg, 11);
@@ -65,10 +66,28 @@ console.log('ok');
   assert(cpu.st === 'dead', 'an unrevived CPU dies after 10 s and stays dead');
   for (let i = 0; i < 600; i++) { freeze(); Sim.step(g); }
   assert(cpu.st === 'dead', 'dead Sprotos are not revived automatically');
+  // B4: a human's second death puts that human out; the run goes on while another human is left.
+  const kill = p => { p.inv = 0; p.hp = 0; p.st = 'down'; p.downT = 1; g.enemies.length = 0; for (let i = 0; i < 3; i++) { freeze(); Sim.step(g); } };
   const me = g.players[0];
-  for (const n of [1, 2]) { me.inv = 0; me.st = 'idle'; me.hp = 1; g.enemies.length = 0;
-    me.hp = 0; me.st = 'down'; me.downT = 1; for (let i = 0; i < 3; i++) { freeze(); Sim.step(g); } }
-  assert(g.mode === 'gameover', 'the second death of a human loses the game');
+  kill(me);
+  assert(Sim.alive(me) && me.lives === 1 && g.mode === 'play', 'the first death drops the human back in on the last life');
+  kill(me);
+  assert(me.st === 'dead' && me.lives === 0, 'the second death puts that human out');
+  assert.strictEqual(g.mode, 'play', 'one human out does not end the run for the others');
+  for (const k of [1, 2, 4]) { kill(g.players[k]); kill(g.players[k]); assert.strictEqual(g.mode, 'play'); }
+  kill(g.players[5]); kill(g.players[5]);
+  assert.strictEqual(g.mode, 'gameover', 'the run ends when the last human is out');
+  assert(/No human/.test(g.banner.sub), 'and says why');
+  // Humans who were put out return for the next stage on one life, like dead CPUs do.
+  {
+    const n = Sim.create(cfg.map((c, i) => ({ ...c, ctrl: i < 2 ? 'local' : 'cpu' })), 12);
+    const out = n.players[0];
+    for (let i = 0; i < 60; i++) Sim.step(n);
+    for (const round of [1, 2]) { out.inv = 0; out.hp = 0; out.st = 'down'; out.downT = 1; out.x = n.camX + 600; out.y = 0; n.players.forEach((q, k) => { if (k) { q.x = n.camX + 40; q.y = 110; } }); for (let i = 0; i < 3; i++) Sim.step(n); }
+    assert(out.st === 'dead' && n.mode === 'play');
+    Sim.startStage(n, 1);
+    assert(Sim.alive(out) && out.lives === 1 && out.hp >= 60, 'back for the next stage on a last life');
+  }
   console.log('death rules ok');
 }
 
@@ -348,4 +367,210 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   for (let i = 0; i < Sim.REVIVE_TICKS + 2; i++) { two.g.players.forEach(p => (p.in = { ...PN })); Sim.step(two.g); }
   assert(Sim.alive(b) && a.revs === 1, 'a revive is counted for the helper');
   console.log('run totals ok');
+}
+
+// B1: waves, Shadow Sproto health and boss health scale with the number of human seats, counted
+// when the stage's first fight starts.
+{
+  const make = (h, stage, seed) => Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < h ? 'local' : 'cpu' })), seed || 71, stage || 0);
+  const firstWave = g => { g.camX = g.stage.waves[0].x; g.players.forEach(p => { p.in = { ...PN }; p.x = g.camX + 100; p.inv = 9999; }); Sim.step(g); return g.stage.waves[0]; };
+  assert.strictEqual(Sim.WAVE_SCALE(1), 0.6); assert.strictEqual(Sim.WAVE_SCALE(5), 1);
+  for (const [h, want] of [[0, 1], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]]) {
+    for (const stage of [0, 5, 11]) {
+      const g = make(h, stage);
+      assert.strictEqual(g.humans, 0, 'not counted before the first fight');
+      const w = firstWave(g);
+      assert.strictEqual(g.humans, want, h + ' human seats count as ' + want);
+      // The first Shadow Sproto of the wave may already have been spawned by this tick.
+      const spawned = g.enemies.length;
+      assert.strictEqual(w.left + spawned, Math.round(w.count * Sim.WAVE_SCALE(want)), 'wave size for ' + h + ' humans on stage ' + (stage + 1));
+      // Health: let a few of the wave walk on and compare each with the formula for its kit.
+      for (let i = 0; i < 200 && g.enemies.length < 4; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
+      assert(g.enemies.length >= 4);
+      for (const e of g.enemies) {
+        const base = (26 + stage * 4 + (e.weapon === 0 ? 14 : 0)) * (1 + 0.09 * stage);
+        assert.strictEqual(e.maxHp, Math.round(base * Sim.GRUNT_HP_SCALE(want)), 'Shadow Sproto health for ' + h + ' humans on stage ' + (stage + 1));
+      }
+      g.enemies.length = 0; g.stage.waves.forEach(x => (x.done = true));
+      g.camX = g.stage.len; g.lockX = null;
+      for (let i = 0; i < 400 && !g.boss; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
+      assert.strictEqual(g.boss.maxHp, Math.round((2600 + 480 * stage) * Sim.BOSS_HP_SCALE(want)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
+    }
+  }
+  // Fewer humans means smaller waves and softer enemies; six humans face the largest of everything.
+  for (const f of [Sim.WAVE_SCALE, Sim.GRUNT_HP_SCALE, Sim.BOSS_HP_SCALE]) for (let h = 1; h < 6; h++) assert(f(h) < f(h + 1));
+  assert(Sim.BOSS_HP_SCALE(1) < 0.6 && Sim.BOSS_HP_SCALE(6) >= 1 && Sim.GRUNT_HP_SCALE(6) >= 1);
+  // A drop-in mid-stage does not change the stage in progress; the next stage counts again.
+  const g = make(1);
+  firstWave(g);
+  g.players[1].ctrl = 'local'; g.players[2].ctrl = 'local';
+  for (let i = 0; i < 30; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
+  assert.strictEqual(g.humans, 1, 'locked for the stage in progress');
+  Sim.startStage(g, 1);
+  firstWave(g);
+  assert.strictEqual(g.humans, 3, 'counted again on the next stage');
+  // CPU teammates: 75% dealt / 115% taken with one or two humans, 55% / 135% with more.
+  for (const [h, dealt, taken] of [[1, 0.75, 1.15], [2, 0.75, 1.15], [3, 0.55, 1.35], [6, 0.55, 1.35]]) {
+    const c = arena({ humans: Math.min(h, 5), cpus: true });
+    c.g.humans = h;
+    const cpu = c.g.players[5];
+    Object.assign(cpu, { x: c.g.camX + 300, y: 100, st: 'attack', t: 4, combo: 1, launch: false, hitDone: new Set(), face: 1, weapon: 0, inv: 0, hp: 100 });
+    const e = foe(c.g, cpu.x + 30, 100, { hp: 500, maxHp: 500 });
+    c.g.players.forEach((p, k) => { if (k !== 5) { p.x = c.g.camX + 30; p.y = 10; } p.in = { ...PN }; });
+    Sim.step(c.g); // the swing is on its first active frame
+    assert.strictEqual(500 - e.hp, Math.ceil(9 * dealt), 'CPU katana hit with ' + h + ' humans');
+    const hit = foe(c.g, cpu.x - 22, 100, { st: 'attack', t: 10, face: 1, weapon: 1 });
+    cpu.inv = 0; cpu.hp = 100; cpu.st = 'idle'; c.g.enemies.splice(c.g.enemies.indexOf(e), 1);
+    Sim.step(c.g);
+    assert.strictEqual(100 - cpu.hp, Math.ceil(Math.round(5 * 0.8) * taken), 'CPU damage taken with ' + h + ' humans');
+  }
+  // CPUs are revived like humans: by a human as often as needed, by another CPU once per life and stage.
+  const r = arena({ cpus: true });
+  const a = r.g.players[4], b = r.g.players[5];
+  r.g.players.forEach((p, k) => { if (k < 4) { p.x = r.g.camX + 30; p.y = 5; if (k) { p.st = 'dead'; p.dead = true; } } });
+  r.me.x = r.g.camX + 30; r.me.y = 5;
+  const down = () => Object.assign(b, { x: r.g.camX + 400, y: 100, hp: 0, st: 'down', downT: Sim.DOWN_TICKS, revive: 0, z: 0 });
+  down(); a.x = b.x - 200; a.y = 40;
+  let ticks = 0;
+  for (; ticks < Sim.DOWN_TICKS && b.st === 'down'; ticks++) { r.me.in = { ...PN }; Sim.step(r.g); r.g.events.length = 0; }
+  assert(Sim.alive(b) && b.npcRevived, 'a CPU Sproto runs over and revives a downed CPU (' + (ticks / 60).toFixed(1) + ' s)');
+  assert.strictEqual(a.revs, 1);
+  down(); a.x = b.x - 200; a.y = 40;
+  for (ticks = 0; ticks < Sim.DOWN_TICKS + 5 && b.st === 'down'; ticks++) { r.me.in = { ...PN }; Sim.step(r.g); r.g.events.length = 0; }
+  assert.strictEqual(b.st, 'dead', 'but only once: the second time only a human can help');
+  Sim.startStage(r.g, 1);
+  assert(Sim.alive(b) && !b.npcRevived, 'the CPU revive is available again on the next stage');
+  console.log('B1 scaling ok');
+}
+
+// B2: block on press, parry from the press, spin on a quick tap, and a short attack buffer.
+{
+  // Block is up on the very tick Special is pressed (it used to need a 9-tick hold).
+  let { g, me } = arena();
+  drive(g, me, [{ s: 1 }]);
+  assert.strictEqual(me.st, 'block', 'block rises on press');
+  // A hit 3 ticks after the press is parried: the parry window is the first 8 ticks from the press.
+  const parryAt = n => {
+    const a = arena(); const e = foe(a.g, a.me.x + 28, 60, { st: 'attack', t: 10 - n + 1, face: -1, weapon: 1 }); // knife lands on tick n
+    drive(a.g, a.me, Array(n).fill({ s: 1 }));
+    return { hp: a.me.hp, dazed: e.st === 'hit' && e.stun >= 2, parries: a.me.parries };
+  };
+  for (const n of [1, 3, Sim.PARRY_WINDOW]) { const r = parryAt(n); assert(r.hp === 100 && r.dazed && r.parries === 1, 'parry ' + n + ' ticks after the press'); }
+  const late = parryAt(Sim.PARRY_WINDOW + 3);
+  assert(late.hp < 100 && late.hp >= 99 && !late.dazed, 'after the window it is a plain block: 75% less damage (' + late.hp + ')');
+  // A quick tap is still the spin attack, and costs health; holding then releasing is not.
+  ({ g, me } = arena());
+  drive(g, me, [{ s: 1 }, { s: 1 }, { s: 1 }, {}]);
+  assert(me.st === 'special' && me.hp === 94, 'tap Special: spin (' + me.st + ', ' + me.hp + ')');
+  ({ g, me } = arena());
+  drive(g, me, [...Array(Sim.SPIN_TAP + 2).fill({ s: 1 }), {}]);
+  assert(me.st === 'idle' && me.hp === 100, 'a held block released does not spin');
+  // A tap that blocked or parried something does not turn into a spin.
+  ({ g, me } = arena());
+  foe(g, me.x + 28, 60, { st: 'attack', t: 9, face: -1, weapon: 1 });
+  drive(g, me, [{ s: 1 }, { s: 1 }, {}]);
+  for (let i = 0; i < 12; i++) drive(g, me, [{}]); // let the parry hitstop pass
+  assert(me.st !== 'special' && me.hp === 100, 'a successful parry tap is not followed by a spin');
+  // Parries cannot be mashed: a block raised right after the last one blocks but does not parry.
+  ({ g, me } = arena());
+  drive(g, me, [...Array(8).fill({ s: 1 }), {}, {}]);
+  const e2 = foe(g, me.x + 28, 60, { st: 'attack', t: 9, face: -1, weapon: 1 });
+  drive(g, me, [{ s: 1 }, { s: 1 }]);
+  assert(me.hp < 100 && e2.st === 'attack', 're-raised within ' + Sim.PARRY_LOCK + ' ticks: blocked, not parried');
+  ({ g, me } = arena());
+  drive(g, me, [...Array(8).fill({ s: 1 }), ...Array(Sim.PARRY_LOCK + 1).fill({})]);
+  const e3 = foe(g, me.x + 28, 60, { st: 'attack', t: 9, face: -1, weapon: 1 });
+  drive(g, me, [{ s: 1 }, { s: 1 }]);
+  assert(me.hp === 100 && e3.st === 'hit', 'after the lock a fresh block parries again');
+  // Special held through a swing blocks on the first free tick.
+  ({ g, me } = arena());
+  drive(g, me, [{ a: 1 }, ...Array(20).fill({ s: 1 })]);
+  assert.strictEqual(me.st, 'block', 'held Special blocks as soon as the swing ends');
+  // Down + Special still fires a saved power-up instead of blocking.
+  ({ g, me } = arena());
+  me.powers.push(0);
+  drive(g, me, [{ d: 1, s: 1 }]);
+  assert(me.st === 'special' && me.powers.length === 0, 'Down + Special fires the power-up');
+  // Attack buffer: a press during the swing's startup comes out as the next combo hit.
+  const combo = withBuffer => { const a = arena(); drive(a.g, a.me, [{ a: 1 }, {}, { a: 1 }, ...Array(withBuffer ? 5 : 0).fill({}), ...Array(14).fill({})]); return a.me; };
+  // katana: startup 4, active 4 -> chaining opens at t 9. The second press is at t 2.
+  const noChain = (() => { const a = arena(); drive(a.g, a.me, [{ a: 1 }, {}, { a: 1 }, ...Array(4).fill({})]); return a.me.combo; })();
+  assert.strictEqual(noChain, 1, 'a press ' + (Sim.ATTACK_BUFFER + 1) + ' ticks early is not held that long');
+  const chained = (() => { const a = arena(); drive(a.g, a.me, [{ a: 1 }, {}, {}, {}, { a: 1 }, ...Array(6).fill({})]); return a.me.combo; })();
+  assert.strictEqual(chained, 2, 'a press up to ' + Sim.ATTACK_BUFFER + ' ticks early chains the combo');
+  // ... and a press late in a finisher's recovery starts the next string on the first free tick.
+  ({ g, me } = arena());
+  Object.assign(me, { st: 'land', t: 3 });
+  drive(g, me, [{ a: 1 }, {}, {}, {}, {}]);
+  assert.strictEqual(me.st, 'attack', 'a press during landing recovery is buffered');
+  ({ g, me } = arena());
+  drive(g, me, [{ a: 1 }, ...Array(40).fill({})]);
+  assert.strictEqual(me.st, 'idle', 'one press is one attack: the buffer never repeats it');
+  console.log('B2 block and buffer ok');
+}
+
+// B3: every Shadow Sproto keeps its own stand-off, and all of them can still reach their target.
+{
+  for (const weapon of [0, 1, 2]) for (const offX of [-28, 0, 28]) {
+    const { g, me } = arena();
+    me.inv = 0; me.hp = 100;
+    const e = foe(g, me.x + 140, 60, { weapon, cd: 0, offX, offY: 0, hp: 500, maxHp: 500 });
+    let swung = false;
+    for (let i = 0; i < 400 && !swung; i++) { drive(g, me, [{}]); me.hp = 100; me.st = me.st === 'hit' || me.st === 'knock' || me.st === 'lying' ? 'idle' : me.st; me.inv = 0; if (e.st === 'attack') swung = true; }
+    assert(swung, 'weapon ' + weapon + ' with stand-off ' + offX + ' still attacks');
+    assert(Math.abs(e.x - me.x) < Sim.ENEMY_WEAPONS[weapon].reach, 'and does so inside its reach');
+  }
+  // Spawned stand-offs differ, and two Shadow Sprotos on one target do not stand in each other.
+  const { g, me } = arena();
+  me.inv = 99999;
+  const a = foe(g, me.x + 100, 60, { weapon: 0, offX: 0, offY: 0 }), b = foe(g, me.x + 104, 60, { weapon: 0, offX: 0, offY: 0 });
+  for (let i = 0; i < 300; i++) drive(g, me, [{}]);
+  assert(Math.abs(a.x - b.x) > 16 || Math.abs(a.y - b.y) > 5, 'two on one target stand apart: ' + [a.x - me.x, a.y, b.x - me.x, b.y].map(Math.round));
+  console.log('B3 spread ok');
+}
+
+// B5: the boss faces the fuller side, and Sprotos who stay behind it draw a rear sweep.
+{
+  const bossFight = () => {
+    const a = arena({ humans: 6 });
+    const g = a.g;
+    g.boss = { bi: 0, phase: 0, hp: 9000, maxHp: 9000, x: g.camX + 320, y: 60, z: 0, face: -1, st: 'idle', t: 0, row: 0, w: 150, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0 };
+    return a;
+  };
+  const place = (g, xs) => g.players.forEach((p, k) => { Object.assign(p, { x: g.boss.x + xs[k], y: 20 + k * 14, z: 0, st: 'idle', inv: 0, hp: 100, vx: 0 }); p.in = { ...PN }; });
+  // Four on the left, two on the right: it faces left even though the average is to the right.
+  let { g } = bossFight();
+  place(g, [-100, -110, -120, -130, 300, 310]);
+  Sim.step(g);
+  assert.strictEqual(g.boss.face, -1, 'faces the side with more Sprotos, not the average position');
+  // Two behind for three seconds: a sweep that hits them on the ground.
+  const sweep = (xs, jumper) => {
+    const a = bossFight(); const b = a.g.boss; let saw = 0, t = 0;
+    for (; t < 900; t++) {
+      if (b.st === 'idle') place(a.g, xs); // hold everyone in place (and at full health) until the sweep starts
+      else a.g.players.forEach(p => (p.in = { ...PN }));
+      if (b.st === 'fire' || b.st === 'charge') { b.st = 'idle'; b.t = 0; a.g.projs.length = 0; } // only the sweep is under test
+      a.g.enemies.length = 0;
+      if (b.st === 'sweep') {
+        if (!saw) saw = t;
+        if (jumper !== undefined && b.t === Sim.SWEEP_WARN - 6) a.g.players[jumper].in = { ...PN, j: 1 };
+        if (b.t === Sim.SWEEP_WARN - 1) { Sim.step(a.g); break; } // this step lands the sweep
+      }
+      Sim.step(a.g);
+      if (b.st === 'sweep' && b.t < Sim.SWEEP_WARN) a.g.players.forEach(p => assert.strictEqual(p.hp, 100, 'no damage during the warning'));
+    }
+    return { g: a.g, saw, hp: a.g.players.map(p => p.hp) };
+  };
+  const two = sweep([-120, -130, -140, -150, 120, 130]); // four in front (left), two behind
+  assert(two.saw > 150 && two.saw < 320, 'two behind: swept after about 3 s (tick ' + two.saw + ')');
+  assert(two.hp[4] < 100 && two.hp[5] < 100, 'the two behind are hit: ' + two.hp);
+  assert.deepStrictEqual(two.hp.slice(0, 4), [100, 100, 100, 100], 'the four in front are not');
+  const one = sweep([-120, -130, -140, -150, -160, 120]);
+  assert(one.saw > two.saw + 60, 'one behind: it takes longer (tick ' + one.saw + ')');
+  assert(one.hp[5] < 100, 'but the safe spot behind the boss is gone');
+  const jumped = sweep([-120, -130, -140, -150, 120, 130], 5);
+  assert(jumped.hp[4] < 100 && jumped.hp[5] === 100, 'a jump clears the sweep: ' + jumped.hp);
+  const none = sweep([-120, -130, -140, -150, -160, -170]);
+  assert.strictEqual(none.saw, 0, 'nobody behind, no sweep');
+  console.log('B5 rear sweep ok');
 }

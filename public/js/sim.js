@@ -22,14 +22,24 @@ const ENEMY_WEAPONS = [
   { id: 'pike',   reach: 62, dmg: 8, startup: 20, active: 5, recovery: 24 },
   { id: 'knife',  reach: 32, dmg: 5, startup: 22, active: 3, recovery: 18, thrower: true },
 ];
-// Each human may die once and drop back in; the second death loses the game.
+// Each human may die once and drop back in; the second death puts that human out until the next
+// stage. The run is lost when no human is left, or when every Sproto is down.
 const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 2;
-// Fighting: dash (double-tap), block/parry (hold Special), grab/throw, launcher + juggles, slam.
-const DASH_TICKS = 14, DOUBLE_TAP = 14, BLOCK_HOLD = 9, PARRY_WINDOW = 8, GRAB_TICKS = 150;
+// Fighting: dash (double-tap), block/parry (Special), grab/throw, launcher + juggles, slam.
+// Block rises on the tick Special is pressed and the parry window is its first PARRY_WINDOW ticks.
+// Letting go within SPIN_TAP ticks without having blocked anything is the spin attack. A block
+// raised within PARRY_LOCK ticks of the last one cannot parry, so parries cannot be mashed.
+const DASH_TICKS = 14, DOUBLE_TAP = 14, SPIN_TAP = 6, PARRY_WINDOW = 8, PARRY_LOCK = 24, GRAB_TICKS = 150;
+// An Attack press is remembered for this many ticks, so one made late in a swing still comes out.
+const ATTACK_BUFFER = 6;
 // A downed Sproto that nobody revives within 10 seconds dies.
 const UFO_TICKS = 720, DOWN_TICKS = 600, REVIVE_TICKS = 70;
-// CPU teammates are deliberately weaker than humans so the team can lose Sprotos.
-const CPU_DMG = 0.55, CPU_TAKEN = 1.35;
+// CPU teammates are deliberately weaker than humans so the team can lose Sprotos. With one or two
+// humans they carry more of the fight, so they hit harder and last longer.
+const CPU_DMG = 0.55, CPU_TAKEN = 1.35, CPU_DMG_FEW = 0.75, CPU_TAKEN_FEW = 1.15;
+// Difficulty scales with the number of human seats (h = 1..6), counted when a stage's first fight
+// starts so a drop-in mid-stage does not change the stage in progress.
+const WAVE_SCALE = h => 0.5 + 0.1 * h, GRUNT_HP_SCALE = h => 0.58 + 0.115 * h, BOSS_HP_SCALE = h => 0.34 + 0.175 * h;
 // Difficulty: more Shadow Sprotos, tougher and more aggressive.
 // Difficulty ramps by stage: stage 1 is a warm-up, stage 12 is brutal.
 const ENEMY_HP = s => 1.0 + 0.09 * s, ENEMY_DMG = s => 0.8 + 0.1 * s, MAX_ON_SCREEN = 12;
@@ -41,6 +51,11 @@ function rng(state) { // mulberry32 stored in state.seed
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+function seatedHumans(state) { let n = 0; for (const p of state.players) if (p.ctrl !== 'cpu') n++; return clamp(n, 1, SLOTS); }
+const humansOf = state => state.humans || seatedHumans(state);
+function lockHumans(state) { if (!state.humans) state.humans = seatedHumans(state); }
+const cpuDmg = state => (humansOf(state) <= 2 ? CPU_DMG_FEW : CPU_DMG);
+const cpuTaken = state => (humansOf(state) <= 2 ? CPU_TAKEN_FEW : CPU_TAKEN);
 const pick = (s, arr) => arr[Math.floor(rng(s) * arr.length)];
 
 function stageLength(i) { return 2200 + i * 80; }
@@ -63,7 +78,7 @@ function newPlayer(slot, cfg) {
     x: 80 + slot * 14, y: 18 + slot * 17, z: 0, vx: 0, vy: 0, vz: 0, face: 1,
     hp: MAX_HP, lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
     inv: 90, downT: 0, revive: 0, ufoT: 0, ufoShield: 0, shotCd: 0, ballCd: 0, out: false, contT: 0,
-    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, sHeld: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, kills: 0, revs: 0, parries: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
+    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, bufA: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, kills: 0, revs: 0, parries: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
   };
 }
 
@@ -81,11 +96,14 @@ function startStage(state, i) {
   state.stageIdx = i;
   state.stage = makeStage(state, i);
   state.camX = 0; state.lockX = null; state.enemies = []; state.projs = []; state.items = []; state.fx = []; state.boss = null;
-  state.mode = 'play'; state.clearT = 0;
+  state.mode = 'play'; state.clearT = 0; state.humans = 0;
   for (const c of state.stage.crates) state.items.push({ id: state.nextId++, kind: 'crate', x: c.x, y: c.y, z: 0, hp: 12 });
   state.players.forEach((p, k) => {
     Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
-    p.hp = p.dead ? 60 : Math.max(p.hp, 60); p.dead = false; // dead CPUs return for the next stage
+    // Dead Sprotos return for the next stage: CPUs as before, and a human who was put out comes
+    // back on a last life. Everyone can be revived by a CPU once more.
+    if (p.dead && p.ctrl !== 'cpu') p.lives = Math.max(p.lives, 1);
+    p.hp = p.dead ? 60 : Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
   });
   state.banner = { text: 'STAGE ' + (i + 1), sub: (root.MANIFEST ? root.MANIFEST.bosses[i % 12].stage : ''), t: 150 };
   ev(state, 'stage');
@@ -111,16 +129,18 @@ function setState(p, st) { p.st = st; p.t = 0; }
 
 function updatePlayer(state, p) {
   const inp = p.in;
-  if (p.hs > 0) { p.hs--; return; } // hitstop: frozen for a few ticks on impact (inputs stay buffered)
+  if (p.hs > 0) { // hitstop: frozen for a few ticks on impact; an Attack tap during it is kept
+    if (inp.a && !p.prev.a) p.bufA = ATTACK_BUFFER;
+    p.prev.a = inp.a; p.hs--; return;
+  }
   const pressA = inp.a && !p.prev.a, pressJ = inp.j && !p.prev.j, pressS = inp.s && !p.prev.s, pressP = inp.p && !p.prev.p;
+  if (pressA) p.bufA = ATTACK_BUFFER; else if (p.bufA > 0) p.bufA--;
+  const wantA = p.bufA > 0; // pressed now, or within the last few ticks
   // Double-tap left or right to dash.
   let dash = 0;
   for (const [k, d] of [['l', -1], ['r', 1]]) {
     if (inp[k] && !p.prev[k]) { if (p.tapDir === d && state.t - p.tapT <= DOUBLE_TAP) dash = d; p.tapDir = d; p.tapT = state.t; }
   }
-  // Special: a quick tap spins (on release), holding it blocks.
-  const tapS = !inp.s && p.sHeld > 0 && p.sHeld < BLOCK_HOLD && !p.prev.d;
-  p.sHeld = inp.s ? p.sHeld + 1 : 0;
   p.prev.a = inp.a; p.prev.j = inp.j; p.prev.s = inp.s; p.prev.p = inp.p; p.prev.l = inp.l; p.prev.r = inp.r; p.prev.d = inp.d;
   p.t++;
   const god = isGod(state, p);
@@ -131,8 +151,9 @@ function updatePlayer(state, p) {
   if (p.st === 'dead') return; // no automatic revives: dead Sprotos sit out the rest of the stage
   if (p.st === 'down') {
     p.downT--;
-    // Humans revive anyone. CPU Sprotos revive only humans, and only once per life (p.npcRevived).
-    const helper = state.players.find(o => o !== p && (o.ctrl !== 'cpu' || (p.ctrl !== 'cpu' && !p.npcRevived)) && alive(o) && o.st !== 'ufo' && Math.abs(o.x - p.x) < 30 && Math.abs(o.y - p.y) < 20);
+    // Humans revive anyone, as often as they like. CPU Sprotos revive anyone too, humans and each
+    // other, but each Sproto gets only one CPU revive per life and per stage (p.npcRevived).
+    const helper = state.players.find(o => o !== p && (o.ctrl !== 'cpu' || !p.npcRevived) && alive(o) && o.st !== 'ufo' && Math.abs(o.x - p.x) < 30 && Math.abs(o.y - p.y) < 20);
     if (helper) {
       p.revive++;
       if (p.revive % 12 === 0) fx(state, 'spark', p.x, p.y, 20);
@@ -176,7 +197,7 @@ function updatePlayer(state, p) {
     }
     if (dash && p.t > w.startup + w.active) startDash(state, p, dash); // cancel recovery into a dash
     else if (p.t >= tot) setState(p, 'idle');
-    else if (pressA && p.t > w.startup + w.active && !fin && !p.launch) startAttack(state, p, inp);
+    else if (wantA && p.t > w.startup + w.active && !fin && !p.launch) startAttack(state, p, inp);
   } else if (p.st === 'jumpatk') {
     const w = WEAPONS[p.weapon];
     meleeHit(state, p, w.reach * 0.8, w.dmg + 2, true, w.knock);
@@ -190,7 +211,7 @@ function updatePlayer(state, p) {
     if (p.t > 6) setState(p, 'idle');
   } else if (p.st === 'dash') {
     p.vx = p.dashDir * (p.t < 8 ? 6.2 : 3); p.vy = (inp.d ? 1 : inp.u ? -1 : 0) * 1.2;
-    if (pressA) { setState(p, 'dashatk'); p.hitDone = new Set(); ev(state, 'swing'); }
+    if (pressA) { setState(p, 'dashatk'); p.bufA = 0; p.hitDone = new Set(); ev(state, 'swing'); }
     else if (p.t >= DASH_TICKS) setState(p, 'idle');
   } else if (p.st === 'dashatk') {
     // Dash strike: slides through and knocks the first enemies down.
@@ -200,7 +221,11 @@ function updatePlayer(state, p) {
     if (p.t >= 20) setState(p, 'idle');
   } else if (p.st === 'block') {
     p.vx = 0; p.vy = 0;
-    if (!inp.s) setState(p, 'idle');
+    if (!inp.s) {
+      p.parryLock = state.t + PARRY_LOCK;
+      // A quick tap that blocked nothing is the spin attack.
+      if (p.t <= SPIN_TAP && !p.blockHit && !inp.d) startSpin(state, p, god); else setState(p, 'idle');
+    }
   } else if (p.st === 'grab') {
     updateGrab(state, p, pressA, inp);
   } else if (p.st === 'throw') {
@@ -217,6 +242,7 @@ function updatePlayer(state, p) {
       setState(p, 'land');
     }
   } else if (p.st === 'jump') {
+    if (pressA) p.bufA = 0;
     if (pressA && inp.d && p.z > 20) { setState(p, 'slam'); p.vz = -9; p.hitDone = new Set(); ev(state, 'swing'); }
     else if (pressA) { setState(p, 'jumpatk'); p.hitDone = new Set(); ev(state, 'swing'); }
     if (p.z === 0 && p.t > 2) { setState(p, 'land'); p.vx = 0; p.vy = 0; }
@@ -231,17 +257,18 @@ function updatePlayer(state, p) {
       usePower(state, p, p.powers.shift());
     } else if (dash) {
       startDash(state, p, dash);
-    } else if (p.sHeld >= BLOCK_HOLD) {
-      setState(p, 'block'); ev(state, 'shield');
+    } else if (inp.s && !(inp.d && p.powers.length)) {
+      // Block on press. Held from an earlier move it rises on the first free tick.
+      setState(p, 'block'); p.blockHit = false; p.noParry = state.t < (p.parryLock || 0); ev(state, 'shield');
     } else if (dazed && p.ctrl !== 'cpu' || (dazed && p.ctrl === 'cpu' && rng(state) < 0.02)) {
       startGrab(state, p, dazed);
-    } else if (pressA && inp.u) {
+    } else if (wantA && inp.u) {
       startAttack(state, p, inp, true); // launcher
-    } else if (tapS || (pressA && pressJ)) {
-      if (god || p.hp > SPECIAL_COST + 1) { if (!god) p.hp -= SPECIAL_COST; setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0); }
+    } else if (pressA && pressJ) {
+      startSpin(state, p, god);
     } else if (pressJ) {
       setState(p, 'jump'); p.vz = 8.6; p.vx = mx * 2.6; p.vy = my * 1.4; ev(state, 'jump');
-    } else if (pressA) startAttack(state, p, inp);
+    } else if (wantA) startAttack(state, p, inp);
     // Pick up items by walking over them.
     for (const it of state.items) {
       if (it.kind === 'crate' || it.taken) continue;
@@ -252,6 +279,12 @@ function updatePlayer(state, p) {
   clampPlayer(state, p);
 }
 
+// The spin attack costs a little health; without enough of it the Sproto just stands.
+function startSpin(state, p, god) {
+  if (!god && p.hp <= SPECIAL_COST + 1) { setState(p, 'idle'); return; }
+  if (!god) p.hp -= SPECIAL_COST;
+  setState(p, 'special'); p.hitDone = new Set(); ev(state, 'special'); fx(state, 'ring', p.x, p.y, 0);
+}
 function clampPlayer(state, p) {
   p.y = clamp(p.y, 0, DEPTH);
   const right = state.lockX !== null ? Math.min(state.lockX + W, state.stage.len + W) : state.stage.len + W;
@@ -261,7 +294,7 @@ function clampPlayer(state, p) {
 const maxCombo = p => (WEAPONS[p.weapon].id === 'katana' ? 4 : 3); // Katana: a 4th combo hit
 const isFinisher = p => !p.launch && p.combo >= maxCombo(p);
 function startAttack(state, p, inp, launch) {
-  p.launch = !!launch;
+  p.launch = !!launch; p.bufA = 0;
   p.combo = launch ? 1 : p.combo >= maxCombo(p) ? 1 : p.combo + 1;
   p.comboT = 40;
   setState(p, 'attack');
@@ -278,7 +311,7 @@ function startDash(state, p, dir) {
 function shake(state, n) { state.shake = Math.max(state.shake || 0, n); }
 // Weapon finishers: each weapon's last combo hit has its own effect.
 function weaponFinisher(state, p, w) {
-  const dmg = p.ctrl === 'cpu' ? Math.ceil(10 * CPU_DMG) : 10;
+  const dmg = p.ctrl === 'cpu' ? Math.ceil(10 * cpuDmg(state)) : 10;
   if (w.id === 'hammer' || w.id === 'spear') {
     // Hammer: a shockwave rolls along the lane. Spear: the thrust pierces the whole lane.
     const len = w.id === 'hammer' ? 170 : 150;
@@ -309,6 +342,7 @@ function updateGrab(state, p, pressA, inp) {
   if (!e || e.dead || e.st !== 'grabbed' || p.t > GRAB_TICKS) { if (e && e.st === 'grabbed') { e.st = 'walk'; e.t = 0; } p.grab = null; setState(p, 'idle'); return; }
   e.x = p.x + p.face * 22; e.y = p.y; e.face = -p.face;
   const dir = (inp.r ? 1 : 0) - (inp.l ? 1 : 0);
+  if (pressA) p.bufA = 0;
   if (pressA && !dir && p.knees < 2) {
     // Knee strike.
     p.knees++; p.kneeT = state.t; hurtEnemy(state, e, p.ctrl === 'cpu' ? 4 : 7, false, p.face, 0, p); e.st = 'grabbed'; e.t = 0;
@@ -333,7 +367,7 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
     if (dx < -10 || dx > reach || Math.abs(e.y - p.y) > 15 || e.z - p.z > 75 || p.z - e.z > 40) continue;
     hits.add(e.id);
     const dir = Math.sign(e.x - p.x) || p.face;
-    hurtEnemy(state, e, p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_DMG) : dmg, knockdown, dir, knockF, p, opt.launch);
+    hurtEnemy(state, e, p.ctrl === 'cpu' ? Math.ceil(dmg * cpuDmg(state)) : dmg, knockdown, dir, knockF, p, opt.launch);
     // Weapon rules: Axe hits make enemies bleed; Flail hits pull them in.
     if (w.id === 'axe' && !e.dead) { e.bleed = Math.min(3, (e.bleed || 0) + 1); e.bleedT = 180; e.bleedBy = p.slot; }
     if (w.id === 'flail' && !e.dead && e.st !== 'knock') e.x += (p.x + p.face * 26 - e.x) * 0.5;
@@ -365,7 +399,7 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
     const dx = p.x - b.x;
     if (Math.abs(dx) < half + reach * 0.8 && Math.abs(b.y - p.y) < 32) {
       hits.add('boss');
-      hurtBoss(state, b, p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_DMG) : dmg, p);
+      hurtBoss(state, b, p.ctrl === 'cpu' ? Math.ceil(dmg * cpuDmg(state)) : dmg, p);
       p.hs = Math.max(p.hs, 3);
     }
   }
@@ -375,7 +409,8 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
   if (p.inv > 0 || !alive(p) || p.st === 'special') return false;
   // Blocking (hold Special) stops 75% of a frontal hit; blocking just before the hit is a parry.
   if (p.st === 'block' && Math.sign(dir) === -p.face) {
-    if (p.t <= PARRY_WINDOW) {
+    p.blockHit = true;
+    if (p.t <= PARRY_WINDOW && !p.noParry) {
       fx(state, 'parry', p.x + p.face * 14, p.y, 34); fx(state, 'text', p.x, p.y, 76, { text: 'PARRY!' }); ev(state, 'shield');
       p.hs = 6; p.inv = 20; p.score += 300; p.parries = (p.parries || 0) + 1;
       if (src && src.st === 'attack') { src.st = 'hit'; src.t = 0; src.stun = 3; src.vx = -dir * 2; src.hs = 10; } // the attacker is left dazed
@@ -391,7 +426,7 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
     if (p.ufoShield <= 0) ejectUfo(state, p);
     return true;
   }
-  p.hp -= p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_TAKEN) : dmg;
+  p.hp -= p.ctrl === 'cpu' ? Math.ceil(dmg * cpuTaken(state)) : dmg;
   releaseGrab(state, p); // any hit that lands breaks a grab
   ev(state, 'hurt');
   fx(state, 'spark', p.x, p.y, 34 + p.z);
@@ -410,7 +445,12 @@ function die(state, p) {
   fx(state, 'text', p.x, p.y, 70, { text: p.name + ' DIED' }); ev(state, 'ko');
   if (p.ctrl === 'cpu') { setState(p, 'dead'); p.dead = true; p.lives = 0; return; }
   p.lives--;
-  if (p.lives <= 0) { setState(p, 'dead'); p.dead = true; gameOver(state, p.name + ' (P' + (p.slot + 1) + ') died twice'); return; }
+  if (p.lives <= 0) {
+    // Out until the next stage. The run only ends when no human is left in it.
+    p.lives = 0; setState(p, 'dead'); p.dead = true;
+    if (!state.players.some(q => q.ctrl !== 'cpu' && !q.dead)) gameOver(state, 'No human Sproto is left');
+    return;
+  }
   respawn(state, p, false);
 }
 function gameOver(state, why) {
@@ -525,12 +565,13 @@ function ejectUfo(state, p) {
 // ---------------- enemies (Shadow Sprotos) ----------------
 function spawnEnemy(state, side) {
   const kind = Math.floor(rng(state) * ENEMY_WEAPONS.length);
-  const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx));
+  const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx) * GRUNT_HP_SCALE(humansOf(state)));
   const x = side > 0 ? state.camX + W + 30 + rng(state) * 40 : state.camX - 30 - rng(state) * 40;
   state.enemies.push({
     id: state.nextId++, fid: Math.floor(rng(state) * (root.MANIFEST ? root.MANIFEST.fighters.length : 3)), weapon: kind, x, y: rng(state) * DEPTH, z: 0, vx: 0, vy: 0, vz: 0,
     face: -side, hp, maxHp: hp, st: 'walk', t: 0, cd: 25 + Math.floor(rng(state) * 40), target: null, inv: 0, hitDone: null,
-    offY: (rng(state) - 0.5) * 10, offX: 0,
+    // Each Shadow Sproto keeps its own lane offset and stand-off distance, so a crowd fans out.
+    offY: (rng(state) - 0.5) * 16, offX: (rng(state) - 0.5) * 56,
   });
 }
 
@@ -587,9 +628,18 @@ function updateEnemy(state, e) {
   const ps = activePlayers(state);
   if (!ps.length) { e.vx = 0; e.vy = 0; return; }
   if (!e.target || e.t % 90 === 0 || !alive(e.target)) {
+    // Crowded targets are less attractive, so a wave spreads over the team instead of piling on
+    // one Sproto, and each Shadow Sproto takes the emptier side of the one it picks.
     let best = null, bd = 1e9;
-    for (const p of ps) { const d = Math.abs(p.x - e.x) + Math.abs(p.y - e.y) * 2 + (p.st === 'ufo' ? 300 : 0) + rng(state) * 60; if (d < bd) { bd = d; best = p; } }
+    for (const p of ps) {
+      let on = 0; for (const o of state.enemies) if (o !== e && !o.dead && o.target === p) on++;
+      const d = Math.abs(p.x - e.x) + Math.abs(p.y - e.y) * 2 + (p.st === 'ufo' ? 300 : 0) + on * 80 + rng(state) * 60;
+      if (d < bd) { bd = d; best = p; }
+    }
     e.target = best;
+    let l = 0, r = 0;
+    for (const o of state.enemies) if (o !== e && !o.dead && o.target === best) { if (o.x < best.x) l++; else r++; }
+    e.side = l === r ? 0 : l < r ? -1 : 1;
   }
   const p = e.target;
   if (e.cd > 0) e.cd--;
@@ -613,14 +663,19 @@ function updateEnemy(state, e) {
     return;
   }
   // Approach: stand off at weapon reach on the near side, in the same lane.
-  const side = e.x < p.x ? -1 : 1;
-  const want = w.thrower ? 150 : w.reach * 0.75;
+  const side = e.side || (e.x < p.x ? -1 : 1);
+  const want = w.thrower ? 150 + e.offX : w.reach * (0.66 + (e.offX || 0) * 0.007); // 46%..86% of reach: always close enough to swing
   // Stand-off points are kept on screen so every Shadow Sproto is reachable.
   const tx = clamp(p.x + side * want, state.camX + 24, state.camX + W - 24), ty = clamp(p.y + e.offY, 0, DEPTH);
   const dx = tx - e.x, dy = ty - e.y;
   const sp = w.id === 'knife' ? 1.5 : 1.1;
   e.vx = Math.abs(dx) > 4 ? Math.sign(dx) * sp : 0;
   e.vy = Math.abs(dy) > 3 ? Math.sign(dy) * sp * 0.6 : 0;
+  // Do not stand inside another Shadow Sproto: step apart across the lanes.
+  for (const o of state.enemies) {
+    if (o === e || o.dead || o.st === 'knock' || o.st === 'lying' || Math.abs(o.x - e.x) > 22 || Math.abs(o.y - e.y) > 8) continue;
+    e.vy = (e.y > o.y || (e.y === o.y && e.id > o.id) ? 1 : -1) * 0.7; break;
+  }
   e.face = p.x > e.x ? 1 : -1;
   e.st = e.vx || e.vy ? 'walk' : 'idle';
   const inRange = Math.abs(p.x - e.x) < (w.thrower ? 220 : w.reach) && Math.abs(p.y - e.y) < 10;
@@ -629,11 +684,16 @@ function updateEnemy(state, e) {
 
 // ---------------- boss (Sproto Arcade machines) ----------------
 const BOSS_SCALE = 0.95;
+// Rear sweep: after this many ticks with two Sprotos behind the boss (or longer with one), it marks
+// the ground behind it for SWEEP_WARN ticks and then hits everything standing there.
+const SWEEP_AFTER = 180, SWEEP_AFTER_ONE = 300, SWEEP_WARN = 36, SWEEP_REACH = 170;
 function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % 12] : null; }
 function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
-  const hp = 2600 + state.stageIdx * 480; // 2,600 on stage 1 up to 7,880 on stage 12
+  lockHumans(state);
+  // 2,600 on stage 1 up to 7,880 on stage 12 for six humans; 54% of that for one.
+  const hp = Math.round((2600 + state.stageIdx * 480) * BOSS_HP_SCALE(state.humans));
   state.boss = {
     bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
@@ -701,8 +761,17 @@ function updateBoss(state) {
     const wantX = avgX < (arenaL + arenaR) / 2 ? arenaR - 20 : arenaL + 20;
     b.x += clamp(wantX - b.x, -1.2, 1.2);
     b.y += clamp(target.y - b.y, -1.4, 1.4);
-    b.face = avgX > b.x ? 1 : -1;
-    if (b.t > 34 * fast) {
+    // Face the side with more Sprotos on it (the average position only breaks a tie).
+    let left = 0, right = 0;
+    for (const p of ps) { if (p.x < b.x) left++; else right++; }
+    b.face = left === right ? (avgX > b.x ? 1 : -1) : right > left ? 1 : -1;
+    // Nobody is safe behind the machine: Sprotos who stay there draw a rear sweep.
+    let behind = 0;
+    for (const p of ps) if (p.st !== 'ufo' && (p.x - b.x) * b.face < 0 && Math.abs(p.x - b.x) < b.w / 2 + SWEEP_REACH) behind++;
+    b.rear = behind ? (b.rear || 0) + 1 : Math.max(0, (b.rear || 0) - 2);
+    if (b.t > 34 * fast && ((behind >= 2 && b.rear > SWEEP_AFTER) || b.rear > SWEEP_AFTER_ONE)) {
+      b.st = 'sweep'; b.t = 0; b.rear = 0; b.tx = -b.face; ev(state, 'charge');
+    } else if (b.t > 34 * fast) {
       b.cycle++;
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1).
       const charge = b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
@@ -718,6 +787,17 @@ function updateBoss(state) {
     const fireAt = 30, burst = b.missile || b.row === 2 ? 1 : (b.phase ? 3 : 2);
     if (b.t >= fireAt && (b.t - fireAt) % 8 === 0 && (b.t - fireAt) / 6 < burst) bossShoot(state, b);
     if (b.t > 54 + (burst - 1) * 8) { b.st = 'idle'; b.t = 0; b.warn = null; }
+  } else if (b.st === 'sweep') {
+    // Rear sweep: the zone behind the machine is marked, then everything standing in it is hit.
+    // It is low: a jump clears it, and so does walking round to the front.
+    if (b.t === SWEEP_WARN) {
+      for (const p of ps) {
+        const dx = (p.x - b.x) * b.tx;
+        if (p.st !== 'ufo' && dx > 0 && dx < b.w / 2 + SWEEP_REACH && p.z < 20) hurtPlayer(state, p, 12 + state.stageIdx, b.tx, true);
+      }
+      fx(state, 'nova', b.x + b.tx * (b.w / 2 + 40), b.y, 0); ev(state, 'boom'); shake(state, 5);
+    }
+    if (b.t > SWEEP_WARN + 24) { b.st = 'idle'; b.t = 0; }
   } else if (b.st === 'charge') {
     if (b.t < 24) { b.x += (rng(state) - 0.5) * 2; }
     else { b.x += b.tx * 8.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20); } }
@@ -816,7 +896,7 @@ function updateWaves(state) {
   const st = state.stage;
   for (const w of st.waves) {
     if (w.done) continue;
-    if (!w.active && state.camX + W * 0.5 >= w.x) { w.active = true; state.lockX = state.camX; w.left = w.count; ev(state, 'wave'); }
+    if (!w.active && state.camX + W * 0.5 >= w.x) { lockHumans(state); w.active = true; state.lockX = state.camX; w.left = Math.round(w.count * WAVE_SCALE(state.humans)); ev(state, 'wave'); }
     if (w.active) {
       const onScreen = state.enemies.filter(e => !e.dead).length;
       if (w.left > 0 && onScreen < MAX_ON_SCREEN && state.t % 16 === 0) { spawnEnemy(state, rng(state) < 0.6 ? 1 : -1); w.left--; }
@@ -873,7 +953,7 @@ function snapshot(state) {
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
-    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0 },
+    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0, w: Math.round(state.boss.w) },
   };
 }
 
@@ -1001,7 +1081,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);

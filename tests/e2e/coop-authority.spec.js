@@ -60,7 +60,8 @@ function authority() {
   }
   const stage1 = ran.cases.find(row => row.id === 'human-seed3-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
-  assert.ok(stage1.flags.bossPhase >= 1);
+  assert.ok(stage1.flags.boss > 0);
+  assert.ok(ran.cases.find(row => row.id === 'human-seed5-stage1').flags.bossPhase >= 1);
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }

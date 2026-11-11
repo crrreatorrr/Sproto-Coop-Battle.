@@ -333,7 +333,7 @@ function drawBoss(g, b, camX) {
   g.save();
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   if (b.st === 'transform' && b.t % 8 < 4) g.globalAlpha = 0.4;
-  const shake = b.st === 'charge' && b.t < 30 ? (b.t % 4 < 2 ? 2 : -2) : 0;
+  const shake = (b.st === 'charge' && b.t < 30) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
   g.scale(b.fc > 0 ? -BS : BS, BS);
   const cx = (ph.body[0] + ph.body[2]) / 2, by = ph.body[3];
@@ -550,7 +550,7 @@ function drawWorld(g, snap, opts) {
       if (p.st === 'down') {
         g.fillStyle = '#300'; g.fillRect(sx - 16, sy - 40, 32, 4);
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
-        const needHuman = p.c === 'cpu' || p.nr;
+        const needHuman = p.nr; // this Sproto's one CPU revive is spent: only a human can help now
         text(g, String(Math.ceil(p.dt / 60)), sx, sy - 62, 10, p.dt < 180 ? '#ff4d4d' : '#fff', 'center');
         if (!needHuman && Math.floor(snap.t / 15) % 2) text(g, 'REVIVE!', sx, sy - 50, 6, '#ffd23d', 'center');
       }
@@ -579,6 +579,18 @@ function drawWorld(g, snap, opts) {
       g.fillRect(lx, y - 7, lw, 1); g.fillRect(lx, y + 6, lw, 1);
     }
     if (Math.floor(bw.t / 6) % 2) text(g, 'MOVE!', x0 + bw.fc * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
+  }
+  // Rear sweep: the ground behind the boss is marked before it is hit (jump it, or get in front).
+  if (bw && bw.st === 'sweep') {
+    const rear = -bw.fc, reach = (bw.w || 150) / 2 + S.SWEEP_REACH, x0 = bw.x - camX, x1 = x0 + rear * reach;
+    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx, warn = bw.t < S.SWEEP_WARN;
+    if (warn || bw.t < S.SWEEP_WARN + 8) {
+      const k = bw.t / S.SWEEP_WARN;
+      g.fillStyle = warn ? `rgba(255,150,30,${0.3 + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(255,240,200,.7)';
+      g.fillRect(lx, FLOOR_TOP, lw, S.DEPTH);
+      g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.strokeRect(lx + 0.5, FLOOR_TOP + 0.5, lw - 1, S.DEPTH - 1);
+      if (warn && Math.floor(bw.t / 6) % 2) text(g, 'BEHIND! JUMP!', lx + lw / 2, FLOOR_TOP - 10, 8, '#ffb23d', 'center');
+    }
   }
   if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX) });
