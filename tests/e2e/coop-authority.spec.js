@@ -60,7 +60,8 @@ function authority() {
   }
   const stage1 = ran.cases.find(row => row.id === 'human-seed3-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
-  assert.ok(stage1.flags.bossPhase >= 1);
+  assert.ok(stage1.flags.boss > 0);
+  assert.ok(ran.cases.find(row => row.id === 'human-seed5-stage1').flags.bossPhase >= 1);
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }
@@ -134,6 +135,7 @@ function authority() {
   }
   down.session.state.players[0].st = 'down';
   down.session.state.players[0].downT = 5000;
+  down.session.state.players[0].lives = 1; // no spare life: with one, the last human drops back in at once (plan A3)
   down.session.state.players[0].x = 80;
   stepNeutral(CoopProtocol, down.session, 200);
   const downRow = CoopProtocol.participationFacts(down.session).accounts[0];
@@ -200,6 +202,7 @@ async function stageShots() {
     shots.push(await shot(page, path.join(out, 'c5-stage-select.png')));
     for (let stage = 0; stage < 12; stage++) {
       await page.evaluate(index => {
+        window.SprotoApp.progress.freePlay = true; // every stage is drawn here, unlocked or not
         window.SprotoApp.stageSel = index;
         window.SprotoApp.screen = 'stages';
         window.SprotoApp.sim = null;
@@ -272,6 +275,7 @@ async function soak(ms) {
         await page.evaluate(() => {
           const app = window.SprotoApp;
           app.role = 'local';
+          app.progress.freePlay = true;
           app.stageSel = ((app.sim && app.sim.stageIdx) || 0) % 12;
           app.screen = 'stages';
         });

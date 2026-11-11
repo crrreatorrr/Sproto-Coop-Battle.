@@ -9,8 +9,8 @@ Game id: `sproto-coop-battle`. Entry remains the Bar cabinet. This phase does no
 | Item | Value |
 |---|---|
 | Protocol | 1 |
-| Content fingerprint | `f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e` |
-| Bundle sha256 | `28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac` |
+| Content fingerprint | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
+| Bundle sha256 | `a9034b346fced4a1c963dc70133549d7444d61acdb6b844d873aa8a89c0f4cb5` |
 | Hub match | `sproto_coop` (H2-C merge `469a69a52b029b6b7b431187ea779b988af56a89`) |
 | Loop | 20 Hz, 3 substeps, snapshot every 2nd loop (10 Hz) |
 | SDK | `@metaverse/hub-sdk` 0.7.0, IIFE `092603b61a3511fbbcaa3b674b16f02b24d581752e1fa1dc69eeb577bc5ae5e8` |

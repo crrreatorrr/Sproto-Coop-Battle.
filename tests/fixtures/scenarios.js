@@ -149,6 +149,9 @@ function caseList() {
     { id: 'mixed-seed7-1800', kind: 'mixed', seed: 7, stage: 0, ticks: 1800, input: 'legacy-mixed' },
     { id: 'six-local-seed99-1800', kind: 'local', seed: 99, stage: 0, ticks: 1800, input: 'legacy-six' },
     { id: 'human-seed3-stage1', kind: 'local', seed: 3, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },
+    // A second run of the same policy, so six-human boss phase 2 stays under a golden even when a
+    // balance change makes seed 3 lose before the phase change (it did for one tuning pass).
+    { id: 'human-seed5-stage1', kind: 'local', seed: 5, stage: 0, ticks: 20000, input: 'policy' },
   ];
   for (let stage = 0; stage < 12; stage++) {
     list.push({ id: 'stage-' + stage + '-human', kind: 'local', seed: 4000 + stage * 17, stage: stage, ticks: 900, input: 'policy' });

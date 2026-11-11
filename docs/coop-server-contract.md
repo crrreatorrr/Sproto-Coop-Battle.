@@ -11,11 +11,11 @@ Game id: `sproto-coop-battle` (no terminal dot). Practice play, God Mode, and st
 | Gameplay base | `ef1f35a1311bd611f08eebd1ad9725fbdeb569bb` (C0) |
 | Protocol / state version | 1 |
 | Bundle | `build/coop-sim.js` |
-| Bundle sha256 | `28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac` |
-| Content sha256 | `f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e` |
-| `sim.js` | `08611f8cc60d9102a6a729f81351431d595b85565ba5e8c59895f8050759a368` |
-| `ai.js` | `a484504b1b415cfa5f7c3deaaeb6bf4b77317483152d087f3a264532a1ea61ae` |
-| `net-protocol.js` | `c8a09e9ffd76d0f852242262bcb57d62fda3e322bb45c4b0809986958a1a25b4` |
+| Bundle sha256 | `a9034b346fced4a1c963dc70133549d7444d61acdb6b844d873aa8a89c0f4cb5` |
+| Content sha256 | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
+| `sim.js` | `9cd4dd723427d81ef19ec3bb17921bec8534d5a43e3592247b1212be03524fe6` |
+| `ai.js` | `d582e77a0f6162969ec3927e65e7be5d6fa78355b5ba77a04e5b7b3b22a49b97` |
+| `net-protocol.js` | `2be827ea6fefc3da16d6711b7fe111cc307221bc0f58089c8c58c0b38c61484b` |
 | `manifest.js` | `76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a` |
 | Goja | `github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc` (Go 1.26) |
 | Node | `>=22` |
@@ -62,15 +62,15 @@ Phase 1 and phase 2 are one canonical clear. Ids are the shipped manifest keys:
 | 11 | `11-rooftop-sproto1668` | Rooftop Breakaway | sproto1668 | Pursuit Jetpack / Intercept Glider |
 | 12 | `12-codebreak-sproto3106` | Codebreak Ascent | sproto3106 | Warrant Rig / Summit Lockdown |
 
-`terminalFacts` and `participationFacts` always report `tickets: 0` and `scoreSubmitted: 0`. One account controlling six local seats is one participation row. A late join after the first tick of the encounter is not present at the start. AFK means no non-neutral input and at least 300 alive ticks of neutral input after a 180-tick grace. Time spent down or dead does not count as that idle time, so a downed teammate is not marked AFK. These are facts for H3-C. This bundle cannot pay them.
+`terminalFacts` and `participationFacts` always report `tickets: 0` and `scoreSubmitted: 0`. One account controlling six local seats is one participation row. A late join after the first tick of the encounter is not present at the start. AFK means no non-neutral input and at least 300 alive ticks of neutral input after a 180-tick grace. Time spent down or dead does not count as that idle time, so a downed teammate is not marked AFK. Since a human's second death now puts only that human out, each row also carries `out`: 1 when every seat of that account was dead at the moment the boss fell (latched once per encounter, on the first tick the boss is `dead` or the stage is `clear`). `eligible` is `presentAtStart && !afk && !out`, so an account that was out for the kill is not eligible for that boss; a seat that was only down is. The seat returns at the next stage and starts the next encounter clean. These are facts for H3-C. This bundle cannot pay them.
 
 ## Goldens and goja
 
-`tests/fixtures/sim-goldens.json` locks 40 cases: the published six-CPU, mixed, and six-local snapshot hashes; one six-human stage-1 fight; and every stage from 0 to 11 under six-human, mixed, and CPU input. The stage-1 fight (seed 3) reaches UFO, a revive, a death, saved power-ups, and boss phase 2, then `gameover` at tick 7154. Its restart state is 5549 bytes, sha256 `0a612ee2dfbca19cb2788419d5e0a98834f684e2e8d90897e3427cff46a379eb`. A second import of that state at tick 2000, stepped 120 ticks twice, matches. Node, goja, and headless Chromium hash the same bundle.
+`tests/fixtures/sim-goldens.json` locks 41 cases: the published six-CPU, mixed, and six-local snapshot hashes; two six-human stage-1 fights (seeds 3 and 5, the same policy); and every stage from 0 to 11 under six-human, mixed, and CPU input. The seed-3 fight reaches UFO, revives, deaths, saved power-ups, and boss phase 2, then `gameover` at tick 12755. Its restart state is 6186 bytes, sha256 `d2ce008a3994eee2cd26d8dcaff960d1a8cb54e4b4a374c776aae2686da2f7ca`. The seed-5 fight was added with the gameplay improvement plan so boss phase 2 under six humans does not hang on one seed. A second import of that state at tick 2000, stepped 120 ticks twice, matches. Node, goja, and headless Chromium hash the same bundle.
 
-This offline golden (`human-seed3-stage1`: tick 7154, state `0a612ee2…`) is not the golden in `docs/coop-release.md` (tick 7734, state `3ec54344…`). Both are current, and they check different runs. This one (`tests/fixtures/scenarios.js`) reads the sim and picks inputs every tick, and `npm test` here locks it. The release golden is metaverse-hub's: the same seed and fight policy sent through the 20 Hz `sproto_coop` match, where each loop sends three frames chosen from the state at the start of that loop. The inputs differ, so the fight ends differently. The hub's `server/test/games/coop_match.test.ts` and `scripts/load/coop-bots.ts` lock it.
+This offline golden (`human-seed3-stage1`: tick 12755, state `d2ce008a…`) is not the golden in `docs/coop-release.md` (tick 7734, state `3ec54344…`), and they check different runs. The release golden was recorded on the sim before the gameplay improvement plan; the hub has to record it again when it re-vendors. This one (`tests/fixtures/scenarios.js`) reads the sim and picks inputs every tick, and `npm test` here locks it. The release golden is metaverse-hub's: the same seed and fight policy sent through the 20 Hz `sproto_coop` match, where each loop sends three frames chosen from the state at the start of that loop. The inputs differ, so the fight ends differently. The hub's `server/test/games/coop_match.test.ts` and `scripts/load/coop-bots.ts` lock it.
 
-On this 4-thread host (Node v22.23.4, `go1.26.0`, Intel Xeon), the stage-1 fight itself took 1175 ms inside goja, including the tick-2000 resume check. The full 40-case set took 1308 ms in Node and 10082 ms inside goja. Ten warmed goja VMs then ran the 3-step loop across 400 samples: mean 0.86 ms, p95 3.20 ms, max 18.6 ms. That p95 is under the 25 ms share of the 50 ms server loop on this machine. H2-C still has to time the same bundle inside Nakama before the capacity gate is closed. This is not a browser-host substitute.
+On this 4-thread host (Node v22.23.4, `go1.26.0`, Intel Xeon), the stage-1 fight itself took 1175 ms inside goja, including the tick-2000 resume check. The full 40-case set took 1308 ms in Node and 10082 ms inside goja. Ten warmed goja VMs then ran the 3-step loop across 400 samples: mean 0.86 ms, p95 3.20 ms, max 18.6 ms. That p95 is under the 25 ms share of the 50 ms server loop on this machine. Those timings are from the C3 bundle on an idle host. The gameplay improvement plan's bundle was only measured on a busy shared host (load average 15 to 40), where the old and new bundles could be compared with each other but not against the 25 ms budget: in interleaved runs, a single goja VM running the 36 stage cases took 1.9 to 2.8 ms per 3-step loop on the old bundle and 2.7 to 3.1 ms on the new one (roughly 15% to 40% more). `npm run bench:goja` should be run again on an idle machine. H2-C still has to time the same bundle inside Nakama before the capacity gate is closed. This is not a browser-host substitute.
 
 ## What is left
 

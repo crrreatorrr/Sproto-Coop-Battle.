@@ -1,7 +1,7 @@
 // Sproto Coop Battle — app shell: title, lobby (local / host / guest), game loop and netcode glue.
 (function () {
 'use strict';
-const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST;
+const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST, P = Progress;
 const cv = document.getElementById('game'), g = cv.getContext('2d');
 g.imageSmoothingEnabled = false;
 const STEP = 1000 / 60;
@@ -19,6 +19,8 @@ const app = {
   pauseMenu: null, // pause menu while open: { dev: pad id or 'keys', sel, held }
   joinCursor: 0,
   runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
+  progress: P.load(), // local best run and stage unlocks (this browser only)
+  summary: null, godSeen: false, // end-of-run panel for the run on screen
   frozen: false, // the feedback window is open over local play: no sim step, no menu input
   view: null, // the snapshot drawGame last drew, for the feedback note's context
 };
@@ -60,7 +62,8 @@ function claimSlot(ctrl, owner, dev) {
   const i = app.slots.findIndex(s => s.ctrl === 'cpu');
   if (i < 0) return -1;
   Object.assign(app.slots[i], { ctrl, owner, dev, label: ctrl === 'remote' ? (app.guestNames[owner] || 'Online') + ' · ' + (I.DEVICE_NAMES[dev] || dev) : I.DEVICE_NAMES[dev] });
-  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); }
+  // A drop-in after the stage's human count was taken grows what is left of the stage to match.
+  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); S.rescaleHumans(app.sim); }
   app.lobbyDirty = true; A.play('join');
   toast(`P${i + 1} joined (${ctrl === 'remote' ? (app.guestNames[owner] || 'online') : I.DEVICE_NAMES[dev]})`);
   return i;
@@ -184,6 +187,7 @@ function releaseForHub() {
   if (app.net) { try { app.net.close(); } catch (err) { /* already closed */ } app.net = null; }
   try {
     const ctx = A.ensure && A.ensure();
+    A.music('');
     if (ctx && ctx.close && ctx.state !== 'closed') ctx.close();
   } catch (err) { /* audio already stopped */ }
   removeEventListener('keydown', onKeyDown);
@@ -301,7 +305,12 @@ function localDevicesInput() {
       if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
       if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
       if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
-      if (p.ok || p.start) { startGame(); return; }
+      // Power toggles free play: every stage open, for groups that just want to pick one.
+      if (p.p) { app.progress.freePlay = !app.progress.freePlay; P.save(app.progress); A.play('menu'); }
+      if (p.ok || p.start) {
+        if (!P.isOpen(app.progress, app.stageSel)) { A.play('hurt'); return; } // the screen says why
+        startGame(); return;
+      }
       if (p.back) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
     } else if (app.screen === 'game') {
       if (app.role === 'banked' && app.authority) {
@@ -575,9 +584,12 @@ function drawLobby() {
     const nm = fname(s.fid);
     T(g, nm.length > 10 ? nm : '< ' + nm + ' >', x + cw / 2, y + 172, nm.length > 10 ? 6 : 7, '#fff', 'center');
     if (nm.length > 10) { T(g, '<', x + 6, y + 150, 8, '#8a88a8'); T(g, '>', x + cw - 6, y + 150, 8, '#8a88a8', 'right'); }
-    T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 190, 7, '#ffd23d', 'center');
-    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 216, 6, '#7aff8a', 'center');
-    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 216, 5, '#8a88a8', 'center');
+    T(g, S.WEAPONS[s.weapon].name, x + cw / 2, y + 188, 7, '#ffd23d', 'center');
+    const pv = S.PASSIVES[s.fid % S.PASSIVES.length]; // each Sproto's passive
+    T(g, pv.name.toUpperCase(), x + cw / 2, y + 200, 5, '#8ef8d6', 'center');
+    T(g, pv.text, x + cw / 2, y + 208, 4.5, '#c8c6e0', 'center');
+    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 222, 6, '#7aff8a', 'center');
+    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 222, 5, '#8a88a8', 'center');
   });
   const lines = padUI() ? padLobbyLines() : app.role === 'banked'
     ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']
@@ -610,7 +622,9 @@ function drawStages() {
     const back = R.img('assets/stages/' + String(i + 1).padStart(2, '0') + '-back.jpg');
     g.fillStyle = '#000'; g.fillRect(x, y, cw, ch);
     if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / 62)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, 62); }
-    g.fillStyle = on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
+    const open = P.isOpen(app.progress, i);
+    g.fillStyle = !open ? 'rgba(0,0,0,.8)' : on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
+    if (!open) T(g, 'LOCKED', x + cw / 2, y + 32, 8, '#8a88a8', 'center');
     g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + 62, cw, 20);
     T(g, String(i + 1), x + 6, y + 10, 8, on ? '#ffd23d' : '#fff');
     T(g, M.bosses[i].stage, x + 6, y + 72, M.bosses[i].stage.length > 17 ? 5 : 6, on ? '#ffd23d' : '#e8e6f8');
@@ -618,8 +632,11 @@ function drawStages() {
     g.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
   }
   const b = M.bosses[app.stageSel];
-  T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 318, 8, '#ff8a8a', 'center');
-  T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
+  if (P.isOpen(app.progress, app.stageSel)) T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 316, 8, '#ff8a8a', 'center');
+  else T(g, 'LOCKED: CLEAR STAGE ' + app.stageSel + ' FIRST, OR TURN ON FREE PLAY', S.W / 2, 316, 7, '#ff8a8a', 'center');
+  const fp = app.progress.freePlay;
+  T(g, (fp ? 'FREE PLAY: ALL STAGES OPEN' : 'CLEAR A STAGE TO UNLOCK THE NEXT · ' + app.progress.unlocked + ' OF 12 OPEN') + '   ' + (padUI() ? 'Y' : 'POWER') + ': FREE PLAY ' + (fp ? 'OFF' : 'ON'), S.W / 2, 330, 5, fp ? '#7aff8a' : '#ffd23d', 'center');
+  T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 344, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
   return R.interpolateSnapshot(a, b, k);
@@ -638,12 +655,39 @@ function drawGame() {
   app.view = snap;
   noteRun(snap);
   R.bossImages(snap.si);
-  R.drawWorld(g, snap);
+  // Seats played on this device get a marker so they can be found in a crowd.
+  const mine = [];
+  app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });
+  // End of run: stage reached, time, per-player totals and this browser's best run.
+  const over = snap.mode === 'gameover' || snap.mode === 'victory';
+  A.music(over ? '' : snap.boss && snap.boss.st !== 'dead' ? 'boss' : 'stage', snap.si);
+  // A klaxon the moment the boss telegraphs a shot (lanes or a missile lock), not when it lands.
+  const aiming = !!(snap.boss && snap.boss.st === 'fire' && snap.boss.t < 30);
+  if (aiming && !app.aiming) A.play('warn');
+  app.aiming = aiming;
+  if (snap.god) app.godSeen = true;
+  if (!over) app.summary = null;
+  else if (!app.summary) {
+    const sum = P.summarize(snap), prev = app.progress.best;
+    const res = P.recordRun(app.progress, sum, app.godSeen || !mine.length); // watching or God Mode: not a record
+    if (res.newBest) P.save(app.progress);
+    app.summary = { sum, res, prev };
+  }
+  // Clearing stage N opens stage N + 1 on this device (not in God Mode, and only if you played).
+  if (snap.mode === 'clear' && !app.godSeen && mine.length && P.clearStage(app.progress, snap.si + 1)) {
+    P.save(app.progress); toast('STAGE ' + app.progress.unlocked + ' UNLOCKED');
+  }
+  R.drawWorld(g, snap, { local: mine, noBanner: over });
+  if (over) {
+    const why = String((snap.banner && snap.banner.sub) || '').replace(' · press START', '');
+    const prompt = app.role === 'guest' ? 'WAITING FOR THE HOST' : app.role === 'banked' ? '' : (padUI() ? 'START' : 'ENTER') + ': BACK TO THE LOBBY';
+    R.drawSummary(g, app.summary.sum, { why, prompt, local: mine, best: app.summary.res.best, newBest: app.summary.res.newBest, god: app.godSeen, blink: Math.floor(app.t / 30) % 2 });
+  }
   if (app.role === 'banked' && banked) {
-    T(g, banked.payout || bankedPayLine(), S.W / 2, 28, 6, '#ffd23d', 'center');
+    T(g, banked.payout || bankedPayLine(), S.W / 2, 46, 6, '#ffd23d', 'center'); // under the player panels
     const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? (banked.restarting ? 'SERVER RESTARTING — RECONNECTING' + (banked.resumeMs > 0 ? ' IN ' + Math.ceil(banked.resumeMs / 1000) + 's' : '…') : 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST') : '';
-    if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 40, S.W, 16); T(g, note, S.W / 2, 44, 6, '#ffd23d', 'center'); }
-    if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 64, 6, '#fff', 'center');
+    if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 64, S.W, 16); T(g, note, S.W / 2, 72, 6, '#ffd23d', 'center'); }
+    if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 88, 6, '#fff', 'center');
   } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
   if (app.pauseMenu) drawPauseMenu();
   const free = app.slots.some(s => s.ctrl === 'cpu');
@@ -671,7 +715,7 @@ function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   I.poll(now);
   noteRole();
-  if (app.screen !== 'game') seen.run = false;
+  if (app.screen !== 'game') { seen.run = false; app.summary = null; app.godSeen = false; A.music(app.screen === 'loading' ? '' : 'menu'); }
   // The feedback window is open over local play: the game holds still and reads no input.
   if (app.frozen) { /* frozen */ }
   else if (app.screen === 'join') joinPadInput();
@@ -720,9 +764,17 @@ function drawHubStatus() {
   const h = app.hub;
   const who = h.kind === 'account' ? 'ACCOUNT ' + h.label : h.kind === 'guest' ? 'GUEST' : h.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
   const bal = (h.kind === 'account' || h.kind === 'guest') && typeof h.balance === 'number' ? '   TICKETS ' + h.balance : '';
-  g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
   const mode = app.role === 'banked' ? '   ·   ' + bankedPayLine() : '   ·   PRACTICE';
-  T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
+  if (app.screen === 'game') {
+    // In a run the strip is a short tag under the player panels, so it never hides the P1-P6 labels.
+    // The banked payout line is already drawn by drawGame.
+    const line = who + bal + (app.role === 'banked' ? '' : mode);
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 41, line.length * 5 + 12, 10);
+    T(g, line, 6, 46, 5, '#c8c6e0');
+  } else {
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
+    T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
+  }
   if (h.confirming) {
     g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
     T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');

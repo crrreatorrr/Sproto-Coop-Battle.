@@ -42,6 +42,8 @@ const SYNTAX = [
   'tests/crash-guard.test.js',
   'tests/gamepad.test.js',
   'tests/input.test.js',
+  'tests/progress.test.js',
+  'tests/audio.test.js',
   'tests/atlas-visual.cjs',
   'scripts/build.mjs',
   'scripts/check-assets.mjs',

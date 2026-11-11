@@ -35,9 +35,12 @@ function hello(match, who, devices) {
   match.loop(2000 + 299 * 50);
   assert.strictEqual(match.seatView()[0].human, 0);
   assert.strictEqual(match.seatView()[0].ctrl, 'cpu');
+  // The match keeps running for those 15 s and the team may take hits in its first wave, so the
+  // check is that nothing was refilled: no life or health went up when the AI took the seat.
   const after = match.life();
-  assert.deepStrictEqual(after.lives, before.lives);
-  assert.deepStrictEqual(after.hp, before.hp);
+  after.lives.forEach((n, i) => assert.ok(n <= before.lives[i], 'lives were not refilled'));
+  after.hp.forEach((n, i) => assert.ok(n <= before.hp[i], 'health was not refilled'));
+  assert.strictEqual(after.hp[0] > 0 && after.lives[0], before.lives[0], 'the parked seat kept its lives');
   assert.deepStrictEqual(after.powers, before.powers);
   console.log('15s grace parks the seat, then AI takes it without a life reset');
 }

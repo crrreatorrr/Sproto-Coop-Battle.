@@ -48,7 +48,9 @@ for (const [id, expected] of legacy) {
   assert.ok(row.flags.revive > 0, 'revive');
   assert.ok(row.flags.dead > 0, 'death');
   assert.ok(row.flags.power > 0, 'power');
-  assert.ok(row.flags.bossPhase >= 1, 'boss phase');
+  assert.ok(row.flags.boss > 0, 'boss');
+  const phase2 = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed5-stage1'));
+  assert.ok(phase2.flags.bossPhase >= 1, 'boss phase 2 (seed 5)');
   assert.ok(row.resume && row.resume.hash, 'resume');
   assert.strictEqual(row.resume.steps, 120);
   console.log('stage1 coverage', row.flags, 'resume', row.resume.hash, 'bytes', row.stateBytes);

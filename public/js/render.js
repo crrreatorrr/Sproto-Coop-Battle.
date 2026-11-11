@@ -333,7 +333,7 @@ function drawBoss(g, b, camX) {
   g.save();
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   if (b.st === 'transform' && b.t % 8 < 4) g.globalAlpha = 0.4;
-  const shake = b.st === 'charge' && b.t < 30 ? (b.t % 4 < 2 ? 2 : -2) : 0;
+  const shake = (b.st === 'charge' && b.t < (b.ar === 1 ? 40 : 30)) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
   g.scale(b.fc > 0 ? -BS : BS, BS);
   const cx = (ph.body[0] + ph.body[2]) / 2, by = ph.body[3];
@@ -377,6 +377,11 @@ function powerIcon(g, pt, x, y, r) {
   if (pt === 0) { g.beginPath(); g.arc(x, y, r * .5, 0, 7); g.stroke(); g.beginPath(); g.arc(x, y, r * .15, 0, 7); g.fill(); }
   else if (pt === 1) { g.beginPath(); g.arc(x + r * .2, y + r * .2, r * .35, 0, 7); g.fill(); g.beginPath(); g.moveTo(x - r * .6, y - r * .6); g.lineTo(x + r * .05, y + r * .05); g.stroke(); }
   else { g.beginPath(); g.moveTo(x + r * .15, y - r * .7); g.lineTo(x - r * .35, y + r * .1); g.lineTo(x + r * .05, y + r * .1); g.lineTo(x - r * .15, y + r * .7); g.lineTo(x + r * .4, y - r * .15); g.lineTo(x, y - r * .15); g.closePath(); g.fill(); }
+}
+// A down-pointing arrow in the slot colour over a Sproto played on this device.
+function localMarker(g, x, y, col) {
+  const tri = (w, h, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(x - w, y - h); g.lineTo(x + w, y - h); g.lineTo(x, y); g.fill(); };
+  tri(8, 10, '#000'); tri(6, 8, '#fff'); tri(4, 6, col);
 }
 function drawItem(g, it, camX, t) {
   const sx = it.x - camX, sy = FLOOR_TOP + it.y;
@@ -454,6 +459,12 @@ function drawFx(g, f, camX) {
       g.strokeStyle = 'rgba(255,170,60,.7)'; g.lineWidth = 4; g.beginPath(); g.moveTo(mx + 20, my - 40); g.lineTo(mx, my); g.stroke();
       g.fillStyle = '#5a3a2a'; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.fill(); g.fillStyle = '#ff8a3d'; g.beginPath(); g.arc(mx - 2, my - 2, 3, 0, 7); g.fill();
     }
+  } else if (f.k === 'mark') {
+    // Where a bomber's bomb will land: a red ring that closes in until impact.
+    const k = Math.min(1, f.t / (f.sm || 1)), gy = FLOOR_TOP + f.y;
+    g.fillStyle = `rgba(255,40,40,${0.25 + 0.3 * k})`; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.stroke();
+    g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
@@ -485,7 +496,7 @@ function drawHud(g, snap) {
       text(g, 'DEAD', x + 26, y + 30, 7, '#ff4d4d');
     } else {
       g.fillStyle = '#300'; g.fillRect(x + 26, y + 25, pw - 34, 5);
-      g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * p.hp / S.MAX_HP, 5);
+      g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * Math.min(1, p.hp / (p.mh || S.MAX_HP)), 5);
       if (p.c !== 'cpu') text(g, p.l > 1 ? '♥♥' : '♥', x + 3, y + 32, 6, '#ff5a7a');
       (p.pw || []).forEach((pt, k) => powerIcon(g, pt, x + 76 + k * 9, y + 34, 3.5));
       text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 5, '#c8c6e0');
@@ -493,7 +504,7 @@ function drawHud(g, snap) {
       if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
     }
   });
-  if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 48, 7, '#8ef8d6', 'center');
+  if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 58, 7, '#8ef8d6', 'center');
   const b = snap.boss;
   if (b) {
     const info = M.bosses[b.bi];
@@ -515,7 +526,10 @@ function drawBanner(g, snap) {
   g.globalAlpha = 1;
 }
 
-function drawWorld(g, snap) {
+// opts.local: slots played on this device (they get a marker). opts.noBanner: the caller draws
+// its own end-of-run panel instead of the banner.
+function drawWorld(g, snap, opts) {
+  const mine = (opts && opts.local) || [];
   enterStage(snap.si);
   const camX = snap.camX;
   const sk = snap.sk || 0;
@@ -536,11 +550,13 @@ function drawWorld(g, snap) {
         const blink = p.inv > 0 && p.st !== 'attack' && Math.floor(p.inv / 3) % 2;
         drawFighter(g, p, sx, sy - p.z, variantOf(snap, p), S.WEAPONS[p.w].id, S.WEAPONS[p.w], blink ? 0.45 : 1);
       }
-      text(g, 'P' + (p.s + 1), sx, sy - p.z - (p.st === 'ufo' ? 60 : 72), 6, S.SLOT_COLORS[p.s], 'center');
+      const tagY = sy - p.z - (p.st === 'ufo' ? 60 : 72);
+      text(g, 'P' + (p.s + 1), sx, tagY, 6, S.SLOT_COLORS[p.s], 'center');
+      if (mine.indexOf(p.s) >= 0) localMarker(g, sx, tagY - 8 - (Math.floor(snap.t / 10) % 2), S.SLOT_COLORS[p.s]);
       if (p.st === 'down') {
         g.fillStyle = '#300'; g.fillRect(sx - 16, sy - 40, 32, 4);
         g.fillStyle = '#4dff7a'; g.fillRect(sx - 16, sy - 40, 32 * p.rv / S.REVIVE_TICKS, 4);
-        const needHuman = p.c === 'cpu' || p.nr;
+        const needHuman = p.nr; // this Sproto's one CPU revive is spent: only a human can help now
         text(g, String(Math.ceil(p.dt / 60)), sx, sy - 62, 10, p.dt < 180 ? '#ff4d4d' : '#fff', 'center');
         if (!needHuman && Math.floor(snap.t / 15) % 2) text(g, 'REVIVE!', sx, sy - 50, 6, '#ffd23d', 'center');
       }
@@ -552,8 +568,28 @@ function drawWorld(g, snap) {
       shadow(g, sx, sy, 12);
       const st = e.st === 'grabbed' ? 'hit' : e.st;
       drawFighter(g, { f: e.f, st, t: e.st === 'attack' ? e.t * (8 / wpn.startup) : e.t, z: e.z, fc: e.fc, cb: 1 }, sx, sy - e.z, 'shadow', wpn.thrower && e.st === 'attack' && e.t > wpn.startup ? null : wpn.id, { startup: 8, active: 4, recovery: 10 }, e.d && e.st === 'lying' && e.t > 20 ? (e.t % 6 < 3 ? 0.3 : 1) : 1);
-      if (!e.d && e.hp < e.mh) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
+      if (!e.d && (e.hp < e.mh || e.el)) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = e.el ? '#ffd23d' : '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
+      // Elite: a gold bar, and a shield on the side it guards while the guard is up.
+      if (e.el && !e.d) {
+        text(g, 'ELITE', sx, sy - 76 - e.z, 5, '#ffd23d', 'center');
+        if (e.el === 2 && (e.st === 'walk' || e.st === 'idle' || e.st === 'attack')) {
+          const hx = sx + e.fc * 13, hy = sy - 30 - e.z;
+          g.fillStyle = 'rgba(150,215,255,.45)'; g.strokeStyle = '#e8f6ff'; g.lineWidth = 2;
+          g.beginPath(); g.ellipse(hx, hy, 6, 16, 0, 0, 7); g.fill(); g.stroke();
+        }
+      }
     } });
+  }
+  // Burning lanes left by a charger: they flicker, and fade as they burn out.
+  for (const h of snap.hz || []) {
+    const a = Math.min(1, (h.l - h.t) / 40), x = h.x0 - camX, w = h.x1 - h.x0, y = FLOOR_TOP + h.y;
+    g.fillStyle = `rgba(255,90,20,${0.45 * a})`; g.fillRect(x, y - h.hf, w, h.hf * 2);
+    g.fillStyle = `rgba(255,236,170,${0.8 * a})`; g.fillRect(x, y - h.hf - 1, w, 1); g.fillRect(x, y + h.hf, w, 1);
+    g.fillStyle = `rgba(255,210,61,${0.75 * a})`;
+    for (let fxn = x + ((h.id * 7) % 12); fxn < x + w; fxn += 12) {
+      const fh = 6 + ((fxn * 13 + snap.t * 3 + h.id) % 9);
+      g.beginPath(); g.moveTo(fxn - 4, y + 2); g.lineTo(fxn + 4, y + 2); g.lineTo(fxn + ((snap.t >> 2) % 3) - 1, y + 2 - fh); g.fill();
+    }
   }
   // Boss lane warnings: a red stripe along each lane about to be shot.
   const bw = snap.boss;
@@ -561,10 +597,26 @@ function drawWorld(g, snap) {
     const k = bw.t / 30, x0 = bw.x - camX;
     for (const ly of bw.wl) {
       const y = FLOOR_TOP + ly;
-      g.fillStyle = `rgba(255,40,40,${0.18 + 0.25 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
-      if (bw.fc < 0) g.fillRect(0, y - 6, x0, 12); else g.fillRect(x0, y - 6, W - x0, 12);
+      // Starts at 40% and is edged in a light colour so it reads on dark and light floors alike.
+      const lx = bw.fc < 0 ? 0 : x0, lw = bw.fc < 0 ? x0 : W - x0;
+      g.fillStyle = `rgba(255,40,40,${0.4 + 0.2 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
+      g.fillRect(lx, y - 6, lw, 12);
+      g.fillStyle = `rgba(255,236,170,${0.75 + 0.25 * k})`;
+      g.fillRect(lx, y - 7, lw, 1); g.fillRect(lx, y + 6, lw, 1);
     }
     if (Math.floor(bw.t / 6) % 2) text(g, 'MOVE!', x0 + bw.fc * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
+  }
+  // Rear sweep: the ground behind the boss is marked before it is hit (jump it, or get in front).
+  if (bw && bw.st === 'sweep') {
+    const rear = -bw.fc, reach = (bw.w || 150) / 2 + S.SWEEP_REACH, x0 = bw.x - camX, x1 = x0 + rear * reach;
+    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx, warn = bw.t < S.SWEEP_WARN;
+    if (warn || bw.t < S.SWEEP_WARN + 8) {
+      const k = bw.t / S.SWEEP_WARN;
+      g.fillStyle = warn ? `rgba(255,150,30,${0.3 + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(255,240,200,.7)';
+      g.fillRect(lx, FLOOR_TOP, lw, S.DEPTH);
+      g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.strokeRect(lx + 0.5, FLOOR_TOP + 0.5, lw - 1, S.DEPTH - 1);
+      if (warn && Math.floor(bw.t / 6) % 2) text(g, 'BEHIND! JUMP!', lx + lw / 2, FLOOR_TOP - 10, 8, '#ffb23d', 'center');
+    }
   }
   if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX) });
@@ -573,7 +625,33 @@ function drawWorld(g, snap) {
   for (const f of snap.fx) drawFx(g, f, camX);
   g.restore();
   drawHud(g, snap);
-  drawBanner(g, snap);
+  if (!(opts && opts.noBanner)) drawBanner(g, snap);
+}
+
+// End-of-run panel. sum comes from Progress.summarize; info carries the reason, the best run and
+// which seats are played here. Counters a snapshot does not carry are shown as dashes.
+function drawSummary(g, sum, info) {
+  const x = 70, y = 50, w = 500, h = 272, num = v => (v === undefined || v === null ? '-' : String(v));
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, W, H);
+  g.fillStyle = 'rgba(10,8,22,.95)'; g.fillRect(x, y, w, h);
+  g.fillStyle = sum.victory ? '#7aff8a' : '#ff5a5a'; g.fillRect(x, y, w, 3);
+  text(g, sum.victory ? 'VICTORY!' : 'GAME OVER', W / 2, y + 24, 18, sum.victory ? '#7aff8a' : '#ff5a5a', 'center');
+  if (info.why) text(g, info.why, W / 2, y + 44, 6, '#c8c6e0', 'center');
+  text(g, 'STAGE ' + sum.stage + ' OF 12    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
+  const cols = [[x + 330, 'SCORE'], [x + 384, 'KOS'], [x + 438, 'REVIVES'], [x + 488, 'PARRIES']];
+  for (const c of cols) text(g, c[1], c[0], y + 82, 5, '#9a98b8', 'right');
+  sum.rows.forEach((r, i) => {
+    const ry = y + 98 + i * 15, col = S.SLOT_COLORS[r.slot], here = (info.local || []).indexOf(r.slot) >= 0;
+    if (here) { g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(x + 8, ry - 7, w - 16, 14); }
+    text(g, 'P' + (r.slot + 1), x + 14, ry, 7, col);
+    text(g, String(r.name).slice(0, 15), x + 44, ry, 6, '#fff');
+    text(g, r.cpu ? 'CPU' : here ? 'YOU' : '', x + 150, ry, 5, r.cpu ? '#8a88a8' : '#7aff8a');
+    [r.score, r.kills, r.revives, r.parries].forEach((v, k) => text(g, num(v), cols[k][0], ry, 6, '#e8e6f8', 'right'));
+  });
+  const b = info.best;
+  const line = info.god ? 'GOD MODE RUNS ARE NOT RECORDED' : info.newBest ? 'NEW BEST RUN!' : b ? 'BEST RUN: ' + (b.victory ? 'VICTORY' : 'STAGE ' + b.stage) + '  ·  SCORE ' + b.score + '  ·  ' + root.Progress.clock(b.ticks) : '';
+  if (line) text(g, line, W / 2, y + 204, 7, info.newBest && !info.god ? '#7aff8a' : '#c8c6e0', 'center');
+  if (info.prompt && info.blink) text(g, info.prompt, W / 2, y + 244, 8, '#fff', 'center');
 }
 
 // Render-only blend between two Sim.snapshot views. A snapshot is not restart state.
@@ -593,5 +671,5 @@ function interpolateSnapshot(a, b, k) {
   });
 }
 
-root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT, interpolateSnapshot };
+root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawSummary, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT, interpolateSnapshot };
 })(window);
