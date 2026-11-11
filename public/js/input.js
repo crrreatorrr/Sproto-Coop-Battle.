@@ -70,7 +70,13 @@ function read(dev) {
 function setMuted(dev, on) { if (on) muted.add(dev); else muted.delete(dev); }
 // Ignore whatever this pad holds now until it is released (after closing a menu, after joining).
 function latch(dev) { if (isPad(dev) && trackers[+dev.slice(2)]) P.latch(trackers[+dev.slice(2)]); }
-function endFrame() { tapped.clear(); }
+// End of frame: forget taps and settle keyboard edges for every layout, polled or not. A menu
+// action often returns before the other layout is polled; without this, that layout would report
+// the same held Enter as a fresh press on the next frame and skip a whole screen.
+function endFrame() {
+  tapped.clear();
+  for (const dev in DEVICE_CODES) prevKeys[dev] = new Set(DEVICE_CODES[dev].filter(c => keys.has(c)));
+}
 function devices() {
   const list = ['k1', 'k2'];
   const pads = getPads();

@@ -65,6 +65,25 @@ const frame = () => I.endFrame();
   down('KeyW'); assert.strictEqual(I.pressed('k1').u, 1, 'W moves the menu'); up('KeyW'); frame(); I.pressed('k1');
 }
 
+// ---- one Enter press is one menu action, even when the first layout's action ends the frame ----
+// (title -> lobby returns before the arrows layout is polled; it must not see a new press later)
+{
+  I.pressed('k1'); I.pressed('k2'); frame();
+  down('Enter');
+  let actions = 0;
+  for (let f = 0; f < 5; f++) { // Enter stays held for five frames
+    for (const dev of ['k1', 'k2']) if (I.pressed(dev).start) { actions++; break; } // a menu action returns
+    frame();
+  }
+  assert.strictEqual(actions, 1, 'a held Enter confirms exactly once');
+  up('Enter'); frame();
+  down('Enter'); up('Enter'); // a tap that starts and ends between two frames still counts, once
+  actions = 0;
+  for (let f = 0; f < 3; f++) { for (const dev of ['k1', 'k2']) if (I.pressed(dev).start) { actions++; break; } frame(); }
+  assert.strictEqual(actions, 1, 'a quick Enter tap confirms exactly once');
+  I.pressed('k1'); I.pressed('k2'); frame();
+}
+
 // ---- battle edges: Space is a jump, never START; switching layouts invents no press ----
 {
   down('Space');
