@@ -216,3 +216,136 @@ console.log('ok');
   assert.strictEqual(snapHash(g), expected.snapSha256);
   console.log('six-local gameplay hash', expected.snapSha256);
 }
+
+// ---------- gameplay improvement plan (docs/gameplay-improvement-plan.md) ----------
+const PN = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
+// One human (seat 0) on an empty, locked screen. opts.cpus keeps the five CPU seats alive.
+function arena(opts) {
+  const o = opts || {};
+  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i ? i : (o.weapon || 0), ctrl: i < (o.humans || 1) ? 'local' : 'cpu' })), o.seed || 61, o.stage || 0);
+  for (let i = 0; i < 60; i++) { g.players.forEach(p => { if (p.ctrl !== 'cpu') p.in = { ...PN }; }); Sim.step(g); }
+  if (!o.cpus) g.players.forEach(p => { if (p.ctrl === 'cpu') { p.st = 'dead'; p.dead = true; } });
+  g.enemies.length = 0; g.items.length = 0; g.projs.length = 0; g.stage.waves.forEach(w => (w.done = true)); g.lockX = g.camX;
+  const me = g.players[0];
+  Object.assign(me, { x: g.camX + 200, y: 60, z: 0, st: 'idle', t: 0, inv: 0, hp: 100, face: 1, combo: 0 });
+  return { g, me };
+}
+function foe(g, x, y, extra) {
+  const e = { id: 7000 + g.enemies.length, fid: 0, weapon: 0, x, y, z: 0, vx: 0, vy: 0, vz: 0, face: -1, hp: 200, maxHp: 200, st: 'walk', t: 0, cd: 999, inv: 0, offY: 0, offX: 0, ...extra };
+  g.enemies.push(e); return e;
+}
+function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp }; Sim.step(g); g.events.length = 0; } }
+
+// A1: a grab that ends because the grabber is hit must free the enemy, or the wave never clears.
+{
+  for (const how of ['hit', 'knock', 'down']) {
+    const { g, me } = arena();
+    const held = foe(g, g.camX + 222, 60, { st: 'hit', stun: 3, hp: 30, maxHp: 30 });
+    drive(g, me, [{ r: 1 }]);
+    assert(me.st === 'grab' && held.st === 'grabbed', 'setup: the enemy is grabbed');
+    // Something hits the grabber from behind.
+    me.inv = 0; if (how === 'down') me.hp = 1;
+    // A knife in the back, or (for the knockdown) a heavy boss shot.
+    const striker = foe(g, me.x - 22, 60, { st: 'attack', t: how === 'knock' ? 99 : 10, face: 1, weapon: 1 });
+    if (how === 'knock') g.projs.push({ id: 9100, kind: 'boss', row: 2, x: me.x - 12, y: 60, z: 16, vx: 3.8, vy: 0, vz: 0, dmg: 10, t: 0, life: 260, enemy: true, phase: 0, bi: 0 });
+    drive(g, me, [{}]);
+    if (how === 'down') assert.strictEqual(me.lives, 1, 'down: the hit downed the solo human, who came back on the spare life (A3)');
+    else assert.strictEqual(me.st, how, how + ': setup lands the hit');
+    assert(me.st !== 'grab', how + ': the hit broke the grab (' + me.st + ')');
+    assert.strictEqual(me.grab, null, how + ': the grab is cleared');
+    assert.notStrictEqual(held.st, 'grabbed', how + ': the enemy is free in the same tick');
+    g.enemies.splice(g.enemies.indexOf(striker), 1);
+    if (how === 'down') continue;
+    // It can now be killed with ordinary attacks.
+    me.hp = 100; me.st = 'idle'; me.inv = 9999; me.face = 1; held.cd = 999;
+    for (let i = 0; i < 400 && !held.dead; i++) { held.x = me.x + 30; held.y = me.y; if (held.st === 'lying' || held.st === 'knock') { held.st = 'walk'; held.z = 0; } drive(g, me, [{ a: i % 4 === 0 ? 1 : 0 }]); }
+    assert(held.dead, how + ': the freed enemy can be killed');
+  }
+  // The second guard: even if the grabber's state is changed from outside, nobody stays frozen.
+  const { g, me } = arena();
+  const held = foe(g, g.camX + 222, 60, { st: 'hit', stun: 3 });
+  drive(g, me, [{ r: 1 }]);
+  assert(held.st === 'grabbed');
+  me.st = 'lying'; me.t = 0;
+  drive(g, me, [{}]);
+  assert.notStrictEqual(held.st, 'grabbed', 'an enemy nobody holds walks again');
+  // The plan's reproduction: wave with one grabbed enemy left, grabber hit, wave must clear.
+  const r = arena();
+  const wave = r.g.stage.waves[0]; wave.done = false; wave.active = true; wave.left = 0;
+  const last = foe(r.g, r.g.camX + 222, 60, { st: 'hit', stun: 3, hp: 20, maxHp: 20 });
+  drive(r.g, r.me, [{ r: 1 }]);
+  assert(r.me.st === 'grab');
+  r.me.inv = 0; foe(r.g, r.me.x - 22, 60, { st: 'attack', t: 10, face: 1, weapon: 1, hp: 1, maxHp: 1 });
+  drive(r.g, r.me, [{}]);
+  r.me.inv = 99999;
+  for (let i = 0; i < 1800 && !wave.done; i++) {
+    for (const e of r.g.enemies) { e.cd = 999; if (!e.dead && e.st !== 'knock' && e.st !== 'lying') { e.x = r.me.x + r.me.face * 30; e.y = r.me.y; } }
+    r.me.st = r.me.st === 'hit' || r.me.st === 'knock' || r.me.st === 'lying' ? 'idle' : r.me.st;
+    drive(r.g, r.me, [{ a: i % 4 === 0 ? 1 : 0 }]);
+  }
+  assert(wave.done, 'the wave clears after the grabber was hit');
+  console.log('A1 grab release ok');
+}
+
+// A2: a dead boss cannot end the run. Its shots vanish and nobody can be hurt while it explodes.
+{
+  const { g, me } = arena();
+  g.boss = { bi: 0, phase: 1, hp: 5, maxHp: 2600, x: g.camX + 420, y: 60, z: 0, face: -1, st: 'idle', t: 0, row: 0, w: 150, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0 };
+  me.hp = 1; me.lives = 1; me.x = g.boss.x - 110; me.inv = 0;
+  // Shots one tick from the last standing Sproto, a missile, and a Shadow Sproto mid-swing.
+  g.projs.push({ id: 9001, kind: 'boss', row: 0, x: me.x + 10, y: 60, z: 16, vx: -3.8, vy: 0, vz: 0, dmg: 20, t: 0, life: 260, enemy: true, phase: 1, bi: 0 });
+  g.projs.push({ id: 9002, kind: 'boss', row: 3, x: me.x + 8, y: 60, z: 20, vx: -1.6, vy: 0, vz: 0, dmg: 30, t: 0, life: 300, enemy: true, homing: true, boom: true, phase: 1, bi: 0 });
+  const add = foe(g, me.x - 22, 60, { st: 'attack', t: 16, face: 1, hp: 80, maxHp: 80 });
+  // The katana swing is on its first active frame: the killing blow, both shots and the club all
+  // land on this very tick.
+  Object.assign(me, { st: 'attack', t: 4, combo: 1, launch: false, hitDone: new Set() });
+  drive(g, me, [{}]);
+  assert.strictEqual(g.boss.st, 'dead', 'setup: the boss just died');
+  assert.strictEqual(g.projs.filter(pr => pr.enemy).length, 0, 'enemy shots are gone the moment the boss dies');
+  assert(add.dead, 'its Shadow Sprotos fall with it');
+  assert(me.inv >= 100, 'survivors are safe during the explosion');
+  for (let i = 0; i < 400 && g.mode === 'play'; i++) drive(g, me, [{}]);
+  assert.strictEqual(g.mode, 'clear', 'the stage clears instead of GAME OVER (' + g.mode + ')');
+  assert.strictEqual(me.hp, 1, 'the last Sproto was not hurt');
+  console.log('A2 dead boss ok');
+}
+
+// A3: every Sproto down, but a human still holds a spare life: it is used instead of GAME OVER.
+{
+  const { g, me } = arena(); // the five CPUs are dead
+  assert.strictEqual(me.lives, 2);
+  me.hp = 0; me.st = 'down'; me.downT = Sim.DOWN_TICKS; // freshly downed: ten seconds on the clock
+  drive(g, me, [{}]);
+  assert.strictEqual(g.mode, 'play', 'first down with a spare life is not game over');
+  assert.strictEqual(me.lives, 1, 'the spare life was spent');
+  assert(Sim.alive(me) && me.hp === Sim.MAX_HP, 'the human is back at once, not after the 10 s timer');
+  for (let i = 0; i < 60; i++) drive(g, me, [{}]);
+  me.hp = 0; me.st = 'down'; me.downT = Sim.DOWN_TICKS; me.z = 0;
+  drive(g, me, [{}]);
+  assert.strictEqual(g.mode, 'gameover', 'the second time, with no life left, the run ends');
+  // Two humans both down, one with a spare life: that one returns and can revive the other.
+  const two = arena({ humans: 2 });
+  const a = two.g.players[0], b = two.g.players[1];
+  b.lives = 1;
+  for (const p of [a, b]) { p.hp = 0; p.st = 'down'; p.downT = Sim.DOWN_TICKS; p.z = 0; }
+  two.g.players.forEach(p => (p.in = { ...PN })); Sim.step(two.g);
+  assert.strictEqual(two.g.mode, 'play');
+  assert(Sim.alive(a) && a.lives === 1 && b.st === 'down' && b.lives === 1, 'only the spare life is spent; the other stays down to be revived');
+  console.log('A3 spare life ok');
+}
+
+// Run totals for the end-of-run panel: KOs, revives and parries are counted per Sproto.
+{
+  const { g, me } = arena();
+  const e = foe(g, g.camX + 230, 60, { hp: 5, maxHp: 5 });
+  drive(g, me, [{ a: 1 }, ...Array(8).fill({})]);
+  assert(e.dead && me.kills === 1, 'a kill is counted for the Sproto that landed it');
+  const snap = Sim.snapshot(g).players[0];
+  assert.deepStrictEqual([snap.k, snap.rvn, snap.pa], [1, 0, 0], 'the snapshot carries the totals');
+  const two = arena({ humans: 2 });
+  const a = two.g.players[0], b = two.g.players[1];
+  Object.assign(b, { x: a.x + 5, y: a.y, hp: 0, st: 'down', downT: Sim.DOWN_TICKS, revive: 0, z: 0 });
+  for (let i = 0; i < Sim.REVIVE_TICKS + 2; i++) { two.g.players.forEach(p => (p.in = { ...PN })); Sim.step(two.g); }
+  assert(Sim.alive(b) && a.revs === 1, 'a revive is counted for the helper');
+  console.log('run totals ok');
+}

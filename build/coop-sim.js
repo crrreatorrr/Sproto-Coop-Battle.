@@ -69,7 +69,7 @@ function newPlayer(slot, cfg) {
     x: 80 + slot * 14, y: 18 + slot * 17, z: 0, vx: 0, vy: 0, vz: 0, face: 1,
     hp: MAX_HP, lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
     inv: 90, downT: 0, revive: 0, ufoT: 0, ufoShield: 0, shotCd: 0, ballCd: 0, out: false, contT: 0,
-    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, sHeld: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
+    in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, sHeld: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, kills: 0, revs: 0, parries: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
   };
 }
 
@@ -145,7 +145,7 @@ function updatePlayer(state, p) {
       if (p.revive >= REVIVE_TICKS) {
         p.hp = 45; setState(p, 'idle'); p.inv = 120; p.revive = 0;
         if (helper.ctrl === 'cpu') p.npcRevived = true;
-        helper.score += 500; ev(state, 'revive'); fx(state, 'text', p.x, p.y, 70, { text: 'REVIVED!' });
+        helper.score += 500; helper.revs = (helper.revs || 0) + 1; ev(state, 'revive'); fx(state, 'text', p.x, p.y, 70, { text: 'REVIVED!' });
       }
     } else p.revive = Math.max(0, p.revive - 1);
     if (p.downT <= 0) die(state, p);
@@ -301,6 +301,14 @@ function startGrab(state, p, e) {
   e.st = 'grabbed'; e.t = 0; e.vx = 0; e.vy = 0; e.vz = 0; e.z = 0;
   ev(state, 'swing');
 }
+// A grab can end without the grabber's say (hit, knocked down, downed, killed). The enemy must
+// never stay 'grabbed' after that: nothing else can hit it, and the wave would never clear.
+function releaseGrab(state, p) {
+  if (p.grab === null || p.grab === undefined) return;
+  const e = state.enemies.find(o => o.id === p.grab);
+  if (e && e.st === 'grabbed') { e.st = 'walk'; e.t = 0; }
+  p.grab = null;
+}
 function updateGrab(state, p, pressA, inp) {
   p.vx = 0; p.vy = 0;
   const e = state.enemies.find(o => o.id === p.grab);
@@ -375,7 +383,7 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
   if (p.st === 'block' && Math.sign(dir) === -p.face) {
     if (p.t <= PARRY_WINDOW) {
       fx(state, 'parry', p.x + p.face * 14, p.y, 34); fx(state, 'text', p.x, p.y, 76, { text: 'PARRY!' }); ev(state, 'shield');
-      p.hs = 6; p.inv = 20; p.score += 300;
+      p.hs = 6; p.inv = 20; p.score += 300; p.parries = (p.parries || 0) + 1;
       if (src && src.st === 'attack') { src.st = 'hit'; src.t = 0; src.stun = 3; src.vx = -dir * 2; src.hs = 10; } // the attacker is left dazed
       return true;
     }
@@ -390,6 +398,7 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
     return true;
   }
   p.hp -= p.ctrl === 'cpu' ? Math.ceil(dmg * CPU_TAKEN) : dmg;
+  releaseGrab(state, p); // any hit that lands breaks a grab
   ev(state, 'hurt');
   fx(state, 'spark', p.x, p.y, 34 + p.z);
   if (p.hp <= 0) {
@@ -403,7 +412,7 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
 }
 
 function die(state, p) {
-  p.hp = 0; p.revive = 0;
+  p.hp = 0; p.revive = 0; releaseGrab(state, p);
   fx(state, 'text', p.x, p.y, 70, { text: p.name + ' DIED' }); ev(state, 'ko');
   if (p.ctrl === 'cpu') { setState(p, 'dead'); p.dead = true; p.lives = 0; return; }
   p.lives--;
@@ -542,7 +551,7 @@ function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p, launch) {
   if (e.hp <= 0) {
     e.st = 'knock'; e.t = 0; e.vx = dir * (knockF + 1); e.vz = 6; e.dead = true;
     if (rng(state) < 0.04) dropPower(state, e.x, e.y);
-    if (p) p.score += 200;
+    if (p) { p.score += 200; p.kills = (p.kills || 0) + 1; }
     return;
   }
   if (launch) { e.st = 'knock'; e.t = 0; e.vx = dir * 0.8; e.vz = 9.5; e.jug = 0; e.stun = 0; fx(state, 'text', e.x, e.y, 80, { text: 'LAUNCH!' }); return; }
@@ -557,7 +566,11 @@ function updateEnemy(state, e) {
     e.bleedT--;
     if (e.bleedT % 30 === 0 && e.hp > 0 && !e.dead) { e.hp -= e.bleed * 2; fx(state, 'spark', e.x, e.y, 30); if (e.hp <= 0) hurtEnemy(state, e, 0, true, 1, 2, state.players[e.bleedBy]); }
   }
-  if (e.st === 'grabbed') { e.t++; return; }
+  if (e.st === 'grabbed') {
+    // Second guard: whatever ended the grab, an enemy nobody is holding walks again.
+    if (state.players.some(q => q.st === 'grab' && q.grab === e.id)) { e.t++; return; }
+    e.st = 'walk'; e.t = 0;
+  }
   e.t++;
   e.x += e.vx; e.y = clamp(e.y + e.vy, 0, DEPTH); e.z += e.vz;
   if (e.z > 0 || e.vz > 0) e.vz -= 0.55;
@@ -648,7 +661,14 @@ function hurtBoss(state, b, dmg, p) {
     dropPower(state, state.camX + 200, DEPTH / 2 + 30);
     ev(state, 'transform');
   }
-  if (b.hp <= 0) { b.hp = 0; b.st = 'dead'; b.t = 0; ev(state, 'bossdown'); for (const pl of activePlayers(state)) pl.score += 5000; }
+  if (b.hp <= 0) {
+    b.hp = 0; b.st = 'dead'; b.t = 0; ev(state, 'bossdown');
+    // The fight is over: its shots vanish, its Shadow Sprotos fall, and nobody can be hurt while it
+    // explodes. A dead boss must not end the run.
+    for (const pr of state.projs) if (pr.enemy) pr.remove = true;
+    for (const e of state.enemies) if (e.hp > 0 && !e.dead) { e.hp = 0; e.st = 'knock'; e.t = 0; e.vx = (e.x < b.x ? -1 : 1) * 3; e.vz = 6; e.dead = true; }
+    for (const pl of activePlayers(state)) { pl.score += 5000; pl.inv = Math.max(pl.inv, 150); }
+  }
 }
 
 function updateBoss(state) {
@@ -736,6 +756,7 @@ function bossShoot(state, b) {
 function updateProjs(state) {
   const ps = activePlayers(state);
   for (const pr of state.projs) {
+    if (pr.remove) continue; // knocked out of the air or wiped earlier this tick
     pr.t++;
     if (pr.homing && ps.length) {
       let best = ps[0], bd = 1e9;
@@ -840,7 +861,11 @@ function step(state) {
     else startStage(state, state.stageIdx + 1);
   }
   // Game over when every Sproto on screen is down or dead (nobody is left to revive).
-  if (state.mode === 'play' && !state.players.some(alive)) gameOver(state, 'Every Sproto is down');
+  // A downed human who still has a spare life uses it now instead of losing the run with it unspent.
+  if (state.mode === 'play' && !state.players.some(alive)) {
+    for (const p of state.players) if (p.st === 'down' && p.ctrl !== 'cpu' && p.lives > 1) die(state, p);
+    if (state.mode === 'play' && !state.players.some(alive)) gameOver(state, 'Every Sproto is down');
+  }
 }
 
 // Compact, render-only view of the state (used for rendering and network snapshots).
@@ -849,7 +874,7 @@ function snapshot(state) {
   return {
     t: state.t, sk: r1(state.shake || 0), god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
-    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice() })),
+    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice(), k: p.kills || 0, rvn: p.revs || 0, pa: p.parries || 0 })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0 })),
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),

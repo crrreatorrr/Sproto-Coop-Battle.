@@ -221,6 +221,7 @@ function input(session, seq, generation, mask, extra) {
   player.st = 'down';
   player.hp = 0;
   player.downT = 8000;
+  player.lives = 1; // no spare life: with one, the sim now brings the last human back at once (plan A3)
   for (let n = 0; n < 200; n++) {
     const stepped = CoopProtocol.stepLoop(session, [null, null, null], 200 + n);
     assert.strictEqual(stepped.ok, true);

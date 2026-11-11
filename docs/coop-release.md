@@ -2,6 +2,8 @@
 
 Prepared for H5. This document does not deploy, flip a public flag, or change gameplay. The sim bytes below are the bytes on game main `171a7e9` and they still match the hub pin.
 
+**Superseded pins.** The gameplay improvement plan (`docs/gameplay-improvement-plan.md`) changed the sim after this release, so the sim hashes in the matrix below are the C5 record, not the current pin. The current pin is `build/coop-sim.pin.json` (also quoted in `docs/coop-server-contract.md`), and the hub must re-vendor it before banked play matches again.
+
 ## What was exercised
 
 The Bar cabinet on hub main `05859c8e` lists three games. Sproto Coop Battle is the third. Signing in, pressing E at the machine, and choosing 3 opens this game with a redeemed account and a live Ticket balance. Return lands on `/hub/#from=sproto-coop-battle` at the cabinet. Screenshots from that run are `tests/artifacts/c5-bar-*.png`.
