@@ -181,6 +181,7 @@ function releaseForHub() {
   if (app.net) { try { app.net.close(); } catch (err) { /* already closed */ } app.net = null; }
   try {
     const ctx = A.ensure && A.ensure();
+    A.music('');
     if (ctx && ctx.close && ctx.state !== 'closed') ctx.close();
   } catch (err) { /* audio already stopped */ }
   removeEventListener('keydown', onKeyDown);
@@ -599,6 +600,11 @@ function drawGame() {
   app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });
   // End of run: stage reached, time, per-player totals and this browser's best run.
   const over = snap.mode === 'gameover' || snap.mode === 'victory';
+  A.music(over ? '' : snap.boss && snap.boss.st !== 'dead' ? 'boss' : 'stage', snap.si);
+  // A klaxon the moment the boss telegraphs a shot (lanes or a missile lock), not when it lands.
+  const aiming = !!(snap.boss && snap.boss.st === 'fire' && snap.boss.t < 30);
+  if (aiming && !app.aiming) A.play('warn');
+  app.aiming = aiming;
   if (snap.god) app.godSeen = true;
   if (!over) app.summary = null;
   else if (!app.summary) {
@@ -648,7 +654,7 @@ function drawPauseMenu() {
 function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   I.poll(now);
-  if (app.screen !== 'game') { app.summary = null; app.godSeen = false; }
+  if (app.screen !== 'game') { app.summary = null; app.godSeen = false; A.music(app.screen === 'loading' ? '' : 'menu'); }
   if (app.screen === 'join') joinPadInput();
   else if (app.screen === 'loading') { if (app.loadErr) loadErrorPadInput(); }
   else localDevicesInput();
