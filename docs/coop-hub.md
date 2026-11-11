@@ -8,11 +8,11 @@ This phase is session init, Ticket balance, and return only. It does not award T
 
 | Item | Value |
 |---|---|
-| Package | `@metaverse/hub-sdk` 0.6.4 |
-| Hub commit | `a1281c93b113d5cb1d9418d61c25b945f7e265de` (branch `relics-coop-shooter`, vendored as `main` ahead of its merge) |
+| Package | `@metaverse/hub-sdk` 0.7.0 |
+| Hub commit | `b9ac30856327bece3a002151760febca65e43ad1` (branch `claude/festive-ptolemy-4mg8oe`, not merged to hub `main` yet) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
-| IIFE sha256 | `e7626595184dc132e72ffd707c87149b266c7b3933d40670e55eb2fb0a64eda6` |
+| IIFE sha256 | `092603b61a3511fbbcaa3b674b16f02b24d581752e1fa1dc69eeb577bc5ae5e8` |
 | Pin | `vendor/hub-sdk/SOURCE.pin.json` |
 
 Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
@@ -56,6 +56,21 @@ Clearing stage 1 (Tidebreak Marina, boss `01-marina-bront`, `stageIdx` 0) grants
 - Local, hosted and relay-guest runs report from the page. When the sim's `'clear'` event fires with `stageIdx` 0, `main.js` calls `CoopHub.session.reportStageClear(stageIdx, godMode, runId)`, which sends `reportEvent('coop.stage_clear', { stage: 1, godMode }, 'coop.stage_clear:1:<runId>')` once per run. The host and local roles watch `sim.events` in `hostStep`. A relay guest watches the snapshot's `ev` list with `si` 0 and `god` from the same snapshot, so each hub account on its own device earns its own Relic.
 - Nothing is sent unless the hub opened the page (a redeemed `#t=` ticket or the saved hub session) and this device has a human in the run, so standalone play and the all-CPU demo report nothing. The run id is new for each `startGame` (local, host) and each run a guest enters, so the key is unique per run and its body never changes.
 - A failed report is logged and resolves `null`. It never throws into the game loop. A first grant shows the toast `Relic: Marina Anchor`.
+
+## Feedback window (SDK 0.7.0)
+
+Pressing **N twice** opens the hub's feedback window (`HubSDK.installFeedback`; behaviour in metaverse-hub `docs/feedback.md`). `public/js/feedback-link.js` is the game's adapter. `main.js` hands it the promise from `CoopHub.boot`, and it installs the window once, with `feedbackTransportFromSdk(CoopHub.session.sdk())`, only when the SDK loaded. Standalone play (no ticket, no saved hub session) never loads the SDK, so nothing is installed and N does nothing. Only signed-in hub accounts can send.
+
+- **Pause.** Local play freezes: the adapter sets `app.frozen`, and while it is set `main.js` runs no sim step and reads no menu or pad input. `app.paused`, the pause menu and the screen are not touched, so closing the window restores exactly what was there (still paused, still in the menu, or playing). Host, guest and server (banked) play return `false`: the match keeps running, the window says so, and no server hold is taken.
+- **Keys.** The SDK swallows key events in a window capture listener while the window is open, and the N key always. The game has no capture listeners of its own. Held keys are dropped (`Input.keys.clear()`) when the window opens and closes. Typing N in the join dialog's fields works as usual.
+- **Context.** Stage (`01 Tidebreak Marina`), mode and role, the local player's position, character, weapon, health, lives, score and combo, the stage clock (`snap.t / 60`), and extras: screen, section (`play` / `clear` / ...), camera progress, waves done (local and host only, where this page runs the sim), boss name, phase and health, player and human counts, God Mode, and the content fingerprint. It reads the snapshot `drawGame` last drew (`app.view`), so every role reports the same way.
+- **Version.** `0.1.0+<first 8 of the content fingerprint>`.
+- **Screenshot.** The `#game` canvas, taken before the window appears.
+- **Errors.** The crash guard's distinct errors (`CrashGuard.onCrash`), newest last, up to ten.
+- **Breadcrumbs.** `role_change`, `stage_start`, `wave_start`, `boss_start`, `boss_phase`, `player_down`, `stage_clear` and `run_end`, noted by `main.js` from the snapshot being drawn.
+- **Pause menu.** Signed-in accounts get a SEND FEEDBACK item. It closes the menu for the screenshot and reopens it when the window closes.
+
+The window uses the join dialog's look: Press Start 2P, `#14112a` panel, `#ffd23d` frame and accent, square corners.
 
 ## Hub status (updated 2026-11-08)
 
