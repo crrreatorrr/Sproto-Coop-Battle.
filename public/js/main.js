@@ -1,7 +1,7 @@
 // Sproto Coop Battle — app shell: title, lobby (local / host / guest), game loop and netcode glue.
 (function () {
 'use strict';
-const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST;
+const S = Sim, R = Render, I = Input, A = Audio2, M = MANIFEST, P = Progress;
 const cv = document.getElementById('game'), g = cv.getContext('2d');
 g.imageSmoothingEnabled = false;
 const STEP = 1000 / 60;
@@ -16,6 +16,8 @@ const app = {
   pauseMenu: null, // pause menu while open: { dev: pad id or 'keys', sel, held }
   joinCursor: 0,
   runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
+  progress: P.load(), // local best run and stage unlocks (this browser only)
+  summary: null, godSeen: false, // end-of-run panel for the run on screen
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -296,7 +298,12 @@ function localDevicesInput() {
       if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
       if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
       if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
-      if (p.ok || p.start) { startGame(); return; }
+      // Power toggles free play: every stage open, for groups that just want to pick one.
+      if (p.p) { app.progress.freePlay = !app.progress.freePlay; P.save(app.progress); A.play('menu'); }
+      if (p.ok || p.start) {
+        if (!P.isOpen(app.progress, app.stageSel)) { A.play('hurt'); return; } // the screen says why
+        startGame(); return;
+      }
       if (p.back) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
     } else if (app.screen === 'game') {
       if (app.role === 'banked' && app.authority) {
@@ -556,7 +563,9 @@ function drawStages() {
     const back = R.img('assets/stages/' + String(i + 1).padStart(2, '0') + '-back.jpg');
     g.fillStyle = '#000'; g.fillRect(x, y, cw, ch);
     if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / 62)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, 62); }
-    g.fillStyle = on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
+    const open = P.isOpen(app.progress, i);
+    g.fillStyle = !open ? 'rgba(0,0,0,.8)' : on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
+    if (!open) T(g, 'LOCKED', x + cw / 2, y + 32, 8, '#8a88a8', 'center');
     g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + 62, cw, 20);
     T(g, String(i + 1), x + 6, y + 10, 8, on ? '#ffd23d' : '#fff');
     T(g, M.bosses[i].stage, x + 6, y + 72, M.bosses[i].stage.length > 17 ? 5 : 6, on ? '#ffd23d' : '#e8e6f8');
@@ -564,8 +573,11 @@ function drawStages() {
     g.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
   }
   const b = M.bosses[app.stageSel];
-  T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 318, 8, '#ff8a8a', 'center');
-  T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 340, 6, '#c8c6e0', 'center');
+  if (P.isOpen(app.progress, app.stageSel)) T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 316, 8, '#ff8a8a', 'center');
+  else T(g, 'LOCKED: CLEAR STAGE ' + app.stageSel + ' FIRST, OR TURN ON FREE PLAY', S.W / 2, 316, 7, '#ff8a8a', 'center');
+  const fp = app.progress.freePlay;
+  T(g, (fp ? 'FREE PLAY: ALL STAGES OPEN' : 'CLEAR A STAGE TO UNLOCK THE NEXT · ' + app.progress.unlocked + ' OF 12 OPEN') + '   ' + (padUI() ? 'Y' : 'POWER') + ': FREE PLAY ' + (fp ? 'OFF' : 'ON'), S.W / 2, 330, 5, fp ? '#7aff8a' : '#ffd23d', 'center');
+  T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 344, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
   return R.interpolateSnapshot(a, b, k);
@@ -585,7 +597,26 @@ function drawGame() {
   // Seats played on this device get a marker so they can be found in a crowd.
   const mine = [];
   app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });
-  R.drawWorld(g, snap, { local: mine });
+  // End of run: stage reached, time, per-player totals and this browser's best run.
+  const over = snap.mode === 'gameover' || snap.mode === 'victory';
+  if (snap.god) app.godSeen = true;
+  if (!over) app.summary = null;
+  else if (!app.summary) {
+    const sum = P.summarize(snap), prev = app.progress.best;
+    const res = P.recordRun(app.progress, sum, app.godSeen || !mine.length); // watching or God Mode: not a record
+    if (res.newBest) P.save(app.progress);
+    app.summary = { sum, res, prev };
+  }
+  // Clearing stage N opens stage N + 1 on this device (not in God Mode, and only if you played).
+  if (snap.mode === 'clear' && !app.godSeen && mine.length && P.clearStage(app.progress, snap.si + 1)) {
+    P.save(app.progress); toast('STAGE ' + app.progress.unlocked + ' UNLOCKED');
+  }
+  R.drawWorld(g, snap, { local: mine, noBanner: over });
+  if (over) {
+    const why = String((snap.banner && snap.banner.sub) || '').replace(' · press START', '');
+    const prompt = app.role === 'guest' ? 'WAITING FOR THE HOST' : app.role === 'banked' ? '' : (padUI() ? 'START' : 'ENTER') + ': BACK TO THE LOBBY';
+    R.drawSummary(g, app.summary.sum, { why, prompt, local: mine, best: app.summary.res.best, newBest: app.summary.res.newBest, god: app.godSeen, blink: Math.floor(app.t / 30) % 2 });
+  }
   if (app.role === 'banked' && banked) {
     T(g, banked.payout || bankedPayLine(), S.W / 2, 46, 6, '#ffd23d', 'center'); // under the player panels
     const note = banked.background ? 'TAB IN BACKGROUND — MATCH CONTINUES' : banked.held ? 'YOUR INPUTS ARE HELD — MATCH CONTINUES' : banked.phase === 'reconnecting' ? (banked.restarting ? 'SERVER RESTARTING — RECONNECTING' + (banked.resumeMs > 0 ? ' IN ' + Math.ceil(banked.resumeMs / 1000) + 's' : '…') : 'RECONNECTING ' + Math.ceil((banked.reconnectMs || 0) / 1000) + 's — NOT A LOCAL HOST') : '';
@@ -617,6 +648,7 @@ function drawPauseMenu() {
 function frameStep(now) {
   const dt = Math.min(250, now - (app.last || now)); app.last = now; app.t++;
   I.poll(now);
+  if (app.screen !== 'game') { app.summary = null; app.godSeen = false; }
   if (app.screen === 'join') joinPadInput();
   else if (app.screen === 'loading') { if (app.loadErr) loadErrorPadInput(); }
   else localDevicesInput();

@@ -590,6 +590,32 @@ function drawWorld(g, snap, opts) {
   if (!(opts && opts.noBanner)) drawBanner(g, snap);
 }
 
+// End-of-run panel. sum comes from Progress.summarize; info carries the reason, the best run and
+// which seats are played here. Counters a snapshot does not carry are shown as dashes.
+function drawSummary(g, sum, info) {
+  const x = 70, y = 50, w = 500, h = 272, num = v => (v === undefined || v === null ? '-' : String(v));
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, W, H);
+  g.fillStyle = 'rgba(10,8,22,.95)'; g.fillRect(x, y, w, h);
+  g.fillStyle = sum.victory ? '#7aff8a' : '#ff5a5a'; g.fillRect(x, y, w, 3);
+  text(g, sum.victory ? 'VICTORY!' : 'GAME OVER', W / 2, y + 24, 18, sum.victory ? '#7aff8a' : '#ff5a5a', 'center');
+  if (info.why) text(g, info.why, W / 2, y + 44, 6, '#c8c6e0', 'center');
+  text(g, 'STAGE ' + sum.stage + ' OF 12    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
+  const cols = [[x + 330, 'SCORE'], [x + 384, 'KOS'], [x + 438, 'REVIVES'], [x + 488, 'PARRIES']];
+  for (const c of cols) text(g, c[1], c[0], y + 82, 5, '#9a98b8', 'right');
+  sum.rows.forEach((r, i) => {
+    const ry = y + 98 + i * 15, col = S.SLOT_COLORS[r.slot], here = (info.local || []).indexOf(r.slot) >= 0;
+    if (here) { g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(x + 8, ry - 7, w - 16, 14); }
+    text(g, 'P' + (r.slot + 1), x + 14, ry, 7, col);
+    text(g, String(r.name).slice(0, 15), x + 44, ry, 6, '#fff');
+    text(g, r.cpu ? 'CPU' : here ? 'YOU' : '', x + 150, ry, 5, r.cpu ? '#8a88a8' : '#7aff8a');
+    [r.score, r.kills, r.revives, r.parries].forEach((v, k) => text(g, num(v), cols[k][0], ry, 6, '#e8e6f8', 'right'));
+  });
+  const b = info.best;
+  const line = info.god ? 'GOD MODE RUNS ARE NOT RECORDED' : info.newBest ? 'NEW BEST RUN!' : b ? 'BEST RUN: ' + (b.victory ? 'VICTORY' : 'STAGE ' + b.stage) + '  ·  SCORE ' + b.score + '  ·  ' + root.Progress.clock(b.ticks) : '';
+  if (line) text(g, line, W / 2, y + 204, 7, info.newBest && !info.god ? '#7aff8a' : '#c8c6e0', 'center');
+  if (info.prompt && info.blink) text(g, info.prompt, W / 2, y + 244, 8, '#fff', 'center');
+}
+
 // Render-only blend between two Sim.snapshot views. A snapshot is not restart state.
 function interpolateSnapshot(a, b, k) {
   if (!b) return a;
@@ -607,5 +633,5 @@ function interpolateSnapshot(a, b, k) {
   });
 }
 
-root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT, interpolateSnapshot };
+root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawSummary, drawFighter, drawHead, drawBackground, text, weapon, frameCanvas, FONT, interpolateSnapshot };
 })(window);

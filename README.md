@@ -75,6 +75,7 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
     - **Chain Lightning:** lightning strikes the 10 nearest enemies on screen, and the boss.
 - **Rescue:** the first time a human player goes down, the nearest CPU Sproto sprints over to revive them.
 - **Bosses:** every stage ends with a Sproto Arcade machine. Bosses are tough: 2,600 HP on stage 1, rising 480 per stage to 7,880 on stage 12. Weapons A and C fire 2-shot bursts, weapon B fires a 3-lane spread, and every third attack launches a homing missile. Every fifth attack is a charge rush. At half HP the boss transforms into its phase-2 machine: it attacks 40% faster, fires 3-shot bursts and 5-lane spreads, launches missiles in pairs and charges every fourth attack. Below 25% HP it enrages and speeds up again. Jump over low shots.
+- **Stages, unlocks and bests:** clearing a stage unlocks the next one on that device. On the stage screen, Power (R, ', or Y on a pad) toggles **free play**, which opens all twelve for groups that just want to pick one. Every run ends on a summary: stage reached, time, and each Sproto's score, KOs, revives and parries, next to the best run saved in that browser. God Mode runs are shown but never recorded, and nothing here is sent to the hub.
 
 The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
 
@@ -106,6 +107,7 @@ The weapons, items and effects are drawn in code (`public/js/render.js`). `tools
 | `public/js/main.js` | Title, lobby, drop-in, game loop, relay netcode glue |
 | `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
 | `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices; pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX; relay WebSocket client |
+| `public/js/progress.js` | Best run and stage unlocks in `localStorage` (pure; `tests/progress.test.js`) |
 | `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
 | `public/js/net-hub.js` | Client for the hub's authoritative `sproto_coop` match (banked play) |
 | `server/server.js` | Practice static server and room relay |

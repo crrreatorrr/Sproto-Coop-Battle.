@@ -200,6 +200,7 @@ async function stageShots() {
     shots.push(await shot(page, path.join(out, 'c5-stage-select.png')));
     for (let stage = 0; stage < 12; stage++) {
       await page.evaluate(index => {
+        window.SprotoApp.progress.freePlay = true; // every stage is drawn here, unlocked or not
         window.SprotoApp.stageSel = index;
         window.SprotoApp.screen = 'stages';
         window.SprotoApp.sim = null;
@@ -272,6 +273,7 @@ async function soak(ms) {
         await page.evaluate(() => {
           const app = window.SprotoApp;
           app.role = 'local';
+          app.progress.freePlay = true;
           app.stageSel = ((app.sim && app.sim.stageIdx) || 0) % 12;
           app.screen = 'stages';
         });
