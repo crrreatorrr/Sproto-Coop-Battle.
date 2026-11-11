@@ -2,7 +2,9 @@
 
 ## 1. Status
 
-Plan only. No game code has changed.
+Implemented on branch `claude/trusting-ramanujan-63h582` (2026-11-11). Sections 2 to 10 are the plan
+as it was written, and their line numbers refer to `ae9dd75`. What was built, what differs from the
+plan and what was measured is in section 11.
 
 - Audited 2026-11-09 at `ae9dd75`. Re-checked 2026-11-11: `main` is still `ae9dd75`, so every line
   number below is current.
@@ -328,3 +330,108 @@ hub's own plan before acting):
 
 Online relay play, banked play against a live hub, gamepads, Firefox, mobile, and frame rate on real
 hardware.
+
+## 11. Implementation record (2026-11-11)
+
+### What was built
+
+| Item | State | Notes |
+| --- | --- | --- |
+| A1 | Done | `releaseGrab` on every hit, on death, and a guard in `updateEnemy`. Also fixed while testing it: a knee strike that killed the held enemy stood the dead enemy back up as a Shadow Sproto that attacked but could not be hit. |
+| A2 | Done | Enemy shots removed, remaining Shadow Sprotos fall, 150 ticks of invulnerability. |
+| A3 | Done | All downed humans with a spare life use it when nobody is standing. |
+| A4 | Done | Keyboard edges are settled for both layouts at the end of every frame. |
+| A5 | Done | Lane warning at 40% with a light edge, arrow over your own Sproto, hub tag under the player panels. |
+| A6 | Done | README boss numbers, then rewritten again for B1 and D1. |
+| B1 | Done | Tuned, see below. The human count is taken when the stage's first fight starts, not in `startStage`: banked seats are assigned after `create`, so `startStage` would always count zero. |
+| B2 | Done | Plus a 24-tick parry lock after a block, because block-on-press alone made parries mashable. |
+| B3 | Partly | Much better, not at the target. See the crowd numbers below. |
+| B4 | Done | Recommended option taken. A human who is put out returns at the next stage on one life, as dead CPUs already did. |
+| B5 | Done | Rear sweep after 3 s with two Sprotos behind, 5 s with one (the observed exploit was one human). |
+| C1 | Done | `public/js/progress.js`; KOs, revives and parries are counted in the sim. |
+| C2 | Done | Three synthesized loops and a boss klaxon. Nobody has listened to them: they were only checked for scheduling in `tests/audio.test.js` and for errors in headless Chromium. |
+| C3 | Done | Power on the stage screen toggles free play. |
+| D1 | Done | Existing sheets only. The summoner's adds are the old "periodic adds", which could never fire (`b.t` never reached 150). |
+| D2 | Done | Six blocked hits also break the guard, so an elite can never stall a wave for players who do not parry or launch. |
+| D3 | Done | Passives live in `sim.js` by fighter index. `manifest.js` is generated and was not edited. |
+| F10 | Partly | CPUs no longer run ahead of the lead human or chase items behind the camera. Banked prediction was not touched. |
+
+### B1 numbers
+
+| Quantity | Plan | Shipped |
+| --- | --- | --- |
+| Wave count | `0.55 + 0.075·h` | `0.5 + 0.1·h` |
+| Grunt health | `0.7 + 0.05·h` | `0.58 + 0.102·h` |
+| Boss health | `0.45 + 0.09·h` | `0.35 + 0.15·h` |
+| CPU dealt / taken, `h ≤ 2` | 0.75 / 1.15 | 0.75 / 1.15 |
+
+The slopes are steeper than planned because B4 and A3 make deaths much cheaper for large groups:
+with the planned values six bot-humans won 9 of 12 runs against 2 of 12 before.
+
+### Bot sweep
+
+The harness was rebuilt as section 2 describes (CPU brain on human seats, plus mashing attack,
+reviving and firing power-ups; never blocks, parries, dashes or launches). It also stops swinging
+while a boss winds up a charge or the bot stands in a marked area, and walks on when the screen is
+empty. "Before" is `ae9dd75` under the same harness, so it differs from the table in F2. Furthest
+stage reached from stage 1, six seeds (`W` is a win):
+
+| Humans | Before | After |
+| --- | --- | --- |
+| 0 | 1 1 1 1 1 1 | 2 2 2 2 2 5 |
+| 1 | 2 1 2 2 3 2 | 6 6 7 7 6 6 |
+| 2 | 4 6 5 3 5 3 | 7 10 10 9 9 7 |
+| 3 | 7 8 6 6 8 6 | 10 9 10 11 10 9 |
+| 4 | 9 11 11 10 10 11 | W 10 11 11 11 11 |
+| 6 | 11 12 9 11 W 12 | 11 9 8 11 8 W |
+
+Twelve seeds: one human reached stage 6 or later in 12 of 12 runs (median 7); two humans reached
+stage 9 in 8 of 12 (median 9); six humans won 2 of 12 with a median of stage 11. Before, over the same twelve seeds: one human
+never passed stage 3 (median 2), two humans never passed stage 6 (median 4), and six humans won 2
+of 12 with a median of stage 11.
+
+Starting on stage 12, wins out of six: one human 0 (before 0), two 1 (0), three 3 (0), four 5 (3),
+six 5 (6).
+
+Against the acceptance targets: one human past stage 6 in half of runs, met. Two humans reach stage
+9, met in two thirds of runs. Six humans no easier than today, met on win rate, at the cost of
+longer fights for six (below).
+
+### Other measurements
+
+- Katana time-to-kill on one passive Shadow Sproto, stages 1 / 6 / 12: before 0.7 / 4.2 / 9.9 s.
+  After, one human 0.5 / 2.4 / 5.9 s; six humans 0.7 / 4.3 / 11.5 s. The late-game sponge (F4) is
+  smaller for small groups and slightly larger for six.
+- Crowd (B3): sampled frames with six Sprotos up and at least nine Shadow Sprotos on stage 6, the
+  largest number of bodies inside one 30 px circle. Before: median 5, worst 8, more than three in
+  76% to 87% of frames. After: median 2 to 3, worst 4, more than three in 4% to 19% of frames. The
+  target was never more than three.
+- Soft lock (F1): the reproduction now ends with the wave cleared (`tests/sim.test.js`).
+- goja: the machine was shared and busy (load average 15 to 40), so `npm run bench:goja` could not
+  be compared with its 25 ms budget; the old bundle itself measured 18 to 56 ms there against 16 ms
+  earlier the same day. Interleaved, one goja VM over the 36 stage cases took 1.9 to 2.8 ms per
+  3-step loop before and 2.7 to 3.1 ms after. Run `npm run bench:goja` on an idle machine.
+
+### Pins
+
+| Batch | `bundleSha256` | `contentSha256` |
+| --- | --- | --- |
+| Before | `28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac` | `f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e` |
+| 1 (A1 to A3) | `22a104e0c3a41e62318aab8f2e5cbc4f802a8cf98170cc46888ed6ce668f1c31` | unchanged |
+| 2 (B1 to B5) | `1c344819e8dd5bf9d1fd34cf1c469a2cf6e064c83d0d1332bf44662e3b49a1a4` | unchanged |
+| 3 (D1 to D3) | `bb02957d4a6fda819dec4e42cd856a26f14f55e82b193d520bc4db4948193483` | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
+
+`contentSha256` changed in batch 3 because `contentManifest` now lists each stage's boss script and
+each fighter's passive. The hub has to copy `build/coop-sim.js` and its pin, update `CoopProto`, and
+record its own seed-3 golden again. B1 changes how fast bosses fall (section 7).
+
+### Not done, and worth a look first
+
+- No human has played any of this. Section 9's playtest checklist is still open, and the bot never
+  blocks, so block-on-press, the parry lock and the elite guard are only covered by unit tests.
+- The music and the klaxon have not been heard by anyone.
+- `public/js/progress.js` is the 30th startup script: the critical-request cap of 30 is now exactly
+  met, and the title transfer is 1,514,129 of 1,572,864 bytes.
+- Firefox, gamepads, online relay play with real latency and banked play against a live hub were
+  not run. The Chromium browser and e2e suites pass.
+
