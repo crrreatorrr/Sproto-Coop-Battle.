@@ -11,9 +11,9 @@ Game id: `sproto-coop-battle` (no terminal dot). Practice play, God Mode, and st
 | Gameplay base | `ef1f35a1311bd611f08eebd1ad9725fbdeb569bb` (C0) |
 | Protocol / state version | 1 |
 | Bundle | `build/coop-sim.js` |
-| Bundle sha256 | `a9034b346fced4a1c963dc70133549d7444d61acdb6b844d873aa8a89c0f4cb5` |
+| Bundle sha256 | `10804e5e4519e17074d4944b856f724fe8e54937af871f2019b6238f15e36f2c` |
 | Content sha256 | `fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72` |
-| `sim.js` | `9cd4dd723427d81ef19ec3bb17921bec8534d5a43e3592247b1212be03524fe6` |
+| `sim.js` | `e7f9edf12beb86eb3c4157e85a8084720c9877806a32d7a430e8e4cbdc43a878` |
 | `ai.js` | `d582e77a0f6162969ec3927e65e7be5d6fa78355b5ba77a04e5b7b3b22a49b97` |
 | `net-protocol.js` | `2be827ea6fefc3da16d6711b7fe111cc307221bc0f58089c8c58c0b38c61484b` |
 | `manifest.js` | `76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a` |

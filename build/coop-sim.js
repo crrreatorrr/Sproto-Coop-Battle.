@@ -49,8 +49,9 @@ const CPU_DMG = 0.55, CPU_TAKEN = 1.35, CPU_DMG_FEW = 0.75, CPU_TAKEN_FEW = 1.15
 // starts so a drop-in mid-stage does not change the stage in progress.
 const WAVE_SCALE = h => 0.5 + 0.1 * h, GRUNT_HP_SCALE = h => 0.58 + 0.102 * h, BOSS_HP_SCALE = h => 0.35 + 0.15 * h;
 // Difficulty: more Shadow Sprotos, tougher and more aggressive.
-// Difficulty ramps by stage: stage 1 is a warm-up, stage 12 is brutal.
-const ENEMY_HP = s => 1.0 + 0.09 * s, ENEMY_DMG = s => 0.8 + 0.1 * s, MAX_ON_SCREEN = 12;
+// Difficulty ramps by stage: stage 1 is a warm-up, stage 12 is brutal. Shadow Sproto health starts
+// 1.5x up from stage 1 so the opening stage is a real fight.
+const ENEMY_HP = s => 1.5 + 0.08 * s, ENEMY_DMG = s => 0.8 + 0.1 * s, MAX_ON_SCREEN = 12;
 
 // One small passive per Sproto, by fighter index (the same order as MANIFEST.fighters).
 const PASSIVES = [
@@ -756,10 +757,10 @@ function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
   lockHumans(state);
-  // (2,600 on stage 1 up to 7,880 on stage 12) x the human scale: 1,300 to 3,940 for one human,
-  // 3,250 to 9,850 for six. One human faces 40% of the six-human boss.
+  // (4,200 on stage 1 up to 9,040 on stage 12) x the human scale: 2,100 to 4,520 for one human,
+  // 5,250 to 11,300 for six. One human faces 40% of the six-human boss.
   // The charger spends much of its fight rushing out of reach, so it has less health to compensate.
-  const hp = Math.round((2600 + state.stageIdx * 480) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
+  const hp = Math.round((4200 + state.stageIdx * 440) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
   state.boss = {
     bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
