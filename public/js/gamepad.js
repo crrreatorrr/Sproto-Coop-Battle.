@@ -26,6 +26,10 @@ const GAME = {
   p: [BTN.Y, BTN.LT, BTN.RT],
   start: [BTN.START],
 };
+// The full default map for one pad, directions included (the stick always moves as well).
+// Controller settings swap button lists per pad through tracker.map; menus keep A = OK, B = back.
+const DEFAULT_MAP = Object.freeze({ l: [BTN.LEFT], r: [BTN.RIGHT], u: [BTN.UP], d: [BTN.DOWN], a: GAME.a, j: GAME.j, s: GAME.s, p: GAME.p, start: GAME.start });
+const BUTTON_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'VIEW', 'START', 'LS', 'RS', 'D-UP', 'D-DOWN', 'D-LEFT', 'D-RIGHT'];
 const EMPTY_GAME = Object.freeze({ l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0, start: 0 });
 const EMPTY_EDGES = Object.freeze({ l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0, start: 0, ok: 0, back: 0, view: 0 });
 const DIRS = ['l', 'r', 'u', 'd'];
@@ -46,9 +50,10 @@ function radial(x, y, dz) {
   return { x: x * k, y: y * k };
 }
 
-function createTracker(cfg) {
+function createTracker(cfg, map) {
   return {
     cfg: Object.assign({}, CONFIG, cfg || {}),
+    map: map || DEFAULT_MAP,
     present: false, id: '',
     raw: new Array(TRACKED).fill(false),
     latched: new Array(TRACKED).fill(false),
@@ -94,24 +99,25 @@ function update(tr, pad, now) {
   }
   const axes = pad.axes || [];
   const st = radial(axes[0], axes[1], cfg.leftDeadzone);
+  const map = tr.map || DEFAULT_MAP;
   const any = list => list.some(i => b[i]) ? 1 : 0;
   const mv = cfg.moveThreshold, mn = cfg.menuThreshold;
   const game = {
-    l: st.x < -mv || b[BTN.LEFT] ? 1 : 0,
-    r: st.x > mv || b[BTN.RIGHT] ? 1 : 0,
-    u: st.y < -mv || b[BTN.UP] ? 1 : 0,
-    d: st.y > mv || b[BTN.DOWN] ? 1 : 0,
-    a: any(GAME.a), j: any(GAME.j), s: any(GAME.s), p: any(GAME.p), start: any(GAME.start),
+    l: st.x < -mv || any(map.l) ? 1 : 0,
+    r: st.x > mv || any(map.r) ? 1 : 0,
+    u: st.y < -mv || any(map.u) ? 1 : 0,
+    d: st.y > mv || any(map.d) ? 1 : 0,
+    a: any(map.a), j: any(map.j), s: any(map.s), p: any(map.p), start: any(map.start),
   };
   const held = {
-    l: st.x < -mn || b[BTN.LEFT], r: st.x > mn || b[BTN.RIGHT],
-    u: st.y < -mn || b[BTN.UP], d: st.y > mn || b[BTN.DOWN],
+    l: st.x < -mn || !!any(map.l), r: st.x > mn || !!any(map.r),
+    u: st.y < -mn || !!any(map.u), d: st.y > mn || !!any(map.d),
   };
   const edge = i => b[i] && !tr.prev[i];
   const edgeAny = list => list.some(edge) ? 1 : 0;
   const edges = {
     l: 0, r: 0, u: 0, d: 0,
-    a: edgeAny(GAME.a), j: edgeAny(GAME.j), s: edgeAny(GAME.s), p: edgeAny(GAME.p), start: edgeAny(GAME.start),
+    a: edgeAny(map.a), j: edgeAny(map.j), s: edgeAny(map.s), p: edgeAny(map.p), start: edgeAny(map.start),
     ok: edge(BTN.A) ? 1 : 0, back: edge(BTN.B) ? 1 : 0, view: edge(BTN.VIEW) ? 1 : 0,
   };
   let active = false;
@@ -143,7 +149,7 @@ function editCode(value, cursor, e, alphabet, maxLen) {
   return { value: v, cursor: Math.max(0, Math.min(c, maxLen - 1)) };
 }
 
-const PadMap = { CONFIG, BTN, GAME, EMPTY_GAME, EMPTY_EDGES, buttonDown, radial, createTracker, update, latch, editCode };
+const PadMap = { CONFIG, BTN, GAME, DEFAULT_MAP, BUTTON_NAMES, EMPTY_GAME, EMPTY_EDGES, buttonDown, radial, createTracker, update, latch, editCode };
 root.PadMap = PadMap;
 if (typeof module !== 'undefined' && module.exports) module.exports = PadMap;
 })(typeof window !== 'undefined' ? window : globalThis);

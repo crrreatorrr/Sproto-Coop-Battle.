@@ -35,7 +35,7 @@ Offline, a failed init, and a rejected ticket still reach local play.
 
 ## Return
 
-Title, lobby, stage select, and a finished run (`gameover` / `victory`) return immediately. A live run asks once. Attack, Enter or a second `B` confirms. Jump or Esc cancels. On a pad, A or Start confirms and B cancels. Pads reach the return from RETURN TO BAR on the title and in the pause menu (Start). The destination is the trusted hub URL plus `#from=sproto-coop-battle`:
+Title, lobby, stage select, and a finished run (`gameover` / `victory`) return immediately. RETURN TO BAR is in every menu: the title, the pause menu, and the menu on the lobby and stage select (Tab, a pad's View, or the MENU box). A live run asks once. Attack, Enter or a second `B` confirms. Jump or Esc cancels. On a pad, A or Start confirms and B cancels. Pads reach the return from RETURN TO BAR on the title and in the pause menu (Start). The destination is the trusted hub URL plus `#from=sproto-coop-battle`:
 
 - `play.<domain>` returns to `https://<domain>/hub/#from=sproto-coop-battle` (cross-origin, same site).
 - Any other host returns to same-origin `/hub/#from=sproto-coop-battle`.
