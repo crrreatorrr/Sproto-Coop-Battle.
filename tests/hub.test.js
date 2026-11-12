@@ -11,7 +11,7 @@ const { spawnSync } = require('child_process');
 const root = path.join(__dirname, '..');
 const IIFE = path.join(root, 'vendor/hub-sdk/dist/hub-sdk.iife.js');
 const PIN = path.join(root, 'vendor/hub-sdk/SOURCE.pin.json');
-const EXPECTED = '25b989eb2cda2227e4395c84965c7a4bea5f937c3df442c08aad8ab8c40e5a35';
+const EXPECTED = '770e8e1b41ad1abef33eb0d04ef9c7eec8fda723336e5149a7809d902042013c';
 const SIM = '10804e5e4519e17074d4944b856f724fe8e54937af871f2019b6238f15e36f2c';
 
 function memory() {

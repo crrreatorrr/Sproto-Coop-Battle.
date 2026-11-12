@@ -30,7 +30,7 @@ Local and relay play stay practice and write 0 Tickets. A banked Nakama match is
 | `manifest.js` | `76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a` |
 | `net-protocol.js` | `c8a09e9ffd76d0f852242262bcb57d62fda3e322bb45c4b0809986958a1a25b4` |
 | Golden (hub match) | tick `7734`, state `3ec543448ecd6aafb53de3056c2425955733d2002ef65bfc117b11d531255494`, end `gameover`. This is the hub's seed-3 run through the 20 Hz match, not this repo's offline `human-seed3-stage1` fixture (tick 7154); see `docs/coop-server-contract.md` § Goldens and goja |
-| SDK | `@metaverse/hub-sdk` 0.7.2, IIFE `25b989eb2cda2227e4395c84965c7a4bea5f937c3df442c08aad8ab8c40e5a35` |
+| SDK | `@metaverse/hub-sdk` 0.7.2, IIFE `770e8e1b41ad1abef33eb0d04ef9c7eec8fda723336e5149a7809d902042013c` |
 | Nakama image | `heroiclabs/nakama:3.41.0` (`3.41.0+cab8af5`, Go 1.27.1 in that image) |
 | Postgres | `postgres:16.8-alpine` |
 | Migration | `0041_coop_boss_receipt` |
