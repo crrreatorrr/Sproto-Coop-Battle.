@@ -623,7 +623,11 @@ function createStandin(opts) {
       if (match) { match.leave(ws.presence); deliver(match, match.drain()); }
     });
   });
+  let paused = false;
   const timer = setInterval(() => {
+    // A Playwright round trip is long enough for a power pickup. Callers freeze
+    // the loop while they sample life, so that pickup is not blamed on reconnect.
+    if (paused) return;
     flushQueue();
     for (const match of matches.values()) {
       if (match.state.phase === 'done') continue;
@@ -645,7 +649,18 @@ function createStandin(opts) {
     latency: latency, matches: matches, ledgerWrites: ledgerWrites, checkpoints: checkpoints,
     listen: () => new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server.address().port))),
     close: () => new Promise(resolve => { clearInterval(timer); wss.close(); server.close(() => resolve()); }),
-    drop: userId => { for (const ws of sockets) if (ws.presence && ws.presence.userId === userId) ws.close(4000, 'drop'); },
+    drop: userId => new Promise(resolve => {
+      let pending = 0;
+      for (const ws of sockets) {
+        if (!ws.presence || ws.presence.userId !== userId) continue;
+        pending++;
+        ws.once('close', () => { if (--pending === 0) resolve(); });
+        ws.close(4000, 'drop');
+      }
+      if (!pending) resolve();
+    }),
+    pause: () => { paused = true; },
+    resume: () => { paused = false; },
     shutdownMatch: shutdownMatch,
     setLatency: (ms, jitter) => { latency.ms = ms; latency.jitter = jitter || 0; },
   };
@@ -796,35 +811,61 @@ async function main() {
 
     // Dash ends one tick before an overlapped power is picked up, and only while
     // idle or walking. Wait until that seat has been idle with the same powers
-    // for several ticks, then require reconnect to leave hp, lives, and powers unchanged.
-    await host.waitForFunction(() => {
-      const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
-      const player = view && view.snapshot && view.snapshot.players[0];
-      if (!view || view.phase !== 'playing' || !player || player.st !== 'idle') {
-        window.__coopSettle = null;
-        return false;
-      }
-      const powers = JSON.stringify(player.pw || []);
-      const mark = window.__coopSettle;
-      if (!mark || mark.powers !== powers) {
-        window.__coopSettle = { tick: view.snapshot.t, powers: powers };
-        return false;
-      }
-      return view.snapshot.t >= mark.tick + 6;
-    }, null, { timeout: 4000 });
-    const beforeDrop = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
-    standin.drop('acct-ada');
-    await host.waitForFunction(() => {
-      const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
-      return view && (view.phase === 'reconnecting' || view.generation > 1);
-    }, null, { timeout: 8000 });
-    await host.screenshot({ path: path.join(out, 'c4-reconnect.png') });
-    summary.screenshots.push('c4-reconnect.png');
-    await host.waitForFunction(() => window.SprotoApp.authority.view().phase === 'playing' && window.SprotoApp.authority.view().generation > 1, null, { timeout: 10000 });
-    const afterDrop = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
-    summary.reconnect = { before: beforeDrop, after: afterDrop, generation: await host.evaluate(() => window.SprotoApp.authority.view().generation) };
-    const healed = afterDrop.some((row, i) => row.lives > beforeDrop[i].lives || row.hp > beforeDrop[i].hp + 1 || JSON.stringify(row.powers) !== JSON.stringify(beforeDrop[i].powers));
-    if (healed) throw new Error('reconnect refilled hp, lives, or powers: ' + JSON.stringify(summary.reconnect));
+    // for several ticks, freeze the stand-in, and sample again. The loop runs
+    // every 50 ms, so a Playwright round trip can collect a power between the
+    // two reads and look like a reconnect refill. Require reconnect to leave
+    // hp, lives, and powers unchanged.
+    const settleDeadline = Date.now() + 4000;
+    let beforeDrop = null;
+    while (Date.now() < settleDeadline) {
+      const settled = await host.evaluate(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        const player = view && view.snapshot && view.snapshot.players[0];
+        if (!view || view.phase !== 'playing' || !player || player.st !== 'idle') {
+          window.__coopSettle = null;
+          return false;
+        }
+        const powers = JSON.stringify(player.pw || []);
+        const mark = window.__coopSettle;
+        if (!mark || mark.powers !== powers) {
+          window.__coopSettle = { tick: view.snapshot.t, powers: powers };
+          return false;
+        }
+        return view.snapshot.t >= mark.tick + 6;
+      });
+      if (!settled) { await delay(30); continue; }
+      standin.pause();
+      const frozen = await host.evaluate(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        const player = view && view.snapshot && view.snapshot.players[0];
+        const mark = window.__coopSettle;
+        if (!view || !player || !mark || player.st !== 'idle') return null;
+        if (JSON.stringify(player.pw || []) !== mark.powers) return null;
+        return view.snapshot.players.map(row => ({ hp: row.hp, lives: row.l, powers: row.pw }));
+      });
+      if (frozen) { beforeDrop = frozen; break; }
+      standin.resume();
+    }
+    if (!beforeDrop) throw new Error('reconnect settle timed out');
+    // Stay frozen through the second sample. ws.close is not synchronous, and
+    // once the seat is human again the match can pick up a power during the
+    // screenshot. That pickup is not a reconnect refill.
+    await standin.drop('acct-ada');
+    try {
+      await host.waitForFunction(() => {
+        const view = window.SprotoApp.authority && window.SprotoApp.authority.view();
+        return view && (view.phase === 'reconnecting' || view.generation > 1);
+      }, null, { timeout: 8000 });
+      await host.screenshot({ path: path.join(out, 'c4-reconnect.png') });
+      summary.screenshots.push('c4-reconnect.png');
+      await host.waitForFunction(() => window.SprotoApp.authority.view().phase === 'playing' && window.SprotoApp.authority.view().generation > 1, null, { timeout: 10000 });
+      const afterDrop = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players.map(player => ({ hp: player.hp, lives: player.l, powers: player.pw })));
+      summary.reconnect = { before: beforeDrop, after: afterDrop, generation: await host.evaluate(() => window.SprotoApp.authority.view().generation) };
+      const healed = afterDrop.some((row, i) => row.lives > beforeDrop[i].lives || row.hp > beforeDrop[i].hp + 1 || JSON.stringify(row.powers) !== JSON.stringify(beforeDrop[i].powers));
+      if (healed) throw new Error('reconnect refilled hp, lives, or powers: ' + JSON.stringify(summary.reconnect));
+    } finally {
+      standin.resume();
+    }
 
     await host.evaluate(() => window.SprotoApp.authority.command('god'));
     await host.evaluate(() => window.SprotoApp.authority.sendRaw(10, { t: 'input', frame: 9, seq: 1, seats: [{ slot: 5, device: 'k2', mask: 1 }] }));

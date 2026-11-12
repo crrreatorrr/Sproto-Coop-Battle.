@@ -9,7 +9,7 @@ This phase is session init, Ticket balance, and return only. It does not award T
 | Item | Value |
 |---|---|
 | Package | `@metaverse/hub-sdk` 0.7.2 |
-| Hub commit | `5099cb5` (branch `claude/nifty-einstein-ptgr08`, not merged to hub `main` yet) |
+| Hub commit | `c6627e51585a7c0e8006122af54e0e413ca91876` (`main`) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
 | IIFE sha256 | `770e8e1b41ad1abef33eb0d04ef9c7eec8fda723336e5149a7809d902042013c` |
