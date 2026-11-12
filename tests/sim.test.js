@@ -388,14 +388,14 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
       for (let i = 0; i < 200 && g.enemies.length < 4; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
       assert(g.enemies.length >= 4);
       for (const e of g.enemies) {
-        const base = (26 + stage * 4 + (e.weapon === 0 ? 14 : 0)) * (1 + 0.09 * stage);
+        const base = (26 + stage * 4 + (e.weapon === 0 ? 14 : 0)) * (1.5 + 0.08 * stage);
         assert.strictEqual(e.maxHp, Math.round(base * Sim.GRUNT_HP_SCALE(want) * (e.elite ? 1.6 : 1)), 'Shadow Sproto health for ' + h + ' humans on stage ' + (stage + 1));
       }
       g.enemies.length = 0; g.stage.waves.forEach(x => (x.done = true));
       g.camX = g.stage.len; g.lockX = null;
       for (let i = 0; i < 400 && !g.boss; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
       // Chargers (stages 2, 6, 10) have half the health: they spend the fight rushing out of reach.
-      assert.strictEqual(g.boss.maxHp, Math.round((2600 + 480 * stage) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
+      assert.strictEqual(g.boss.maxHp, Math.round((4200 + 440 * stage) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
     }
   }
   // Fewer humans means smaller waves and softer enemies; six humans face the largest of everything.
@@ -810,15 +810,15 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   const b = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 94);
   b.stage.waves.forEach(x => (x.done = true)); b.camX = b.stage.len; b.lockX = null;
   for (let i = 0; i < 400 && !b.boss; i++) { b.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(b); }
-  assert.strictEqual(b.boss.maxHp, 1300);
-  b.boss.hp = 780;
+  assert.strictEqual(b.boss.maxHp, 2100);
+  b.boss.hp = 1260;
   for (let k = 1; k < 6; k++) b.players[k].ctrl = 'local';
   Sim.rescaleHumans(b);
-  assert.deepStrictEqual([b.boss.maxHp, b.boss.hp], [3250, 1950], 'the boss grows to the six-human size, keeping its share of health');
+  assert.deepStrictEqual([b.boss.maxHp, b.boss.hp], [5250, 3150], 'the boss grows to the six-human size, keeping its share of health');
   // It never shrinks when seats go back to the CPU, and a banked match never calls it: there the
   // count stays as locked (assignSeat mid-stage is covered in tests/protocol.test.js).
   for (let k = 1; k < 6; k++) b.players[k].ctrl = 'cpu';
   assert.strictEqual(Sim.rescaleHumans(b), false);
-  assert.strictEqual(b.boss.maxHp, 3250);
+  assert.strictEqual(b.boss.maxHp, 5250);
   console.log('drop-in rescale ok');
 }
