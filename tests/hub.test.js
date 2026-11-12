@@ -11,7 +11,7 @@ const { spawnSync } = require('child_process');
 const root = path.join(__dirname, '..');
 const IIFE = path.join(root, 'vendor/hub-sdk/dist/hub-sdk.iife.js');
 const PIN = path.join(root, 'vendor/hub-sdk/SOURCE.pin.json');
-const EXPECTED = '092603b61a3511fbbcaa3b674b16f02b24d581752e1fa1dc69eeb577bc5ae5e8';
+const EXPECTED = '25b989eb2cda2227e4395c84965c7a4bea5f937c3df442c08aad8ab8c40e5a35';
 const SIM = '10804e5e4519e17074d4944b856f724fe8e54937af871f2019b6238f15e36f2c';
 
 function memory() {
@@ -76,7 +76,7 @@ async function main() {
   const pin = JSON.parse(fs.readFileSync(PIN, 'utf8'));
   const iife = fs.readFileSync(IIFE);
   const hash = crypto.createHash('sha256').update(iife).digest('hex');
-  assert.strictEqual(pin.version, '0.7.0');
+  assert.strictEqual(pin.version, '0.7.2');
   assert.strictEqual(pin.global, 'HubSDK');
   assert.strictEqual(pin.iifeSha256, EXPECTED);
   assert.strictEqual(hash, EXPECTED);
