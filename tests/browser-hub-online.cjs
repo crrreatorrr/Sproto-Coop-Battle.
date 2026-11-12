@@ -722,9 +722,13 @@ async function openPlayer(browser, pageUrl, nakama, user, errs) {
 async function choose(page, item) {
   const index = await page.evaluate(name => window.SprotoApp ? ['LOCAL PLAY', 'HOST ONLINE', 'JOIN ONLINE', 'HUB QUICK', 'HUB ROOM', 'JOIN HUB', 'RETURN TO BAR'].indexOf(name) : -1, item);
   if (index < 0) throw new Error('missing menu ' + item);
+  // One frame folds two taps of the same key into one press, so wait for each step to land
+  // (a loaded machine can stretch a frame past the 90 ms between presses).
+  await page.waitForFunction(() => window.SprotoApp.screen === 'title', null, { timeout: 15000 });
   for (let i = 0; i < index; i++) {
+    const at = await page.evaluate(() => window.SprotoApp.menu);
     await page.keyboard.press('ArrowDown');
-    await delay(90);
+    await page.waitForFunction(was => window.SprotoApp.menu !== was, at, { timeout: 5000 });
   }
   await page.keyboard.press('KeyF');
 }

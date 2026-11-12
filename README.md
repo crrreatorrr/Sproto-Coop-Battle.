@@ -31,19 +31,26 @@ Two people can share one keyboard, so WASD and the arrows are two separate playe
 
 **N twice: send feedback.** When the hub opened the game and you are signed in, pressing N twice (or SEND FEEDBACK in the pause menu) opens the hub's feedback window with a screenshot. Local play freezes and resumes exactly where it was; online and server matches keep running. Without the hub it does nothing. See `docs/coop-hub.md`.
 
+**Full screen and menus.** The game fills the browser window at the largest size that keeps its 16:9 shape (dark bars fill the rest; nothing is stretched or cut off). Every menu (the title, the lobby and stage select through their menu, the pause menu, and the game-over screen through it) offers MAIN MENU (not on the title; a live run asks first), RETURN TO BAR (the hub), CONTROLLER SETTINGS and FULL SCREEN, which turns the browser's full screen on and off (it is hidden when the browser does not allow it). The mouse works too: click a menu item, or the small MENU box at the top right of the lobby and stage select (and in a run while the mouse moves). In full screen, Esc only leaves full screen; P or Tab still opens the menu.
+
+**Controller settings** show every action for each device (both keyboard sides and pads 1 to 4) and let you rebind it: pick the action, then press the new key, or the new button on that pad. Esc cancels a key; View or Esc cancels a button. A key or button already in use moves: the action it leaves keeps its other keys, or takes over the old one (a swap). Esc, Tab, P, B, M, N, 9 and the F keys are reserved. Each pad also has its left-stick dead zone (5–50%, default 20%). Reset to defaults resets both keyboard sides together, or one pad. Settings apply at once and are saved in this browser (`localStorage` key `sproto-coop-battle.controls.v1`). They only change what the input layer reports, so online play and the pinned sim are unaffected. The game has no rumble, so there is no vibration switch. Menus always use A to confirm and B to back out on a pad.
+
 Any standard controller works with no setup (Xbox names; PlayStation and Switch pads work by button position). The pad shows up on its first press. Buttons held when a pad connects, such as the A that picked this game in the hub, are ignored until released. The prompts on screen follow the last device used.
 
 | Screen | Keyboard | Gamepad |
 |---|---|---|
 | Menus (all) | W/S or arrows move, Enter / Space / Attack confirm, Esc or Jump back | D-pad or left stick move (held repeats), A confirms, B backs out |
-| Title | RETURN TO BAR is the last item | same |
-| Lobby | Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage |
-| Stage select | Enter / Space / Attack fight, Esc or Jump back | A or Start fight, B back |
+| Title | the hub items, then RETURN TO BAR, CONTROLLER SETTINGS and FULL SCREEN | same |
+| Lobby | Tab opens the menu (below). Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage, View opens the menu |
+| Stage select | Enter / Space / Attack fight, Esc or Jump back, Tab menu | A or Start fight, B back, View menu |
 | Battle | Attack on a free keyboard side drops in | A or X on a free pad drops in |
-| Pause menu (Resume, Sound, Send Feedback when signed in to the hub, Return to Bar) | Esc or P opens and closes, Enter / Space selects | Start opens, A selects, B or Start resumes |
-| Game over / victory | Enter back to the lobby (host) | Start back to the lobby (host) |
+| Pause menu (Resume, Sound, Send Feedback when signed in to the hub, Controller Settings, Full Screen, Main Menu, Return to Bar) | Esc, P or Tab opens and closes, Enter / Space selects | Start or View opens, A selects, B, Start or View resumes |
+| Lobby and stage menu (Back, Sound, Controller Settings, Full Screen, Main Menu, Return to Bar) | Tab opens, Esc or Tab closes | View opens, B or View closes |
+| Game over / victory | Enter back to the lobby (host), Esc the menu | Start back to the lobby (host), View the menu |
 | Join dialog | type the code, Enter joins, Esc cancels | up/down change the letter, left/right move, X deletes, A joins, B cancels |
 | Return to the Bar? | Attack, Enter or B again confirms; Jump or Esc cancels | A or Start confirms, B cancels |
+| Leave the run for the main menu? | Attack or Enter confirms; Jump or Esc cancels | A or Start confirms, B cancels |
+| Controller settings | up/down row, left/right device (or the dead zone), Enter / Attack rebinds, Esc back | same with the pad; A rebinds, B back |
 
 Online guests wait for the host to pick the stage. In a server match Start / Enter in the lobby means ready. Local play pauses under the pause menu. Online and server matches keep running; the menu only holds the inputs of the device that opened it (both keyboard sides for the keyboard).
 
@@ -112,7 +119,7 @@ The weapons, items and effects are drawn in code (`public/js/render.js`). `tools
 | `public/js/render.js` | Canvas renderer; draws snapshots only, so every client looks identical |
 | `public/js/main.js` | Title, lobby, drop-in, game loop, relay netcode glue |
 | `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
-| `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices; pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX and music, plus the `Progress` module (best run and stage unlocks in `localStorage`, kept in this file because the page is at its cap of 30 startup requests; `tests/progress.test.js`); relay WebSocket client |
+| `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices, and the controller settings (`Input.Controls`: bindings, storage, press-to-bind; `tests/controls.test.js`); pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX and music, plus the `Progress` module (best run and stage unlocks in `localStorage`, kept in this file because the page is at its cap of 30 startup requests; `tests/progress.test.js`); relay WebSocket client |
 | `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
 | `public/js/feedback-link.js` | Adapter for the hub's feedback window (N twice): freeze, context, theme |
 | `public/js/net-hub.js` | Client for the hub's authoritative `sproto_coop` match (banked play) |
@@ -131,7 +138,7 @@ There are two kinds of online play:
 
 ```bash
 npm test                 # sim, relay, protocol, goja goldens, assets, hub link (needs Go)
-npm run test:browser     # relay host + guest, atlas visuals, browser goldens, banked client (Playwright)
+npm run test:browser     # relay host + guest, atlas visuals, browser goldens, banked client, menus and controller settings (Playwright)
 npm run test:e2e         # hub round trip, authority, rewards, reconnect
 ```
 

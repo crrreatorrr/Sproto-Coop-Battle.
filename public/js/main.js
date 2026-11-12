@@ -24,6 +24,9 @@ const app = {
   summary: null, godSeen: false, // end-of-run panel for the run on screen
   frozen: false, // the feedback window is open over local play: no sim step, no menu input
   view: null, // the snapshot drawGame last drew, for the feedback note's context
+  controls: null, // controller settings while open: { dev, screen, tab, row, cap, msg }
+  confirmMain: false, // "leave the run for the main menu?" over the pause menu
+  fsCalls: 0, mouseAt: -Infinity,
 };
 function defaultSlots() {
   return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
@@ -66,13 +69,51 @@ function stageClear(stageIdx, god, players) {
   } catch (err) { console.warn('[hub] stage clear report failed', err); }
 }
 
-// ---------- canvas sizing ----------
+// ---------- canvas sizing and full screen ----------
+// The 640x360 canvas fills the window at the largest scale that fits; the spare bars show the page
+// background. Pixels stay square (no stretch) and nothing is cropped.
 function fit() {
-  const s = Math.max(1, Math.min(innerWidth / S.W, innerHeight / S.H));
-  const k = s >= 2 ? Math.floor(s) : s;
+  const k = Math.min(innerWidth / S.W, innerHeight / S.H);
   cv.style.width = Math.floor(S.W * k) + 'px'; cv.style.height = Math.floor(S.H * k) + 'px';
 }
 addEventListener('resize', fit); fit();
+// FULL SCREEN in every menu. Keys and clicks call this from their own event handler (see fsKey
+// and the canvas click); a pad press comes from the frame loop, which a browser may refuse.
+const fsAvail = () => !!document.fullscreenEnabled;
+const fsLabel = () => 'FULL SCREEN: ' + (document.fullscreenElement ? 'ON' : 'OFF');
+let fsLeftAt = -Infinity; // when the page last left full screen (Esc, F11 or the menu)
+function toggleFullscreen() {
+  app.fsCalls++;
+  app.fsActive = navigator.userActivation ? navigator.userActivation.isActive : null;
+  const refused = () => toast('Full screen was refused. Try a key, a click or F11.');
+  try {
+    const job = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    if (job && job.catch) job.catch(refused);
+  } catch (err) { refused(); }
+}
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) fsLeftAt = performance.now(); fit(); });
+// Items every menu shares, after its own.
+const sharedItems = () => ['CONTROLLER SETTINGS'].concat(fsAvail() ? [fsLabel()] : []);
+const titleItems = () => MENU.concat(sharedItems());
+
+// ---------- mouse ----------
+// Canvas menus register clickable boxes while they draw; a dialog drawn on top clears the ones
+// under it (modal), so only what is visible on top answers the mouse.
+const hits = [];
+const hit = (x, y, w, h, act, hover) => hits.push({ x, y, w, h, act, hover });
+const modal = () => { hits.length = 0; };
+function hitAt(e) {
+  const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * S.W / r.width, y = (e.clientY - r.top) * S.H / r.height;
+  for (let i = hits.length - 1; i >= 0; i--) { const h = hits[i]; if (x >= h.x && x < h.x + h.w && y >= h.y && y < h.y + h.h) return h; }
+  return null;
+}
+cv.addEventListener('click', e => { if (app.frozen) return; const h = hitAt(e); if (h) { A.ensure(); h.act(); } });
+cv.addEventListener('mousemove', e => {
+  app.mouseAt = performance.now();
+  const h = app.frozen ? null : hitAt(e);
+  if (h && h.hover) h.hover();
+  cv.style.cursor = h ? 'pointer' : '';
+});
 
 // ---------- slots ----------
 function slotOf(owner, dev) { return app.slots.findIndex(s => s.ctrl !== 'cpu' && s.owner === owner && s.dev === dev); }
@@ -265,8 +306,18 @@ function localDevicesInput() {
     }
     return;
   }
+  if (app.confirmMain) {
+    for (const d of devs) {
+      const p = I.pressed(d);
+      if (p.ok || p.start) { toMainMenu(true); return; }
+      if (p.back) { app.confirmMain = false; return; }
+    }
+    return;
+  }
   const menu = app.pauseMenu;
-  if (menu && (app.screen !== 'game' || (menu.dev !== 'keys' && devs.indexOf(menu.dev) < 0))) closePauseMenu();
+  if (menu && (app.screen !== menu.screen || (menu.dev !== 'keys' && devs.indexOf(menu.dev) < 0))) closePauseMenu();
+  if (app.controls && app.screen !== app.controls.screen) app.controls = null;
+  if (app.controls) { controlsInput(devs); return; }
   const keysMenu = !!(app.pauseMenu && app.pauseMenu.dev === 'keys');
   if (keysMenu) {
     // Both keyboard layouts drive the menu as one device, so a shared Enter counts once.
@@ -280,8 +331,9 @@ function localDevicesInput() {
     const p = I.pressed(d, ctx);
     const i = slotOf(owner, d);
     if (app.pauseMenu && app.pauseMenu.dev === d) { pauseMenuInput(p, false); continue; }
+    if (I.isPad(d) && p.view && MENU_SCREENS.indexOf(app.screen) >= 0) { openPauseMenu(d); return; }
     if (app.screen === 'title') {
-      const n = MENU.length;
+      const n = titleItems().length;
       if (p.u) { app.menu = (app.menu + n - 1) % n; A.play('menu'); }
       if (p.d) { app.menu = (app.menu + 1) % n; A.play('menu'); }
       if (p.ok || p.start) { A.ensure(); chooseMenu(app.menu, d); return; }
@@ -361,22 +413,27 @@ function leaveLobby() {
   app.net = null; app.role = 'local'; app.screen = 'title';
 }
 
-// ---------- pause menu ----------
-// Start on a pad, or Esc / P on the keyboard, during a run. Local play pauses. Online and server
-// matches keep running, so the opener's inputs are held instead (both keyboard layouts when the
-// keyboard opened it: it is one shared keyboard). dev is a pad id or 'keys'.
+// ---------- pause menu (and the menu on the lobby and stage screens) ----------
+// Start on a pad, or Esc / P on the keyboard, during a run; View on a pad, Tab on the keyboard, or
+// the MENU box with the mouse on the lobby, the stage select and in a run. Local play pauses.
+// Online and server matches keep running, so the opener's inputs are held instead (both keyboard
+// layouts when the keyboard opened it: it is one shared keyboard). dev is a pad id or 'keys'.
 const KEY_DEVS = ['k1', 'k2'];
+const MENU_SCREENS = ['lobby', 'stages', 'game'];
 const menuDevs = dev => (dev === 'keys' ? KEY_DEVS : [dev]);
 function pauseMenuItems() {
-  const items = ['RESUME', A.isMuted && A.isMuted() ? 'SOUND: OFF' : 'SOUND: ON'];
-  if (F && F.ready() && app.hub.kind === 'account') items.push('SEND FEEDBACK'); // signed-in hub players only
-  return items.concat(['RETURN TO BAR']);
+  const game = app.screen === 'game';
+  const items = [game ? 'RESUME' : 'BACK', A.isMuted && A.isMuted() ? 'SOUND: OFF' : 'SOUND: ON'];
+  if (game && F && F.ready() && app.hub.kind === 'account') items.push('SEND FEEDBACK'); // signed-in hub players only
+  return items.concat(sharedItems(), ['MAIN MENU', 'RETURN TO BAR']);
 }
 function openPauseMenu(dev) {
-  if (app.pauseMenu || app.hub.confirming || app.screen !== 'game') return;
-  const m = { dev, sel: 0, held: false };
-  if (app.role === 'local') app.paused = true;
-  else if (app.role === 'banked' && app.authority && !app.authority.view().held) { app.authority.toggleHold(); m.held = true; }
+  if (app.pauseMenu || app.hub.confirming || MENU_SCREENS.indexOf(app.screen) < 0) return;
+  const m = { dev, sel: 0, held: false, screen: app.screen };
+  if (app.screen === 'game') {
+    if (app.role === 'local') app.paused = true;
+    else if (app.role === 'banked' && app.authority && !app.authority.view().held) { app.authority.toggleHold(); m.held = true; }
+  }
   for (const d of menuDevs(dev)) I.setMuted(d, true);
   app.pauseMenu = m;
   A.play('menu');
@@ -384,21 +441,26 @@ function openPauseMenu(dev) {
 function closePauseMenu() {
   const m = app.pauseMenu;
   if (!m) return;
-  app.pauseMenu = null;
-  if (app.role === 'local') app.paused = false;
-  else if (m.held && app.role === 'banked' && app.authority && app.authority.view().held) app.authority.toggleHold();
+  app.pauseMenu = null; app.controls = null; app.confirmMain = false;
+  if (m.screen === 'game') {
+    if (app.role === 'local') app.paused = false;
+    else if (m.held && app.role === 'banked' && app.authority && app.authority.view().held) app.authority.toggleHold();
+  }
   for (const d of menuDevs(m.dev)) { I.setMuted(d, false); I.latch(d); } // the A that picked RESUME must not also jump
 }
-// p: one frame of menu edges. Pads: A selects, B or Start resumes. Keyboard: Enter / Space or
-// Attack selects, Jump resumes (Esc and P resume from onKeyDown).
+// p: one frame of menu edges. Pads: A selects, B, Start or View resumes. Keyboard: Enter / Space
+// or Attack selects, Jump resumes (Esc, P and Tab resume from onKeyDown).
 function pauseMenuInput(p, keyboard) {
   const m = app.pauseMenu, n = pauseMenuItems().length;
   if (p.u) { m.sel = (m.sel + n - 1) % n; A.play('menu'); }
   if (p.d) { m.sel = (m.sel + 1) % n; A.play('menu'); }
-  if (p.back || (!keyboard && p.start)) { closePauseMenu(); return; }
+  if (p.back || (!keyboard && (p.start || p.view))) { closePauseMenu(); return; }
   if (!(p.ok || (keyboard && p.start))) return;
-  const item = pauseMenuItems()[m.sel];
-  if (item === 'RESUME') closePauseMenu();
+  pauseMenuChoose(pauseMenuItems()[m.sel]);
+}
+function pauseMenuChoose(item) {
+  const m = app.pauseMenu;
+  if (item === 'RESUME' || item === 'BACK') closePauseMenu();
   else if (item.startsWith('SOUND')) { A.toggle(); A.play('menu'); }
   else if (item === 'SEND FEEDBACK') {
     // Close the menu so the screenshot shows the game, and put it back when the window closes.
@@ -406,7 +468,110 @@ function pauseMenuInput(p, keyboard) {
     closePauseMenu();
     if (!F.open(() => openPauseMenu(dev))) openPauseMenu(dev);
   }
+  else if (item === 'CONTROLLER SETTINGS') openControls(m.dev);
+  else if (item.startsWith('FULL SCREEN')) toggleFullscreen();
+  else if (item === 'MAIN MENU') toMainMenu(false);
   else if (item === 'RETURN TO BAR') { closePauseMenu(); requestHubReturn(runLive()); }
+}
+// MAIN MENU: back to the title. A live run asks first, like RETURN TO BAR; the pause menu stays
+// open under the question, so local play stays paused until it is answered.
+function toMainMenu(sure) {
+  if (!sure && runLive()) { app.confirmMain = true; A.play('menu'); return; }
+  closePauseMenu();
+  leaveLobby();
+  Object.assign(app, { sim: null, snap: null, prevSnap: null, paused: false, code: '', hostChoosing: null, msgT: 0 });
+  app.slots = defaultSlots();
+  A.play('menu');
+}
+
+// ---------- controller settings ----------
+// One tab per device: both keyboard layouts and four pad slots. Every action can be rebound
+// (press-to-bind), pads also have the left-stick dead zone. Saved in localStorage by input.js
+// (Input.Controls) and applied at once. The game has no vibration, so there is no rumble switch.
+const CC = I.Controls;
+const CTRL_TABS = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
+const ACTION_NAMES = { l: 'LEFT', r: 'RIGHT', u: 'UP', d: 'DOWN', a: 'ATTACK', j: 'JUMP', s: 'SPECIAL / BLOCK', p: 'POWER', start: 'START / CONFIRM' };
+const controlsRows = () => CC.ACTIONS.concat(I.isPad(CTRL_TABS[app.controls.tab]) ? ['dz'] : [], ['reset', 'back']);
+const devName = d => (I.DEVICE_NAMES[d] || d).toUpperCase();
+function openControls(dev, from) {
+  const tab = CTRL_TABS.indexOf(from || dev);
+  app.controls = { dev, screen: app.screen, tab: tab < 0 ? 0 : tab, row: 0, cap: null, msg: '' };
+  A.play('menu');
+}
+function closeControls() { app.controls = null; A.play('menu'); }
+function setControls(cfg, msg) {
+  CC.apply(cfg);
+  app.controls.msg = CC.save(CC.get()) ? msg || 'SAVED' : 'APPLIED (THIS BROWSER CANNOT SAVE IT)';
+  A.play('menu');
+}
+const bindLabel = (d, b) => (I.isPad(d) ? CC.padLabel(b) : CC.keyLabel(b));
+function bound(r, d, action, b) {
+  const moved = r.moved.map(m => bindLabel(d, b) + ' LEFT ' + (m.dev === d ? '' : devName(m.dev) + ' ') + ACTION_NAMES[m.action] + (m.to === '' || m.to === -1 ? ' (NOW UNBOUND)' : ' (NOW ' + bindLabel(d, m.to) + ')'));
+  setControls(r.cfg, moved.length ? moved.join(' · ') : ACTION_NAMES[action] + ' = ' + bindLabel(d, b));
+  app.controls.cap = null;
+}
+function controlsChoose(row) {
+  const c = app.controls, d = CTRL_TABS[c.tab];
+  if (row === 'back') closeControls();
+  else if (row === 'reset') setControls(CC.reset(CC.get(), d), 'DEFAULTS RESTORED FOR ' + (I.isPad(d) ? devName(d) : 'THE KEYBOARD'));
+  else if (row === 'dz') nudgeDeadzone(1, true);
+  else {
+    c.cap = { action: row, t: performance.now() };
+    if (I.isPad(d)) CC.rawEdge(+d.slice(2)); // what is held now does not count
+    c.msg = '';
+    A.play('menu');
+  }
+}
+function nudgeDeadzone(dir, wrap) {
+  const c = app.controls, i = +CTRL_TABS[c.tab].slice(2), cfg = CC.get();
+  let v = Math.round((cfg.dz[i] + dir * CC.DZ.step) * 100) / 100;
+  if (v > CC.DZ.max) v = wrap ? CC.DZ.min : CC.DZ.max;
+  if (v < CC.DZ.min) v = CC.DZ.min;
+  cfg.dz[i] = v;
+  setControls(cfg, 'DEAD ZONE ' + Math.round(v * 100) + '%');
+}
+function controlsInput(devs) {
+  const c = app.controls, d = CTRL_TABS[c.tab];
+  if (c.cap) {
+    // Keys are caught in onKeyDown. Pads: the next button on the pad being set; View cancels.
+    let cancel = performance.now() - c.cap.t > 8000;
+    if (I.isPad(d)) {
+      const b = CC.rawEdge(+d.slice(2));
+      if (b === PadMap.BTN.VIEW) cancel = true;
+      else if (b >= 0) { bound(CC.bindPad(CC.get(), +d.slice(2), c.cap.action, b), d, c.cap.action, b); I.latch(d); }
+    }
+    for (const x of devs) if (I.pressed(x).view && I.isPad(x)) cancel = true; // spends this frame's edges
+    if (cancel && c.cap) { c.cap = null; c.msg = 'NOT CHANGED'; }
+    return;
+  }
+  const p = {};
+  for (const x of devs) {
+    if (c.dev !== 'any' && menuDevs(c.dev).indexOf(x) < 0) continue;
+    const e = I.pressed(x);
+    for (const k in e) p[k] = (p[k] | 0) | e[k];
+  }
+  const rows = controlsRows(), n = rows.length;
+  if (p.u) { c.row = (c.row + n - 1) % n; A.play('menu'); }
+  if (p.d) { c.row = (c.row + 1) % n; A.play('menu'); }
+  if (rows[c.row] === 'dz' && (p.l || p.r)) nudgeDeadzone(p.r ? 1 : -1, false);
+  else if (p.l || p.r) { c.tab = (c.tab + (p.r ? 1 : CTRL_TABS.length - 1)) % CTRL_TABS.length; c.row = Math.min(c.row, controlsRows().length - 1); c.msg = ''; A.play('menu'); }
+  if (p.back || p.view) { closeControls(); return; }
+  if (p.ok || p.start) controlsChoose(controlsRows()[c.row]);
+}
+// Keyboard press-to-bind, from onKeyDown. Returns true when the key was spent here.
+function controlsKey(e) {
+  const c = app.controls;
+  if (!c || !c.cap) return false;
+  if (e.preventDefault) e.preventDefault();
+  if (e.repeat) return true;
+  const d = CTRL_TABS[c.tab];
+  I.swallow(e.code);
+  if (e.code === 'Escape') { c.cap = null; c.msg = 'NOT CHANGED'; return true; }
+  if (I.isPad(d)) return true; // waiting for a pad button
+  const r = CC.bindKey(CC.get(), d, c.cap.action, e.code);
+  if (r.error) { c.msg = CC.keyLabel(e.code) + ' IS RESERVED (MENUS, SOUND, BAR, FEEDBACK, GOD MODE). PICK ANOTHER KEY'; A.play('hurt'); return true; }
+  bound(r, d, c.cap.action, e.code);
+  return true;
 }
 
 // ---------- feedback breadcrumbs ----------
@@ -480,8 +645,10 @@ function loadErrorPadInput() {
 }
 
 function chooseMenu(k, dev) {
-  const item = MENU[k];
+  const item = titleItems()[k];
   if (item === 'RETURN TO BAR') { requestHubReturn(false); return; }
+  if (item === 'CONTROLLER SETTINGS') { openControls('any', dev); return; }
+  if (item && item.startsWith('FULL SCREEN')) { toggleFullscreen(); return; }
   if (item === 'LOCAL PLAY') { app.role = 'local'; app.screen = 'lobby'; app.slots = defaultSlots(); claimSlot('local', 0, dev); }
   else if (item === 'HOST ONLINE') { hostOnline(); claimSlot('local', 0, dev); }
   else if (item === 'JOIN ONLINE') showJoin('practice');
@@ -535,8 +702,32 @@ function hideJoin() {
 
 // God mode: press 9 twice within 0.75 s during a battle (same input as Sproto Arcade).
 let lastNine = -Infinity;
+// FULL SCREEN picked with a key: toggled here, inside the key's own handler, because browsers
+// only grant full screen to a user gesture. The key is swallowed so the frame does not act on it.
+function fsKey(e) {
+  if (e.repeat || app.frozen || app.hub.confirming || app.confirmMain || app.controls) return false;
+  const m = app.pauseMenu;
+  const item = m ? (m.dev === 'keys' ? pauseMenuItems()[m.sel] : '') : app.screen === 'title' ? titleItems()[app.menu] : '';
+  if (!item || !item.startsWith('FULL SCREEN')) return false;
+  const L = I.LAYOUTS;
+  if ([].concat(L.k1.a, L.k1.start, L.k2.a, L.k2.start).indexOf(e.code) < 0) return false;
+  I.swallow(e.code);
+  toggleFullscreen();
+  return true;
+}
 function onKeyDown(e) {
   if (e.target && e.target.tagName === 'INPUT') return;
+  if (controlsKey(e) || fsKey(e)) return;
+  // In browser full screen Esc belongs to the browser: it leaves full screen and does nothing else.
+  if (e.code === 'Escape' && (document.fullscreenElement || performance.now() - fsLeftAt < 500)) return;
+  if (app.controls) { if (e.code === 'Escape' && !e.repeat) closeControls(); if (e.code === 'Tab') e.preventDefault(); return; }
+  if (app.confirmMain) { if (e.code === 'Escape') app.confirmMain = false; return; }
+  if (e.code === 'Tab') {
+    if (e.preventDefault) e.preventDefault();
+    if (!e.repeat && !app.hub.confirming && MENU_SCREENS.indexOf(app.screen) >= 0) { if (app.pauseMenu) closePauseMenu(); else openPauseMenu('keys'); }
+    return;
+  }
+  if (e.code === 'Escape' && app.pauseMenu && app.screen !== 'game') { closePauseMenu(); return; }
   if (app.screen === 'loading' && app.loadErr && !e.repeat && (e.code === 'Enter' || e.code === 'KeyF' || e.code === 'Space')) { bootAssets(); return; }
   if (!e.repeat && e.code === 'KeyB') { requestHubReturn(runLive()); return; }
   if (app.hub.confirming && e.code === 'Escape') {
@@ -578,8 +769,13 @@ function drawTitle() {
     const o = { f: i % M.fighters.length, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
     R.drawFighter(g, o, 120 + i * 80, 214, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
-  const items = MENU;
-  items.forEach((s, i) => T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 110, 236 + i * 14, 8, app.menu === i ? '#ffd23d' : '#c8c6e0'));
+  const items = titleItems();
+  if (app.menu >= items.length) app.menu = 0;
+  items.forEach((s, i) => {
+    const y = 230 + i * 12;
+    T(g, (app.menu === i ? '> ' : '  ') + s, S.W / 2 - 110, y, 8, app.menu === i ? '#ffd23d' : '#c8c6e0');
+    hit(S.W / 2 - 114, y - 6, 240, 12, () => { app.menu = i; chooseMenu(i, 'k1'); }, () => { app.menu = i; });
+  });
   T(g, padUI() ? 'PAD: A SELECT  ·  IN BATTLE  X ATTACK  A JUMP  B SPECIAL  Y POWER  START MENU' : 'WASD + F ATTACK  G/SPACE JUMP  H SPECIAL  R POWER  ·  ARROWS + , . /  \'  ·  ESC PAUSE', S.W / 2, 348, 6, '#9a98b8', 'center');
 }
 function drawLobby() {
@@ -699,7 +895,8 @@ function drawGame() {
   R.drawWorld(g, snap, { local: mine, noBanner: over });
   if (over) {
     const why = String((snap.banner && snap.banner.sub) || '').replace(' · press START', '');
-    const prompt = app.role === 'guest' ? 'WAITING FOR THE HOST' : app.role === 'banked' ? '' : (padUI() ? 'START' : 'ENTER') + ': BACK TO THE LOBBY';
+    const menuKey = (padUI() ? 'VIEW' : 'ESC') + ': MENU';
+    const prompt = app.role === 'guest' ? 'WAITING FOR THE HOST · ' + menuKey : app.role === 'banked' ? menuKey : (padUI() ? 'START' : 'ENTER') + ': BACK TO THE LOBBY · ' + menuKey;
     R.drawSummary(g, app.summary.sum, { why, prompt, local: mine, best: app.summary.res.best, newBest: app.summary.res.newBest, god: app.godSeen, blink: Math.floor(app.t / 30) % 2 });
   }
   if (app.role === 'banked' && banked) {
@@ -708,23 +905,97 @@ function drawGame() {
     if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 64, S.W, 16); T(g, note, S.W / 2, 72, 6, '#ffd23d', 'center'); }
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 88, 6, '#fff', 'center');
   } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
-  if (app.pauseMenu) drawPauseMenu();
   const free = app.slots.some(s => s.ctrl === 'cpu');
   if (free && Math.floor(app.t / 40) % 2) T(g, padUI() ? 'PRESS A TO JOIN' : 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 6, S.H - 6, 6, '#7aff8a', 'right');
 }
 
 function drawPauseMenu() {
-  const m = app.pauseMenu, items = pauseMenuItems();
+  const m = app.pauseMenu, items = pauseMenuItems(), game = m.screen === 'game';
+  if (m.sel >= items.length) m.sel = 0;
+  modal();
   g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
-  const w = 260, h = 64 + items.length * 18, x = (S.W - w) / 2, y = (S.H - h) / 2;
+  const w = 280, h = 64 + items.length * 18, x = (S.W - w) / 2, y = (S.H - h) / 2;
   g.fillStyle = 'rgba(10,8,22,.95)'; g.fillRect(x, y, w, h);
   g.fillStyle = '#ffd23d'; g.fillRect(x, y, w, 3);
-  T(g, app.role === 'local' ? 'PAUSED' : 'MENU', S.W / 2, y + 18, 12, '#ffd23d', 'center');
+  T(g, game && app.role === 'local' ? 'PAUSED' : 'MENU', S.W / 2, y + 18, 12, '#ffd23d', 'center');
   const held = app.role === 'banked' ? 'YOUR INPUTS ARE HELD' : (m.dev === 'keys' ? 'KEYBOARD' : I.DEVICE_NAMES[m.dev] || m.dev).toUpperCase() + ' IS HELD';
-  if (app.role !== 'local') T(g, 'THE MATCH CONTINUES · ' + held, S.W / 2, y + 34, 5, '#c8c6e0', 'center');
-  items.forEach((s, i) => T(g, (m.sel === i ? '> ' : '  ') + s, x + 70, y + 50 + i * 18, 8, m.sel === i ? '#ffd23d' : '#c8c6e0'));
-  T(g, m.dev === 'keys' ? 'ENTER SELECT   ESC RESUME' : 'A SELECT   B / START RESUME', S.W / 2, y + h - 10, 5, '#9a98b8', 'center');
+  if (game && app.role !== 'local') T(g, 'THE MATCH CONTINUES · ' + held, S.W / 2, y + 34, 5, '#c8c6e0', 'center');
+  items.forEach((s, i) => {
+    const iy = y + 50 + i * 18;
+    T(g, (m.sel === i ? '> ' : '  ') + s, x + 60, iy, 8, m.sel === i ? '#ffd23d' : '#c8c6e0');
+    hit(x, iy - 9, w, 18, () => { m.sel = i; pauseMenuChoose(s); }, () => { m.sel = i; });
+  });
+  T(g, m.dev === 'keys' ? 'ENTER SELECT   ESC ' + (game ? 'RESUME' : 'BACK') : 'A SELECT   B ' + (game ? 'RESUME' : 'BACK'), S.W / 2, y + h - 10, 5, '#9a98b8', 'center');
+}
+// A small MENU box for the mouse (and a reminder of the keys) on the lobby, stage select and runs.
+function drawMenuButton() {
+  if (app.pauseMenu || app.controls || MENU_SCREENS.indexOf(app.screen) < 0) return;
+  const game = app.screen === 'game';
+  if (game && performance.now() - app.mouseAt > 3000) return; // in a run only while the mouse is used
+  const label = (padUI() ? 'VIEW' : game ? 'ESC' : 'TAB') + ' MENU', w = label.length * 5 + 10, x = S.W - w - 2, y = game ? 54 : 1;
+  g.fillStyle = 'rgba(10,8,22,.85)'; g.fillRect(x, y, w, 12);
+  g.strokeStyle = '#ffd23d'; g.lineWidth = 1; g.strokeRect(x + 0.5, y + 0.5, w - 1, 11);
+  T(g, label, x + w / 2, y + 6, 5, '#ffd23d', 'center');
+  hit(x, y, w, 12, () => openPauseMenu('keys'));
+}
+// A yes / no question in the style of the RETURN TO THE BAR? box, with mouse buttons.
+function drawConfirm(title, yes, no) {
+  modal();
+  g.fillStyle = 'rgba(10,8,22,.97)'; g.fillRect(48, 140, S.W - 96, 72);
+  g.fillStyle = '#ffd23d'; g.fillRect(48, 140, S.W - 96, 3);
+  T(g, title, S.W / 2, 156, 10, '#ffd23d', 'center');
+  T(g, padUI() ? 'A CONFIRMS    B CANCELS' : 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 174, 6, '#fff', 'center');
+  [['YES', yes, S.W / 2 - 70], ['NO', no, S.W / 2 + 10]].forEach(([s, act, bx]) => {
+    g.strokeStyle = '#ffd23d'; g.lineWidth = 1; g.strokeRect(bx + 0.5, 186.5, 59, 15);
+    T(g, s, bx + 30, 194, 7, '#fff', 'center');
+    hit(bx, 186, 60, 16, act);
+  });
+}
+function drawControls() {
+  const c = app.controls, d = CTRL_TABS[c.tab], pad = I.isPad(d), rows = controlsRows(), cfg = CC.get();
+  if (c.row >= rows.length) c.row = rows.length - 1;
+  modal();
+  g.fillStyle = '#0a0816'; g.fillRect(0, 0, S.W, S.H);
+  g.fillStyle = '#ffd23d'; g.fillRect(0, 0, S.W, 3);
+  T(g, 'CONTROLLER SETTINGS', 12, 16, 12, '#ffd23d');
+  T(g, 'SAVED IN THIS BROWSER', S.W - 12, 16, 5, '#9a98b8', 'right');
+  CTRL_TABS.forEach((t, i) => {
+    const x = 12 + i * 103, on = i === c.tab, live = !I.isPad(t) || CC.padPresent(+t.slice(2));
+    g.fillStyle = on ? 'rgba(255,210,61,.22)' : 'rgba(255,255,255,.08)'; g.fillRect(x, 28, 99, 14);
+    if (on) { g.strokeStyle = '#ffd23d'; g.lineWidth = 1; g.strokeRect(x + 0.5, 28.5, 98, 13); }
+    T(g, devName(t), x + 50, 35, 6, on ? '#ffd23d' : live ? '#fff' : '#6a6888', 'center');
+    hit(x, 28, 99, 14, () => { c.tab = i; c.cap = null; c.msg = ''; });
+  });
+  const list = pad ? cfg.pads[+d.slice(2)] : cfg.keys[d];
+  rows.forEach((r, i) => {
+    const y = 54 + i * 17, on = i === c.row, capping = on && c.cap;
+    if (on) { g.fillStyle = capping ? 'rgba(255,90,90,.25)' : 'rgba(255,210,61,.14)'; g.fillRect(12, y - 8, S.W - 24, 16); }
+    const col = on ? '#ffd23d' : '#e8e6f8';
+    hit(12, y - 8, S.W - 24, 16, () => { c.row = i; controlsChoose(r); }, () => { if (!c.cap) c.row = i; });
+    if (r === 'back') { T(g, 'BACK', 24, y, 7, col); return; }
+    if (r === 'reset') { T(g, 'RESET TO DEFAULTS' + (pad ? '' : ' (BOTH KEYBOARD SIDES)'), 24, y, 7, col); return; }
+    if (r === 'dz') {
+      T(g, 'LEFT STICK DEAD ZONE', 24, y, 7, col);
+      T(g, '<  ' + Math.round(cfg.dz[+d.slice(2)] * 100) + '%  >', 260, y, 7, '#fff');
+      hit(250, y - 8, 30, 16, () => { c.row = i; nudgeDeadzone(-1, false); });
+      hit(300, y - 8, 30, 16, () => { c.row = i; nudgeDeadzone(1, false); });
+      return;
+    }
+    T(g, ACTION_NAMES[r], 24, y, 7, col);
+    let keys = (list[r] || []).map(b => bindLabel(d, b)).join('  ') || 'NONE';
+    if (pad && 'lrud'.indexOf(r) >= 0) keys += '  + LEFT STICK';
+    if (!pad && r === 'j' && I.GAME_LAYOUTS[d].j.length > list.j.length) keys += '  (+ SPACE IN BATTLE)';
+    T(g, capping ? (pad ? 'PRESS A BUTTON ON ' + devName(d) + '…' : 'PRESS A KEY…') : keys, 260, y, 7, capping ? '#ff8a8a' : '#fff');
+  });
+  const info = pad
+    ? ['MENUS: A OK, B BACK. START: PAUSE MENU. VIEW: MENU. THE LEFT STICK ALWAYS MOVES.', 'DOUBLE-TAP LEFT/RIGHT: DASH · DOWN+SPECIAL: SAVED POWER-UP · TAP SPECIAL: SPIN']
+    : ['FIXED KEYS: ESC / P PAUSE · TAB MENU · M SOUND · B BAR · N N FEEDBACK · 9 9 GOD MODE', 'DOUBLE-TAP LEFT/RIGHT: DASH · DOWN+SPECIAL: SAVED POWER-UP · TAP SPECIAL: SPIN'];
+  info.forEach((l, k) => T(g, l, S.W / 2, 268 + k * 11, 5, '#9a98b8', 'center'));
+  const msg = c.cap ? (pad ? 'PRESS THE NEW BUTTON FOR ' + ACTION_NAMES[c.cap.action] + ' · VIEW OR ESC CANCELS' : 'PRESS THE NEW KEY FOR ' + ACTION_NAMES[c.cap.action] + ' · ESC CANCELS')
+    : pad && !CC.padPresent(+d.slice(2)) ? devName(d) + ' IS NOT CONNECTED. PRESS ANY BUTTON ON IT.' : c.msg;
+  if (msg) T(g, msg.length > 104 ? msg.slice(0, 103) + '…' : msg, S.W / 2, 300, 5, c.cap ? '#ff8a8a' : '#7aff8a', 'center');
+  T(g, padUI() ? 'UP/DOWN CHOOSE · LEFT/RIGHT DEVICE · A CHANGE · B BACK' : 'UP/DOWN CHOOSE · LEFT/RIGHT DEVICE · ENTER / ATTACK CHANGE · ESC BACK', S.W / 2, 340, 6, '#c8c6e0', 'center');
 }
 
 // ---------- main loop ----------
@@ -758,6 +1029,7 @@ function frameStep(now) {
   }
   if ((app.screen === 'lobby' || app.screen === 'stages') && app.role === 'host' && (app.lobbyDirty || app.t % 60 === 0)) broadcastLobby();
 
+  hits.length = 0;
   g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
   g.fillStyle = '#000'; g.fillRect(0, 0, S.W, S.H);
   if (app.screen === 'loading') {
@@ -770,8 +1042,13 @@ function frameStep(now) {
   else if (app.screen === 'lobby') drawLobby();
   else if (app.screen === 'stages') drawStages();
   else if (app.screen === 'game') drawGame();
+  if (!app.controls) drawHubStatus();
+  drawMenuButton();
+  if (app.pauseMenu) drawPauseMenu();
+  if (app.controls) drawControls();
+  if (app.confirmMain) drawConfirm('LEAVE THE RUN FOR THE MAIN MENU?', () => toMainMenu(true), () => { app.confirmMain = false; });
   if (app.msgT > 0) { app.msgT--; g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16); T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center'); }
-  drawHubStatus();
+  if (app.hub.confirming) drawConfirm('RETURN TO THE BAR?', () => requestHubReturn(true), cancelHubReturn);
   return judged;
 }
 function bankedPayLine() {
@@ -794,11 +1071,11 @@ function drawHubStatus() {
     g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 0, S.W, 14);
     T(g, who + bal + mode, 6, 4, 5, '#c8c6e0');
   }
-  if (h.confirming) {
-    g.fillStyle = 'rgba(0,0,0,.8)'; g.fillRect(48, 148, S.W - 96, 56);
-    T(g, 'RETURN TO THE BAR?', S.W / 2, 166, 10, '#ffd23d', 'center');
-    T(g, padUI() ? 'A CONFIRMS    B CANCELS' : 'ATTACK CONFIRMS    JUMP CANCELS', S.W / 2, 186, 6, '#fff', 'center');
-  }
+}
+function cancelHubReturn() {
+  const hub = window.CoopHub && window.CoopHub.session;
+  if (hub) hub.cancelReturn();
+  app.hub.confirming = false;
 }
 const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
@@ -825,5 +1102,7 @@ C.setRetry(bootAssets);
 const hubJob = window.CoopHub ? window.CoopHub.boot({ release: releaseForHub, onChange: syncHub }) : null;
 if (F && hubJob) F.boot(app, hubJob);
 bootAssets();
+// The labels of the menu on screen (title or pause menu), for browser tests.
+app.menuItems = () => (app.pauseMenu ? pauseMenuItems() : app.screen === 'title' ? titleItems() : []);
 window.SprotoApp = app; // handy for debugging and browser tests
 })();
