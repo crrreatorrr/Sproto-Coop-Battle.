@@ -39,10 +39,15 @@ function fakePad() {
   navigator.getGamepads = () => [pad, null, null, null];
 }
 
-async function tap(page, code, ms) { await page.keyboard.down(code); await delay(ms || 60); await page.keyboard.up(code); await delay(60); }
+// Wait for the game to run n more frames, so input lands however loaded the machine is.
+async function frames(page, n) {
+  const t = await page.evaluate(() => window.SprotoApp.t);
+  await page.waitForFunction(([t0, k]) => window.SprotoApp.t >= t0 + k, [t, n || 3], { timeout: 10000 });
+}
+async function tap(page, code) { await page.keyboard.down(code); await frames(page, 2); await page.keyboard.up(code); await frames(page, 2); }
 async function padTap(page, button) {
-  await page.evaluate(b => window.__press(b, true), button); await delay(80);
-  await page.evaluate(b => window.__press(b, false), button); await delay(80);
+  await page.evaluate(b => window.__press(b, true), button); await frames(page, 3);
+  await page.evaluate(b => window.__press(b, false), button); await frames(page, 3);
 }
 const state = page => page.evaluate(() => {
   const a = window.SprotoApp, el = document.scrollingElement, cv = document.getElementById('game').getBoundingClientRect();
@@ -109,7 +114,7 @@ async function check(browser, base, size, shots) {
   assert.strictEqual(await page.evaluate(() => window.SprotoApp.controls.tab), 2, 'pad 1 tab');
   await tap(page, 'ArrowDown'); // JUMP is row 5
   await tap(page, 'Enter');
-  await page.waitForTimeout(100);
+  await frames(page, 3);
   await padTap(page, 3); // Y
   const jump = await page.evaluate(() => window.Input.Controls.get().pads[0]);
   assert.deepStrictEqual(jump.j, [3], 'pad 1 jump is Y');
@@ -160,11 +165,11 @@ async function check(browser, base, size, shots) {
   await fits('game');
   await shot('game');
   const read = () => page.evaluate(() => ({ a: window.SprotoApp.sim.players[0].in.a, j: window.SprotoApp.sim.players[0].in.j }));
-  await page.keyboard.down('KeyJ'); await delay(120);
+  await page.keyboard.down('KeyJ'); await frames(page, 4);
   assert.strictEqual((await read()).a, 1, 'J attacks after the remap');
-  await page.keyboard.up('KeyJ'); await page.keyboard.down('KeyF'); await delay(120);
+  await page.keyboard.up('KeyJ'); await page.keyboard.down('KeyF'); await frames(page, 4);
   assert.strictEqual((await read()).a, 0, 'F no longer attacks');
-  await page.keyboard.up('KeyF'); await delay(60);
+  await page.keyboard.up('KeyF'); await frames(page, 3);
 
   // ---- pause menu, MAIN MENU asks first, mouse picks ----
   await tap(page, 'Escape');
@@ -189,13 +194,13 @@ async function check(browser, base, size, shots) {
   await tap(page, 'Escape');
   const box = await page.evaluate(() => document.getElementById('game').getBoundingClientRect().toJSON());
   const at = (x, y) => [box.x + x * box.width / 640, box.y + y * box.height / 360];
-  await page.mouse.move(...at(320, 200)); await delay(80);
-  await page.mouse.click(...at(620, 60)); await delay(80);
+  await page.mouse.move(...at(320, 200)); await frames(page, 2);
+  await page.mouse.click(...at(620, 60)); await frames(page, 2);
   assert.ok((await state(page)).menu, 'the MENU box opens the menu');
   const list = await items(page), y0 = (360 - (64 + list.length * 18)) / 2;
-  await page.mouse.click(...at(320, y0 + 50 + list.indexOf('MAIN MENU') * 18)); await delay(80);
+  await page.mouse.click(...at(320, y0 + 50 + list.indexOf('MAIN MENU') * 18)); await frames(page, 2);
   assert.ok((await state(page)).confirm, 'mouse MAIN MENU asks');
-  await page.mouse.click(...at(290, 194)); await delay(120);
+  await page.mouse.click(...at(290, 194)); await frames(page, 2);
   assert.strictEqual((await state(page)).screen, 'title', 'YES goes to the title');
 
   // ---- game over: the summary keeps the menu ----
@@ -221,12 +226,12 @@ async function check(browser, base, size, shots) {
   await padTap(page, 9); await padTap(page, 0); // Start: stages, A: fight
   await page.waitForFunction(() => window.SprotoApp.screen === 'game');
   await delay(300);
-  await page.evaluate(() => window.__press(3, true)); await delay(120);
+  await page.evaluate(() => window.__press(3, true)); await frames(page, 4);
   assert.strictEqual((await read()).j, 1, 'pad Y jumps after the remap');
-  await page.evaluate(() => window.__press(3, false)); await delay(60);
-  await page.evaluate(() => window.__press(0, true)); await delay(120);
+  await page.evaluate(() => window.__press(3, false)); await frames(page, 3);
+  await page.evaluate(() => window.__press(0, true)); await frames(page, 4);
   assert.strictEqual((await read()).j, 0, 'pad A no longer jumps');
-  await page.evaluate(() => window.__press(0, false)); await delay(60);
+  await page.evaluate(() => window.__press(0, false)); await frames(page, 3);
 
   assert.deepStrictEqual(errors, [], 'page errors');
   await ctx.close();
