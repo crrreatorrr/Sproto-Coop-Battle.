@@ -19,6 +19,7 @@ const app = {
   pauseMenu: null, // pause menu while open: { dev: pad id or 'keys', sel, held }
   joinCursor: 0,
   runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
+  killLatch: null, // { run, si, out }: was this device's account out when the stage's boss fell
   progress: P.load(), // local best run and stage unlocks (this browser only)
   summary: null, godSeen: false, // end-of-run panel for the run on screen
   frozen: false, // the feedback window is open over local play: no sim step, no menu input
@@ -37,11 +38,29 @@ const newRunId = () => Date.now().toString(36) + '-' + Math.random().toString(36
 // Marina Anchor Relic: a stage 1 clear in local, hosted or relay play is reported once per run
 // through the hub link, only when the hub opened this page and this device has a human in the run.
 // No Tickets. Banked runs never get here: the hub's server grants the Relic for them.
-function stageClear(stageIdx, god) {
+// A player who was out when the boss fell gets no report for that clear: the same rule as the
+// sim's per-encounter `out` latch (net-protocol.js latchKill / participationFacts). At the first
+// moment the boss is dead (the 'bossdown' event, or the 'clear' itself if that was missed), this
+// device's account is out when none of its seats is anything but 'dead'. A downed seat is not out.
+// The run is not marked reported, so a later stage 1 clear where they were not out still reports.
+const mySeat = () => app.role === 'guest' ? s => s.ctrl === 'remote' && s.owner === app.myId : s => s.ctrl === 'local';
+function latchKill(stageIdx, players) {
+  const k = app.killLatch;
+  if (k && k.run === app.runId && k.si === stageIdx) return;
+  const mine = mySeat();
+  const standing = (players || []).some((p, i) => {
+    const slot = app.slots[p.slot != null ? p.slot : p.s != null ? p.s : i];
+    return slot && mine(slot) && p.st !== 'dead';
+  });
+  app.killLatch = { run: app.runId, si: stageIdx, out: !standing };
+}
+function stageClear(stageIdx, god, players) {
   const hub = window.CoopHub && window.CoopHub.session;
   if (!hub || !hub.reportStageClear || app.role === 'banked' || !app.runId) return;
-  const mine = app.role === 'guest' ? s => s.ctrl === 'remote' && s.owner === app.myId : s => s.ctrl === 'local';
+  const mine = mySeat();
   if (!app.slots.some(mine)) return;
+  latchKill(stageIdx, players);
+  if (app.killLatch.out) return;
   try {
     hub.reportStageClear(stageIdx, !!god, app.runId).then(r => { if (r && r.granted === 'marina_anchor') toast('Relic: Marina Anchor'); });
   } catch (err) { console.warn('[hub] stage clear report failed', err); }
@@ -118,7 +137,7 @@ function onGuestMessage(m) {
     app.snapGap = app.snapAt ? Math.min(100, Math.max(16, now - app.snapAt)) : 33; app.snapAt = now;
     if (app.screen !== 'game') app.runId = newRunId();
     app.slots = m.slots || app.slots; app.screen = 'game';
-    for (const e of m.ev || []) { A.play(e); if (e === 'clear' && m.s) stageClear(m.s.si, m.s.god === 1); }
+    for (const e of m.ev || []) { A.play(e); if (e === 'bossdown' && m.s) latchKill(m.s.si, m.s.players); if (e === 'clear' && m.s) stageClear(m.s.si, m.s.god === 1, m.s.players); }
   }
 }
 function broadcastLobby() {
@@ -146,7 +165,7 @@ function hostStep() {
   S.step(sim);
   // Preload the next bosses' sheets as the campaign advances.
   R.bossImages(sim.stageIdx); if (sim.stageIdx < 11) R.bossImages(sim.stageIdx + 1);
-  for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'clear') stageClear(sim.stageIdx, sim.god); }
+  for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'bossdown') latchKill(sim.stageIdx, sim.players); if (e === 'clear') stageClear(sim.stageIdx, sim.god, sim.players); }
   sim.events.length = 0;
   if (app.role === 'host' && app.net && app.net.open && ++app.sendTick % 2 === 0) {
     app.net.send({ t: 'snap', s: S.snapshot(sim), ev: app.pendingEv.splice(0), slots: app.slots });
