@@ -134,6 +134,21 @@ function seat(session, slot, device, generation) {
   assert.strictEqual(old.reason, 'owner');
   const fresh = CoopProtocol.acceptInput(session, input(session, 1, 2, 1), 10);
   assert.strictEqual(fresh.ok, true);
+  // Leaving and retaking a seat never refreshes spawn protection.
+  player.inv = 0;
+  assert.strictEqual(CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 2, slot: 2 }).ok, true);
+  seat(session, 2, 'k1', 3);
+  assert.strictEqual(player.inv, 0, 'a returning Sproto keeps the invulnerability it left with');
+  // A player who died and left still gets the next stage's recovery.
+  Object.assign(player, { lives: 0, dead: true, hp: 0, st: 'dead' });
+  assert.strictEqual(CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 3, slot: 2 }).ok, true);
+  Sim.startStage(session.state, 1);
+  assert.strictEqual(player.st, 'out', 'still out until the seat is taken again');
+  seat(session, 2, 'k1', 4);
+  assert.strictEqual(player.st, 'idle');
+  assert.strictEqual(player.lives, 1);
+  assert.strictEqual(player.hp, 60);
+  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'none' && p.st === 'out'), 'unused seats stay out across stages');
   console.log('join, release, and generation takeover keep lives and items');
 }
 

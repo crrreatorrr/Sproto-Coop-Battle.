@@ -118,6 +118,14 @@ function fakeStore(initial) {
   assert.deepStrictEqual(sum.rows[0], { slot: 0, name: 'Sproto Sheriff', cpu: false, score: 1200, kills: 7, revives: 1, parries: 2 });
   assert.strictEqual(sum.rows[1].cpu, true);
   assert.strictEqual(P.clock(sum.ticks), '2:05');
+  // A seat nobody took has no row; a player who left keeps the row for what they earned.
+  const left = P.summarize({ si: 0, t: 10, mode: 'gameover', players: [
+    { s: 0, n: 'A', c: 'local', sc: 1000, k: 1, rvn: 0, pa: 0 },
+    { s: 1, n: 'B', c: 'none', sc: 8000, k: 9, rvn: 1, pa: 0 },
+    { s: 2, n: 'P3', c: 'none', sc: 0, k: 0, rvn: 0, pa: 0 },
+  ] });
+  assert.deepStrictEqual(left.rows.map(r => r.slot), [0, 1]);
+  assert.strictEqual(left.score, 9000);
   const old = P.summarize({ si: 0, t: 10, mode: 'victory', players: [{ s: 0, n: 'A', c: 'local', sc: 5 }] });
   assert.strictEqual(old.rows[0].kills, undefined, 'older snapshots without counters still summarize');
   assert.strictEqual(old.victory, true);
