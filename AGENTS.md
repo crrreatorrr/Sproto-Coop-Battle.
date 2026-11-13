@@ -1,6 +1,6 @@
 # Sproto Coop Battle
 
-A 6-player co-op pixel beat-'em-up on Canvas 2D, written as plain classic scripts with no engine
+A 4-player co-op pixel beat-'em-up on Canvas 2D, written as plain classic scripts with no engine
 and no bundler. `README.md` describes the modes and controls. `docs/` holds the phase notes:
 `coop-server-contract.md` is the pin contract, `coop-online.md` the banked client and
 `coop-release.md` the release pins.

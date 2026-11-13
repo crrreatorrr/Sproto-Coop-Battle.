@@ -31,7 +31,7 @@ for (const rel of ['public/js/sim.js', 'public/js/ai.js', 'public/js/net-protoco
 const legacy = [
   ['cpu-seed42-terminal', gameplay.cpuSeed42Terminal],
   ['mixed-seed7-1800', gameplay.mixedSeed7Tick1800],
-  ['six-local-seed99-1800', gameplay.sixLocalSeed99Tick1800],
+  ['four-local-seed99-1800', gameplay.fourLocalSeed99Tick1800],
 ];
 assert.strictEqual(Sha256.hex('abc'), sha('abc'));
 for (const [id, expected] of legacy) {
@@ -49,15 +49,15 @@ for (const [id, expected] of legacy) {
   assert.ok(row.flags.dead > 0, 'death');
   assert.ok(row.flags.power > 0, 'power');
   assert.ok(row.flags.boss > 0, 'boss');
-  const phase2 = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed5-stage1'));
-  assert.ok(phase2.flags.bossPhase >= 1, 'boss phase 2 (seed 5)');
+  const phase2 = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed16-stage1'));
+  assert.ok(phase2.flags.bossPhase >= 1, 'boss phase 2 (seed 16)');
   assert.ok(row.resume && row.resume.hash, 'resume');
   assert.strictEqual(row.resume.steps, 120);
   console.log('stage1 coverage', row.flags, 'resume', row.resume.hash, 'bytes', row.stateBytes);
 }
 
 {
-  const state = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 2 ? 'local' : 'cpu', name: 'P' + (i + 1) })), 21);
+  const state = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 2 ? 'local' : 'cpu', name: 'P' + (i + 1) })), 21);
   for (let i = 0; i < 400; i++) {
     state.players[0].in = { l: 0, r: 1, u: 0, d: 0, a: i % 8 === 0 ? 1 : 0, j: 0, s: 0, p: 0 };
     Sim.step(state);

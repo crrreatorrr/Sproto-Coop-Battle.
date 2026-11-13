@@ -111,8 +111,8 @@ Do not treat ten six-seat matches as proven headroom on a 4-core VM. H5 should r
 `npm test` runs the existing node suites, including goja goldens (40 cases, stage 1 UFO/revive/power/down). `npm run test:e2e` runs:
 
 - `tests/e2e/hub-roundtrip.spec.js` — return URL, Chromium and Firefox title/practice/confirm, cold/warm title. `C5_BAR=1` drives the live cabinet.
-- `tests/e2e/coop-authority.spec.js` — six humans, one account, mixed seats, twelve stage hashes, UFO/revive/power/down, AFK, late join, God Mode and practice isolation, stage screenshots. `C5_SOAK_MS=1200000` is the 20-minute heap soak.
-- `tests/e2e/rewards.spec.js` — one participation row for six seats; the client cannot mint. `C5_LIVE=1` checks Nakama.
+- `tests/e2e/coop-authority.spec.js` — four humans, one account, mixed seats, twelve stage hashes, UFO/revive/power/down, AFK, late join, God Mode and practice isolation, stage screenshots. `C5_SOAK_MS=1200000` is the 20-minute heap soak.
+- `tests/e2e/rewards.spec.js` — one participation row for four seats; the client cannot mint. `C5_LIVE=1` checks Nakama.
 - `tests/e2e/reconnect.spec.js` — stale fingerprint, oversized input, expired session, checkpoint restore, six-player bytes. `C5_LIVE=1` repeats the six-player sample on Nakama.
 
 CI runs `npm test`, the build and budget gates, then `npm run test:e2e` on Chromium and Firefox. The soak, the live Nakama sample, and the Bar cabinet are evidence runs, not part of the 30-minute PR job. Raw numbers are in `tests/artifacts/c5-*-summary.json` and `tests/artifacts/c5-soak.json`.

@@ -5,7 +5,7 @@ const N = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
 function slots(kind) {
   const n = root.MANIFEST.fighters.length;
   const out = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < root.Sim.SLOTS; i++) {
     const ctrl = kind === 'cpu' ? 'cpu' : kind === 'mixed' ? (i < 2 ? 'local' : 'cpu') : 'local';
     const name = kind === 'cpu' ? ('CPU' + (i + 1)) : ('P' + (i + 1));
     out.push({ fid: i % n, weapon: i, ctrl: ctrl, name: name });
@@ -36,7 +36,7 @@ function policy(state, p, tick) {
   }
   let goal = null;
   if (ufo && p.slot === 0) goal = ufo;
-  else if (pow && p.powers.length < 3 && p.slot === (tick % 6)) goal = pow;
+  else if (pow && p.powers.length < 3 && p.slot === (tick % root.Sim.SLOTS)) goal = pow;
   else if (foe) goal = foe;
   if (!goal) { inp.r = 1; return inp; }
   const dx = goal.x - p.x, dy = goal.y - p.y;
@@ -56,7 +56,7 @@ function policy(state, p, tick) {
 function legacyLocal(tick) {
   return { l: 0, r: tick % 100 < 70 ? 1 : 0, u: 0, d: 0, a: tick % 10 === 0 ? 1 : 0, j: tick % 45 === 0 ? 1 : 0, s: 0, p: 0 };
 }
-function legacySix(tick, slot) {
+function legacyFour(tick, slot) {
   return {
     l: 0, r: tick % 100 < 70 ? 1 : 0,
     u: slot % 2 === 0 && tick % 30 < 8 ? 1 : 0,
@@ -74,7 +74,7 @@ function apply(state, tick, mode) {
     const p = state.players[i];
     if (p.ctrl === 'cpu') continue;
     if (mode === 'legacy-mixed') p.in = legacyLocal(tick);
-    else if (mode === 'legacy-six') p.in = legacySix(tick, i);
+    else if (mode === 'legacy-four') p.in = legacyFour(tick, i);
     else if (mode === 'script') p.in = scripted(tick, i);
     else p.in = policy(state, p, tick);
   }
@@ -147,11 +147,12 @@ function caseList() {
   const list = [
     { id: 'cpu-seed42-terminal', kind: 'cpu', seed: 42, stage: 0, ticks: 60 * 60 * 40, input: 'cpu' },
     { id: 'mixed-seed7-1800', kind: 'mixed', seed: 7, stage: 0, ticks: 1800, input: 'legacy-mixed' },
-    { id: 'six-local-seed99-1800', kind: 'local', seed: 99, stage: 0, ticks: 1800, input: 'legacy-six' },
+    { id: 'four-local-seed99-1800', kind: 'local', seed: 99, stage: 0, ticks: 1800, input: 'legacy-four' },
     { id: 'human-seed3-stage1', kind: 'local', seed: 3, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },
-    // A second run of the same policy, so six-human boss phase 2 stays under a golden even when a
-    // balance change makes seed 3 lose before the phase change (it did for one tuning pass).
-    { id: 'human-seed5-stage1', kind: 'local', seed: 5, stage: 0, ticks: 20000, input: 'policy' },
+    // A second run of the same policy, so four-human boss phase 2 stays under a golden even when a
+    // balance change makes seed 3 lose before the phase change (it did for one tuning pass). Seed 5
+    // reached phase 2 with six seats; with four, seed 16 is the first that does.
+    { id: 'human-seed16-stage1', kind: 'local', seed: 16, stage: 0, ticks: 20000, input: 'policy' },
   ];
   for (let stage = 0; stage < 12; stage++) {
     list.push({ id: 'stage-' + stage + '-human', kind: 'local', seed: 4000 + stage * 17, stage: stage, ticks: 900, input: 'policy' });

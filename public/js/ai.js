@@ -1,4 +1,4 @@
-// CPU teammates: any slot not held by a human is a CPU Sproto, so every battle is six-strong.
+// CPU teammates: any slot not held by a human is a CPU Sproto, so every battle is four-strong.
 (function (root) {
 'use strict';
 function think(state, p) {
@@ -117,7 +117,7 @@ function think(state, p) {
 }
 function nearestFoe(state, p) {
   // A Shadow Sproto a teammate is already on counts as further away, and the current one as a
-  // little nearer, so six Sprotos spread over the wave and do not swap targets every tick.
+  // little nearer, so four Sprotos spread over the wave and do not swap targets every tick.
   const taken = {};
   for (const o of state.players) if (o !== p && o.ai.foe && o.st !== 'down' && o.st !== 'dead') taken[o.ai.foe] = (taken[o.ai.foe] || 0) + 1;
   let best = null, bd = 1e9;

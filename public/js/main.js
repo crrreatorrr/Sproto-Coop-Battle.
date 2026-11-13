@@ -33,7 +33,7 @@ const app = {
   fsCalls: 0, mouseAt: -Infinity,
 };
 function defaultSlots() {
-  return Array.from({ length: 6 }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
+  return Array.from({ length: S.SLOTS }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
 }
 app.slots = defaultSlots();
 // Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
@@ -201,7 +201,7 @@ function startGame() {
 }
 function hostStep() {
   const sim = app.sim;
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < S.SLOTS; i++) {
     const s = app.slots[i], p = sim.players[i];
     p.ctrl = s.ctrl;
     if (s.ctrl === 'local') p.in = I.read(s.dev);
@@ -768,10 +768,10 @@ function drawTitle() {
   g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, S.W, S.H);
   T(g, 'SPROTO', S.W / 2, 56, 34, '#ffd23d', 'center');
   T(g, 'COOP BATTLE', S.W / 2, 96, 22, '#ff5a5a', 'center');
-  T(g, '6 armed Sprotos  vs  12 machine bosses', S.W / 2, 124, 7, '#fff', 'center');
-  for (let i = 0; i < 6; i++) {
+  T(g, S.SLOTS + ' armed Sprotos  vs  12 machine bosses', S.W / 2, 124, 7, '#fff', 'center');
+  for (let i = 0; i < S.SLOTS; i++) {
     const o = { f: i % M.fighters.length, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
-    R.drawFighter(g, o, 120 + i * 80, 214, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
+    R.drawFighter(g, o, S.W / 2 - (S.SLOTS - 1) * 40 + i * 80, 214, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
   }
   const items = titleItems();
   if (app.menu >= items.length) app.menu = 0;
@@ -788,9 +788,10 @@ function drawLobby() {
   const title = app.role === 'banked' ? 'SERVER LOBBY' : app.role === 'host' ? 'PRACTICE LOBBY' : app.role === 'guest' ? 'PRACTICE LOBBY (RELAY)' : 'LOCAL PRACTICE';
   T(g, title, 12, 22, 12, '#ffd23d');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 12, 22, 12, '#7aff8a', 'right');
-  const cw = 100;
+  // One card per seat, centred: four seats get wider cards.
+  const gap = 8, cw = Math.min(148, Math.floor((S.W - 16 - gap * (S.SLOTS - 1)) / S.SLOTS)), x0 = Math.round((S.W - S.SLOTS * cw - gap * (S.SLOTS - 1)) / 2);
   app.slots.forEach((s, i) => {
-    const x = 8 + i * (cw + 4), y = 36;
+    const x = x0 + i * (cw + gap), y = 36;
     const col = S.SLOT_COLORS[i];
     g.fillStyle = 'rgba(10,8,22,.85)'; g.fillRect(x, y, cw, 236);
     g.fillStyle = col; g.fillRect(x, y, cw, 3);

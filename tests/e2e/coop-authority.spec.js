@@ -1,4 +1,4 @@
-// C5: six humans, one account, mixed seats, twelve stages, UFO/revive/powers,
+// C5: four humans, one account, mixed seats, twelve stages, UFO/revive/powers,
 // downed lives, AFK, late joins, and God Mode / practice isolation.
 'use strict';
 
@@ -9,7 +9,7 @@ const vm = require('vm');
 const { createAuthorityMatch, OP, FINGERPRINT, PROTOCOL, startStatic, stopChild, delay } = require('../browser-hub-online.cjs');
 const { root, artifactDir, hardware, launch, shot, writeSummary } = require('../fixtures/c5-browser.cjs');
 
-const DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
+const DEVICES = ['k1', 'k2', 'gp0', 'gp1']; // one device per seat
 const BOSSES = [
   '01-marina-bront', '02-last-light-vela', '03-mudline-crapto', '04-ranch-zephyr',
   '05-neon-sproto102', '06-circuit-rune', '07-moonkeep-bigswole', '08-crown-alpha777',
@@ -61,37 +61,37 @@ function authority() {
   const stage1 = ran.cases.find(row => row.id === 'human-seed3-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);
-  assert.ok(ran.cases.find(row => row.id === 'human-seed5-stage1').flags.bossPhase >= 1);
+  assert.ok(ran.cases.find(row => row.id === 'human-seed16-stage1').flags.bossPhase >= 1);
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }
 
   const one = CoopProtocol.createMatch({ mode: 'banked', seed: 3, matchId: 'one-account' });
   assert.strictEqual(one.ok, true);
-  seatAll(one.session, CoopProtocol, 'acct-ada', 6);
+  seatAll(one.session, CoopProtocol, 'acct-ada', 4);
   assert.strictEqual(CoopProtocol.beginEncounter(one.session).ok, true);
   stepNeutral(CoopProtocol, one.session, 2);
   const oneFacts = CoopProtocol.participationFacts(one.session);
   assert.strictEqual(oneFacts.accounts.length, 1);
-  assert.strictEqual(oneFacts.accounts[0].slots.length, 6);
+  assert.strictEqual(oneFacts.accounts[0].slots.length, 4);
   assert.strictEqual(oneFacts.accounts[0].presentAtStart, 1);
   assert.strictEqual(oneFacts.tickets, 0);
   assert.strictEqual(oneFacts.phasesAreOneClear, 1);
   const beforeLife = JSON.stringify(CoopProtocol.lifeFacts(one.session.state));
-  CoopProtocol.releaseSeat(one.session, { slot: 5, accountId: 'acct-ada', generation: 1 });
+  CoopProtocol.releaseSeat(one.session, { slot: 3, accountId: 'acct-ada', generation: 1 });
   assert.strictEqual(JSON.stringify(CoopProtocol.lifeFacts(one.session.state)), beforeLife);
-  assert.strictEqual(one.session.state.players[5].ctrl, 'cpu');
+  assert.strictEqual(one.session.state.players[3].ctrl, 'cpu');
 
-  const six = CoopProtocol.createMatch({ mode: 'banked', seed: 4, matchId: 'six-humans' });
-  const names = ['ada', 'bea', 'cy', 'dee', 'eli', 'fay'];
-  for (let i = 0; i < 6; i++) {
-    assert.strictEqual(CoopProtocol.assignSeat(six.session, { slot: i, accountId: 'acct-' + names[i], device: 'k1', generation: 1 }).ok, true);
+  const four = CoopProtocol.createMatch({ mode: 'banked', seed: 4, matchId: 'four-humans' });
+  const names = ['ada', 'bea', 'cy', 'dee'];
+  for (let i = 0; i < 4; i++) {
+    assert.strictEqual(CoopProtocol.assignSeat(four.session, { slot: i, accountId: 'acct-' + names[i], device: 'k1', generation: 1 }).ok, true);
   }
-  CoopProtocol.beginEncounter(six.session);
-  stepNeutral(CoopProtocol, six.session, 1);
-  const sixFacts = CoopProtocol.participationFacts(six.session);
-  assert.strictEqual(sixFacts.accounts.length, 6);
-  assert.ok(sixFacts.accounts.every(row => row.slots.length === 1 && row.presentAtStart === 1));
+  CoopProtocol.beginEncounter(four.session);
+  stepNeutral(CoopProtocol, four.session, 1);
+  const fourFacts = CoopProtocol.participationFacts(four.session);
+  assert.strictEqual(fourFacts.accounts.length, 4);
+  assert.ok(fourFacts.accounts.every(row => row.slots.length === 1 && row.presentAtStart === 1));
 
   const mixed = CoopProtocol.createMatch({ mode: 'banked', seed: 5, matchId: 'mixed' });
   assert.strictEqual(CoopProtocol.assignSeat(mixed.session, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 }).ok, true);
@@ -102,7 +102,7 @@ function authority() {
   const mixedFacts = CoopProtocol.participationFacts(mixed.session);
   assert.strictEqual(mixedFacts.accounts.length, 2);
   assert.strictEqual(mixedFacts.accounts.find(row => row.accountId === 'acct-ada').slots.length, 2);
-  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 3);
+  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 1);
 
   const late = CoopProtocol.createMatch({ mode: 'banked', seed: 6, matchId: 'late' });
   CoopProtocol.assignSeat(late.session, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 });
@@ -129,7 +129,7 @@ function authority() {
   const down = CoopProtocol.createMatch({ mode: 'banked', seed: 8, matchId: 'down' });
   CoopProtocol.assignSeat(down.session, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 });
   CoopProtocol.beginEncounter(down.session);
-  for (let i = 1; i < 6; i++) {
+  for (let i = 1; i < 4; i++) {
     down.session.state.players[i].st = 'dead';
     down.session.state.players[i].x = 8000;
   }
@@ -171,7 +171,7 @@ function authority() {
   standin.hello(who, { t: 'hello', protocol: PROTOCOL, fingerprint: '0'.repeat(64), devices: ['k1'] });
   assert.ok(standin.drain().some(row => row.body && row.body.reason === 'version_mismatch'));
   standin.hello(who, { t: 'hello', protocol: PROTOCOL, fingerprint: FINGERPRINT, devices: DEVICES });
-  assert.strictEqual(standin.seatView().filter(seat => seat.human).length, 6);
+  assert.strictEqual(standin.seatView().filter(seat => seat.human).length, 4);
   standin.command(who);
   assert.strictEqual(standin.state.session.state.god, false);
   assert.strictEqual(standin.state.ledgerWrites, 0);
@@ -179,7 +179,7 @@ function authority() {
   const saved = standin.shutdown();
   assert.strictEqual(saved.saved.rewards, 0);
   const restored = createAuthorityMatch({ id: 'restored', privateRoom: true, seed: 12, restore: saved.saved });
-  assert.strictEqual(restored.seatView().filter(seat => seat.human).length, 6);
+  assert.strictEqual(restored.seatView().filter(seat => seat.human).length, 4);
   assert.deepStrictEqual(restored.life().lives, lives);
   assert.strictEqual(Sim.STATE_VERSION, 1);
   console.log('authority facts ok', JSON.stringify({ goldens: ran.cases.length, ms: ran.ms, ufo: stage1.flags.ufo, revive: stage1.flags.revive, power: stage1.flags.power, dead: stage1.flags.dead }));

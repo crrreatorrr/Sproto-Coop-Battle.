@@ -8,7 +8,7 @@ async function main() {
   const budgets = await import('../scripts/check-budgets.mjs');
   const build = await import('../scripts/build.mjs');
   const report = assets.inventory();
-  assert.strictEqual(report.assetCount, 330);
+  assert.strictEqual(report.assetCount, 334); // 330 + the four boss effect sheets in assets/fx/
   assert.strictEqual(report.preloadCount, 10);
   assert.ok(report.assetBytes > 9027457);
   assert.ok(report.publicBytes <= 10 * 1024 * 1024);
@@ -20,6 +20,7 @@ async function main() {
   assert.ok(report.unused.includes('assets/ufo/muzzle.png'));
   assert.strictEqual(report.unused.filter(file => /assets\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(file)).length, 240);
   assert.ok(!report.unused.some(file => file.endsWith('/atlas.png')));
+  assert.ok(!report.unused.some(file => file.startsWith('assets/fx/')), 'boss effect sheets are in the load plan');
   assert.ok(report.literalPrefixes.includes('assets/stages/'));
   assert.ok(report.literalPrefixes.includes('assets/ufo/shield'));
   const planted = assets.missingRefs(new Set(['assets/does-not-exist.png']), new Set(report.files.map(file => file.path)));

@@ -28,7 +28,7 @@ function fakeSdk() {
 }
 
 function playing(role) {
-  const players = [0, 1, 2, 3, 4, 5].map(i => ({ s: i, n: 'Sproto ' + i, w: i, c: i === 2 ? 'local' : 'cpu', x: 100 + i, y: 40 + i, z: 0, hp: 80 - i, l: 2, sc: 1500 * i, cb: 1, st: 'idle' }));
+  const players = [0, 1, 2, 3].map(i => ({ s: i, n: 'Sproto ' + i, w: i, c: i === 2 ? 'local' : 'cpu', x: 100 + i, y: 40 + i, z: 0, hp: 80 - i, l: 2, sc: 1500 * i, cb: 1, st: 'idle' }));
   return {
     role, screen: 'game', paused: false, frozen: false, pauseMenu: null, myId: 7, runId: 'run-1', hub: { kind: 'account' },
     slots: players.map(p => ({ ctrl: p.c, owner: 0, dev: p.c === 'local' ? 'k1' : '' })),
@@ -96,7 +96,7 @@ for (const role of ['host', 'guest', 'banked']) {
   assert.strictEqual(c.gameTime, 15);
   assert.deepStrictEqual(c.player, { slot: 3, character: 'Sproto 2', weapon: 'Laser', health: 78, lives: 2, score: 3000, combo: 1, state: 'idle', control: 'local' });
   assert.strictEqual(c.extra.role, 'local');
-  assert.strictEqual(c.extra.players, 6);
+  assert.strictEqual(c.extra.players, 4);
   assert.strictEqual(c.extra.humans, 1);
   assert.strictEqual(c.extra.wave, 2);
   assert.strictEqual(c.extra.waves, 4);
@@ -110,9 +110,9 @@ for (const role of ['host', 'guest', 'banked']) {
   const guest = playing('guest');
   guest.sim = null;
   guest.slots[2] = { ctrl: 'local', owner: 0, dev: 'k1' };
-  guest.slots[4] = { ctrl: 'remote', owner: 7, dev: 'k1' };
+  guest.slots[3] = { ctrl: 'remote', owner: 7, dev: 'k1' };
   const g = F.create({ app: guest }).context();
-  assert.strictEqual(g.player.slot, 5);
+  assert.strictEqual(g.player.slot, 4);
   assert.strictEqual(g.mode, 'relay practice (guest)');
   assert.strictEqual(g.extra.wave, undefined);
 

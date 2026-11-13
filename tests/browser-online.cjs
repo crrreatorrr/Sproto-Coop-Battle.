@@ -1,4 +1,4 @@
-// Host + guest practice-relay smoke, plus local six-slot and all-CPU screenshots.
+// Host + guest practice-relay smoke, plus local four-slot and all-CPU screenshots.
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -115,20 +115,20 @@ async function main() {
     await local.waitForFunction(() => window.SprotoApp.screen === 'lobby', null, { timeout: 10000 });
     const localSlots = await local.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.localSlots = localSlots;
-    if (localSlots.length !== 6 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'cpu').length !== 5) {
-      throw new Error('local lobby is not one human plus five CPU: ' + localSlots.join(','));
+    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'cpu').length !== 3) {
+      throw new Error('local lobby is not one human plus three CPU: ' + localSlots.join(','));
     }
-    await local.screenshot({ path: path.join(out, 'local-lobby-six-slots.png') });
-    summary.screenshots.push('local-lobby-six-slots.png');
+    await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
+    summary.screenshots.push('local-lobby-four-slots.png');
 
     const demo = await mk(acquired.url + '?demo=1');
-    await demo.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim && window.SprotoApp.sim.players.length === 6, null, { timeout: 45000 });
+    await demo.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim && window.SprotoApp.sim.players.length === 4, null, { timeout: 45000 });
     const demoCtrls = await demo.evaluate(() => window.SprotoApp.sim.players.map(player => player.ctrl));
     summary.demoCtrls = demoCtrls;
-    if (demoCtrls.some(ctrl => ctrl !== 'cpu')) throw new Error('demo was not six CPU: ' + demoCtrls.join(','));
+    if (demoCtrls.some(ctrl => ctrl !== 'cpu')) throw new Error('demo was not four CPU: ' + demoCtrls.join(','));
     await demo.waitForTimeout(800);
-    await demo.screenshot({ path: path.join(out, 'demo-six-cpu.png') });
-    summary.screenshots.push('demo-six-cpu.png');
+    await demo.screenshot({ path: path.join(out, 'demo-four-cpu.png') });
+    summary.screenshots.push('demo-four-cpu.png');
 
     const host = await mk(acquired.url);
     const guest = await mk(acquired.url);
@@ -153,7 +153,7 @@ async function main() {
     await host.waitForFunction(() => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote'), null, { timeout: 10000 });
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
-    if (onlineSlots.length !== 6) throw new Error('online room lost a seat');
+    if (onlineSlots.length !== 4) throw new Error('online room lost a seat');
     await guest.waitForTimeout(400);
     await guest.screenshot({ path: path.join(out, 'online-lobby-guest.png') });
     summary.screenshots.push('online-lobby-guest.png');
@@ -171,7 +171,7 @@ async function main() {
     });
     summary.remote = moved;
     console.log('remote player', moved);
-    if (moved.players !== 6) throw new Error('host sim does not have six players');
+    if (moved.players !== 4) throw new Error('host sim does not have four players');
     if (!(moved.x > moved.start + 20)) throw new Error('guest input did not move the remote Sproto');
     await guest.waitForTimeout(800);
     await guest.screenshot({ path: path.join(out, 'online-game-guest.png') });

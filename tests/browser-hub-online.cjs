@@ -202,7 +202,7 @@ function createAuthorityMatch(opts) {
     const before = JSON.stringify(life());
     let need = 0;
     for (let n = 0; n < devices.length; n++) if (!holds(account, devices[n])) need++;
-    if (need > 6 - countHuman()) return reject(presence, 'match_full');
+    if (need > CoopProtocol.LIMITS.maxSeats - countHuman()) return reject(presence, 'match_full');
     for (let i = 0; i < devices.length; i++) {
       if (holds(account, devices[i])) continue;
       const slot = freeSlot();
@@ -506,7 +506,7 @@ function createStandin(opts) {
   function savedMatchId(saved) { return saved.matchId || ''; }
   function flushQueue() {
     if (!tickets.length) return;
-    const batch = tickets.splice(0, 6);
+    const batch = tickets.splice(0, CoopProtocol.LIMITS.maxSeats);
     seq += 1;
     const ids = batch.map(row => row.presence.userId);
     const names = {};
@@ -868,7 +868,7 @@ async function main() {
     }
 
     await host.evaluate(() => window.SprotoApp.authority.command('god'));
-    await host.evaluate(() => window.SprotoApp.authority.sendRaw(10, { t: 'input', frame: 9, seq: 1, seats: [{ slot: 5, device: 'k2', mask: 1 }] }));
+    await host.evaluate(() => window.SprotoApp.authority.sendRaw(10, { t: 'input', frame: 9, seq: 1, seats: [{ slot: 3, device: 'k2', mask: 1 }] }));
     await delay(400);
     const rejects = await host.evaluate(() => window.SprotoApp.authority.view().rejects);
     summary.rejects = rejects;
@@ -887,35 +887,35 @@ async function main() {
     await host.screenshot({ path: path.join(out, 'c4-mixed-devices.png') });
     summary.screenshots.push('c4-mixed-devices.png');
 
-    const six = [];
-    const names = ['ada', 'bea', 'cy', 'dee', 'eli', 'fay'];
+    const four = [];
+    const names = ['ada', 'bea', 'cy', 'dee'];
     for (let i = 0; i < names.length; i++) {
-      const page = await openPlayer(browser, staticServer.url, nakama, { id: 'six-' + names[i], name: names[i] }, errs);
-      six.push(page);
+      const page = await openPlayer(browser, staticServer.url, nakama, { id: 'four-' + names[i], name: names[i] }, errs);
+      four.push(page);
       if (i === 0) {
         await choose(page, 'HUB ROOM');
         await page.waitForFunction(() => window.SprotoApp.code && window.SprotoApp.code.length === 12, null, { timeout: 15000 });
       } else {
-        const room = await six[0].evaluate(() => window.SprotoApp.code);
+        const room = await four[0].evaluate(() => window.SprotoApp.code);
         await choose(page, 'JOIN HUB');
         await page.fill('#code', room);
         await page.click('#joinForm button[type=submit]');
         await page.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'lobby', null, { timeout: 15000 });
       }
     }
-    for (const page of six) await page.keyboard.press('Enter');
-    await six[0].waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'playing', null, { timeout: 10000 });
-    const humans = await six[0].evaluate(() => window.SprotoApp.authority.view().seats.filter(seat => seat.human).length);
-    const accounts = await six[0].evaluate(() => {
+    for (const page of four) await page.keyboard.press('Enter');
+    await four[0].waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'playing', null, { timeout: 10000 });
+    const humans = await four[0].evaluate(() => window.SprotoApp.authority.view().seats.filter(seat => seat.human).length);
+    const accounts = await four[0].evaluate(() => {
       const ids = {};
       window.SprotoApp.authority.view().seats.forEach(seat => { if (seat.human && seat.accountId) ids[seat.accountId] = 1; });
       return Object.keys(ids);
     });
     summary.humans = humans;
     summary.accounts = accounts;
-    if (humans !== 6 || accounts.length !== 6) throw new Error('expected six accounts, saw ' + humans + ' seats / ' + accounts.join(','));
-    await six[0].screenshot({ path: path.join(out, 'c4-six-accounts.png') });
-    summary.screenshots.push('c4-six-accounts.png');
+    if (humans !== 4 || accounts.length !== 4) throw new Error('expected four accounts, saw ' + humans + ' seats / ' + accounts.join(','));
+    await four[0].screenshot({ path: path.join(out, 'c4-four-accounts.png') });
+    summary.screenshots.push('c4-four-accounts.png');
 
     for (const sample of [{ ms: 100, jitter: 20 }, { ms: 200, jitter: 30 }]) {
       standin.setLatency(sample.ms, sample.jitter);

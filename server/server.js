@@ -45,7 +45,7 @@ const limits = {
   maxSocketsPerIp: 8,
   maxRooms: 24,
   maxRoomsPerIp: 4,
-  maxGuests: 5,
+  maxGuests: 3, // the host plus three guests fill the four seats
   messageRate: 240,
   messageBurst: 120,
   controlRate: 10,
@@ -258,7 +258,7 @@ function sanitizeGuest(msg) {
 
 function sanitizeHost(msg) {
   if (msg.t === 'lobby') {
-    if (!Array.isArray(msg.slots) || msg.slots.length !== 6) return null;
+    if (!Array.isArray(msg.slots) || msg.slots.length !== 4) return null;
     const sel = Number.isInteger(msg.sel) ? Math.max(0, Math.min(11, msg.sel)) : 0;
     return {
       t: 'lobby',
@@ -272,7 +272,7 @@ function sanitizeHost(msg) {
   }
   if (msg.t === 'snap') {
     if (!msg.s || typeof msg.s !== 'object' || Array.isArray(msg.s)) return null;
-    if (msg.slots != null && (!Array.isArray(msg.slots) || msg.slots.length !== 6)) return null;
+    if (msg.slots != null && (!Array.isArray(msg.slots) || msg.slots.length !== 4)) return null;
     if (msg.ev != null && !Array.isArray(msg.ev)) return null;
     const ev = (msg.ev || []).filter(item => typeof item === 'string' && item.length > 0 && item.length <= 24).slice(0, 64);
     return { t: 'snap', s: msg.s, ev, slots: msg.slots || null, practice: true, economy: 'none' };
