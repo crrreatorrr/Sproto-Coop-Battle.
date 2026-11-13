@@ -77,13 +77,13 @@ function hello(match, who, devices, extra) {
 {
   const match = createAuthorityMatch({ id: 'full', privateRoom: true, seed: 4 });
   const ada = presence('acct-ada', 's1', 'ada');
-  hello(match, ada, ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3']);
-  assert.strictEqual(match.seatView().filter(seat => seat.human).length, 6);
+  hello(match, ada, ['k1', 'k2', 'gp0', 'gp1']);
+  assert.strictEqual(match.seatView().filter(seat => seat.human).length, 4);
   const bea = presence('acct-bea', 's2', 'bea');
   const rejected = hello(match, bea, ['k1']).some(row => row.body && row.body.reason === 'match_full');
   assert.strictEqual(rejected, true);
-  assert.strictEqual(match.seatView().filter(seat => seat.human).length, 6);
-  console.log('six seats stay six when another account arrives');
+  assert.strictEqual(match.seatView().filter(seat => seat.human).length, 4);
+  console.log('four seats stay four when another account arrives');
 }
 
 {

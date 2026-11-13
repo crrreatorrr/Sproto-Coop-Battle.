@@ -11,6 +11,7 @@
     REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19,
   };
   var DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
+  var SEATS = 4; // Sim.SLOTS: always four Sprotos
   var BANNED = { god: 1, stage: 1, state: 1, seed: 1, earn: 1, score: 1, pause: 1, snapshot: 1, result: 1 };
   var RPC_OK = { 'coop.version': 1, 'coop.room_create': 1, 'coop.room_join': 1, 'coop.queue_cancel': 1, 'coop.resume': 1, 'coop.metrics': 1 };
   var SIM_MS = 1000 / 60;
@@ -163,13 +164,13 @@
   function slotsOf(state) {
     var n = fighterCount();
     var slots = [];
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < SEATS; i++) {
       slots.push({ ctrl: 'cpu', owner: 0, dev: '', fid: i % n, weapon: i % weaponCount(), label: '', lives: null, hp: null, grace: false });
     }
     for (var s = 0; s < state.seats.length; s++) {
       var seat = state.seats[s];
       var index = seat.slot | 0;
-      if (index < 0 || index > 5) continue;
+      if (index < 0 || index >= SEATS) continue;
       var human = !!seat.human;
       var mine = !!(state.accountId && seat.accountId === state.accountId);
       var grace = human && seat.ctrl === 'cpu';
@@ -872,7 +873,7 @@
       app.prevSnap = view.prevSnapshot;
       app.snapAt = view.snapAt;
       app.snapGap = view.snapGap || 100;
-      if (view.slots && view.slots.length === 6) app.slots = view.slots;
+      if (view.slots && view.slots.length === SEATS) app.slots = view.slots;
       if (view.message && view.message !== app._authMsg) {
         app._authMsg = view.message;
         if (hooks.toast) hooks.toast(view.message);

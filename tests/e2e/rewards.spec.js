@@ -38,9 +38,9 @@ function clientCannotMint() {
     assert.ok(!text.includes(REASON), file);
   }
   const CoopProtocol = loadProtocol();
-  const session = CoopProtocol.createMatch({ mode: 'banked', seed: 3, matchId: 'six-seats' }).session;
-  const devices = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
-  for (let slot = 0; slot < 6; slot++) {
+  const session = CoopProtocol.createMatch({ mode: 'banked', seed: 3, matchId: 'four-seats' }).session;
+  const devices = ['k1', 'k2', 'gp0', 'gp1'];
+  for (let slot = 0; slot < 4; slot++) {
     assert.strictEqual(CoopProtocol.assignSeat(session, { slot, accountId: 'acct-ada', device: devices[slot], generation: 1 }).ok, true);
   }
   assert.strictEqual(CoopProtocol.beginEncounter(session).ok, true);
@@ -51,7 +51,7 @@ function clientCannotMint() {
   assert.strictEqual(moved.ok, true, moved.reason);
   const facts = CoopProtocol.participationFacts(session);
   assert.strictEqual(facts.accounts.length, 1);
-  assert.strictEqual(facts.accounts[0].slots.length, 6);
+  assert.strictEqual(facts.accounts[0].slots.length, 4);
   assert.strictEqual(facts.tickets, 0);
   assert.strictEqual(facts.scoreSubmitted, 0);
   const again = CoopProtocol.endEncounter(session);
@@ -59,7 +59,7 @@ function clientCannotMint() {
   assert.strictEqual(again.accounts.length, 1);
   assert.strictEqual(retry.accounts.length, 1);
   assert.strictEqual(retry.accounts[0].accountId, 'acct-ada');
-  assert.strictEqual(CoopProtocol.command(session, { t: 'earn', amount: PAY * 6, reason: REASON }, 1).reason, 'rejected');
+  assert.strictEqual(CoopProtocol.command(session, { t: 'earn', amount: PAY * 4, reason: REASON }, 1).reason, 'rejected');
   assert.strictEqual(CoopProtocol.command(session, { t: 'score', value: 1 }, 1).reason, 'rejected');
   const practice = CoopProtocol.createMatch({ mode: 'practice', seed: 9, matchId: 'practice-clear', stage: 0 }).session;
   CoopProtocol.assignSeat(practice, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 });
@@ -67,7 +67,7 @@ function clientCannotMint() {
   assert.strictEqual(practice.state.god, true);
   assert.strictEqual(CoopProtocol.terminalFacts(practice).tickets, 0);
   console.log('one account is one participation row and the client has no earn call');
-  return { slots: 6, accounts: 1, tickets: 0 };
+  return { slots: 4, accounts: 1, tickets: 0 };
 }
 
 function nakamaUrl() {
@@ -121,9 +121,9 @@ async function live() {
   assert.strictEqual(version.body.rewards, 0);
   const before = await rpc(base, 'tickets.balance', { game: 'sproto-coop-battle' }, session.token);
   assert.strictEqual(typeof before.body.balance, 'number');
-  const forged = await rpc(base, 'tickets.earn', { amount: PAY * 6, reason: REASON, key: 'c5-six-' + label }, session.token);
+  const forged = await rpc(base, 'tickets.earn', { amount: PAY * 4, reason: REASON, key: 'c5-four-' + label }, session.token);
   assert.notStrictEqual(forged.body.error, undefined);
-  const event = await rpc(base, 'session.event', { event: 'coop.boss_clear', key: 'c5-event-' + label, data: { boss: '01-marina-bront', slots: 6 } }, session.token);
+  const event = await rpc(base, 'session.event', { event: 'coop.boss_clear', key: 'c5-event-' + label, data: { boss: '01-marina-bront', slots: 4 } }, session.token);
   const score = await rpc(base, 'score.submit', { board: 'coop_stage_clear_ms_v1', score: 1, key: 'c5-score-' + label }, session.token);
   const after = await rpc(base, 'tickets.balance', { game: 'sproto-coop-battle' }, session.token);
   assert.strictEqual(after.body.balance, before.body.balance, JSON.stringify({ before: before.body, after: after.body, forged, event, score }));

@@ -33,7 +33,7 @@ Join, release, and a new connection generation change `player.ctrl` and the seat
 
 ## Seats
 
-Six seats. A seat is `{ slot, accountId, generation, device, human }`. CPU seats have no account. One account may hold several local devices (`k1`, `k2`, `gp0`…`gp3`) and has one connection generation. A newer generation updates every seat of that account; the previous generation's input is rejected. Releasing a seat sets `ctrl` to `cpu` so server AI takes over without a new life or a new inventory.
+Four seats. A seat is `{ slot, accountId, generation, device, human }`. CPU seats have no account. One account may hold several local devices (`k1`, `k2`, `gp0`…`gp3`) and has one connection generation. A newer generation updates every seat of that account; the previous generation's input is rejected. Releasing a seat sets `ctrl` to `cpu` so server AI takes over without a new life or a new inventory.
 
 ## Banked ingress
 

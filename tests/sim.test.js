@@ -1,4 +1,4 @@
-// Headless checks: six CPU Sprotos play the campaign; the sim must progress and stay sane.
+// Headless checks: four CPU Sprotos play the campaign; the sim must progress and stay sane.
 'use strict';
 globalThis.window = globalThis;
 require('../public/js/manifest.js');
@@ -12,7 +12,7 @@ function snapHash(state) {
   return crypto.createHash('sha256').update(JSON.stringify(Sim.snapshot(state))).digest('hex');
 }
 
-const slots = Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'cpu', name: 'CPU' + (i + 1) }));
+const slots = Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'cpu', name: 'CPU' + (i + 1) }));
 const s = Sim.create(slots, 42);
 let maxStage = 0, bossSeen = 0, ufoRides = 0, stageTicks = [0], last = 0;
 for (let i = 0; i < 60 * 60 * 40 && s.mode !== 'victory' && s.mode !== 'gameover'; i++) {
@@ -22,7 +22,7 @@ for (let i = 0; i < 60 * 60 * 40 && s.mode !== 'victory' && s.mode !== 'gameover
   if (s.stageIdx !== last) { stageTicks.push(i); last = s.stageIdx; }
   maxStage = Math.max(maxStage, s.stageIdx);
   for (const p of s.players) assert(Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z), 'player position finite');
-  assert(s.players.length === 6, 'always six players');
+  assert(s.players.length === 4, 'always four players');
   s.events.length = 0;
 }
 const snap = JSON.stringify(Sim.snapshot(s));
@@ -41,7 +41,7 @@ console.log('ok');
 
 // God mode: human Sprotos never lose health and attack twice as fast.
 {
-  const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
+  const cfg = Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
   const g = Sim.create(cfg, 7);
   Sim.toggleGod(g);
   const p = g.players[0];
@@ -56,7 +56,7 @@ console.log('ok');
 // Death rules: no auto revive; 10 s to revive; a human's second death puts them out for the stage;
 // the run is lost when no human is left or the whole team is down.
 {
-  const cfg = Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
+  const cfg = Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: 0, ctrl: i === 0 ? 'local' : 'cpu' }));
   const g = Sim.create(cfg, 11);
   for (let i = 0; i < 200; i++) Sim.step(g);
   const cpu = g.players[3]; cpu.hp = 0; cpu.st = 'down'; cpu.downT = Sim.DOWN_TICKS; cpu.x = g.camX + 600; cpu.y = 0;
@@ -74,8 +74,8 @@ console.log('ok');
   kill(me);
   assert(me.st === 'dead' && me.lives === 0, 'the second death puts that human out');
   assert.strictEqual(g.mode, 'play', 'one human out does not end the run for the others');
-  for (const k of [1, 2, 4]) { kill(g.players[k]); kill(g.players[k]); assert.strictEqual(g.mode, 'play'); }
-  kill(g.players[5]); kill(g.players[5]);
+  kill(g.players[1]); kill(g.players[1]); assert.strictEqual(g.mode, 'play');
+  kill(g.players[2]); kill(g.players[2]);
   assert.strictEqual(g.mode, 'gameover', 'the run ends when the last human is out');
   assert(/No human/.test(g.banner.sub), 'and says why');
   // Humans who were put out return for the next stage on one life, like dead CPUs do.
@@ -94,7 +94,7 @@ console.log('ok');
 // Dodging: standing in a warned boss lane gets you hit; stepping out of it or jumping does not.
 {
   const run = how => {
-    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: 0, ctrl: 'local' })), 21);
+    const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: 0, ctrl: 'local' })), 21);
     g.stage.waves.forEach(w => (w.done = true));
     for (let i = 0; i < 3000 && !(g.boss && g.boss.st === 'idle'); i++) { g.players.forEach(p => (p.in = { l: 0, r: 1, u: 0, d: 0, a: 0, j: 0, s: 0 })); Sim.step(g); }
     const me = g.players[0], b = g.boss;
@@ -118,7 +118,7 @@ console.log('ok');
 
 // Rescue: the first time a human goes down, the nearest CPU Sproto runs over and revives them.
 {
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i === 0 ? 'local' : 'cpu' })), 31);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i === 0 ? 'local' : 'cpu' })), 31);
   for (let i = 0; i < 200; i++) { g.players[0].in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0 }; Sim.step(g); g.events.length = 0; }
   const me = g.players[0];
   g.enemies.length = 0; g.stage.waves.forEach(w => (w.done = true)); g.lockX = g.camX;
@@ -133,7 +133,7 @@ console.log('ok');
 
 // Power-ups: humans save up to 3; using one wipes out a crowd far wider than a normal attack.
 {
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i === 0 ? 'local' : 'cpu' })), 41);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i === 0 ? 'local' : 'cpu' })), 41);
   for (let i = 0; i < 120; i++) { g.players[0].in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }; Sim.step(g); }
   const me = g.players[0], cpu = g.players[1];
   for (const p of [me, cpu]) for (let k = 0; k < 4; k++) g.items.push({ id: 9000 + k + p.slot * 10, kind: 'power', pt: 0, x: p.x, y: p.y, z: 0 });
@@ -153,7 +153,7 @@ console.log('ok');
 {
   const N = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
   const setup = (weapon = 0) => {
-    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i ? i : weapon, ctrl: i === 0 ? 'local' : 'cpu' })), 51);
+    const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i ? i : weapon, ctrl: i === 0 ? 'local' : 'cpu' })), 51);
     for (let i = 0; i < 60; i++) { g.players[0].in = { ...N }; Sim.step(g); }
     g.players.forEach((p, k) => { if (k) { p.st = 'dead'; } });
     g.enemies.length = 0; g.items.length = 0; g.stage.waves.forEach(w => (w.done = true)); g.lockX = g.camX;
@@ -202,16 +202,16 @@ console.log('ok');
   console.log('fighting mechanics ok');
 }
 
-// Six-seat hashes: two local devices plus four CPU, then six scripted local devices.
+// Four-seat hashes: two local devices plus two CPU, then four scripted local devices.
 {
   const expected = gameplay.mixedSeed7Tick1800;
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: i < 2 ? 'local' : 'cpu', name: 'P' + (i + 1) })), expected.seed);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: i < 2 ? 'local' : 'cpu', name: 'P' + (i + 1) })), expected.seed);
   for (let i = 0; i < expected.ticks; i++) {
     for (const p of g.players) if (p.ctrl === 'local') p.in = { l: 0, r: i % 100 < 70 ? 1 : 0, u: 0, d: 0, a: i % 10 === 0 ? 1 : 0, j: i % 45 === 0 ? 1 : 0, s: 0, p: 0 };
     Sim.step(g);
     g.events.length = 0;
   }
-  assert.strictEqual(g.players.length, 6);
+  assert.strictEqual(g.players.length, 4);
   assert.strictEqual(g.mode, expected.mode);
   assert.strictEqual(g.stageIdx + 1, expected.stageReached);
   assert.strictEqual(g.t, expected.t);
@@ -219,8 +219,8 @@ console.log('ok');
   console.log('mixed gameplay hash', expected.snapSha256);
 }
 {
-  const expected = gameplay.sixLocalSeed99Tick1800;
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'local', name: 'P' + (i + 1) })), expected.seed);
+  const expected = gameplay.fourLocalSeed99Tick1800;
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i % MANIFEST.fighters.length, weapon: i, ctrl: 'local', name: 'P' + (i + 1) })), expected.seed);
   for (let i = 0; i < expected.ticks; i++) {
     g.players.forEach((p, slot) => {
       p.in = { l: 0, r: i % 100 < 70 ? 1 : 0, u: slot % 2 === 0 && i % 30 < 8 ? 1 : 0, d: slot % 2 === 1 && i % 30 < 8 ? 1 : 0, a: i % 12 === slot ? 1 : 0, j: i % 80 === slot * 3 ? 1 : 0, s: 0, p: 0 };
@@ -228,20 +228,20 @@ console.log('ok');
     Sim.step(g);
     g.events.length = 0;
   }
-  assert.strictEqual(g.players.length, 6);
+  assert.strictEqual(g.players.length, 4);
   assert.strictEqual(g.mode, expected.mode);
   assert.strictEqual(g.stageIdx + 1, expected.stageReached);
   assert.strictEqual(g.t, expected.t);
   assert.strictEqual(snapHash(g), expected.snapSha256);
-  console.log('six-local gameplay hash', expected.snapSha256);
+  console.log('four-local gameplay hash', expected.snapSha256);
 }
 
 // ---------- gameplay improvement plan (docs/gameplay-improvement-plan.md) ----------
 const PN = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
-// One human (seat 0) on an empty, locked screen. opts.cpus keeps the five CPU seats alive.
+// One human (seat 0) on an empty, locked screen. opts.cpus keeps the three CPU seats alive.
 function arena(opts) {
   const o = opts || {};
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i ? i : (o.weapon || 0), ctrl: i < (o.humans || 1) ? 'local' : 'cpu' })), o.seed || 61, o.stage || 0);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i ? i : (o.weapon || 0), ctrl: i < (o.humans || 1) ? 'local' : 'cpu' })), o.seed || 61, o.stage || 0);
   for (let i = 0; i < 60; i++) { g.players.forEach(p => { if (p.ctrl !== 'cpu') p.in = { ...PN }; }); Sim.step(g); }
   if (!o.cpus) g.players.forEach(p => { if (p.ctrl === 'cpu') { p.st = 'dead'; p.dead = true; } });
   g.enemies.length = 0; g.items.length = 0; g.projs.length = 0; g.stage.waves.forEach(w => (w.done = true)); g.lockX = g.camX;
@@ -331,7 +331,7 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 
 // A3: every Sproto down, but a human still holds a spare life: it is used instead of GAME OVER.
 {
-  const { g, me } = arena(); // the five CPUs are dead
+  const { g, me } = arena(); // the three CPUs are dead
   assert.strictEqual(me.lives, 2);
   me.hp = 0; me.st = 'down'; me.downT = Sim.DOWN_TICKS; // freshly downed: ten seconds on the clock
   drive(g, me, [{}]);
@@ -372,10 +372,10 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 // B1: waves, Shadow Sproto health and boss health scale with the number of human seats, counted
 // when the stage's first fight starts.
 {
-  const make = (h, stage, seed) => Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < h ? 'local' : 'cpu' })), seed || 71, stage || 0);
+  const make = (h, stage, seed) => Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < h ? 'local' : 'cpu' })), seed || 71, stage || 0);
   const firstWave = g => { g.camX = g.stage.waves[0].x; g.players.forEach(p => { p.in = { ...PN }; p.x = g.camX + 100; p.inv = 9999; }); Sim.step(g); return g.stage.waves[0]; };
-  assert.strictEqual(Sim.WAVE_SCALE(1), 0.6); assert.strictEqual(Sim.WAVE_SCALE(5), 1);
-  for (const [h, want] of [[0, 1], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]]) {
+  assert.strictEqual(Sim.WAVE_SCALE(1), 0.6); assert.strictEqual(Sim.WAVE_SCALE(4), 0.9);
+  for (const [h, want] of [[0, 1], [1, 1], [2, 2], [3, 3], [4, 4]]) {
     for (const stage of [0, 5, 11]) {
       const g = make(h, stage);
       assert.strictEqual(g.humans, 0, 'not counted before the first fight');
@@ -398,9 +398,10 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
       assert.strictEqual(g.boss.maxHp, Math.round((4200 + 440 * stage) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
     }
   }
-  // Fewer humans means smaller waves and softer enemies; six humans face the largest of everything.
-  for (const f of [Sim.WAVE_SCALE, Sim.GRUNT_HP_SCALE, Sim.BOSS_HP_SCALE]) for (let h = 1; h < 6; h++) assert(f(h) < f(h + 1));
-  assert(Sim.BOSS_HP_SCALE(1) < 0.6 && Sim.BOSS_HP_SCALE(6) >= 1 && Sim.GRUNT_HP_SCALE(6) >= 1);
+  // Fewer humans means smaller waves and softer enemies; four humans face the largest of everything.
+  for (const f of [Sim.WAVE_SCALE, Sim.GRUNT_HP_SCALE, Sim.BOSS_HP_SCALE]) for (let h = 1; h < Sim.SLOTS; h++) assert(f(h) < f(h + 1));
+  // One human faces under 60% of the four-human boss (about 53%); a full table is near full strength.
+  assert(Sim.BOSS_HP_SCALE(1) / Sim.BOSS_HP_SCALE(4) < 0.6 && Sim.BOSS_HP_SCALE(4) > 0.9 && Sim.GRUNT_HP_SCALE(4) > 0.9);
   // A drop-in mid-stage does not change the stage in progress; the next stage counts again.
   const g = make(1);
   firstWave(g);
@@ -411,13 +412,13 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   firstWave(g);
   assert.strictEqual(g.humans, 3, 'counted again on the next stage');
   // CPU teammates: 75% dealt / 115% taken with one or two humans, 55% / 135% with more.
-  for (const [h, dealt, taken] of [[1, 0.75, 1.15], [2, 0.75, 1.15], [3, 0.55, 1.35], [6, 0.55, 1.35]]) {
-    const c = arena({ humans: Math.min(h, 5), cpus: true });
+  for (const [h, dealt, taken] of [[1, 0.75, 1.15], [2, 0.75, 1.15], [3, 0.55, 1.35], [4, 0.55, 1.35]]) {
+    const c = arena({ humans: Math.min(h, 3), cpus: true });
     c.g.humans = h;
-    const cpu = c.g.players[5];
+    const cpu = c.g.players[3];
     Object.assign(cpu, { x: c.g.camX + 300, y: 100, st: 'attack', t: 4, combo: 1, launch: false, hitDone: new Set(), face: 1, weapon: 0, inv: 0, hp: 100 });
     const e = foe(c.g, cpu.x + 30, 100, { hp: 500, maxHp: 500 });
-    c.g.players.forEach((p, k) => { if (k !== 5) { p.x = c.g.camX + 30; p.y = 10; } p.in = { ...PN }; });
+    c.g.players.forEach((p, k) => { if (k !== 3) { p.x = c.g.camX + 30; p.y = 10; } p.in = { ...PN }; });
     Sim.step(c.g); // the swing is on its first active frame
     assert.strictEqual(500 - e.hp, Math.ceil(9 * dealt), 'CPU katana hit with ' + h + ' humans');
     const hit = foe(c.g, cpu.x - 22, 100, { st: 'attack', t: 10, face: 1, weapon: 1 });
@@ -427,8 +428,8 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   }
   // CPUs are revived like humans: by a human as often as needed, by another CPU once per life and stage.
   const r = arena({ cpus: true });
-  const a = r.g.players[4], b = r.g.players[5];
-  r.g.players.forEach((p, k) => { if (k < 4) { p.x = r.g.camX + 30; p.y = 5; if (k) { p.st = 'dead'; p.dead = true; } } });
+  const a = r.g.players[2], b = r.g.players[3];
+  r.g.players.forEach((p, k) => { if (k < 2) { p.x = r.g.camX + 30; p.y = 5; if (k) { p.st = 'dead'; p.dead = true; } } });
   r.me.x = r.g.camX + 30; r.me.y = 5;
   const down = () => Object.assign(b, { x: r.g.camX + 400, y: 100, hp: 0, st: 'down', downT: Sim.DOWN_TICKS, revive: 0, z: 0 });
   down(); a.x = b.x - 200; a.y = 40;
@@ -534,15 +535,15 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 // B5: the boss faces the fuller side, and Sprotos who stay behind it draw a rear sweep.
 {
   const bossFight = () => {
-    const a = arena({ humans: 6 });
+    const a = arena({ humans: 4 });
     const g = a.g;
     g.boss = { bi: 0, phase: 0, hp: 9000, maxHp: 9000, x: g.camX + 320, y: 60, z: 0, face: -1, st: 'idle', t: 0, row: 0, w: 150, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0 };
     return a;
   };
   const place = (g, xs) => g.players.forEach((p, k) => { Object.assign(p, { x: g.boss.x + xs[k], y: 20 + k * 14, z: 0, st: 'idle', inv: 0, hp: 100, vx: 0 }); p.in = { ...PN }; });
-  // Four on the left, two on the right: it faces left even though the average is to the right.
+  // Three on the left, one on the right: it faces left even though the average is to the right.
   let { g } = bossFight();
-  place(g, [-100, -110, -120, -130, 300, 310]);
+  place(g, [-100, -110, -120, 400]);
   Sim.step(g);
   assert.strictEqual(g.boss.face, -1, 'faces the side with more Sprotos, not the average position');
   // Two behind for three seconds: a sweep that hits them on the ground.
@@ -563,16 +564,17 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
     }
     return { g: a.g, saw, hp: a.g.players.map(p => p.hp) };
   };
-  const two = sweep([-120, -130, -140, -150, 120, 130]); // four in front (left), two behind
+  // Two in front (left), two behind; the average breaks the tie towards the front.
+  const two = sweep([-120, -200, 120, 130]);
   assert(two.saw > 150 && two.saw < 320, 'two behind: swept after about 3 s (tick ' + two.saw + ')');
-  assert(two.hp[4] < 100 && two.hp[5] < 100, 'the two behind are hit: ' + two.hp);
-  assert.deepStrictEqual(two.hp.slice(0, 4), [100, 100, 100, 100], 'the four in front are not');
-  const one = sweep([-120, -130, -140, -150, -160, 120]);
+  assert(two.hp[2] < 100 && two.hp[3] < 100, 'the two behind are hit: ' + two.hp);
+  assert.deepStrictEqual(two.hp.slice(0, 2), [100, 100], 'the two in front are not');
+  const one = sweep([-120, -130, -140, 120]);
   assert(one.saw > two.saw + 60, 'one behind: it takes longer (tick ' + one.saw + ')');
-  assert(one.hp[5] < 100, 'but the safe spot behind the boss is gone');
-  const jumped = sweep([-120, -130, -140, -150, 120, 130], 5);
-  assert(jumped.hp[4] < 100 && jumped.hp[5] === 100, 'a jump clears the sweep: ' + jumped.hp);
-  const none = sweep([-120, -130, -140, -150, -160, -170]);
+  assert(one.hp[3] < 100, 'but the safe spot behind the boss is gone');
+  const jumped = sweep([-120, -200, 120, 130], 3);
+  assert(jumped.hp[2] < 100 && jumped.hp[3] === 100, 'a jump clears the sweep: ' + jumped.hp);
+  const none = sweep([-120, -130, -140, -150]);
   assert.strictEqual(none.saw, 0, 'nobody behind, no sweep');
   console.log('B5 rear sweep ok');
 }
@@ -600,8 +602,10 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   const fidOf = id => Sim.PASSIVES.findIndex(p => p.id === id);
   // Tough: 110 health from the start, on the HUD scale, on respawn and from a snack.
   {
-    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: 0, ctrl: 'local' })), 5);
-    const t = g.players[fidOf('tough')], n = g.players[fidOf('duelist')];
+    // Four seats but six Sprotos: seat the Tough and the Duelist first.
+    const fids = [fidOf('tough'), fidOf('duelist'), ...Sim.PASSIVES.map((_, f) => f).filter(f => f !== fidOf('tough') && f !== fidOf('duelist'))];
+    const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: fids[i], weapon: 0, ctrl: 'local' })), 5);
+    const t = g.players[0], n = g.players[1];
     assert.strictEqual(t.hp, 110); assert.strictEqual(n.hp, 100);
     assert.strictEqual(Sim.snapshot(g).players[t.slot].mh, 110);
     t.hp = 90; g.items.push({ id: 9500, kind: 'snack', x: t.x, y: t.y, z: 0 });
@@ -676,7 +680,7 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   assert(e.hp < 300, 'a power-up goes straight through');
   // Spawning: none on stage 1, never more than two at once later, and they carry club or pike.
   const count = stage => {
-    const s = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 77, stage);
+    const s = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 77, stage);
     s.camX = s.stage.waves[0].x; let most = 0, seen = 0;
     for (let i = 0; i < 4000; i++) {
       s.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; p.x = s.camX + 100; });
@@ -700,7 +704,7 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 {
   assert.deepStrictEqual(Sim.BOSS_ARCHETYPES, ['gunner', 'charger', 'summoner', 'bomber']);
   const fight = (stage, ticks, each) => {
-    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 81, stage);
+    const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: 'local' })), 81, stage);
     g.stage.waves.forEach(w => (w.done = true)); g.camX = g.stage.len; g.lockX = null;
     const out = { g, charges: 0, fires: 0, shots: 0, lobs: 0, marks: 0, addsSeen: 0, hazards: 0, attacks: 0 };
     let last = '';
@@ -774,18 +778,102 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
   console.log('D1 archetypes ok');
 }
 
+// Both sides: a boss with open floor on both sides of it (Sim.MID_ROOM beyond half its width) fires
+// the same volley out of its back too, so standing behind it is not safe. Backed against an arena
+// edge it fires one way only.
+{
+  // cycle is the attack that starts on the next step: gunner phase 1 rows are 1 + cycle % 3,
+  // missiles on cycle % 3 === 2, and the bomber lobs on row 1.
+  const startAttack = (bx, cycle, arch, xs) => {
+    const a = arena({ humans: xs.length });
+    const g = a.g;
+    g.players.forEach((p, k) => { if (k < xs.length) Object.assign(p, { x: g.camX + xs[k], y: 40 + k * 30, z: 0, st: 'idle', inv: 99999, hp: 100 }); });
+    g.boss = { bi: arch, phase: 0, hp: 9000, maxHp: 9000, x: g.camX + bx, y: 60, z: 0, face: -1, st: 'idle', t: 999, row: 0, w: 150, cycle: cycle - 1, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0, arch, addT: 0 };
+    g.players.forEach(p => (p.in = { ...PN })); Sim.step(g); g.events.length = 0;
+    assert.strictEqual(g.boss.st, 'fire', 'setup: the boss starts a fire attack');
+    return g;
+  };
+  // Every boss shot that leaves the machine during the attack, by its direction when first seen.
+  const volley = g => {
+    const seen = new Map();
+    for (let i = 0; i < 120 && g.boss.st === 'fire'; i++) {
+      g.players.forEach(p => { p.in = { ...PN }; p.inv = 99999; });
+      Sim.step(g); g.events.length = 0;
+      for (const pr of g.projs) if (pr.kind === 'boss' && !seen.has(pr.id)) seen.set(pr.id, pr);
+    }
+    const shots = [...seen.values()];
+    return { shots, right: shots.filter(pr => pr.vx > 0).length, left: shots.filter(pr => pr.vx < 0).length };
+  };
+  const mid = 320; // camX + 320: far more than 75 + MID_ROOM of floor on each side
+  // (a) Mid-arena lane and spread volleys fly both ways, and the snapshot says so while it fires.
+  for (const [cycle, what] of [[3, 'lane'], [1, 'spread']]) {
+    const g = startAttack(mid, cycle, 0, [200]);
+    const b = g.boss;
+    assert(b.both && !b.missile && b.row === (what === 'lane' ? 1 : 2), what + ': setup');
+    assert.strictEqual(Sim.snapshot(g).boss.bo, 1, what + ': the snapshot marks a both-ways volley');
+    const v = volley(g);
+    assert(v.left > 0 && v.right > 0, what + ': shots fly both ways (' + v.left + ' left, ' + v.right + ' right)');
+    assert.strictEqual(v.left, v.right, what + ': the same volley each way');
+    assert.strictEqual(Sim.snapshot(g).boss.bo, 0, what + ': bo clears once the attack ends');
+  }
+  // (b) Backed against either edge of the arena it fires one way only.
+  for (const [bx, xs] of [[150, [300]], [490, [300]]]) {
+    const g = startAttack(bx, 3, 0, xs);
+    const b = g.boss;
+    assert(!b.both, 'at the edge (' + bx + '): not in the middle');
+    assert.strictEqual(Sim.snapshot(g).boss.bo, 0, 'at the edge: bo is 0');
+    const v = volley(g);
+    assert(v.shots.length > 0 && (v.left === 0) !== (v.right === 0), 'at the edge: one way only (' + v.left + ' left, ' + v.right + ' right)');
+    assert.strictEqual(Math.sign(v.shots[0].vx), b.face, 'towards the side it faces');
+  }
+  // The edge of "the middle" is MID_ROOM of floor beyond half the boss's width on each side.
+  {
+    const edge = 70 + 75 + Sim.MID_ROOM;
+    assert(startAttack(edge + 3, 3, 0, [400]).boss.both, 'just inside the middle');
+    assert(!startAttack(edge - 3, 3, 0, [400]).boss.both, 'just outside the middle');
+  }
+  // (c) A mid-arena missile attack launches its missiles both ways.
+  {
+    const g = startAttack(mid, 2, 0, [200]);
+    assert(g.boss.both && g.boss.missile, 'missiles: setup');
+    assert.strictEqual(Sim.snapshot(g).boss.bo, 1);
+    const v = volley(g);
+    assert(v.shots.every(pr => pr.homing), 'they are homing missiles');
+    assert(v.left > 0 && v.right > 0 && v.left === v.right, 'missiles both ways (' + v.left + ' left, ' + v.right + ' right)');
+    const edge = volley(startAttack(150, 2, 0, [300]));
+    assert(edge.shots.length > 0 && edge.left === 0, 'at the edge the missiles go one way');
+  }
+  // (d) A mid-arena bomber marks a Sproto on each side when Sprotos stand on both sides.
+  {
+    const g = startAttack(mid, 3, 3, [180, 200, 460]); // two in front (left), one behind
+    const b = g.boss;
+    assert(b.both && b.lob && b.marks.length === 2, 'bomber: setup');
+    assert.strictEqual(b.face, -1, 'it faces the fuller side');
+    const sides = b.marks.map(m => Math.sign(m[0] - b.x));
+    assert(sides.includes(-1) && sides.includes(1), 'one mark on each side of the bomber: ' + JSON.stringify(b.marks));
+    assert.strictEqual(sides[0], b.face, 'front first');
+    // With everyone on one side it still marks two of them, all in front.
+    const one = startAttack(mid, 3, 3, [180, 200, 220]);
+    assert(one.boss.both && one.boss.marks.length === 2 && one.boss.marks.every(m => m[0] < one.boss.x), 'nobody behind: both marks in front');
+    // Backed against the edge it marks as before, without looking for a Sproto behind it.
+    const edge = startAttack(490, 3, 3, [180, 200, 560]);
+    assert(!edge.boss.both && edge.boss.marks.length === 2, 'at the edge: two marks, one-sided rules');
+  }
+  console.log('both-sides boss ok');
+}
+
 // QA follow-up: an idle human must not hold a run open. CPU teammates wait for a human who is
 // playing, but not for one who has pressed nothing for five seconds.
 {
   for (const humans of [1, 2]) {
-    const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < humans ? 'local' : 'cpu' })), 91);
+    const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < humans ? 'local' : 'cpu' })), 91);
     let t = 0;
     for (; t < 60 * 60 * 12 && g.mode !== 'gameover' && g.mode !== 'victory'; t++) { g.players.forEach(p => { if (p.ctrl !== 'cpu') p.in = { ...PN }; }); Sim.step(g); g.events.length = 0; }
     assert(g.mode === 'gameover' || g.mode === 'victory', 'a run with ' + humans + ' idle human(s) ends (mode ' + g.mode + ', camX ' + Math.round(g.camX) + ')');
     assert(g.stage.waves[0].active || g.stage.waves[0].done, 'the CPUs went on and started the first wave');
   }
   // A human who is playing still sets the pace: CPUs do not run ahead and start the wave for them.
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 91);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 91);
   for (let t = 0; t < 1500; t++) { g.players[0].in = { ...PN, j: t % 120 === 0 ? 1 : 0 }; Sim.step(g); g.events.length = 0; } // hops on the spot
   assert(!g.stage.waves[0].active && !g.stage.waves[0].done, 'an active human who stays put is waited for');
   assert(g.players.slice(1).every(p => p.x < g.players[0].x + 180), 'and the CPUs stay near them');
@@ -794,31 +882,32 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 
 // QA follow-up: a local drop-in after the human count was taken grows what is left of the stage.
 {
-  const g = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 93);
+  const g = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 93);
   g.camX = g.stage.waves[0].x;
   const hold = () => g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; p.x = g.camX + 100; });
   for (let i = 0; i < 40; i++) { hold(); Sim.step(g); }
   assert.strictEqual(g.humans, 1);
   const w = g.stage.waves[0], left = w.left, e = g.enemies.find(x => !x.dead), ehp = e.maxHp;
   assert.strictEqual(Sim.rescaleHumans(g), false, 'nothing changes while the count is the same');
-  for (let k = 1; k < 6; k++) g.players[k].ctrl = 'local'; // five friends pick up pads
+  for (let k = 1; k < Sim.SLOTS; k++) g.players[k].ctrl = 'local'; // three friends pick up pads
   assert.strictEqual(Sim.rescaleHumans(g), true);
-  assert.strictEqual(g.humans, 6);
-  assert.strictEqual(w.left, Math.round(left * Sim.WAVE_SCALE(6) / Sim.WAVE_SCALE(1)), 'the rest of the wave grows');
-  assert.strictEqual(e.maxHp, Math.round(ehp * Sim.GRUNT_HP_SCALE(6) / Sim.GRUNT_HP_SCALE(1)), 'Shadow Sprotos on screen grow');
-  // Boss: joined mid-fight at 60% health, it keeps 60% of the six-human boss.
-  const b = Sim.create(Array.from({ length: 6 }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 94);
+  assert.strictEqual(g.humans, 4);
+  assert.strictEqual(w.left, Math.round(left * Sim.WAVE_SCALE(4) / Sim.WAVE_SCALE(1)), 'the rest of the wave grows');
+  assert.strictEqual(e.maxHp, Math.round(ehp * Sim.GRUNT_HP_SCALE(4) / Sim.GRUNT_HP_SCALE(1)), 'Shadow Sprotos on screen grow');
+  // Boss: joined mid-fight at 60% health, it keeps 60% of the four-human boss.
+  const b = Sim.create(Array.from({ length: Sim.SLOTS }, (_, i) => ({ fid: i, weapon: i, ctrl: i < 1 ? 'local' : 'cpu' })), 94);
   b.stage.waves.forEach(x => (x.done = true)); b.camX = b.stage.len; b.lockX = null;
   for (let i = 0; i < 400 && !b.boss; i++) { b.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(b); }
   assert.strictEqual(b.boss.maxHp, 2100);
   b.boss.hp = 1260;
-  for (let k = 1; k < 6; k++) b.players[k].ctrl = 'local';
+  for (let k = 1; k < Sim.SLOTS; k++) b.players[k].ctrl = 'local';
   Sim.rescaleHumans(b);
-  assert.deepStrictEqual([b.boss.maxHp, b.boss.hp], [5250, 3150], 'the boss grows to the six-human size, keeping its share of health');
+  // 4,200 x BOSS_HP_SCALE(4) = 4,200 x 0.95 = 3,990; 60% of that is 2,394.
+  assert.deepStrictEqual([b.boss.maxHp, b.boss.hp], [3990, 2394], 'the boss grows to the four-human size, keeping its share of health');
   // It never shrinks when seats go back to the CPU, and a banked match never calls it: there the
   // count stays as locked (assignSeat mid-stage is covered in tests/protocol.test.js).
-  for (let k = 1; k < 6; k++) b.players[k].ctrl = 'cpu';
+  for (let k = 1; k < Sim.SLOTS; k++) b.players[k].ctrl = 'cpu';
   assert.strictEqual(Sim.rescaleHumans(b), false);
-  assert.strictEqual(b.boss.maxHp, 5250);
+  assert.strictEqual(b.boss.maxHp, 3990);
   console.log('drop-in rescale ok');
 }

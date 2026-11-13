@@ -1,5 +1,5 @@
 // C5: bad networks, expired sessions, stale clients, server restart, and
-// outcome retries. Six-player latency and egress are measured here.
+// outcome retries. Four-player latency and egress are measured here.
 'use strict';
 
 const assert = require('assert');
@@ -101,7 +101,7 @@ async function pick(page, item) {
   }
 }
 
-async function sixPlayer() {
+async function fourPlayer() {
   const { chromium } = require('playwright');
   const standin = createStandin();
   const port = await standin.listen();
@@ -112,7 +112,7 @@ async function sixPlayer() {
   let sent = 0;
   let received = 0;
   try {
-    const host = await openPlayer(browser, staticServer.url, nakama, { id: 'six-ada', name: 'ada' }, []);
+    const host = await openPlayer(browser, staticServer.url, nakama, { id: 'four-ada', name: 'ada' }, []);
     pages.push(host);
     const client = await host.context().newCDPSession(host);
     await client.send('Network.enable');
@@ -121,9 +121,9 @@ async function sixPlayer() {
     await pick(host, 'HUB ROOM');
     await host.waitForFunction(() => window.SprotoApp.code && window.SprotoApp.code.length === 12, null, { timeout: 15000 });
     const code = await host.evaluate(() => window.SprotoApp.code);
-    const names = ['bea', 'cy', 'dee', 'eli', 'fay'];
+    const names = ['bea', 'cy', 'dee'];
     for (const name of names) {
-      const page = await openPlayer(browser, staticServer.url, nakama, { id: 'six-' + name, name }, []);
+      const page = await openPlayer(browser, staticServer.url, nakama, { id: 'four-' + name, name }, []);
       pages.push(page);
       await pick(page, 'JOIN HUB');
       await page.waitForFunction(() => window.SprotoApp.screen === 'join' && !document.getElementById('join').hidden, null, { timeout: 10000 });
@@ -153,13 +153,13 @@ async function sixPlayer() {
         phase: row.phase,
       };
     });
-    assert.strictEqual(view.humans, 6);
-    assert.strictEqual(view.accounts.length, 6);
+    assert.strictEqual(view.humans, 4);
+    assert.strictEqual(view.accounts.length, 4);
     assert.strictEqual(view.rewards, 0);
     assert.strictEqual(view.ledger, 0);
     assert.strictEqual(view.phase, 'playing');
     assert.strictEqual(standin.ledgerWrites.n, 0);
-    const shotName = await shot(host, path.join(out, 'c5-six-player.png'));
+    const shotName = await shot(host, path.join(out, 'c5-four-player.png'));
     return {
       shot: shotName,
       rtt: view.rtt,
@@ -199,7 +199,7 @@ async function portalSession(base, label) {
   const auth = await fetch(base + '/v2/account/authenticate/device?create=true', {
     method: 'POST',
     headers: { Authorization: 'Basic ' + Buffer.from((process.env.NAKAMA_SERVER_KEY || 'defaultkey') + ':').toString('base64'), 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: 'c5-six-' + label + '-' + Date.now().toString(36) }),
+    body: JSON.stringify({ id: 'c5-four-' + label + '-' + Date.now().toString(36) }),
   });
   const authBody = await auth.json();
   if (!auth.ok || !authBody.token) throw new Error('device auth ' + auth.status);
@@ -216,11 +216,11 @@ async function portalSession(base, label) {
   return { id: label, name: label, token: game.token, reconnect: false, balance: before.body.balance };
 }
 
-async function liveSix(base) {
+async function liveFour(base) {
   const { chromium } = require('playwright');
   const staticServer = await startStatic();
   const browser = await launch({ chromium }, 'chromium');
-  const names = ['ada', 'bea', 'cy', 'dee', 'eli', 'fay'];
+  const names = ['ada', 'bea', 'cy', 'dee'];
   const sessions = [];
   for (const name of names) sessions.push(await portalSession(base, name));
   const pages = [];
@@ -265,8 +265,8 @@ async function liveSix(base) {
       row.seats.forEach(seat => { if (seat.human && seat.accountId) ids[seat.accountId] = 1; });
       return { humans: row.seats.filter(seat => seat.human).length, accounts: Object.keys(ids).length, rtt: row.rtt, rewards: row.rewards, ledger: row.ledgerCalls, phase: row.phase };
     });
-    if (view.humans !== 6 || view.accounts !== 6 || view.rewards !== 0 || view.phase !== 'playing') {
-      throw new Error('live six-player ' + JSON.stringify(view));
+    if (view.humans !== 4 || view.accounts !== 4 || view.rewards !== 0 || view.phase !== 'playing') {
+      throw new Error('live four-player ' + JSON.stringify(view));
     }
     const after = [];
     for (const session of sessions) {
@@ -274,7 +274,7 @@ async function liveSix(base) {
       after.push(balance.body.balance);
       if (balance.body.balance !== session.balance) throw new Error('balance moved for ' + session.name);
     }
-    const shotName = await shot(host, path.join(out, 'c5-six-player-nakama.png'));
+    const shotName = await shot(host, path.join(out, 'c5-four-player-nakama.png'));
     return {
       shot: shotName,
       rtt: view.rtt,
@@ -314,7 +314,7 @@ async function live() {
   const created = await rpc(base, 'coop.room_create', {}, game.token);
   const bad = await rpc(base, 'coop.resume', { matchId: created.body.matchId, state: { hp: 1, lives: 9 } }, game.token);
   const missing = await rpc(base, 'tickets.balance', { game: 'sproto-coop-battle' }, 'not-a-token');
-  const six = await liveSix(base);
+  const four = await liveFour(base);
   return {
     version: version.body,
     room: created.body && created.body.code,
@@ -322,17 +322,17 @@ async function live() {
     hostTakeover: created.body && created.body.hostTakeover,
     resumeClientState: bad.body && (bad.body.error || bad.body.reason || bad.status),
     expiredStatus: missing.status,
-    six,
+    four,
   };
 }
 
 async function main() {
   await failures();
-  const summary = { hardware: hardware(), six: null, live: null };
-  if (process.env.C5_NODE_ONLY !== '1') summary.six = await sixPlayer();
+  const summary = { hardware: hardware(), four: null, live: null };
+  if (process.env.C5_NODE_ONLY !== '1') summary.four = await fourPlayer();
   if (process.env.C5_LIVE === '1') summary.live = await live();
   writeSummary(out, 'c5-reconnect-summary.json', summary);
-  console.log('reconnect ok', JSON.stringify(summary.six || { node: true }));
+  console.log('reconnect ok', JSON.stringify(summary.four || { node: true }));
 }
 
 if (require.main === module) {

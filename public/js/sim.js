@@ -4,8 +4,9 @@
 (function (root) {
 'use strict';
 const W = 640, H = 360, DEPTH = 120, FLOOR_TOP = 218; // belt is drawn from screen y FLOOR_TOP to FLOOR_TOP+DEPTH
-const SLOTS = 6;
-const SLOT_COLORS = ['#ff4d4d', '#3da5ff', '#4dff7a', '#ffd23d', '#d36bff', '#ff9a3d'];
+// Always four Sprotos: humans take seats, CPU Sprotos fill the rest.
+const SLOTS = 4;
+const SLOT_COLORS = ['#ff4d4d', '#3da5ff', '#4dff7a', '#ffd23d'];
 
 // Weapons: every Sproto fights armed. reach/dmg per combo hit; startup/active/recovery in ticks.
 const WEAPONS = [
@@ -39,7 +40,7 @@ const UFO_TICKS = 720, DOWN_TICKS = 600, REVIVE_TICKS = 70;
 // CPU teammates are deliberately weaker than humans so the team can lose Sprotos. With one or two
 // humans they carry more of the fight, so they hit harder and last longer.
 const CPU_DMG = 0.55, CPU_TAKEN = 1.35, CPU_DMG_FEW = 0.75, CPU_TAKEN_FEW = 1.15;
-// Difficulty scales with the number of human seats (h = 1..6), counted when a stage's first fight
+// Difficulty scales with the number of human seats (h = 1..4), counted when a stage's first fight
 // starts so a drop-in mid-stage does not change the stage in progress.
 const WAVE_SCALE = h => 0.5 + 0.1 * h, GRUNT_HP_SCALE = h => 0.58 + 0.102 * h, BOSS_HP_SCALE = h => 0.35 + 0.15 * h;
 // Difficulty: more Shadow Sprotos, tougher and more aggressive.
@@ -746,13 +747,17 @@ const BOSS_SCALE = 0.95;
 // Rear sweep: after this many ticks with two Sprotos behind the boss (or longer with one), it marks
 // the ground behind it for SWEEP_WARN ticks and then hits everything standing there.
 const SWEEP_AFTER = 180, SWEEP_AFTER_ONE = 300, SWEEP_WARN = 36, SWEEP_REACH = 170;
+// A boss with this much open floor on both sides (beyond half its width) is in the middle of the
+// arena: its volleys then fire both ways, so the floor behind it is never a safe place to stand.
+const MID_ROOM = 60;
+const inMiddle = (state, b) => b.x - (state.camX + 70) > b.w / 2 + MID_ROOM && state.camX + W - 70 - b.x > b.w / 2 + MID_ROOM;
 function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % 12] : null; }
 function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
   lockHumans(state);
   // (4,200 on stage 1 up to 9,040 on stage 12) x the human scale: 2,100 to 4,520 for one human,
-  // 5,250 to 11,300 for six. One human faces 40% of the six-human boss.
+  // 3,990 to 8,590 for four. One human faces about 53% of the four-human boss.
   // The charger spends much of its fight rushing out of reach, so it has less health to compensate.
   const hp = Math.round((4200 + state.stageIdx * 440) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
   state.boss = {
@@ -849,6 +854,7 @@ function updateBoss(state) {
       const charge = arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
       if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; b.cx = b.x; ev(state, 'charge'); }
       else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y;
+        b.both = inMiddle(state, b); // decided now, so the floor warning shows both sides
         b.lob = arch === 'bomber' && b.row === 1;
         // Lock the lanes now; they are shown on the floor until the shots fire. Spreads leave gaps.
         const offs = b.row === 2 ? (b.phase ? [-72, -36, 0, 36, 72] : [-40, 0, 40]) : [0];
@@ -856,8 +862,16 @@ function updateBoss(state) {
         // The bomber marks where its bombs will land: one Sproto each, two bombs (three in phase 2).
         if (b.lob) {
           b.marks = [];
-          for (let k = 0; k < Math.min(ps.length, b.phase ? 3 : 2); k++) {
-            const q = ps[(b.cycle + k) % ps.length];
+          // In the middle it marks Sprotos on both sides of it in turn, front first.
+          let pool = ps;
+          if (b.both) {
+            const front = ps.filter(q => (q.x - b.x) * b.face >= 0), back = ps.filter(q => (q.x - b.x) * b.face < 0);
+            pool = [];
+            for (let k = 0; k < ps.length; k++) { const q = (k % 2 ? back : front)[Math.floor(k / 2)] || (k % 2 ? front : back)[Math.floor(k / 2)]; if (q && pool.indexOf(q) < 0) pool.push(q); }
+            for (const q of ps) if (pool.indexOf(q) < 0) pool.push(q);
+          }
+          for (let k = 0; k < Math.min(pool.length, b.phase ? 3 : 2); k++) {
+            const q = b.both ? pool[k] : pool[(b.cycle + k) % pool.length];
             b.marks.push([Math.round(q.x), Math.round(q.y)]);
             fx(state, 'mark', q.x, q.y, 0, { small: 30 + BOMB_FLIGHT });
           }
@@ -921,20 +935,23 @@ function bossShoot(state, b) {
   const ph = info ? info.phases[b.phase] : null;
   const bodyH = ph ? (ph.body[3] - ph.body[1]) * BOSS_SCALE : 120;
   const mz = bodyH * 0.45;
-  const mx = b.x + b.face * b.w * 0.55;
   const spd = b.phase ? 4.6 : 3.8;
   const dmg = 11 + state.stageIdx;
   ev(state, 'bossfire');
-  if (b.missile) {
-    // Homing missiles: one in phase 1, a pair in phase 2.
-    for (const off of b.phase ? [-24, 24] : [0]) state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: clamp(b.y + off, 0, DEPTH), z: mz, vx: b.face * 1.6, vy: 0, vz: 0, dmg: dmg + 8, t: 0, life: 300, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
-    return;
-  }
-  // Shots fly straight along the lanes that were warned on the floor, low enough to jump over.
-  // Standing in a warned lane gets you hit; stepping out of it or jumping does not.
-  const r = b.row - 1; // projectile row 0..2 matches weapon A/B/C firing rows 1..3
-  for (const y of b.warn || [b.ty]) {
-    state.projs.push({ id: state.nextId++, kind: 'boss', row: r, x: mx, y, z: 16, vx: b.face * spd, vy: 0, vz: 0, dmg, t: 0, life: 260, enemy: true, phase: b.phase, bi: b.bi });
+  // In the middle of the arena the same volley also leaves the machine's back.
+  for (const dir of b.both ? [b.face, -b.face] : [b.face]) {
+    const mx = b.x + dir * b.w * 0.55;
+    if (b.missile) {
+      // Homing missiles: one in phase 1, a pair in phase 2.
+      for (const off of b.phase ? [-24, 24] : [0]) state.projs.push({ id: state.nextId++, kind: 'boss', row: 3, x: mx, y: clamp(b.y + off, 0, DEPTH), z: mz, vx: dir * 1.6, vy: 0, vz: 0, dmg: dmg + 8, t: 0, life: 300, enemy: true, homing: true, boom: true, phase: b.phase, bi: b.bi });
+      continue;
+    }
+    // Shots fly straight along the lanes that were warned on the floor, low enough to jump over.
+    // Standing in a warned lane gets you hit; stepping out of it or jumping does not.
+    const r = b.row - 1; // projectile row 0..2 matches weapon A/B/C firing rows 1..3
+    for (const y of b.warn || [b.ty]) {
+      state.projs.push({ id: state.nextId++, kind: 'boss', row: r, x: mx, y, z: 16, vx: dir * spd, vy: 0, vz: 0, dmg, t: 0, life: 260, enemy: true, phase: b.phase, bi: b.bi });
+    }
   }
 }
 
@@ -994,13 +1011,17 @@ function ballBoom(state, pr) {
 // ---------------- flow ----------------
 function stageClear(state) {
   state.mode = 'clear'; state.clearT = 0;
-  state.banner = { text: 'STAGE CLEAR!', sub: 'All six Sprotos advance', t: 200 };
+  state.banner = { text: 'STAGE CLEAR!', sub: 'All four Sprotos advance', t: 200 };
   ev(state, 'clear');
   for (const p of state.players) if (p.st === 'down') { p.hp = 40; setState(p, 'idle'); }
 }
 
 function updateCamera(state) {
-  const ps = activePlayers(state);
+  // A human who has pressed nothing for IDLE_AFTER ticks is not waited for (the CPUs already go
+  // on without them), so the screen follows everyone else. With four seats, two idle humans at
+  // the left edge would otherwise hold the average back and the run would never move on.
+  const all = activePlayers(state), busy = all.filter(p => p.ctrl === 'cpu' || (p.idle || 0) < IDLE_AFTER);
+  const ps = busy.length ? busy : all;
   if (!ps.length) return;
   const lead = Math.max(...ps.map(p => p.x)), avg = ps.reduce((s, p) => s + p.x, 0) / ps.length;
   let want = Math.max(state.camX, Math.min(avg - W * 0.42, lead - W * 0.6));
@@ -1071,7 +1092,7 @@ function snapshot(state) {
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
-    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0, w: Math.round(state.boss.w), ar: state.boss.arch || 0 },
+    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0, bo: state.boss.st === 'fire' && state.boss.both ? 1 : 0, w: Math.round(state.boss.w), ar: state.boss.arch || 0 },
     hz: (state.hazards || []).map(h => ({ id: h.id, y: h.y, x0: Math.round(h.x0), x1: Math.round(h.x1), t: h.t, l: h.life, hf: h.half })),
   };
 }
@@ -1200,7 +1221,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);

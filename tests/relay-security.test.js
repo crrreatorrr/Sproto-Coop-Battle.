@@ -160,21 +160,22 @@ async function main() {
     const forwarded = await nextMsg(host);
     check(forwarded.t === 'in' && forwarded.from === joined.id && forwarded.inp.k2 === 1, 'from is the socket, not the client');
 
-    guest.send(JSON.stringify({ t: 'snap', s: { mode: 'victory' }, slots: [{}, {}, {}, {}, {}, {}] }));
+    guest.send(JSON.stringify({ t: 'snap', s: { mode: 'victory' }, slots: [{}, {}, {}, {}] }));
     await noMsg(host);
     host.send(JSON.stringify({ t: 'earnTickets', amount: 20 }));
     await noMsg(guest);
 
-    const slots = Array.from({ length: 6 }, () => ({ ctrl: 'cpu' }));
+    const slots = Array.from({ length: 4 }, () => ({ ctrl: 'cpu' }));
     host.send(JSON.stringify({ t: 'lobby', slots, code: room.code, choosing: false, sel: 0 }));
     const lobby = await nextMsg(guest);
-    check(lobby.t === 'lobby' && lobby.practice === true && lobby.economy === 'none' && lobby.slots.length === 6, 'lobby forwarded');
+    check(lobby.t === 'lobby' && lobby.practice === true && lobby.economy === 'none' && lobby.slots.length === 4, 'lobby forwarded');
     host.send(JSON.stringify({ t: 'snap', s: { mode: 'play', si: 0 }, ev: ['swing'], slots }));
     const snap = await nextMsg(guest);
     check(snap.t === 'snap' && snap.s.mode === 'play' && snap.ev[0] === 'swing' && snap.economy === 'none', 'snap forwarded');
 
+    // Four seats: the host plus three guests. Two more join after the first guest.
     const guests = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       const extra = await openWs(port);
       extra.send(JSON.stringify({ t: 'join', code: room.code, name: 'G' + i }));
       const ok = await nextMsg(extra);
@@ -185,7 +186,7 @@ async function main() {
     const overflow = await openWs(port);
     overflow.send(JSON.stringify({ t: 'join', code: room.code, name: 'Overflow' }));
     const full = await nextMsg(overflow);
-    check(full.t === 'error' && full.error === 'Room is full', 'sixth guest socket rejected');
+    check(full.t === 'error' && full.error === 'Room is full', 'fourth guest socket rejected');
 
     guest.send(JSON.stringify({ t: 'god' }));
     const god = await nextMsg(host);

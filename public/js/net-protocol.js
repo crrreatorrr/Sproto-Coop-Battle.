@@ -10,7 +10,7 @@ const LIMITS = {
   substeps: 3,
   snapshotHz: 10,
   snapshotMaxHz: 15,
-  maxSeats: 6,
+  maxSeats: 4,
   maxFutureFrames: 3,
   maxPayloadBytes: 2048,
   maxInputBytes: 768,

@@ -20,7 +20,7 @@ assert.strictEqual(CoopProtocol.LIMITS.simHz, 60);
 assert.strictEqual(CoopProtocol.LIMITS.snapshotHz, 10);
 assert.ok(CoopProtocol.LIMITS.snapshotMaxHz <= 15 && CoopProtocol.LIMITS.snapshotMaxHz >= 10);
 assert.strictEqual(CoopProtocol.LIMITS.maxStateBytes, Sim.MAX_STATE_BYTES);
-assert.strictEqual(CoopProtocol.LIMITS.maxSeats, 6);
+assert.strictEqual(CoopProtocol.LIMITS.maxSeats, 4);
 assert.strictEqual(CoopProtocol.LIMITS.reconnectGraceMs, 15000);
 
 const manifest = CoopProtocol.contentManifest(MANIFEST);
@@ -171,8 +171,8 @@ function input(session, seq, generation, mask, extra) {
 
 {
   const session = banked(19);
-  const devices = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
-  for (let i = 0; i < 6; i++) seat(session, i, devices[i]);
+  const devices = ['k1', 'k2', 'gp0', 'gp1'];
+  for (let i = 0; i < 4; i++) seat(session, i, devices[i]);
   assert.strictEqual(CoopProtocol.beginEncounter(session).ok, true);
   const seats = devices.map((device, slot) => ({ slot: slot, device: device, mask: 1 }));
   const stepped = CoopProtocol.stepLoop(session, [{
@@ -181,7 +181,7 @@ function input(session, seq, generation, mask, extra) {
   assert.strictEqual(stepped.ok, true, stepped.reason);
   let facts = CoopProtocol.participationFacts(session);
   assert.strictEqual(facts.accounts.length, 1);
-  assert.strictEqual(facts.accounts[0].slots.length, 6);
+  assert.strictEqual(facts.accounts[0].slots.length, 4);
   assert.strictEqual(facts.accounts[0].eligible, 1);
   assert.strictEqual(facts.accounts[0].presentAtStart, 1);
   assert.strictEqual(facts.tickets, 0);
@@ -189,7 +189,7 @@ function input(session, seq, generation, mask, extra) {
   facts = CoopProtocol.participationFacts(session);
   assert.strictEqual(facts.canonicalBossId, manifest.stages[0].canonicalBossId);
   assert.ok(!phase || facts.accounts.length === 1);
-  console.log('one account on six seats is one participation row');
+  console.log('one account on four seats is one participation row');
 }
 
 {

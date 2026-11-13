@@ -47,6 +47,9 @@ function bossPaths(manifest, i) {
 // Drawn by render.js. idle.png and muzzle.png are on disk and unused.
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
+// Boss attack effects (render.js FX, packed by tools/build-boss-fx.py). Prefetched with the first
+// stage. groupOf() puts assets/fx/ in 'other', which evict() never drops.
+const FX = ['spikes', 'flame', 'lights', 'burst'].map(function (name) { return 'assets/fx/' + name + '.png'; });
 
 function unique(list) {
   const seen = new Set();
@@ -75,9 +78,10 @@ function groups(manifest) {
     startup: startup,
     firstBoss: firstBoss,
     ufo: UFO.slice(),
+    fx: FX.slice(),
     stages: stages,
     bosses: bosses,
-    all: unique(atlas.concat(stages, bosses, UFO)),
+    all: unique(atlas.concat(stages, bosses, UFO, FX)),
     scenery: scenery,
     boss: function (i) { return bossPaths(manifest, i); },
   };
