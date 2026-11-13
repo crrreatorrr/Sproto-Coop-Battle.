@@ -1,8 +1,8 @@
 # Vendored @metaverse/hub-sdk
 
 - repo: https://github.com/crrreatorrr/metaverse-hub
-- branch: claude/account-progress
-- sha: c9d01b3
+- branch: main
+- sha: b7921f2
 - package: packages/hub-sdk @ 0.8.0
 - built with: `node scripts/vendor-sdk.mjs`
 - iife: dist/hub-sdk.iife.js (global HubSDK; classic script, not a CDN import)

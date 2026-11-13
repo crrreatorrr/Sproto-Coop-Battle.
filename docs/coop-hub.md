@@ -9,7 +9,7 @@ This phase is session init, Ticket balance, and return only. It does not award T
 | Item | Value |
 |---|---|
 | Package | `@metaverse/hub-sdk` 0.8.0 |
-| Hub commit | `c9d01b3` (`claude/account-progress`; re-vendor from `main` once that merges) |
+| Hub commit | `b7921f2` (`main`) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
 | IIFE sha256 | `833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b602b21f309` |
