@@ -116,69 +116,181 @@ root.Audio2 = { play, ensure, music, toggle: () => (muted = !muted), isMuted: ()
 // Progress lives in this file only because the page is at its cap of 30 startup requests; it has
 // nothing to do with audio and shares no state with it. tests/progress.test.js covers it.
 // ---------------------------------------------------------------------------------------------
-// Local progress: best run and stage unlocks, kept in this browser's localStorage only.
-// Nothing here talks to the hub: no Tickets, no scores sent anywhere.
+// Progress: stage unlocks and the best run. It belongs to whoever earned it:
+// - device: play outside a hub session, kept in this browser under KEY (as before this change);
+// - account: a hub player (account or guest), kept under KEY@<playerId> and in the player's hub
+//   cloud save, so it follows the player to any device;
+// - pending: a hub visit whose player is not known yet, kept in memory until the visit resolves.
+// Progress never moves from the device into an account, nor from one account into another.
+// The hub SDK's createProgressStore does the owning, merging and syncing (hub SDK 0.8.0). The SDK
+// is a 234 KB script that only a hub visit loads (hub-link.js), so until it loads, and on every
+// visit without the hub, createStore below keeps the same device copy and pending hold itself.
+// Free play is a setting, not progress: it can be switched off again, so it stays per device
+// under SETTINGS_KEY. Nothing here sends Tickets or scores anywhere.
 (function (root) {
 'use strict';
 const KEY = 'sproto-coop-progress-v1';
+const SETTINGS_KEY = 'sproto-coop-settings-v1';
 const STAGES = 12;
 const int = (v, lo, hi, d) => (Number.isInteger(v) && v >= lo && v <= hi ? v : d);
-function blank() { return { unlocked: 1, freePlay: false, best: null }; }
+function blank() { return { unlocked: 1, best: null }; }
 function defaultStore() { try { return root.localStorage || null; } catch (err) { return null; } }
+function readJson(store, key) {
+  try { return store ? JSON.parse(store.getItem(key) || 'null') : null; } catch (err) { return null; }
+}
 // Anything unreadable or out of range falls back to a fresh record: a bad save never blocks play.
-function clean(raw) {
+// A record from before this change also carries freePlay; that is a setting and is dropped here.
+function normalize(raw) {
   const out = blank();
   if (!raw || typeof raw !== 'object') return out;
   out.unlocked = int(raw.unlocked, 1, STAGES, 1);
-  out.freePlay = raw.freePlay === true;
   const b = raw.best;
   if (b && typeof b === 'object' && Number.isInteger(b.stage)) {
     out.best = { stage: int(b.stage, 1, STAGES, 1), score: int(b.score, 0, 1e12, 0), ticks: int(b.ticks, 0, 1e9, 0), victory: b.victory === true };
   }
   return out;
 }
-function load(store) {
+// Orders two runs, positive when a is the better one: a win beats any loss, then the furthest
+// stage, then the higher score, then the faster run. Zero only when all four are equal, so the
+// two records are the same and picking either gives one answer, in any order.
+function compare(a, b) {
+  if (a.victory !== b.victory) return a.victory ? 1 : -1;
+  if (a.stage !== b.stage) return a.stage - b.stage;
+  if (a.score !== b.score) return a.score - b.score;
+  return b.ticks - a.ticks;
+}
+// True when run a is strictly better than the record b (or there is none): a new best run.
+function better(a, b) { return !b || compare(a, b) > 0; }
+function bestOf(a, b) { return !a ? b : !b ? a : compare(a, b) >= 0 ? a : b; }
+// Combines two copies of progress without losing anything either earned. Commutative,
+// associative and idempotent, so tabs, devices and the cloud copy merge in any order.
+function merge(a, b) {
+  return { unlocked: Math.max(a.unlocked, b.unlocked), best: bestOf(a.best, b.best) };
+}
+const model = { empty: blank, normalize, merge };
+
+// Records a finished run on a copy of data. God Mode runs are shown but never become the best.
+function recordRun(data, run, god) {
+  const mine = { stage: run.stage, score: run.score, ticks: run.ticks, victory: !!run.victory };
+  const isBest = !god && better(mine, data.best);
+  const next = isBest ? { unlocked: data.unlocked, best: mine } : data;
+  return { data: next, best: next.best, newBest: isBest, counted: !god };
+}
+// Clearing stage N (1-based) opens stage N + 1. opened is true when that opened a new stage.
+function clearStage(data, stageNumber) {
+  const next = Math.min(STAGES, (stageNumber | 0) + 1);
+  if (next <= data.unlocked) return { data, opened: false };
+  return { data: { unlocked: next, best: data.best }, opened: true };
+}
+const isOpen = (data, index, freePlay) => !!freePlay || index < data.unlocked;
+
+// Settings stay on this device. Before this change free play sat inside the progress record, so
+// a browser without the settings key takes it from there once, and keeps it from then on.
+function loadSettings(store) {
   const st = store === undefined ? defaultStore() : store;
-  try { return clean(st ? JSON.parse(st.getItem(KEY) || 'null') : null); } catch (err) { return blank(); }
+  const saved = readJson(st, SETTINGS_KEY);
+  if (saved && typeof saved === 'object') return { freePlay: saved.freePlay === true };
+  const legacy = readJson(st, KEY);
+  const out = { freePlay: !!(legacy && legacy.freePlay === true) };
+  if (out.freePlay) saveSettings(out, st);
+  return out;
 }
-function save(data, store) {
+function saveSettings(settings, store) {
   const st = store === undefined ? defaultStore() : store;
-  try { if (st) st.setItem(KEY, JSON.stringify(clean(data))); return true; } catch (err) { return false; }
+  try { if (st) st.setItem(SETTINGS_KEY, JSON.stringify({ freePlay: settings.freePlay === true })); return true; } catch (err) { return false; }
 }
-// A win beats any loss, then the furthest stage, then the score.
-function better(a, b) {
-  if (!b) return true;
-  if (a.victory !== b.victory) return a.victory;
-  if (a.stage !== b.stage) return a.stage > b.stage;
-  return a.score > b.score;
+
+// The game's one progress store. Every change goes through update(). Before the hub SDK loads it
+// keeps the device copy (same key, same model, same merge as the SDK store's device owner) or,
+// when hubVisit is true, holds progress in memory. useSdk(HubSDK) hands everything, pending
+// progress included, to HubSDK.createProgressStore; from then on attach/release/flush are the SDK's.
+// opts: { storage (KeyValue, null for memory only; default localStorage), hubVisit, onError }
+function createStore(opts) {
+  opts = opts || {};
+  const storage = opts.storage === undefined ? defaultStore() : opts.storage;
+  const listeners = new Set();
+  let sdkStore = null;
+  let pending = !!opts.hubVisit;
+  let persistent = !!storage;
+  const readDevice = () => normalize(readJson(storage, KEY));
+  function writeDevice(value) {
+    try { if (!storage) throw new Error('no storage'); storage.setItem(KEY, JSON.stringify(value)); persistent = true; } catch (err) { persistent = false; }
+  }
+  let value = pending ? blank() : readDevice();
+  const emit = () => { listeners.forEach(fn => { try { fn(); } catch (err) { /* a listener never blocks progress */ } }); };
+  return {
+    get: () => (sdkStore ? sdkStore.get() : value),
+    owner: () => (sdkStore ? sdkStore.owner() : { kind: pending ? 'pending' : 'device' }),
+    sync: () => (sdkStore ? sdkStore.sync() : 'local'),
+    persistent: () => (sdkStore ? sdkStore.persistent() : persistent),
+    sdkLoaded: () => !!sdkStore,
+    update(advance) {
+      if (sdkStore) return sdkStore.update(advance);
+      if (!pending) value = merge(value, readDevice());
+      value = merge(value, normalize(advance(value)));
+      if (!pending) writeDevice(value);
+      emit();
+      return value;
+    },
+    refresh() {
+      if (sdkStore) { sdkStore.refresh(); return; }
+      if (pending) return;
+      value = merge(value, readDevice());
+      emit();
+    },
+    watches(key) {
+      if (sdkStore) return sdkStore.watches(key);
+      return !pending && (key === null || key === KEY);
+    },
+    subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+    hold() {
+      if (sdkStore) { sdkStore.hold(); return; }
+      if (pending) return;
+      pending = true;
+      value = blank();
+      emit();
+    },
+    release() {
+      if (sdkStore) { sdkStore.release(); return; }
+      const earned = pending ? value : null;
+      pending = false;
+      value = readDevice();
+      if (earned) { value = merge(value, earned); writeDevice(value); }
+      emit();
+    },
+    // Only the SDK store can hold an account's progress: without it there is nothing to attach to.
+    attach(sdk, playerId) { return sdkStore ? sdkStore.attach(sdk, playerId) : Promise.resolve(); },
+    flush() { return sdkStore ? sdkStore.flush() : Promise.resolve(); },
+    useSdk(HubSDK) {
+      if (sdkStore || !HubSDK || typeof HubSDK.createProgressStore !== 'function') return !!sdkStore;
+      const options = { key: KEY, model };
+      if (opts.storage !== undefined) options.storage = opts.storage;
+      if (opts.onError) options.onError = opts.onError;
+      const next = HubSDK.createProgressStore(options);
+      if (pending) {
+        const earned = value;
+        next.hold();
+        next.update(() => earned); // while held, update only merges in memory
+      }
+      sdkStore = next;
+      next.subscribe(emit);
+      emit();
+      return true;
+    },
+  };
 }
+
 // Totals for the end-of-run panel, from a render snapshot. Kills, revives and parries are per
 // player counters in the snapshot (k, rvn, pa); a snapshot without them shows dashes.
 function summarize(snap) {
   const rows = (snap.players || []).map(p => ({ slot: p.s, name: p.n, cpu: p.c === 'cpu', score: p.sc | 0, kills: p.k, revives: p.rvn, parries: p.pa }));
   return { stage: (snap.si | 0) + 1, ticks: snap.t | 0, victory: snap.mode === 'victory', score: rows.reduce((s, r) => s + r.score, 0), rows: rows };
 }
-// Records a finished run. God Mode runs are shown but never become the best.
-function recordRun(data, run, god) {
-  const prev = data.best;
-  const mine = { stage: run.stage, score: run.score, ticks: run.ticks, victory: !!run.victory };
-  const isBest = !god && better(mine, prev);
-  if (isBest) data.best = mine;
-  return { best: data.best, newBest: isBest, counted: !god };
-}
-// Clearing stage N (1-based) opens stage N + 1. Returns true when that opened a new stage.
-function clearStage(data, stageNumber) {
-  const next = Math.min(STAGES, (stageNumber | 0) + 1);
-  if (next <= data.unlocked) return false;
-  data.unlocked = next;
-  return true;
-}
-const isOpen = (data, index) => data.freePlay || index < data.unlocked;
 function clock(ticks) {
   const s = Math.floor(ticks / 60);
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
-const Progress = { KEY, STAGES, blank, load, save, summarize, recordRun, clearStage, isOpen, better, clock };
+const Progress = { KEY, SETTINGS_KEY, STAGES, blank, normalize, merge, model, compare, better, recordRun, clearStage, isOpen, loadSettings, saveSettings, createStore, summarize, clock };
 root.Progress = Progress;
 if (typeof module !== 'undefined' && module.exports) module.exports = Progress;
 })(typeof window !== 'undefined' ? window : globalThis);

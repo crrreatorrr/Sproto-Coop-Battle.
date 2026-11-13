@@ -20,7 +20,11 @@ const app = {
   joinCursor: 0,
   runId: '', // one id per local/hosted run, or per relay run a guest watches; keys the Relic report
   killLatch: null, // { run, si, out }: was this device's account out when the stage's boss fell
-  progress: P.load(), // local best run and stage unlocks (this browser only)
+  // Stage unlocks and the best run, owned by the live hub player or by this browser (audio.js).
+  // A hub visit holds them in memory until hub-link.js knows the player. Change them only through
+  // progress.update. Free play is a setting and stays on this device.
+  progress: P.createStore({ hubVisit: !!(window.CoopHub && window.CoopHub.visitStarting()) }),
+  settings: P.loadSettings(),
   summary: null, godSeen: false, // end-of-run panel for the run on screen
   frozen: false, // the feedback window is open over local play: no sim step, no menu input
   view: null, // the snapshot drawGame last drew, for the feedback note's context
@@ -377,9 +381,9 @@ function localDevicesInput() {
       if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
       if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
       // Power toggles free play: every stage open, for groups that just want to pick one.
-      if (p.p) { app.progress.freePlay = !app.progress.freePlay; P.save(app.progress); A.play('menu'); }
+      if (p.p) { app.settings.freePlay = !app.settings.freePlay; P.saveSettings(app.settings); A.play('menu'); }
       if (p.ok || p.start) {
-        if (!P.isOpen(app.progress, app.stageSel)) { A.play('hurt'); return; } // the screen says why
+        if (!P.isOpen(app.progress.get(), app.stageSel, app.settings.freePlay)) { A.play('hurt'); return; } // the screen says why
         startGame(); return;
       }
       if (p.back) { app.screen = 'lobby'; app.lobbyDirty = true; return; }
@@ -827,6 +831,7 @@ function padLobbyLines() {
   return ['A: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'START: choose a stage — empty slots are CPU Sprotos. B with no slot: back'];
 }
 function drawStages() {
+  const prog = app.progress.get();
   R.drawBackground(g, app.stageSel, app.t * 0.4);
   g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
   T(g, 'CHOOSE A STAGE', 12, 22, 12, '#ffd23d');
@@ -837,7 +842,7 @@ function drawStages() {
     const back = R.img('assets/stages/' + String(i + 1).padStart(2, '0') + '-back.jpg');
     g.fillStyle = '#000'; g.fillRect(x, y, cw, ch);
     if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / 62)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, 62); }
-    const open = P.isOpen(app.progress, i);
+    const open = P.isOpen(prog, i, app.settings.freePlay);
     g.fillStyle = !open ? 'rgba(0,0,0,.8)' : on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
     if (!open) T(g, 'LOCKED', x + cw / 2, y + 32, 8, '#8a88a8', 'center');
     g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + 62, cw, 20);
@@ -847,10 +852,10 @@ function drawStages() {
     g.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
   }
   const b = M.bosses[app.stageSel];
-  if (P.isOpen(app.progress, app.stageSel)) T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 316, 8, '#ff8a8a', 'center');
+  if (P.isOpen(prog, app.stageSel, app.settings.freePlay)) T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 316, 8, '#ff8a8a', 'center');
   else T(g, 'LOCKED: CLEAR STAGE ' + app.stageSel + ' FIRST, OR TURN ON FREE PLAY', S.W / 2, 316, 7, '#ff8a8a', 'center');
-  const fp = app.progress.freePlay;
-  T(g, (fp ? 'FREE PLAY: ALL STAGES OPEN' : 'CLEAR A STAGE TO UNLOCK THE NEXT · ' + app.progress.unlocked + ' OF 12 OPEN') + '   ' + (padUI() ? 'Y' : 'POWER') + ': FREE PLAY ' + (fp ? 'OFF' : 'ON'), S.W / 2, 330, 5, fp ? '#7aff8a' : '#ffd23d', 'center');
+  const fp = app.settings.freePlay;
+  T(g, (fp ? 'FREE PLAY: ALL STAGES OPEN' : 'CLEAR A STAGE TO UNLOCK THE NEXT · ' + prog.unlocked + ' OF 12 OPEN') + '   ' + (padUI() ? 'Y' : 'POWER') + ': FREE PLAY ' + (fp ? 'OFF' : 'ON'), S.W / 2, 330, 5, fp ? '#7aff8a' : '#ffd23d', 'center');
   T(g, padUI() ? 'STICK / D-PAD: choose   A / START: fight   B: back to lobby' : 'ARROWS / STICK: choose   ATTACK / START: fight   JUMP / ESC: back to lobby', S.W / 2, 344, 6, '#c8c6e0', 'center');
 }
 function lerpSnap(a, b, k) {
@@ -883,14 +888,16 @@ function drawGame() {
   if (snap.god) app.godSeen = true;
   if (!over) app.summary = null;
   else if (!app.summary) {
-    const sum = P.summarize(snap), prev = app.progress.best;
-    const res = P.recordRun(app.progress, sum, app.godSeen || !mine.length); // watching or God Mode: not a record
-    if (res.newBest) P.save(app.progress);
-    app.summary = { sum, res, prev };
+    const sum = P.summarize(snap), god = app.godSeen || !mine.length; // watching or God Mode: not a record
+    let res = P.recordRun(app.progress.get(), sum, god);
+    if (res.newBest) app.progress.update(d => (res = P.recordRun(d, sum, god)).data);
+    app.summary = { sum, res };
   }
-  // Clearing stage N opens stage N + 1 on this device (not in God Mode, and only if you played).
-  if (snap.mode === 'clear' && !app.godSeen && mine.length && P.clearStage(app.progress, snap.si + 1)) {
-    P.save(app.progress); toast('STAGE ' + app.progress.unlocked + ' UNLOCKED');
+  // Clearing stage N opens stage N + 1 for this player (not in God Mode, and only if you played).
+  if (snap.mode === 'clear' && !app.godSeen && mine.length && P.clearStage(app.progress.get(), snap.si + 1).opened) {
+    let opened = false;
+    const next = app.progress.update(d => { const c = P.clearStage(d, snap.si + 1); opened = c.opened; return c.data; });
+    if (opened) toast('STAGE ' + next.unlocked + ' UNLOCKED');
   }
   R.drawWorld(g, snap, { local: mine, noBanner: over });
   if (over) {
@@ -1099,7 +1106,10 @@ function bootAssets() {
   });
 }
 C.setRetry(bootAssets);
-const hubJob = window.CoopHub ? window.CoopHub.boot({ release: releaseForHub, onChange: syncHub }) : null;
+const hubJob = window.CoopHub ? window.CoopHub.boot({ release: releaseForHub, onChange: syncHub, progress: app.progress }) : null;
+// Another tab saved this player's progress (or this browser's): take it in. Settings stay per tab
+// until reload; only progress has to agree across tabs.
+addEventListener('storage', e => { if (app.progress.watches(e.key)) app.progress.refresh(); });
 if (F && hubJob) F.boot(app, hubJob);
 bootAssets();
 // The labels of the menu on screen (title or pause menu), for browser tests.
