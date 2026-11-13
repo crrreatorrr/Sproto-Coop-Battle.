@@ -2,6 +2,9 @@
 // never a CDN. Redeems #t= once, then the game can play with or without a hub account.
 // Local play and the old relay stay practice: this file never calls earn or score. Its one event
 // write is the Marina Anchor Relic for a stage 1 clear (reportStageClear below), which pays no Tickets.
+// It also tells the progress store (Progress.createStore in audio.js) whose progress is on screen:
+// the live hub player's (account or guest, attach) or this device's (release), and switches it
+// when the hub account changes.
 (function (root) {
   'use strict';
   var GAME_ID = 'sproto-coop-battle';
@@ -136,6 +139,7 @@
     var tabId = deps.tabId || ('tab-' + Math.random().toString(36).slice(2));
     var listeners = [];
     var pending = null;
+    var progress = deps.progress || null;
     var state = {
       gameId: GAME_ID,
       kind: 'offline',
@@ -220,6 +224,25 @@
       return job;
     }
 
+    // Progress follows the live hub player. Each call is guarded: progress never breaks the session.
+    function warnProgress(err) {
+      try { if (root.console) root.console.warn('[hub] progress sync failed', (err && (err.code || err.message)) || String(err)); } catch (e) { /* no console */ }
+    }
+    function progressUse(HubSDK) {
+      try { if (progress && progress.useSdk && HubSDK) progress.useSdk(HubSDK); } catch (err) { warnProgress(err); }
+    }
+    function progressRelease() {
+      try { if (progress) progress.release(); } catch (err) { warnProgress(err); }
+    }
+    function progressAttach(playerId) {
+      if (!progress) return;
+      if (!sdk || !playerId) { progressRelease(); return; }
+      try {
+        var job = progress.attach(sdk, playerId);
+        if (job && job.then) job.then(null, warnProgress);
+      } catch (err) { warnProgress(err); }
+    }
+
     function readLive() {
       if (!sdk || !sdk.getSession) return null;
       try { return sdk.getSession() || null; } catch (err) { return null; }
@@ -235,6 +258,7 @@
         state.balance = null;
         state.message = 'Hub profile did not load';
         state.playable = true;
+        progressAttach(live.playerId); // the session is still this player's; the cloud retries
         emit();
         return;
       }
@@ -252,6 +276,7 @@
         clearIdentity('expired');
         return;
       }
+      progressAttach(state.playerId);
       writeTab();
       emit();
       refreshBalance();
@@ -272,6 +297,7 @@
         : reason === 'takeover' ? 'Opened in another tab'
         : '';
       state.playable = true;
+      progressRelease();
       emit();
     }
 
@@ -306,6 +332,7 @@
       state.left = true;
       state.confirming = false;
       unlistenAll();
+      try { if (progress) progress.flush().then(null, warnProgress); } catch (err) { /* still leave */ }
       try { if (deps.release) deps.release(); } catch (err) { /* still leave */ }
       try { if (sdk && sdk.exit) sdk.exit('return'); } catch (err) { /* still leave */ }
       if (!state.navigated) {
@@ -353,6 +380,7 @@
       var hadTicket = hashHasTicket(readHash());
       if (!sdk) {
         if (!hadTicket && !savedSession()) {
+          progressRelease();
           state.kind = 'offline';
           state.ready = true;
           emit();
@@ -360,6 +388,7 @@
         }
         var HubSDK = deps.loadSdk ? await deps.loadSdk() : await loadClassicSdk();
         if (!HubSDK) {
+          progressRelease();
           clearFragment();
           state.kind = hadTicket ? 'error' : 'offline';
           state.label = state.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
@@ -370,6 +399,9 @@
           return state;
         }
         sdk = openSdk(HubSDK);
+        progressUse(HubSDK);
+      } else {
+        progressUse(deps.HubSDK || root.HubSDK);
       }
       var profile = null;
       var firstError = null;
@@ -386,6 +418,7 @@
       state.ticketError = errorCode(firstError);
       var live = readLive();
       if (!live) {
+        progressRelease();
         state.kind = !hadTicket && firstError ? 'error' : 'offline';
         state.label = state.kind === 'error' ? 'HUB ERROR' : 'OFFLINE';
         state.playerId = null;
@@ -450,6 +483,7 @@
     function connect() {
       if (pending) return pending;
       pending = doConnect().catch(function () {
+        progressRelease();
         clearFragment();
         state.kind = 'error';
         state.label = 'HUB ERROR';
@@ -481,6 +515,19 @@
     };
   }
 
+  // True when this page load starts or resumes a hub visit: a ticket in the fragment or the hub
+  // session saved earlier in this tab. The same test as the SDK's hubVisitStarting, which is not
+  // loaded yet when the game starts. main.js holds progress in memory while it is true.
+  function visitStarting(hash, session) {
+    if (hashHasTicket(hash === undefined ? (root.location && root.location.hash) || '' : hash)) return true;
+    try {
+      var store = session || root.sessionStorage;
+      return !!(store && store.getItem(SESSION_KEY) !== null);
+    } catch (err) {
+      return false;
+    }
+  }
+
   function boot(hooks) {
     hooks = hooks || {};
     if (root.CoopHub && root.CoopHub.session) return root.CoopHub.session.connect();
@@ -497,6 +544,7 @@
       assign: function (url) { root.location.assign(url); },
       release: hooks.release,
       onChange: hooks.onChange,
+      progress: hooks.progress || null,
       loadSdk: loadClassicSdk,
     });
     root.CoopHub.session = session;
@@ -511,6 +559,7 @@
     exitUrl: exitUrl,
     stripTicket: stripTicket,
     usernameFromToken: usernameFromToken,
+    visitStarting: visitStarting,
     createSession: createSession,
     boot: boot,
     session: null,

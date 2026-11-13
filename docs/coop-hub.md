@@ -8,11 +8,11 @@ This phase is session init, Ticket balance, and return only. It does not award T
 
 | Item | Value |
 |---|---|
-| Package | `@metaverse/hub-sdk` 0.7.2 |
-| Hub commit | `c6627e51585a7c0e8006122af54e0e413ca91876` (`main`) |
+| Package | `@metaverse/hub-sdk` 0.8.0 |
+| Hub commit | `dbbf398` (`claude/account-progress`; re-vendor from `main` once that merges) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
-| IIFE sha256 | `770e8e1b41ad1abef33eb0d04ef9c7eec8fda723336e5149a7809d902042013c` |
+| IIFE sha256 | `c0ea77abad144abfd8f01d8f21c29b5e1d869bfcb4462db318ea3982f591aab4` |
 | Pin | `vendor/hub-sdk/SOURCE.pin.json` |
 
 Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
@@ -71,6 +71,19 @@ Pressing **N twice** opens the hub's feedback window (`HubSDK.installFeedback`; 
 - **Pause menu.** Signed-in accounts get a SEND FEEDBACK item. It closes the menu for the screenshot and reopens it when the window closes.
 
 The window uses the join dialog's look: Press Start 2P, `#14112a` panel, `#ffd23d` frame and accent, square corners.
+
+## Progress per account (SDK 0.8.0)
+
+Stage unlocks and the best run belong to whoever earned them. `Progress.createStore` (end of `public/js/audio.js`) is the game's one progress store, and every change goes through its `update`. The model: `unlocked` merges by max; `best` keeps the better run by an explicit order (a win, then the furthest stage, then the higher score, then the faster run; all four equal means the same record), so merging is commutative, associative and idempotent.
+
+- **Owners.** `device` is play outside a hub session, under `sproto-coop-progress-v1` (the same key as before, so a browser's existing progress simply stays its device progress). `account` is the live hub player, account or guest: `sproto-coop-progress-v1@<playerId>` in the browser plus the player's cloud save (`save.get` / `save.put`). `pending` holds a hub visit's progress in memory until the player is known.
+- **Startup.** `main.js` creates the store with `hubVisit: CoopHub.visitStarting()` (a `#t=` ticket or the saved hub session, the same test as the SDK's `hubVisitStarting`), so a hub visit shows empty progress until it resolves, never the device's.
+- **The SDK loads only on a hub visit** (234 KB, and the page is at 30 startup requests). Until it loads, and on every visit without the hub, the store keeps the device copy and the pending hold itself, with the same key, model and merge as the SDK store's `device` owner. `hub-link.js` calls `progress.useSdk(HubSDK)` once the SDK has loaded; from then on `HubSDK.createProgressStore` does everything, taking over any progress held so far.
+- **Lifecycle (hub-link.js).** A live session attaches the store to `live.playerId` (also when the profile did not load: the session is still that player's, and the cloud push retries). An account change in this tab (`checkSession`, swap) releases and re-attaches to the new player. Sign-out, expiry, a takeover by another tab, a failed SDK load, a failed `init` and a visit with no session release the store to the device; pending progress then goes to the device. `leave` flushes any unsynced push before returning to the Bar; a push that does not finish is retried on the next attach.
+- **Tabs.** `main.js` passes `storage` events through `progress.watches(key)` and `refresh()`.
+- **Free play** is a setting (it can be switched off again), so it is not progress. It stays on this device under `sproto-coop-settings-v1`. A browser from before this change had it inside the progress record; `Progress.loadSettings` copies it from there once.
+- **Migration.** None into accounts: existing progress stays this browser's device progress and every hub player starts from their own cloud save. The cloud save is under 100 bytes at its largest, far below `SAVE_MAX_BYTES` (16384). Saves never grant Relics, Tickets or items.
+- Tests: `tests/account-progress.test.js` (account isolation, device progress never reaching an account, a second device, pending wins, legacy data, save size, tabs, and the hub-link wiring against the real vendored SDK) and `tests/progress.test.js` (model and device store).
 
 ## Hub status (updated 2026-11-08)
 
