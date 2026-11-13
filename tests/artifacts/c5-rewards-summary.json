@@ -1,32 +1,18 @@
 {
   "hardware": {
-    "host": "cursor",
-    "platform": "linux 6.12.113+",
-    "cpu": "Intel(R) Xeon(R) Processor",
-    "cores": 4,
-    "memoryBytes": 16780623872,
-    "node": "v22.23.4"
+    "host": "Kens-MacBook-Pro.local",
+    "platform": "darwin 25.4.0",
+    "cpu": "Apple M5 Pro",
+    "cores": 18,
+    "memoryBytes": 51539607552,
+    "node": "v22.22.3"
   },
   "facts": {
-    "slots": 6,
+    "slots": 4,
     "accounts": 1,
     "tickets": 0
   },
   "pay": 20,
   "reason": "srv_coop_boss_clear",
-  "live": {
-    "nakama": "http://127.0.0.1:7350",
-    "version": {
-      "enabled": true,
-      "protocol": 1,
-      "fingerprint": "f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e",
-      "match": "sproto_coop",
-      "rewards": 0
-    },
-    "balance": 0,
-    "forged": "server_reason",
-    "event": "bad_event",
-    "score": "bad_board",
-    "account": "248db548-b695-4e9c-befe-d99a6129bd44"
-  }
+  "live": null
 }

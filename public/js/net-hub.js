@@ -11,7 +11,7 @@
     REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19,
   };
   var DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
-  var SEATS = 4; // Sim.SLOTS: always four Sprotos
+  var SEATS = 4; // Sim.SLOTS: up to four Sprotos; a seat nobody holds stays empty
   var BANNED = { god: 1, stage: 1, state: 1, seed: 1, earn: 1, score: 1, pause: 1, snapshot: 1, result: 1 };
   var RPC_OK = { 'coop.version': 1, 'coop.room_create': 1, 'coop.room_join': 1, 'coop.queue_cancel': 1, 'coop.resume': 1, 'coop.metrics': 1 };
   var SIM_MS = 1000 / 60;
@@ -62,7 +62,7 @@
       device: seat.device || '',
       generation: seat.generation | 0,
       human: seat.human ? 1 : 0,
-      ctrl: seat.ctrl || 'cpu',
+      ctrl: seat.ctrl || 'none',
       lives: seat.lives,
       hp: seat.hp,
       fighter: seat.fighter | 0,
@@ -165,7 +165,7 @@
     var n = fighterCount();
     var slots = [];
     for (var i = 0; i < SEATS; i++) {
-      slots.push({ ctrl: 'cpu', owner: 0, dev: '', fid: i % n, weapon: i % weaponCount(), label: '', lives: null, hp: null, grace: false });
+      slots.push({ ctrl: 'none', owner: 0, dev: '', fid: i % n, weapon: i % weaponCount(), label: '', lives: null, hp: null, grace: false });
     }
     for (var s = 0; s < state.seats.length; s++) {
       var seat = state.seats[s];
@@ -173,14 +173,15 @@
       if (index < 0 || index >= SEATS) continue;
       var human = !!seat.human;
       var mine = !!(state.accountId && seat.accountId === state.accountId);
-      var grace = human && seat.ctrl === 'cpu';
+      // During the reconnect grace the server keeps the seat and the Sproto stands idle ('away').
+      var grace = human && seat.ctrl === 'away';
       slots[index] = {
-        ctrl: human ? (mine ? 'local' : 'remote') : 'cpu',
+        ctrl: human ? (mine ? 'local' : 'remote') : 'none',
         owner: human ? seat.accountId : 0,
         dev: human ? seat.device : '',
         fid: seat.fighter | 0,
         weapon: seat.weapon | 0,
-        label: (seat.name || (human ? 'P' + (index + 1) : '')) + (grace ? ' AI' : ''),
+        label: (seat.name || (human ? 'P' + (index + 1) : '')) + (grace ? ' AWAY' : ''),
         lives: seat.lives,
         hp: seat.hp,
         grace: grace,

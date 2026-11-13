@@ -33,7 +33,7 @@ const app = {
   fsCalls: 0, mouseAt: -Infinity,
 };
 function defaultSlots() {
-  return Array.from({ length: S.SLOTS }, (_, i) => ({ ctrl: 'cpu', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
+  return Array.from({ length: S.SLOTS }, (_, i) => ({ ctrl: 'none', owner: 0, dev: '', fid: i % M.fighters.length, weapon: i }));
 }
 app.slots = defaultSlots();
 // Static hosts without the relay server set window.SPROTO_OFFLINE: only local play is offered.
@@ -120,21 +120,21 @@ cv.addEventListener('mousemove', e => {
 });
 
 // ---------- slots ----------
-function slotOf(owner, dev) { return app.slots.findIndex(s => s.ctrl !== 'cpu' && s.owner === owner && s.dev === dev); }
+function slotOf(owner, dev) { return app.slots.findIndex(s => s.ctrl !== 'none' && s.owner === owner && s.dev === dev); }
 function claimSlot(ctrl, owner, dev) {
   if (slotOf(owner, dev) >= 0) return -1;
-  const i = app.slots.findIndex(s => s.ctrl === 'cpu');
+  const i = app.slots.findIndex(s => s.ctrl === 'none');
   if (i < 0) return -1;
   Object.assign(app.slots[i], { ctrl, owner, dev, label: ctrl === 'remote' ? (app.guestNames[owner] || 'Online') + ' · ' + (I.DEVICE_NAMES[dev] || dev) : I.DEVICE_NAMES[dev] });
   // A drop-in after the stage's human count was taken grows what is left of the stage to match.
-  if (app.sim) { const p = app.sim.players[i]; p.ctrl = ctrl; p.owner = owner; if (!p.dead) p.lives = Math.max(p.lives, 2); S.rescaleHumans(app.sim); }
+  if (app.sim) { S.seatIn(app.sim, i, { ctrl, owner }); S.rescaleHumans(app.sim); }
   app.lobbyDirty = true; A.play('join');
   toast(`P${i + 1} joined (${ctrl === 'remote' ? (app.guestNames[owner] || 'online') : I.DEVICE_NAMES[dev]})`);
   return i;
 }
 function releaseSlot(i) {
-  Object.assign(app.slots[i], { ctrl: 'cpu', owner: 0, dev: '', label: '' });
-  if (app.sim) { app.sim.players[i].ctrl = 'cpu'; }
+  Object.assign(app.slots[i], { ctrl: 'none', owner: 0, dev: '', label: '' });
+  if (app.sim) S.seatOut(app.sim, i);
   app.lobbyDirty = true;
 }
 function cycle(i, key, d) {
@@ -203,7 +203,6 @@ function hostStep() {
   const sim = app.sim;
   for (let i = 0; i < S.SLOTS; i++) {
     const s = app.slots[i], p = sim.players[i];
-    p.ctrl = s.ctrl;
     if (s.ctrl === 'local') p.in = I.read(s.dev);
     else if (s.ctrl === 'remote') p.in = I.unpack(((app.remoteIn[s.owner] || {})[s.dev]) | 0);
   }
@@ -396,7 +395,7 @@ function localDevicesInput() {
         // Jump is only a jump here. It used to release the seat to the AI mid-match.
         continue;
       }
-      // Drop-in: any unassigned device presses ATTACK to take over a CPU Sproto.
+      // Drop-in: any unassigned device presses ATTACK to take an empty seat.
       // A pad can also press A: a fresh pad has nothing else to do here.
       if (i < 0 && (p.a || (I.isPad(d) && p.ok))) {
         if (app.role === 'guest') app.net && app.net.send({ t: 'want', dev: d });
@@ -610,7 +609,7 @@ function noteRun(snap) {
   const acct = app.role === 'banked' && app.authority ? app.authority.accountId() : null;
   const down = snap.players.some(p => {
     const s = app.slots[p.s];
-    const mine = !!s && (app.role === 'guest' ? s.ctrl === 'remote' && s.owner === app.myId : app.role === 'banked' ? s.ctrl !== 'cpu' && s.owner === acct : s.ctrl === 'local');
+    const mine = !!s && (app.role === 'guest' ? s.ctrl === 'remote' && s.owner === app.myId : app.role === 'banked' ? s.ctrl !== 'none' && s.owner === acct : s.ctrl === 'local');
     return mine && p.st === 'down';
   });
   if (down !== seen.down) {
@@ -797,8 +796,8 @@ function drawLobby() {
     g.fillStyle = col; g.fillRect(x, y, cw, 3);
     T(g, 'P' + (i + 1), x + 6, y + 14, 10, col);
     const mine = app.role === 'guest' && s.ctrl === 'remote' && s.owner === app.myId;
-    const who = s.ctrl === 'cpu' ? 'CPU' : mine ? 'YOU · ' + I.DEVICE_NAMES[s.dev] : app.role === 'guest' && s.ctrl === 'local' ? 'HOST · ' + s.label : s.label;
-    T(g, String(who).slice(0, 14), x + 6, y + 30, 6, s.ctrl === 'cpu' ? '#8a88a8' : '#fff');
+    const who = s.ctrl === 'none' ? 'OPEN' : mine ? 'YOU · ' + I.DEVICE_NAMES[s.dev] : app.role === 'guest' && s.ctrl === 'local' ? 'HOST · ' + s.label : s.label;
+    T(g, String(who).slice(0, 14), x + 6, y + 30, 6, s.ctrl === 'none' ? '#8a88a8' : '#fff');
     let variant = 0; for (let k = 0; k < i; k++) if (app.slots[k].fid === s.fid) variant++;
     R.drawFighter(g, { f: s.fid, st: 'idle', t: app.t + i * 9, z: 0, fc: 1 }, x + cw / 2 - 4, y + 150, variant, S.WEAPONS[s.weapon].id, S.WEAPONS[s.weapon]);
     const nm = fname(s.fid);
@@ -808,14 +807,14 @@ function drawLobby() {
     const pv = S.PASSIVES[s.fid % S.PASSIVES.length]; // each Sproto's passive
     T(g, pv.name.toUpperCase(), x + cw / 2, y + 200, 5, '#8ef8d6', 'center');
     T(g, pv.text, x + cw / 2, y + 208, 4.5, '#c8c6e0', 'center');
-    if (s.ctrl === 'cpu' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 222, 6, '#7aff8a', 'center');
-    if (s.ctrl !== 'cpu') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 222, 5, '#8a88a8', 'center');
+    if (s.ctrl === 'none' && Math.floor(app.t / 30) % 2) T(g, padUI() ? 'PRESS A' : 'PRESS ATTACK', x + cw / 2, y + 222, 6, '#7aff8a', 'center');
+    if (s.ctrl !== 'none') T(g, padUI() ? 'B = leave' : 'JUMP = leave', x + cw / 2, y + 222, 5, '#8a88a8', 'center');
   });
   const lines = padUI() ? padLobbyLines() : app.role === 'banked'
-    ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']
+    ? ['ATTACK: take a device   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave the seat', 'START: ready. The server owns seats, lives, and stage 1. ESC leaves the match.']
     : app.role === 'guest'
     ? ['ATTACK: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon', 'Waiting for the host to start…']
-    : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: choose a stage — empty slots are CPU Sprotos. ESC: back'];
+    : ['ATTACK: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   JUMP: leave', 'START / ENTER: choose a stage — empty seats stay empty. ESC: back'];
   lines.forEach((l, k) => T(g, l, S.W / 2, 292 + k * 14, 6, '#c8c6e0', 'center'));
   if (app.role === 'guest' && app.hostChoosing != null) {
     g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 150, S.W, 40);
@@ -827,9 +826,9 @@ function drawLobby() {
   T(g, app.role === 'banked' ? bankedPayLine() + '.' + back : 'PRACTICE — NO TICKETS.' + back, S.W / 2, 346, 6, '#9a98b8', 'center');
 }
 function padLobbyLines() {
-  if (app.role === 'banked') return ['A: take a pad   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: give it to AI', 'START: ready. The server owns seats, lives, and stage 1. B with no seat leaves.'];
+  if (app.role === 'banked') return ['A: take a pad   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave the seat', 'START: ready. The server owns seats, lives, and stage 1. B with no seat leaves.'];
   if (app.role === 'guest') return ['A: join a slot   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'Waiting for the host to start…'];
-  return ['A: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'START: choose a stage — empty slots are CPU Sprotos. B with no slot: back'];
+  return ['A: join   LEFT/RIGHT: Sproto   UP/DOWN: weapon   B: leave', 'START: choose a stage — empty seats stay empty. B with no slot: back'];
 }
 function drawStages() {
   const prog = app.progress.get();
@@ -913,7 +912,7 @@ function drawGame() {
     if (note) { g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, 64, S.W, 16); T(g, note, S.W / 2, 72, 6, '#ffd23d', 'center'); }
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 88, 6, '#fff', 'center');
   } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
-  const free = app.slots.some(s => s.ctrl === 'cpu');
+  const free = app.slots.some(s => s.ctrl === 'none');
   if (free && Math.floor(app.t / 40) % 2) T(g, padUI() ? 'PRESS A TO JOIN' : 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 6, S.H - 6, 6, '#7aff8a', 'right');
 }
@@ -1100,7 +1099,8 @@ function bootAssets() {
     app.screen = 'title';
     const q = new URLSearchParams(location.search);
     if (q.get('room')) showJoin();
-    if (q.get('demo')) { app.role = 'local'; startGame(); } // all-CPU attract mode
+    // ?demo is an attract mode that nobody plays, so its four Sprotos are CPUs. A real run never adds one.
+    if (q.get('demo')) { app.role = 'local'; app.slots = defaultSlots().map(s => ({ ...s, ctrl: 'cpu' })); startGame(); }
   }, err => {
     app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading';
     crash.report(err, 'boot'); // the same panel, with Retry

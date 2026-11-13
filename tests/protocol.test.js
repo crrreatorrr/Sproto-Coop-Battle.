@@ -92,15 +92,22 @@ function seat(session, slot, device, generation) {
 {
   const session = banked(11);
   const player = session.state.players[2];
+  // A seat nobody has taken is empty: no CPU Sproto stands in it.
+  assert.ok(session.state.players.every(p => p.ctrl === 'none' && p.st === 'out'));
+  const items = session.state.items.map(item => item.id);
+  const first = seat(session, 2, 'k1');
+  assert.strictEqual(player.ctrl, 'local');
+  assert.strictEqual(first.lives, 2, 'the first human in a seat gets a fresh Sproto');
+  assert.strictEqual(player.st, 'idle');
+  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'none' && p.st === 'out'), 'other seats stay empty');
   player.hp = 17;
   player.lives = 1;
   player.powers = [0, 1];
   player.st = 'down';
   player.downT = 400;
-  const items = session.state.items.map(item => item.id);
   seat(session, 2, 'k1');
   assert.strictEqual(player.ctrl, 'local');
-  assert.strictEqual(player.hp, 17);
+  assert.strictEqual(player.hp, 17, 'retaking a seat you hold resets nothing');
   assert.strictEqual(player.lives, 1);
   assert.deepStrictEqual(player.powers, [0, 1]);
   assert.strictEqual(player.downT, 400);
@@ -111,7 +118,8 @@ function seat(session, slot, device, generation) {
   assert.strictEqual(player.lives, 1);
   const released = CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 1, slot: 2 });
   assert.strictEqual(released.ok, true);
-  assert.strictEqual(player.ctrl, 'cpu');
+  assert.strictEqual(player.ctrl, 'none', 'a released seat empties; no CPU takes the Sproto');
+  assert.strictEqual(player.st, 'out');
   assert.strictEqual(player.hp, 17);
   assert.strictEqual(player.lives, 1);
   assert.deepStrictEqual(player.powers, [0, 1]);
@@ -120,6 +128,8 @@ function seat(session, slot, device, generation) {
   assert.strictEqual(player.hp, 17);
   assert.strictEqual(player.lives, 1);
   assert.strictEqual(player.ctrl, 'local');
+  assert.strictEqual(player.st, 'down', 'a Sproto that left while down comes back down');
+  assert.strictEqual(player.downT, 400);
   const old = CoopProtocol.acceptInput(session, input(session, 1, 1, 1), 10);
   assert.strictEqual(old.reason, 'owner');
   const fresh = CoopProtocol.acceptInput(session, input(session, 1, 2, 1), 10);

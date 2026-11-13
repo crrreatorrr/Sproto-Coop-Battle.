@@ -10,11 +10,11 @@
   "snapshotMaxHz": 15,
   "files": {
     "manifest.js": "76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a",
-    "sim.js": "63411ea02cc8cdf0e47be0c4c3f3e2e615f347112e4dac3ad7d70b1c8bb7d2e6",
+    "sim.js": "aecb10d962786645d5c290c23f2efd347cc7497cfadedff6bee03804c096aaf2",
     "ai.js": "6a1af96f2f8aeeac6192d10f833cf6fd9e1091ff5d2916ce5398ed9fea5aa2ce",
-    "net-protocol.js": "5a5d1aa5603e3c35819a3b3d35cf2ec3c101dce8f56c50688ef6c5d421b5c558"
+    "net-protocol.js": "2eb2136076b4baa3999c817316e4d9f0d3804c7cf0e75cd16ac36763794a4a2f"
   },
-  "bundleSha256": "a8eba28af2c60e3c305f08ae4b42bc829fbf0e913e917ef3ff21e92040a5d1f1",
+  "bundleSha256": "6674cc86732704173f5bf583a76467a119804d3a0e2c9be7602d3cf4340b5b15",
   "contentSha256": "fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72",
   "goja": "github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc",
   "node": ">=22"

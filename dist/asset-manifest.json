@@ -1,0 +1,3373 @@
+{
+  "kind": "sproto-coop-battle-runtime",
+  "practiceRelay": true,
+  "economy": "none",
+  "algorithm": "sha256",
+  "assetCount": 334,
+  "assetBytes": 10028755,
+  "publicFileCount": 352,
+  "publicBytes": 10386891,
+  "assetTreeSha256": "2d044ede9a192bb0d5a3122cb91f6504683ea585b7bd1afe473945b227841705",
+  "publicTreeSha256": "01ca73b91e4711a5fedcbb9feeab96dab8474bad5708093b2df7ac13f68a254b",
+  "preloadCount": 10,
+  "preloadBytes": 1234442,
+  "preloadGzipBytes": 1211378,
+  "preloadDecodedBytes": 17556208,
+  "dynamicRefCount": 90,
+  "unused": [
+    "assets/fighters/dumpstar/00.png",
+    "assets/fighters/dumpstar/01.png",
+    "assets/fighters/dumpstar/02.png",
+    "assets/fighters/dumpstar/03.png",
+    "assets/fighters/dumpstar/04.png",
+    "assets/fighters/dumpstar/05.png",
+    "assets/fighters/dumpstar/06.png",
+    "assets/fighters/dumpstar/07.png",
+    "assets/fighters/dumpstar/08.png",
+    "assets/fighters/dumpstar/09.png",
+    "assets/fighters/dumpstar/10.png",
+    "assets/fighters/dumpstar/11.png",
+    "assets/fighters/dumpstar/12.png",
+    "assets/fighters/dumpstar/13.png",
+    "assets/fighters/dumpstar/14.png",
+    "assets/fighters/dumpstar/15.png",
+    "assets/fighters/dumpstar/16.png",
+    "assets/fighters/dumpstar/17.png",
+    "assets/fighters/dumpstar/18.png",
+    "assets/fighters/dumpstar/19.png",
+    "assets/fighters/dumpstar/20.png",
+    "assets/fighters/dumpstar/21.png",
+    "assets/fighters/dumpstar/22.png",
+    "assets/fighters/dumpstar/23.png",
+    "assets/fighters/dumpstar/24.png",
+    "assets/fighters/dumpstar/25.png",
+    "assets/fighters/dumpstar/26.png",
+    "assets/fighters/dumpstar/27.png",
+    "assets/fighters/dumpstar/28.png",
+    "assets/fighters/dumpstar/29.png",
+    "assets/fighters/dumpstar/30.png",
+    "assets/fighters/dumpstar/31.png",
+    "assets/fighters/dumpstar/w00.png",
+    "assets/fighters/dumpstar/w01.png",
+    "assets/fighters/dumpstar/w02.png",
+    "assets/fighters/dumpstar/w03.png",
+    "assets/fighters/dumpstar/w04.png",
+    "assets/fighters/dumpstar/w05.png",
+    "assets/fighters/dumpstar/w06.png",
+    "assets/fighters/dumpstar/w07.png",
+    "assets/fighters/guest09/00.png",
+    "assets/fighters/guest09/01.png",
+    "assets/fighters/guest09/02.png",
+    "assets/fighters/guest09/03.png",
+    "assets/fighters/guest09/04.png",
+    "assets/fighters/guest09/05.png",
+    "assets/fighters/guest09/06.png",
+    "assets/fighters/guest09/07.png",
+    "assets/fighters/guest09/08.png",
+    "assets/fighters/guest09/09.png",
+    "assets/fighters/guest09/10.png",
+    "assets/fighters/guest09/11.png",
+    "assets/fighters/guest09/12.png",
+    "assets/fighters/guest09/13.png",
+    "assets/fighters/guest09/14.png",
+    "assets/fighters/guest09/15.png",
+    "assets/fighters/guest09/16.png",
+    "assets/fighters/guest09/17.png",
+    "assets/fighters/guest09/18.png",
+    "assets/fighters/guest09/19.png",
+    "assets/fighters/guest09/20.png",
+    "assets/fighters/guest09/21.png",
+    "assets/fighters/guest09/22.png",
+    "assets/fighters/guest09/23.png",
+    "assets/fighters/guest09/24.png",
+    "assets/fighters/guest09/25.png",
+    "assets/fighters/guest09/26.png",
+    "assets/fighters/guest09/27.png",
+    "assets/fighters/guest09/28.png",
+    "assets/fighters/guest09/29.png",
+    "assets/fighters/guest09/30.png",
+    "assets/fighters/guest09/31.png",
+    "assets/fighters/guest09/w00.png",
+    "assets/fighters/guest09/w01.png",
+    "assets/fighters/guest09/w02.png",
+    "assets/fighters/guest09/w03.png",
+    "assets/fighters/guest09/w04.png",
+    "assets/fighters/guest09/w05.png",
+    "assets/fighters/guest09/w06.png",
+    "assets/fighters/guest09/w07.png",
+    "assets/fighters/guest10/00.png",
+    "assets/fighters/guest10/01.png",
+    "assets/fighters/guest10/02.png",
+    "assets/fighters/guest10/03.png",
+    "assets/fighters/guest10/04.png",
+    "assets/fighters/guest10/05.png",
+    "assets/fighters/guest10/06.png",
+    "assets/fighters/guest10/07.png",
+    "assets/fighters/guest10/08.png",
+    "assets/fighters/guest10/09.png",
+    "assets/fighters/guest10/10.png",
+    "assets/fighters/guest10/11.png",
+    "assets/fighters/guest10/12.png",
+    "assets/fighters/guest10/13.png",
+    "assets/fighters/guest10/14.png",
+    "assets/fighters/guest10/15.png",
+    "assets/fighters/guest10/16.png",
+    "assets/fighters/guest10/17.png",
+    "assets/fighters/guest10/18.png",
+    "assets/fighters/guest10/19.png",
+    "assets/fighters/guest10/20.png",
+    "assets/fighters/guest10/21.png",
+    "assets/fighters/guest10/22.png",
+    "assets/fighters/guest10/23.png",
+    "assets/fighters/guest10/24.png",
+    "assets/fighters/guest10/25.png",
+    "assets/fighters/guest10/26.png",
+    "assets/fighters/guest10/27.png",
+    "assets/fighters/guest10/28.png",
+    "assets/fighters/guest10/29.png",
+    "assets/fighters/guest10/30.png",
+    "assets/fighters/guest10/31.png",
+    "assets/fighters/guest10/w00.png",
+    "assets/fighters/guest10/w01.png",
+    "assets/fighters/guest10/w02.png",
+    "assets/fighters/guest10/w03.png",
+    "assets/fighters/guest10/w04.png",
+    "assets/fighters/guest10/w05.png",
+    "assets/fighters/guest10/w06.png",
+    "assets/fighters/guest10/w07.png",
+    "assets/fighters/rivet/00.png",
+    "assets/fighters/rivet/01.png",
+    "assets/fighters/rivet/02.png",
+    "assets/fighters/rivet/03.png",
+    "assets/fighters/rivet/04.png",
+    "assets/fighters/rivet/05.png",
+    "assets/fighters/rivet/06.png",
+    "assets/fighters/rivet/07.png",
+    "assets/fighters/rivet/08.png",
+    "assets/fighters/rivet/09.png",
+    "assets/fighters/rivet/10.png",
+    "assets/fighters/rivet/11.png",
+    "assets/fighters/rivet/12.png",
+    "assets/fighters/rivet/13.png",
+    "assets/fighters/rivet/14.png",
+    "assets/fighters/rivet/15.png",
+    "assets/fighters/rivet/16.png",
+    "assets/fighters/rivet/17.png",
+    "assets/fighters/rivet/18.png",
+    "assets/fighters/rivet/19.png",
+    "assets/fighters/rivet/20.png",
+    "assets/fighters/rivet/21.png",
+    "assets/fighters/rivet/22.png",
+    "assets/fighters/rivet/23.png",
+    "assets/fighters/rivet/24.png",
+    "assets/fighters/rivet/25.png",
+    "assets/fighters/rivet/26.png",
+    "assets/fighters/rivet/27.png",
+    "assets/fighters/rivet/28.png",
+    "assets/fighters/rivet/29.png",
+    "assets/fighters/rivet/30.png",
+    "assets/fighters/rivet/31.png",
+    "assets/fighters/rivet/w00.png",
+    "assets/fighters/rivet/w01.png",
+    "assets/fighters/rivet/w02.png",
+    "assets/fighters/rivet/w03.png",
+    "assets/fighters/rivet/w04.png",
+    "assets/fighters/rivet/w05.png",
+    "assets/fighters/rivet/w06.png",
+    "assets/fighters/rivet/w07.png",
+    "assets/fighters/sproto3106/00.png",
+    "assets/fighters/sproto3106/01.png",
+    "assets/fighters/sproto3106/02.png",
+    "assets/fighters/sproto3106/03.png",
+    "assets/fighters/sproto3106/04.png",
+    "assets/fighters/sproto3106/05.png",
+    "assets/fighters/sproto3106/06.png",
+    "assets/fighters/sproto3106/07.png",
+    "assets/fighters/sproto3106/08.png",
+    "assets/fighters/sproto3106/09.png",
+    "assets/fighters/sproto3106/10.png",
+    "assets/fighters/sproto3106/11.png",
+    "assets/fighters/sproto3106/12.png",
+    "assets/fighters/sproto3106/13.png",
+    "assets/fighters/sproto3106/14.png",
+    "assets/fighters/sproto3106/15.png",
+    "assets/fighters/sproto3106/16.png",
+    "assets/fighters/sproto3106/17.png",
+    "assets/fighters/sproto3106/18.png",
+    "assets/fighters/sproto3106/19.png",
+    "assets/fighters/sproto3106/20.png",
+    "assets/fighters/sproto3106/21.png",
+    "assets/fighters/sproto3106/22.png",
+    "assets/fighters/sproto3106/23.png",
+    "assets/fighters/sproto3106/24.png",
+    "assets/fighters/sproto3106/25.png",
+    "assets/fighters/sproto3106/26.png",
+    "assets/fighters/sproto3106/27.png",
+    "assets/fighters/sproto3106/28.png",
+    "assets/fighters/sproto3106/29.png",
+    "assets/fighters/sproto3106/30.png",
+    "assets/fighters/sproto3106/31.png",
+    "assets/fighters/sproto3106/w00.png",
+    "assets/fighters/sproto3106/w01.png",
+    "assets/fighters/sproto3106/w02.png",
+    "assets/fighters/sproto3106/w03.png",
+    "assets/fighters/sproto3106/w04.png",
+    "assets/fighters/sproto3106/w05.png",
+    "assets/fighters/sproto3106/w06.png",
+    "assets/fighters/sproto3106/w07.png",
+    "assets/fighters/vamp/00.png",
+    "assets/fighters/vamp/01.png",
+    "assets/fighters/vamp/02.png",
+    "assets/fighters/vamp/03.png",
+    "assets/fighters/vamp/04.png",
+    "assets/fighters/vamp/05.png",
+    "assets/fighters/vamp/06.png",
+    "assets/fighters/vamp/07.png",
+    "assets/fighters/vamp/08.png",
+    "assets/fighters/vamp/09.png",
+    "assets/fighters/vamp/10.png",
+    "assets/fighters/vamp/11.png",
+    "assets/fighters/vamp/12.png",
+    "assets/fighters/vamp/13.png",
+    "assets/fighters/vamp/14.png",
+    "assets/fighters/vamp/15.png",
+    "assets/fighters/vamp/16.png",
+    "assets/fighters/vamp/17.png",
+    "assets/fighters/vamp/18.png",
+    "assets/fighters/vamp/19.png",
+    "assets/fighters/vamp/20.png",
+    "assets/fighters/vamp/21.png",
+    "assets/fighters/vamp/22.png",
+    "assets/fighters/vamp/23.png",
+    "assets/fighters/vamp/24.png",
+    "assets/fighters/vamp/25.png",
+    "assets/fighters/vamp/26.png",
+    "assets/fighters/vamp/27.png",
+    "assets/fighters/vamp/28.png",
+    "assets/fighters/vamp/29.png",
+    "assets/fighters/vamp/30.png",
+    "assets/fighters/vamp/31.png",
+    "assets/fighters/vamp/w00.png",
+    "assets/fighters/vamp/w01.png",
+    "assets/fighters/vamp/w02.png",
+    "assets/fighters/vamp/w03.png",
+    "assets/fighters/vamp/w04.png",
+    "assets/fighters/vamp/w05.png",
+    "assets/fighters/vamp/w06.png",
+    "assets/fighters/vamp/w07.png",
+    "assets/ufo/idle.png",
+    "assets/ufo/muzzle.png",
+    "assets/ufo/red-laser.png",
+    "assets/ufo/thrust.png"
+  ],
+  "startup": [
+    "assets/fighters/sproto3106/atlas.png",
+    "assets/fighters/vamp/atlas.png",
+    "assets/fighters/guest09/atlas.png",
+    "assets/fighters/guest10/atlas.png",
+    "assets/fighters/rivet/atlas.png",
+    "assets/fighters/dumpstar/atlas.png",
+    "assets/stages/01-back.jpg",
+    "assets/stages/01-floor.png",
+    "assets/stages/05-back.jpg",
+    "assets/stages/05-floor.png"
+  ],
+  "files": [
+    {
+      "path": "assets/bosses/01-marina-bront-p1-projectiles.png",
+      "bytes": 108527,
+      "sha256": "3af5ddc2d5a013a7d0422145d35e63caf4ac5046b108ab05b13b7d763ba8eb63",
+      "gzipBytes": 105727,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/01-marina-bront-p1.png",
+      "bytes": 133320,
+      "sha256": "ac8f5457f2137a07fd912d4293bd18d315fd005726228f6de9471020cbdc5d25",
+      "gzipBytes": 129922,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/01-marina-bront-p2-projectiles.png",
+      "bytes": 81979,
+      "sha256": "0f24f4b798d55a47ef0d41a248f74c38b5af4cdd6a72f597e72f53c5738bde9d",
+      "gzipBytes": 78864,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/01-marina-bront-p2.png",
+      "bytes": 164223,
+      "sha256": "47b591584e419c64faf88d3b3d514a041ae258a3d3ea80abed1aa6fa9e310433",
+      "gzipBytes": 161420,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/02-last-light-vela-p1-projectiles.png",
+      "bytes": 126211,
+      "sha256": "6a7cfdb3873fcb1e65b708851fd1c1d51ccfbf757de54487185f5b903225f4ef",
+      "gzipBytes": 122816,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/02-last-light-vela-p1.png",
+      "bytes": 145737,
+      "sha256": "1d5da3b0ca0a98e02f7741a714aa6cdae80ca2536376383ebe6de362a621e8af",
+      "gzipBytes": 143313,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/02-last-light-vela-p2-projectiles.png",
+      "bytes": 100019,
+      "sha256": "31656465442870afcb02f1dd6d489c64a19759198baf0010a70acd6cc0b92c1f",
+      "gzipBytes": 95701,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/02-last-light-vela-p2.png",
+      "bytes": 161261,
+      "sha256": "0c9aebb17dfb2d187091129bbf782890fd5845edcf7de62b9701110073315577",
+      "gzipBytes": 159085,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/03-mudline-crapto-p1-projectiles.png",
+      "bytes": 85938,
+      "sha256": "495b326df922ed46534dcb800a773f82bf3580944bed1912963605f3647ff38d",
+      "gzipBytes": 83104,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/03-mudline-crapto-p1.png",
+      "bytes": 136599,
+      "sha256": "dc075282d47d714c9b4458e0c559422a3fc72f03987e7f6a69ae1384aad0498f",
+      "gzipBytes": 133251,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/03-mudline-crapto-p2-projectiles.png",
+      "bytes": 83481,
+      "sha256": "a5cde226c54d2c12b28988779f92db920446cc4ce47cad52870aabc48a374f9c",
+      "gzipBytes": 81101,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/03-mudline-crapto-p2.png",
+      "bytes": 184681,
+      "sha256": "33690d61de6ac74bba79e1b5fce781daebfd1346733679cc60cc1557b6f440df",
+      "gzipBytes": 183047,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/04-ranch-zephyr-p1-projectiles.png",
+      "bytes": 83421,
+      "sha256": "ddb34f51a5dc0edaa0d4e04d61ab4d47858730cd1e7a30d51f34d5cb99271072",
+      "gzipBytes": 80106,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/04-ranch-zephyr-p1.png",
+      "bytes": 133815,
+      "sha256": "99739c9e08a2c716818a061642311aa2f0633f93def5b1e1a5e706d122962c6c",
+      "gzipBytes": 130653,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+      "bytes": 74586,
+      "sha256": "b783b40082f7435b4da7dcc5a86e7a92561f5e7b3093b0e609b917acc3e82bf8",
+      "gzipBytes": 71471,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/04-ranch-zephyr-p2.png",
+      "bytes": 161293,
+      "sha256": "0f235f8a4c03dd5942fe7e70e65bf9b245f580cc7bc0404cf046e566830e8a45",
+      "gzipBytes": 157930,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/05-neon-sproto102-p1-projectiles.png",
+      "bytes": 82768,
+      "sha256": "45de963fd998df6398c6787d9f3870b363b5e2c2a5249f96678ca71c79dad395",
+      "gzipBytes": 79544,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/05-neon-sproto102-p1.png",
+      "bytes": 104807,
+      "sha256": "6eb94f5ccfe78bac7861fa3876220ce67f06f23626da7d1f9e8b439d0529106d",
+      "gzipBytes": 101494,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/05-neon-sproto102-p2-projectiles.png",
+      "bytes": 46046,
+      "sha256": "782c11a90290b94566cb0a0fbba474d6fdfec032937cb9f39a6d19fd559886c3",
+      "gzipBytes": 43317,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/05-neon-sproto102-p2.png",
+      "bytes": 209195,
+      "sha256": "948530ca49fc46e64bb020c3ca1fa93ea2fa1d5a85b3f1e272df82a1995ad2f3",
+      "gzipBytes": 206958,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/06-circuit-rune-p1-projectiles.png",
+      "bytes": 70949,
+      "sha256": "9803c49c4917bd3eb6f48f667a23b7184d627691af3dc3396f6be0d26cbbef01",
+      "gzipBytes": 67641,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/06-circuit-rune-p1.png",
+      "bytes": 134708,
+      "sha256": "0beb5ee30a8c24de84c3ef408c4bc259c48ae64f119ce70ae926568b03e79bff",
+      "gzipBytes": 132179,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/06-circuit-rune-p2-projectiles.png",
+      "bytes": 70893,
+      "sha256": "bd3ac51c4f0d30c70672c3f70b30842c8681f5f7f4288a658fc4d09a06a4be8b",
+      "gzipBytes": 68053,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/06-circuit-rune-p2.png",
+      "bytes": 142486,
+      "sha256": "c2ab91296f9f485cb3fd28b14490b76148d30a173ed8753d43f92f60637268cb",
+      "gzipBytes": 140507,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/07-moonkeep-bigswole-p1-projectiles.png",
+      "bytes": 114801,
+      "sha256": "6b524c49f78f2b237e1ab672b0b48704ed3a155d1e6d922a07b671d53d5597c0",
+      "gzipBytes": 110581,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/07-moonkeep-bigswole-p1.png",
+      "bytes": 156616,
+      "sha256": "3852c42474da673dcb09e5731862b192fa428570c64772f9f66afa64a9c01ec8",
+      "gzipBytes": 153370,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/07-moonkeep-bigswole-p2-projectiles.png",
+      "bytes": 158386,
+      "sha256": "4b179299d5dae086e35064f0a6240512e821f30590f2edc53a3f917c66a3c77e",
+      "gzipBytes": 155114,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/07-moonkeep-bigswole-p2.png",
+      "bytes": 121362,
+      "sha256": "11af2e0ccc4fc0c0227e3f688256ad8aadbb2bd36fedd5e44dc73abd14b16726",
+      "gzipBytes": 118101,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/08-crown-alpha777-p1-projectiles.png",
+      "bytes": 156119,
+      "sha256": "fe3dfae7417afa68662ec447f409346d3bc4d11f7b1bf1b9282e6fd163b994a2",
+      "gzipBytes": 152356,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/08-crown-alpha777-p1.png",
+      "bytes": 176043,
+      "sha256": "5d0b9c81e5380b916089e3d19a0b6686b1f8924c3c3d51acbe33aea38641644a",
+      "gzipBytes": 173427,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/08-crown-alpha777-p2-projectiles.png",
+      "bytes": 117479,
+      "sha256": "1b3d5a81ed9bc3f586b8076bb273e85e3fb7a9f633ab8ec06f93622edd5768af",
+      "gzipBytes": 113776,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/08-crown-alpha777-p2.png",
+      "bytes": 182904,
+      "sha256": "1fbce38de9a0e58920a3edad3900479db55002572bde17c865e3204c6d2f8c16",
+      "gzipBytes": 180256,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/09-hatchery-highsproto-p1-projectiles.png",
+      "bytes": 146546,
+      "sha256": "b72bb5af9f54650d8bfbc671a61977095c8d174f532a2bb61a3e8287568462fd",
+      "gzipBytes": 143446,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/09-hatchery-highsproto-p1.png",
+      "bytes": 230885,
+      "sha256": "28ab3177a6a2eedc2fb8954a070558fafa062a2aaf1be7edb847586665afa9cb",
+      "gzipBytes": 227903,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/09-hatchery-highsproto-p2-projectiles.png",
+      "bytes": 141455,
+      "sha256": "ebe44568ccac0dfb9b2ea6cfb88e24d1baff7d4ede34b31056f8e64263706ee2",
+      "gzipBytes": 138085,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/09-hatchery-highsproto-p2.png",
+      "bytes": 183860,
+      "sha256": "b1405c7700bcb67fd4b18688527b82d0efa16fbd929503d1fb4a8b2045180267",
+      "gzipBytes": 180217,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/10-verse-sprotosales-p1-projectiles.png",
+      "bytes": 90346,
+      "sha256": "de4892629ab4ebaf508221d31907a62f96a5fad6fd71b0c6a5c9c907c8530720",
+      "gzipBytes": 87621,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/10-verse-sprotosales-p1.png",
+      "bytes": 98091,
+      "sha256": "6523a444cf1f8fc7e820be480bcd2df1799c87c5c4e8d24f8e841b0c3a43544b",
+      "gzipBytes": 94661,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/10-verse-sprotosales-p2-projectiles.png",
+      "bytes": 93641,
+      "sha256": "1498b15ffc0ac8c77632f7013acbce3f7590d149c5eab83bfe694ae084e28ab5",
+      "gzipBytes": 90034,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/10-verse-sprotosales-p2.png",
+      "bytes": 191526,
+      "sha256": "dff35377be3d310dce23f51296d50c911e903195371475a0a43cf8423ee2e2bd",
+      "gzipBytes": 188162,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/11-rooftop-sproto1668-p1-projectiles.png",
+      "bytes": 62931,
+      "sha256": "add1261294f3690b0398555612c6bb5fd1b7494dec23900a7e4be06099cdc420",
+      "gzipBytes": 60015,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/11-rooftop-sproto1668-p1.png",
+      "bytes": 108234,
+      "sha256": "48b66c982ef43d31c9d18019afbd4a471104460dfb49dd6e1875b5e6bba20c5c",
+      "gzipBytes": 104511,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/11-rooftop-sproto1668-p2-projectiles.png",
+      "bytes": 65155,
+      "sha256": "c07ecf8f859182ce18237751b538628590f51f5cc5b7a9b6112089bbaed87f36",
+      "gzipBytes": 62023,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/11-rooftop-sproto1668-p2.png",
+      "bytes": 175161,
+      "sha256": "401c11aca2de9caf389308d8005c7320e6e362f2f2b856bd2ed7e9aa157eb8df",
+      "gzipBytes": 171822,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/12-codebreak-sproto3106-p1-projectiles.png",
+      "bytes": 90877,
+      "sha256": "3b409700d6092d1b659155c930838547c61b23a5fb080eedf85a61b7c493c17c",
+      "gzipBytes": 86611,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/12-codebreak-sproto3106-p1.png",
+      "bytes": 186129,
+      "sha256": "70ef85cf050df00a828dd3158094bd0bab4e5f44ac1a482a080b1b4125b39835",
+      "gzipBytes": 183310,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/12-codebreak-sproto3106-p2-projectiles.png",
+      "bytes": 95774,
+      "sha256": "61bd330a072c451ecc90f76102437edc53e3726504535fae7183e2eb5a7405db",
+      "gzipBytes": 91923,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/bosses/12-codebreak-sproto3106-p2.png",
+      "bytes": 186422,
+      "sha256": "18acb272d33e941413666ef6be3066a0392fedfb8c651bc425164da24b4f18ea",
+      "gzipBytes": 184164,
+      "width": 1024,
+      "height": 1024,
+      "decodedBytes": 4194304
+    },
+    {
+      "path": "assets/fighters/dumpstar/00.png",
+      "bytes": 4655,
+      "sha256": "07ed8f78c649107f695f609c3684aa9e1b7fd0dd90d4892b16e058684a0f910d",
+      "gzipBytes": 4626,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/01.png",
+      "bytes": 4736,
+      "sha256": "3ec360687dd96c53451e2a46e74709e2418313025328cc537e28a32229362201",
+      "gzipBytes": 4710,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/02.png",
+      "bytes": 4744,
+      "sha256": "28bd207139ec92cf3847cfe51d07a501cfdb395b4b51ec1a50e4748d9cb7a182",
+      "gzipBytes": 4714,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/03.png",
+      "bytes": 4666,
+      "sha256": "087497fe3b9fc8ed80a4e49b8399a5a7fdfa0af30913379ada393052bdb6d382",
+      "gzipBytes": 4639,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/04.png",
+      "bytes": 4556,
+      "sha256": "2c908323c24f3113842a06d9e6e90e21e0de63b65565026fe8ab0b24ae0efb6a",
+      "gzipBytes": 4529,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/05.png",
+      "bytes": 4707,
+      "sha256": "1444133a5fa215a4b21e79b65872f1ba3899e37f08b38d7889de589dbf6b24fc",
+      "gzipBytes": 4676,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/06.png",
+      "bytes": 4750,
+      "sha256": "06c2355d5d0fca0f0c1a1b7627ad9676c1f8fbbaeba31d6221003da6acc28a63",
+      "gzipBytes": 4699,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/07.png",
+      "bytes": 4385,
+      "sha256": "033ab4f4e4973474ad1f6f7fca58dc1fc09c0d76cdc7aff8ceb9926bf0b7e0f0",
+      "gzipBytes": 4341,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/08.png",
+      "bytes": 4522,
+      "sha256": "55db524ef9e847004432a10b0e91f9adcfe0a857363689e26e223885e167261f",
+      "gzipBytes": 4501,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/09.png",
+      "bytes": 4619,
+      "sha256": "dfda57b9a24e00aefcfcdb79a752c459b12ba2a518c286ce5200e2575f12d953",
+      "gzipBytes": 4597,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/10.png",
+      "bytes": 4219,
+      "sha256": "67959e857decb147025ab69d1c2f1d0da747119dd6aaafb4c60a903a37706b3f",
+      "gzipBytes": 4178,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/11.png",
+      "bytes": 4682,
+      "sha256": "2d6861d3b8c48bbeed384757f6b107fea0151cf681a015a4290a51a3c32ad4d5",
+      "gzipBytes": 4643,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/12.png",
+      "bytes": 5017,
+      "sha256": "1161c376ee31b6f50720ec7186837a09d08fe001a77352dded91cf9c67c10359",
+      "gzipBytes": 4986,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/13.png",
+      "bytes": 4606,
+      "sha256": "361c732889c28cf69c03064363668aee0c5d1ee1fcf2ba108248b443c191ef8e",
+      "gzipBytes": 4575,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/14.png",
+      "bytes": 4413,
+      "sha256": "6e3d14945c147fc67badbb7581d8ae670407c91678c6671e343b1862ee764254",
+      "gzipBytes": 4371,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/15.png",
+      "bytes": 4700,
+      "sha256": "21bd94e6fdf98cff05290c2724826b5b4b7e762c42aa310dba1272a0d9e4cd72",
+      "gzipBytes": 4671,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/16.png",
+      "bytes": 4007,
+      "sha256": "465b1ab855d97aa0bc2ce8e9aa0a2b94d8b10a7cda868bb2808d96882fcd6fef",
+      "gzipBytes": 3973,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/17.png",
+      "bytes": 4050,
+      "sha256": "9aa2940c0316fe076b85c6aa5f66d2df70e803dc3c239aafc70883a3eff7bfbc",
+      "gzipBytes": 4012,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/18.png",
+      "bytes": 4380,
+      "sha256": "9876ecfe9946196ec46a177a172bbb944b2fddd2ae8d5c54a4548b611823b46e",
+      "gzipBytes": 4345,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/19.png",
+      "bytes": 3843,
+      "sha256": "ad3f0f5f9f7cdbe4c25a18e9746317ffb5557fdfda6f0e589bf68e7de048e562",
+      "gzipBytes": 3808,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/20.png",
+      "bytes": 4071,
+      "sha256": "a80aae944bd232d9603dacc73334cc8706119ffa07b84c6fd80a1d7ec6657a7e",
+      "gzipBytes": 4038,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/21.png",
+      "bytes": 3769,
+      "sha256": "93dfa307a08a22eef9a5cc8f0105415ed5e6d4999ef8e094a64ad784a6f4b183",
+      "gzipBytes": 3729,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/22.png",
+      "bytes": 3812,
+      "sha256": "bd38bbe870a441fba5b942ec195a6a466394730edbb717448f7b4b58df6f74e3",
+      "gzipBytes": 3788,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/23.png",
+      "bytes": 4123,
+      "sha256": "0796ea5218d84b2ad7d0a283be5fd46aed163d96e2c1eafbdf553c25748893b8",
+      "gzipBytes": 4091,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/24.png",
+      "bytes": 4058,
+      "sha256": "7f4c9cf8e439b34beb3dea3c2bbdecda27e51034a0238973ced8f3e6657d4112",
+      "gzipBytes": 4022,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/25.png",
+      "bytes": 3702,
+      "sha256": "672312389abd896ffaf950563b1ddee2ed37b8263a3b2ef4289bb5c26e5f5fc5",
+      "gzipBytes": 3662,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/26.png",
+      "bytes": 4255,
+      "sha256": "d503ea244f465e294fa70bd6e1862aac77531f4b8cb2ef63a787c23e408b4099",
+      "gzipBytes": 4216,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/27.png",
+      "bytes": 3971,
+      "sha256": "4d12adb1c20358c42b71eb22db9c31dd45e178d2279db36941921c66b90b952f",
+      "gzipBytes": 3934,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/28.png",
+      "bytes": 3987,
+      "sha256": "694d97dbe39dcf9b80fb827db2072dd2abeb9ea7b54da4cc65b6abc57c62f7a8",
+      "gzipBytes": 3944,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/29.png",
+      "bytes": 4203,
+      "sha256": "8c594766f476e91603dc8de624520b51378299e3c062387c8fad4de62cae9add",
+      "gzipBytes": 4168,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/30.png",
+      "bytes": 4671,
+      "sha256": "95d0d8d7f94d5db3615b61de06979c566e60c235b4769df8990f0d1daca2bc05",
+      "gzipBytes": 4616,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/31.png",
+      "bytes": 4329,
+      "sha256": "6908f1b930dd0d830f6fd70dbdf99702ae598935fda144b759caba05919ef0fd",
+      "gzipBytes": 4287,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/atlas.png",
+      "bytes": 144718,
+      "sha256": "43dbcd1654ca876e233d9fde61020f157fe9f9fc0a3226b5922452ec8ccefe58",
+      "gzipBytes": 140919,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/dumpstar/w00.png",
+      "bytes": 4744,
+      "sha256": "28bd207139ec92cf3847cfe51d07a501cfdb395b4b51ec1a50e4748d9cb7a182",
+      "gzipBytes": 4714,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w01.png",
+      "bytes": 4704,
+      "sha256": "ff3115d0e139dab63801b94f7a6a9bdc6fb8956aafbd1b71eeaeda222726bb50",
+      "gzipBytes": 4674,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w02.png",
+      "bytes": 4666,
+      "sha256": "087497fe3b9fc8ed80a4e49b8399a5a7fdfa0af30913379ada393052bdb6d382",
+      "gzipBytes": 4639,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w03.png",
+      "bytes": 4614,
+      "sha256": "6135136dec8ca544a8e4fbfcfe18eb6ed3d786cd54d2ccd87c4e74580e1db636",
+      "gzipBytes": 4590,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w04.png",
+      "bytes": 4556,
+      "sha256": "2c908323c24f3113842a06d9e6e90e21e0de63b65565026fe8ab0b24ae0efb6a",
+      "gzipBytes": 4529,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w05.png",
+      "bytes": 4572,
+      "sha256": "9e02af06fad8ebbdc05f17fba43ae3caddd3a7ff957091f6c5850d1111e0527f",
+      "gzipBytes": 4540,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w06.png",
+      "bytes": 4707,
+      "sha256": "1444133a5fa215a4b21e79b65872f1ba3899e37f08b38d7889de589dbf6b24fc",
+      "gzipBytes": 4676,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/dumpstar/w07.png",
+      "bytes": 4721,
+      "sha256": "b3633d9aca6d0e7bbd19f433e9b1d2cac2a3b0fe83df903a2bf07cb647d79c2b",
+      "gzipBytes": 4692,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/00.png",
+      "bytes": 5571,
+      "sha256": "f05ca36b70e4fb7012357c3a81ca192e6943d63def8426ef5041144b625f5d6f",
+      "gzipBytes": 5511,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/01.png",
+      "bytes": 5616,
+      "sha256": "6b8ca74db49923bd8f738f260cecee94fe12baea4d2102d907c8f94087a3fe65",
+      "gzipBytes": 5562,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/02.png",
+      "bytes": 5677,
+      "sha256": "e5800b5d986b841d4a306da369643b99c3d1d2eb58205eaf6ceb8c70f637ead2",
+      "gzipBytes": 5621,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/03.png",
+      "bytes": 5579,
+      "sha256": "397191c79c81a0ea73aee4f693dd6310f6495f60716c7b9e778332cad4802686",
+      "gzipBytes": 5524,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/04.png",
+      "bytes": 5525,
+      "sha256": "a6bf164f9787f94968ab1be3f10dbcbc75e3a03103cbf52f4f50cf8cada7a747",
+      "gzipBytes": 5466,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/05.png",
+      "bytes": 5584,
+      "sha256": "7e0c80a814ae35e62d0a6492e2b8aa976ec9a8abd13bf3bcee0fe2eb71c10320",
+      "gzipBytes": 5536,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/06.png",
+      "bytes": 5232,
+      "sha256": "7dc04c1f76b546b23941961d90ec82df72db9889fe12044ce90b91197dbf06e3",
+      "gzipBytes": 5193,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/07.png",
+      "bytes": 5001,
+      "sha256": "5ca6ecf4a6e86c3e5034c954aa655e2f6efb819d9dfb6f53090cf5e69006f343",
+      "gzipBytes": 4965,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/08.png",
+      "bytes": 5196,
+      "sha256": "f8130760fffbdc141e0ada929009e269b229a21ec1e9ad9079e835d27447e163",
+      "gzipBytes": 5178,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/09.png",
+      "bytes": 5171,
+      "sha256": "ad641fff2ac57a836cf133ba4f91c69401c066f48286deba696769efb8321f94",
+      "gzipBytes": 5140,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/10.png",
+      "bytes": 4479,
+      "sha256": "c20876c9b218582d3256dec3f2a153eca6e7709f73a76c4ca696bec14c625507",
+      "gzipBytes": 4436,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/11.png",
+      "bytes": 5553,
+      "sha256": "ee63e913cc418c07904fc3f28180e5bc8e937f79332fcecc66ec78f2287cd740",
+      "gzipBytes": 5489,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/12.png",
+      "bytes": 5546,
+      "sha256": "b7f89662418e6cbb87be0e9152175600dc331c736188be3a254fc1b1e41a3d68",
+      "gzipBytes": 5513,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/13.png",
+      "bytes": 5269,
+      "sha256": "b6288fadd53aa999ed02e2d27c18558fa8f46ef0af21d19239f6af81c0117dce",
+      "gzipBytes": 5231,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/14.png",
+      "bytes": 5104,
+      "sha256": "8dceba972f576ecae2366ed1885d37fcb9ed5e61305ee8bad7c037fbcc8a171d",
+      "gzipBytes": 5069,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/15.png",
+      "bytes": 5286,
+      "sha256": "75d218a63a3f5facd68e60ee17786222f3c36f72a0b5863f831a02885319998f",
+      "gzipBytes": 5253,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/16.png",
+      "bytes": 5091,
+      "sha256": "483385ecd0acca17d2482d0a40235a27e7e42fb1d3fbeb693fee629a9a191d09",
+      "gzipBytes": 5065,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/17.png",
+      "bytes": 4936,
+      "sha256": "9578a6a5b38ed4666341c1e5d8a449fed722930646e1fa0e93884c8ee3807848",
+      "gzipBytes": 4910,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/18.png",
+      "bytes": 5269,
+      "sha256": "6cb42b0f0b0320b115d60e5320f57e9a7de96a7e1ee827db5350265bc89c7314",
+      "gzipBytes": 5240,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/19.png",
+      "bytes": 4672,
+      "sha256": "9196cf3130991e544ae120b49b4b32744c2abde4333fb753b9aafd31bc5820b1",
+      "gzipBytes": 4658,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/20.png",
+      "bytes": 4798,
+      "sha256": "4eb5b7653ebb89126330df9ff03f642d247bea35d44f8d72a06295675e56c12a",
+      "gzipBytes": 4765,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/21.png",
+      "bytes": 4283,
+      "sha256": "d118fe3580eda6b23fe84ef9d9e9188e2e5b96fb637249b9fbd957f6bba392cb",
+      "gzipBytes": 4244,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/22.png",
+      "bytes": 4375,
+      "sha256": "f5639f759ecd444982b36e22cdac1f1ca63e4df2403bc9a02dd3e3b4116ce0b7",
+      "gzipBytes": 4353,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/23.png",
+      "bytes": 4656,
+      "sha256": "d8358ea64bbb0de8eba49ad74f5bd504d323d3ba79fad99952c2d6e2c8b43026",
+      "gzipBytes": 4625,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/24.png",
+      "bytes": 4607,
+      "sha256": "e19098d3c91d4576ffc8bc8dd05560fc1ffa35960d2373d9cce7e740b77fc7be",
+      "gzipBytes": 4570,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/25.png",
+      "bytes": 4014,
+      "sha256": "9b916fcdd98913126d1455b3057ea44ebd4ba0272cad49def8a9902b49023687",
+      "gzipBytes": 3980,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/26.png",
+      "bytes": 4504,
+      "sha256": "4b4024621dff16677d2f3ec1eba3d7fa8cf40677de4df363def24b8d69d56d89",
+      "gzipBytes": 4459,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/27.png",
+      "bytes": 4403,
+      "sha256": "2e7bb382642ed02e1f5e6f2b6e8be690abf54c539abdaf69534b6d80c876616c",
+      "gzipBytes": 4367,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/28.png",
+      "bytes": 4496,
+      "sha256": "11e361f477fdcf31d895e65f7cbeaf13e481da1244a3fb1fa04385619168997a",
+      "gzipBytes": 4459,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/29.png",
+      "bytes": 4743,
+      "sha256": "00ef9c08f7c05689c88e06fa03a5713fe0882ac07df5d4636e62d46c7d38dd00",
+      "gzipBytes": 4695,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/30.png",
+      "bytes": 4661,
+      "sha256": "cc8dd8c520c2a6ae3405bfe3f255ac05eace84b937165287ce969cea1b6a90d7",
+      "gzipBytes": 4618,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/31.png",
+      "bytes": 4644,
+      "sha256": "0ee42d59d5034cbd61c685bb93a85cfbf2cc8d2946547b3c950e82ad431d3c8e",
+      "gzipBytes": 4603,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/atlas.png",
+      "bytes": 168206,
+      "sha256": "7fbefd8649381004e05e32ff7e8bfc851b9d6c1f36dbaecbe36ecf26022864c0",
+      "gzipBytes": 164394,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/guest09/w00.png",
+      "bytes": 5677,
+      "sha256": "e5800b5d986b841d4a306da369643b99c3d1d2eb58205eaf6ceb8c70f637ead2",
+      "gzipBytes": 5621,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w01.png",
+      "bytes": 5573,
+      "sha256": "b1cc66a4afcad857557b9c7a2c7205875071b56644d3e69ccdc44c5c3c9dd959",
+      "gzipBytes": 5546,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w02.png",
+      "bytes": 5579,
+      "sha256": "397191c79c81a0ea73aee4f693dd6310f6495f60716c7b9e778332cad4802686",
+      "gzipBytes": 5524,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w03.png",
+      "bytes": 5548,
+      "sha256": "97c4393a9cecb1c6fb2261f92a1b12eca4cecef5577bcca3e09766eea32cd493",
+      "gzipBytes": 5490,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w04.png",
+      "bytes": 5525,
+      "sha256": "a6bf164f9787f94968ab1be3f10dbcbc75e3a03103cbf52f4f50cf8cada7a747",
+      "gzipBytes": 5466,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w05.png",
+      "bytes": 5510,
+      "sha256": "af97034fa806bebeb5e9d982e501c1db790319a95871049ed5181d4135f4f720",
+      "gzipBytes": 5450,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w06.png",
+      "bytes": 5584,
+      "sha256": "7e0c80a814ae35e62d0a6492e2b8aa976ec9a8abd13bf3bcee0fe2eb71c10320",
+      "gzipBytes": 5536,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest09/w07.png",
+      "bytes": 5617,
+      "sha256": "f641a9ed0748b2f58c0ce18a30ba2638a26ab0e40e472992dcc2fe8c3f0ec8a7",
+      "gzipBytes": 5563,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/00.png",
+      "bytes": 5192,
+      "sha256": "bddce857ff4c0a418604031cfd889ee2c917238b8730158412b86476f5b79629",
+      "gzipBytes": 5172,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/01.png",
+      "bytes": 5096,
+      "sha256": "1fa77011e0d2bf912bc19d5f3b180bccb32f958c806a2b395e6f26a6abee3d46",
+      "gzipBytes": 5081,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/02.png",
+      "bytes": 5250,
+      "sha256": "e2ac2267d8a65e88555b35920a57d92d2205c8f6fb78924944e195c79835b6b9",
+      "gzipBytes": 5224,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/03.png",
+      "bytes": 5141,
+      "sha256": "447d5c03a182e82c183d1ec0602ed7f71b01c1652d86082a636347ab0f0b7d3f",
+      "gzipBytes": 5110,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/04.png",
+      "bytes": 5145,
+      "sha256": "d47160cbefdbc0dd85daa03363e89e826639940612acb8517814247cf8ca2f88",
+      "gzipBytes": 5117,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/05.png",
+      "bytes": 5160,
+      "sha256": "beaac0d2e07a20d3519fc6bbe5ec394b5bd52394614cd5be0adf13e7d053ba86",
+      "gzipBytes": 5130,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/06.png",
+      "bytes": 4844,
+      "sha256": "e2e11e92dae46894ab2308b4cc956824c88beb60504a37316f14e6a21afa8583",
+      "gzipBytes": 4810,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/07.png",
+      "bytes": 4454,
+      "sha256": "bed6be10496251b1d6eb57a9710dad7f955439c0e564eb75d7b74ca6a114407b",
+      "gzipBytes": 4426,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/08.png",
+      "bytes": 4761,
+      "sha256": "836429870f1eec10ed366d655630d73a442af064312707c0ec5b8f732e6459fa",
+      "gzipBytes": 4739,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/09.png",
+      "bytes": 4586,
+      "sha256": "4380d9d3a5e23f829710febaccc6a6450a83545003e0a5d6ed760d335cac77c1",
+      "gzipBytes": 4565,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/10.png",
+      "bytes": 4235,
+      "sha256": "424f010d9068bc3e3ef680d71fc84c42ffa74cf006c80ceb73a035b7fab6764a",
+      "gzipBytes": 4196,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/11.png",
+      "bytes": 4859,
+      "sha256": "45eb11382b946e57ef4dbcff5ec706fe329953e954594264d8c46a974027017a",
+      "gzipBytes": 4837,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/12.png",
+      "bytes": 5003,
+      "sha256": "bf766d7c4ae755c4f3f3023a37a87cbf2c24b626c18dc8401e9fb060f45bb03c",
+      "gzipBytes": 4985,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/13.png",
+      "bytes": 4850,
+      "sha256": "0a0fd2e61cbfca38e9a7f77c559678d50c45ce7ca76b0ac23400402c496335aa",
+      "gzipBytes": 4827,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/14.png",
+      "bytes": 4568,
+      "sha256": "64b571d480003cf74986736f54ab0f672d416e448876041eb346268888fc15c8",
+      "gzipBytes": 4530,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/15.png",
+      "bytes": 4694,
+      "sha256": "3458d6682033c4a33689bac5836d0a8f5668c467defbf77d91fd3093983c9015",
+      "gzipBytes": 4672,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/16.png",
+      "bytes": 4320,
+      "sha256": "52f8ebfb0e4e2af8df27b49c8f66bb3737a191fa2b8a09827817d7ab433e04c0",
+      "gzipBytes": 4295,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/17.png",
+      "bytes": 4446,
+      "sha256": "27131e87e0e8b2be63321814d186112723cf18090a8892a47db3262cdd50b532",
+      "gzipBytes": 4422,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/18.png",
+      "bytes": 4981,
+      "sha256": "254d894f9146a3cece72c7f69f393b34f92041abe653e59a5df4ca352ef892e0",
+      "gzipBytes": 4951,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/19.png",
+      "bytes": 4457,
+      "sha256": "e385af54fcdfc4ff6878a2216e74ccc50241b5dcd23191949007c3cb63cb9df6",
+      "gzipBytes": 4436,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/20.png",
+      "bytes": 4180,
+      "sha256": "5cb37c99addd9d10f6b862a1a85aa94dbfcfacbb7bc75b9c3155c872d30a7b03",
+      "gzipBytes": 4135,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/21.png",
+      "bytes": 4274,
+      "sha256": "e9957ec781b3bf17b7eecd8c44d72c7b66077707606ea79d0e8ef3d534869453",
+      "gzipBytes": 4246,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/22.png",
+      "bytes": 4249,
+      "sha256": "14682f25815e68781f505949ceb777d8ccf29203fc889df7cfa96a29fd216f33",
+      "gzipBytes": 4221,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/23.png",
+      "bytes": 3950,
+      "sha256": "9a430695e9800f9c403f1d2e62826010fbe489516f5f5d8ff7b34736d0f7e234",
+      "gzipBytes": 3922,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/24.png",
+      "bytes": 4407,
+      "sha256": "c5b2568d80a05c6b887fd290a7d62e53c7abf3561553e3fddaa71d158e125a95",
+      "gzipBytes": 4371,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/25.png",
+      "bytes": 4437,
+      "sha256": "1c6a5ee102107bee3814d414a73e84f48cd4bf2cec425b8a5847d93727978fba",
+      "gzipBytes": 4411,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/26.png",
+      "bytes": 4901,
+      "sha256": "1626a8cc2c1fd2285a4f02fb3e0750ba261507766c1c000d9baafe56129938f8",
+      "gzipBytes": 4874,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/27.png",
+      "bytes": 4612,
+      "sha256": "392568a96e62bf89d000aa6a5da81ddc6a6bc34e882dd83aff0cdd4cefb242a8",
+      "gzipBytes": 4588,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/28.png",
+      "bytes": 4657,
+      "sha256": "fa2ebdb3e554935e713567063faa73a3871e20d7d8f7058040642dabfe7b8f79",
+      "gzipBytes": 4634,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/29.png",
+      "bytes": 4368,
+      "sha256": "a44ff7dbcb6ac456867a05af630a515a50611473bcfe791f6bafe0e2013967ac",
+      "gzipBytes": 4342,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/30.png",
+      "bytes": 4925,
+      "sha256": "e540fd13f595a53eb3c6640215374bb8b250f85f229ef37ad9a1ed53cbd5b084",
+      "gzipBytes": 4898,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/31.png",
+      "bytes": 4347,
+      "sha256": "0d83c942faa5f6c290dc40eb86932abe0278eb35f187ee541f59334e1d23ae43",
+      "gzipBytes": 4326,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/atlas.png",
+      "bytes": 156111,
+      "sha256": "6c94b366347ef2698e8d8d5d6b0b63499b8b8d50c4c1928af4fcea5cf442c5c8",
+      "gzipBytes": 152328,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/guest10/w00.png",
+      "bytes": 5250,
+      "sha256": "e2ac2267d8a65e88555b35920a57d92d2205c8f6fb78924944e195c79835b6b9",
+      "gzipBytes": 5224,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w01.png",
+      "bytes": 5163,
+      "sha256": "4bc2767ac6b3390c402254c9a8ec37dd38230300484c61d0c71e5ebc19e030f0",
+      "gzipBytes": 5131,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w02.png",
+      "bytes": 5141,
+      "sha256": "447d5c03a182e82c183d1ec0602ed7f71b01c1652d86082a636347ab0f0b7d3f",
+      "gzipBytes": 5110,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w03.png",
+      "bytes": 5129,
+      "sha256": "eae67defc397c1cf6f8d87d660caabc9afb65cf85a9172ab2d88d9f8952cacab",
+      "gzipBytes": 5108,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w04.png",
+      "bytes": 5145,
+      "sha256": "d47160cbefdbc0dd85daa03363e89e826639940612acb8517814247cf8ca2f88",
+      "gzipBytes": 5117,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w05.png",
+      "bytes": 5091,
+      "sha256": "2d75336b017d96bbc2122caba1600912dcc753b997f5d7fd616f6ff32cc41c34",
+      "gzipBytes": 5068,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w06.png",
+      "bytes": 5160,
+      "sha256": "beaac0d2e07a20d3519fc6bbe5ec394b5bd52394614cd5be0adf13e7d053ba86",
+      "gzipBytes": 5130,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/guest10/w07.png",
+      "bytes": 5184,
+      "sha256": "e9400d88ff9c78f77fd3b3fdd66addfd893a9e26b20b266c0c58d079e4d7ab0a",
+      "gzipBytes": 5155,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/00.png",
+      "bytes": 5185,
+      "sha256": "f02f757684c2c50e1bb310fe2685f1f85bf22e8494c1045b9eb48b4004c43293",
+      "gzipBytes": 5149,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/01.png",
+      "bytes": 5161,
+      "sha256": "070f03ffcc8fca01841573d65022f0fafe17e02f5e06eb5d5c942114b4305ada",
+      "gzipBytes": 5128,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/02.png",
+      "bytes": 5228,
+      "sha256": "3ea871929070874b89e2ae2a877d8720dc602b9a06497feabf6c920ff2369ad9",
+      "gzipBytes": 5201,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/03.png",
+      "bytes": 5179,
+      "sha256": "a3dd1ff9ffd79f206e2c8895095c023f37fb3d241dac4c08501aa9e863a4c881",
+      "gzipBytes": 5148,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/04.png",
+      "bytes": 5071,
+      "sha256": "7e20a9259719c917076eb8c801a18f3b8dd510b8f93149eab0ab2b9df185ab5c",
+      "gzipBytes": 5042,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/05.png",
+      "bytes": 5182,
+      "sha256": "b1fc0122622db8139f85591372605108126ccdcdfe7711d3dbb11a9f1e11a949",
+      "gzipBytes": 5151,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/06.png",
+      "bytes": 5112,
+      "sha256": "4faed750baa9b3b43da232903762ce995eb52339b30c0ae8f6a4216f5cb2c217",
+      "gzipBytes": 5072,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/07.png",
+      "bytes": 4700,
+      "sha256": "43d0b59f60d23793ef630562c57b2dd8d453bcd3bd9c97af0e22f158a27fd6fb",
+      "gzipBytes": 4656,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/08.png",
+      "bytes": 5174,
+      "sha256": "053bfbda04283e9bf945a7960c4104f2464c46c91210f12518d14a9680b20e41",
+      "gzipBytes": 5128,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/09.png",
+      "bytes": 5344,
+      "sha256": "3e237ec0f539b4d074f5f292026109027f49864cc982ad1a5dc573a97d812328",
+      "gzipBytes": 5317,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/10.png",
+      "bytes": 4571,
+      "sha256": "0b1bbf066bb76cf6bb69ca265f6a80439bd4ad3a77374af00e9641e82f195016",
+      "gzipBytes": 4522,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/11.png",
+      "bytes": 4970,
+      "sha256": "9c4ee74d59a4e6189999ecbc59368c40874bf3ed7a7e795d9cf1c961f3735436",
+      "gzipBytes": 4928,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/12.png",
+      "bytes": 5222,
+      "sha256": "1039e1de8867762537053fcc2e42ab0ad5c8af65e561ac9deb21a97feb92c926",
+      "gzipBytes": 5190,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/13.png",
+      "bytes": 4926,
+      "sha256": "188364c9616cab1ee545135242684765e86fb5a38555367f8d4864d4039251c6",
+      "gzipBytes": 4894,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/14.png",
+      "bytes": 4798,
+      "sha256": "e2409680855d28608d71c770eea52f09e53a30031476975027d099587d5085ad",
+      "gzipBytes": 4758,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/15.png",
+      "bytes": 5045,
+      "sha256": "1e52c8da46868a06c086860552f4aa02a651111282995ff3d52f072e11ed4737",
+      "gzipBytes": 5013,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/16.png",
+      "bytes": 4442,
+      "sha256": "e8c03a62d21cc44fc745d4adbfbce0e723e3d95d189bc839c83510a5e667785d",
+      "gzipBytes": 4411,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/17.png",
+      "bytes": 4594,
+      "sha256": "f80874d1330fbb6090ddaaa9c7e4ee9d1b9bb6136e8ecb56da2853168ff27346",
+      "gzipBytes": 4562,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/18.png",
+      "bytes": 4829,
+      "sha256": "7f6a45ea8046dc00803e447a1a982d6d6d33425ed354bd9995393a8ea650c433",
+      "gzipBytes": 4798,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/19.png",
+      "bytes": 4382,
+      "sha256": "8c5f4d8e7b33bb1b7311bf3a636f720437f2ad0c78e3c6f517ae0ca2b0bf5807",
+      "gzipBytes": 4346,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/20.png",
+      "bytes": 4535,
+      "sha256": "83d30991f8d0b8aef220943519d93d5287e2736442a1b20cf5e8487ec50c18f5",
+      "gzipBytes": 4485,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/21.png",
+      "bytes": 4465,
+      "sha256": "e42943583e66f4888a12c080309058753835d092cfd9ae6252d3caaa17218e92",
+      "gzipBytes": 4409,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/22.png",
+      "bytes": 4329,
+      "sha256": "8cfdf5c00c95e4571e1853537a209c0659ea7395e097989923e967112e5a472c",
+      "gzipBytes": 4289,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/23.png",
+      "bytes": 4695,
+      "sha256": "11239c40c608c70378d80dc34bf452320ce60bff85835e0c1297cd47a76917f8",
+      "gzipBytes": 4653,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/24.png",
+      "bytes": 4363,
+      "sha256": "a186306499d9010ffa6e6585487f68a3397529eb4a38ba5f46f61ebefc095ec1",
+      "gzipBytes": 4315,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/25.png",
+      "bytes": 3958,
+      "sha256": "d26e53360ae604437bb229cafb1d17868bd71c87272f19bb07d15853d9407896",
+      "gzipBytes": 3915,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/26.png",
+      "bytes": 4457,
+      "sha256": "51687414a5d0aef86f709f79454aa91856016a7b52eb7fd2811b6b5720e7dc7f",
+      "gzipBytes": 4410,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/27.png",
+      "bytes": 4069,
+      "sha256": "6e7f3db38eca542b336aa83e289d6b1f498208b8c0f3bbea98f834803b0b0139",
+      "gzipBytes": 4023,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/28.png",
+      "bytes": 4088,
+      "sha256": "77e79409b41a5961e3204919f42832f5d0b8e02798a18ce4c457d952a3a9f4f4",
+      "gzipBytes": 4039,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/29.png",
+      "bytes": 4311,
+      "sha256": "6d5d0801f82f9c3a629a6b83ee8e7004f1af7f54d5fdbd0ea378482dfe9b1903",
+      "gzipBytes": 4257,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/30.png",
+      "bytes": 4279,
+      "sha256": "5c3142b022e02e383a01af87b3c1f8b84488c578abce3e111e8b1925afe3928d",
+      "gzipBytes": 4229,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/31.png",
+      "bytes": 4244,
+      "sha256": "4b7e8b84f31268a4f8e6c99ddffe915391d287d49588aa207d1205bbad6a61f5",
+      "gzipBytes": 4193,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/atlas.png",
+      "bytes": 153547,
+      "sha256": "5d2768c97746a357e58fcd08f994d9b5e9926a0b31a5da0ce784a58139c8b1e2",
+      "gzipBytes": 149747,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/rivet/w00.png",
+      "bytes": 5228,
+      "sha256": "3ea871929070874b89e2ae2a877d8720dc602b9a06497feabf6c920ff2369ad9",
+      "gzipBytes": 5201,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w01.png",
+      "bytes": 5137,
+      "sha256": "3b58fdeac6fdccc7de601249d78eaa1418630cd54dea0c8642677211ee0f0ebd",
+      "gzipBytes": 5101,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w02.png",
+      "bytes": 5179,
+      "sha256": "a3dd1ff9ffd79f206e2c8895095c023f37fb3d241dac4c08501aa9e863a4c881",
+      "gzipBytes": 5148,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w03.png",
+      "bytes": 5112,
+      "sha256": "83ab0cc80981425322c5ae319b32fd5422a10360cd02585f132b9b0ba0e649c7",
+      "gzipBytes": 5082,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w04.png",
+      "bytes": 5071,
+      "sha256": "7e20a9259719c917076eb8c801a18f3b8dd510b8f93149eab0ab2b9df185ab5c",
+      "gzipBytes": 5042,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w05.png",
+      "bytes": 5070,
+      "sha256": "4ea84271dc3d9a4b3679bea63789f4e3fad29defad1bc8699f64774b825fafbd",
+      "gzipBytes": 5041,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w06.png",
+      "bytes": 5182,
+      "sha256": "b1fc0122622db8139f85591372605108126ccdcdfe7711d3dbb11a9f1e11a949",
+      "gzipBytes": 5151,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/rivet/w07.png",
+      "bytes": 5222,
+      "sha256": "5fc7ef1d9c1235ea45350901a9a63c195fe7cf67198723304a191d9502b74e9f",
+      "gzipBytes": 5192,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/00.png",
+      "bytes": 5136,
+      "sha256": "4fe38f193882e3a80b21dcf2ec02bb416b5bfea8e9b6ba55b113315de5fbc5eb",
+      "gzipBytes": 5120,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/01.png",
+      "bytes": 5046,
+      "sha256": "18c97a3247dc81f598398aa3059b5cd032d3f793738c90970dd4ad1f7e6a2d2b",
+      "gzipBytes": 5028,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/02.png",
+      "bytes": 5345,
+      "sha256": "eaa54653c7e8bd9cfdf6ba965e70093dd6d87a4e9711efeb56ce7b7f74615fe8",
+      "gzipBytes": 5331,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/03.png",
+      "bytes": 5136,
+      "sha256": "190e5bfc6f893d32214f7834dd227508391dc5cf8a533842ba8ac5f194afdf3f",
+      "gzipBytes": 5116,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/04.png",
+      "bytes": 5354,
+      "sha256": "de9023fe90090e8b455cfe278eeb494bed64550319f17d2212b9ea6812627838",
+      "gzipBytes": 5338,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/05.png",
+      "bytes": 5307,
+      "sha256": "226cd5d918529a6baf31dae15e2901292acf84dde571c9a41a7d9a5234208f68",
+      "gzipBytes": 5292,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/06.png",
+      "bytes": 5829,
+      "sha256": "2cb951481def06ecb046f3877b941314f395d2b11b3b642adde13435d51496ef",
+      "gzipBytes": 5801,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/07.png",
+      "bytes": 4855,
+      "sha256": "e0390782348ca2660712ab62b09c81d35c7eda2b487cb5630a54ca1d9f384fcb",
+      "gzipBytes": 4826,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/08.png",
+      "bytes": 4911,
+      "sha256": "e36976662ac49da4cb131bf4582b844c8ab6ba4e4133fc3bac7d04eef5b3e7d5",
+      "gzipBytes": 4893,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/09.png",
+      "bytes": 5383,
+      "sha256": "bfb70e58909e2527c146df620c7112c5a0c9a1b300f5aeea1e3eb60230535680",
+      "gzipBytes": 5369,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/10.png",
+      "bytes": 4205,
+      "sha256": "ea59c5bc2bbdcb0ae78a0badcf63b76855602d133b22d6562eb2cba31785b7af",
+      "gzipBytes": 4159,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/11.png",
+      "bytes": 5529,
+      "sha256": "5a8ab399d9061fe505c51e14805d98dd62079bb602e46d88136abc3cb5ca755e",
+      "gzipBytes": 5503,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/12.png",
+      "bytes": 5429,
+      "sha256": "63f60988686169cf30cfa08c54c0411d313264035916f9bcc1d2b1d2e3589fdc",
+      "gzipBytes": 5409,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/13.png",
+      "bytes": 5468,
+      "sha256": "6194c8b2a7a198cd866ce6ae1ce83c96b56ebdbcce35f4dc90236ed49eb44f6c",
+      "gzipBytes": 5454,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/14.png",
+      "bytes": 5427,
+      "sha256": "3b6c823e6f5bcd3b838cfa76090fbe375021da6fcb6e114ef8866267fc5f00d9",
+      "gzipBytes": 5396,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/15.png",
+      "bytes": 5626,
+      "sha256": "3f452a76d46ecafdb3b5976ff0964d42667d26a33557fb366489a3f337894a72",
+      "gzipBytes": 5613,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/16.png",
+      "bytes": 5430,
+      "sha256": "eaf8dcd75c5b4eedc35b421938387d0e870da508f1f46223f0522d483cff3f65",
+      "gzipBytes": 5408,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/17.png",
+      "bytes": 5242,
+      "sha256": "4b3d7f9ef483e42a1e5c1ac2b8081f98c8815d798aa8034ecadf80e87e299bd8",
+      "gzipBytes": 5219,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/18.png",
+      "bytes": 5161,
+      "sha256": "6dd5311837b21ddf8cf9fa64bda3117d6c5a99ef2dc91e0a2956b4e7231a1a3d",
+      "gzipBytes": 5142,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/19.png",
+      "bytes": 5109,
+      "sha256": "d2bd34098ff443ef5f6c6f58988e3a3eba43f7daa7dc511a0e02ef10b0518064",
+      "gzipBytes": 5094,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/20.png",
+      "bytes": 4840,
+      "sha256": "104313601ac027f3c0e4001e12c6c945aa96104018f75fed91a963d5335810d2",
+      "gzipBytes": 4793,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/21.png",
+      "bytes": 5154,
+      "sha256": "1837ddff764ffddd7c30de5180953b477cea415097d67ae44861b1a3f4510f25",
+      "gzipBytes": 5125,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/22.png",
+      "bytes": 5232,
+      "sha256": "1e18c6aab79c80b2fd6211e99095b7a069a52d5fff5ca221e1d2089da9fb3be1",
+      "gzipBytes": 5210,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/23.png",
+      "bytes": 5008,
+      "sha256": "ab609e30b8456255ab8a6fa295a630595d4ae618543cd211dfa30b4293384aa2",
+      "gzipBytes": 4981,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/24.png",
+      "bytes": 5609,
+      "sha256": "b6a1e628ba1f4ea5abba515d16197313246c0b445c944812ef51b90db31e2d70",
+      "gzipBytes": 5589,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/25.png",
+      "bytes": 5086,
+      "sha256": "2359dbfce4d7ac3091255678286521e17fbba367f57103580180d3e879f0491d",
+      "gzipBytes": 5069,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/26.png",
+      "bytes": 5910,
+      "sha256": "8a4bf3339d7e0a760e130d8d12ec947f41b42020bb12edd21b7ac16fec43d85a",
+      "gzipBytes": 5888,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/27.png",
+      "bytes": 5175,
+      "sha256": "3cd6b94859e1eb7c1d485c2f10a6e44563e6830dbb59ea566f0be947a882d8a2",
+      "gzipBytes": 5152,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/28.png",
+      "bytes": 6180,
+      "sha256": "f24f88462fbb608e92a3462315739777e0c261056c64de71fb8e5d6e7b5eb0cc",
+      "gzipBytes": 6133,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/29.png",
+      "bytes": 5167,
+      "sha256": "b5950ee72edaf6cb0e4d0e5104cbd719e1cbf7bff8a45ffcfcb421c7604db557",
+      "gzipBytes": 5149,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/30.png",
+      "bytes": 6118,
+      "sha256": "66a97a060897f6f58858c8d68741a236903c142f1d1ef779a50d227a48fc70ae",
+      "gzipBytes": 6065,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/31.png",
+      "bytes": 6452,
+      "sha256": "3689c15fcd4886f8f91209527f4e0737df9ffe4fdaf6dc6fa2a687e1752bd5d1",
+      "gzipBytes": 6399,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/atlas.png",
+      "bytes": 210203,
+      "sha256": "cbd5245fd6c3a6a5e673da0ef8aa5f4d649f2d695a91e2763184d322fc17b33e",
+      "gzipBytes": 206803,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/sproto3106/w00.png",
+      "bytes": 4632,
+      "sha256": "b36d93e369f8efc8d431955822edc4596dcf5c8122b6af19880568700d9d8258",
+      "gzipBytes": 4605,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w01.png",
+      "bytes": 4727,
+      "sha256": "980028c8f6e073b6dce1f1f8f0483bbbec2f095c9f814c8b9c46ca6b92ea9321",
+      "gzipBytes": 4708,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w02.png",
+      "bytes": 4507,
+      "sha256": "bba03e4bb049664652a079dd8c281ce4e9bb9065315f5c765814854fb7ed992b",
+      "gzipBytes": 4490,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w03.png",
+      "bytes": 4883,
+      "sha256": "cb11860551dc2a500412f9561fcb719a92deea081a9b4036f9960bb5f0330145",
+      "gzipBytes": 4857,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w04.png",
+      "bytes": 4696,
+      "sha256": "4cec5ecba9516c9de244bf09cb5379e49448956e18c38d29555ff5aea3b09cdd",
+      "gzipBytes": 4668,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w05.png",
+      "bytes": 4639,
+      "sha256": "a8d6a1e2e5a95d8b319b7f1caf3661c6365bf91729350ccdd119f24c192dbec2",
+      "gzipBytes": 4617,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w06.png",
+      "bytes": 4337,
+      "sha256": "49d327ca1c7e6d27ad45422a805f38f811f11e5c47ba4475df1a424ca0f54249",
+      "gzipBytes": 4321,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/sproto3106/w07.png",
+      "bytes": 4840,
+      "sha256": "f59e28826a9358cb595d1bdc6e97b745076d5df649fb6ec3bc4eb0b82ad3f9b1",
+      "gzipBytes": 4811,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/00.png",
+      "bytes": 5129,
+      "sha256": "dd7f19ef5c7869363420fd05ec280d64c2dcf2907da40ba18d159dcb593c267c",
+      "gzipBytes": 5095,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/01.png",
+      "bytes": 5069,
+      "sha256": "4dd9ae002720dc9cb654aa5ee226a00e6da04e6f1a1e30e539950afb29e9ae39",
+      "gzipBytes": 5039,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/02.png",
+      "bytes": 5171,
+      "sha256": "445b94e629fc1992b7417ac7138881af5f3e60fd5bdc587f65eb86de2a92d4d9",
+      "gzipBytes": 5140,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/03.png",
+      "bytes": 5103,
+      "sha256": "eee9b480bbf8784754af7298b7f5959700227bf2cfcf4754fe56de20dcc09905",
+      "gzipBytes": 5071,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/04.png",
+      "bytes": 5017,
+      "sha256": "9fe5b3060cf95f5ee73b68a8289a72d115ed9fd0c52c7dcd980b1a019645c649",
+      "gzipBytes": 4987,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/05.png",
+      "bytes": 5155,
+      "sha256": "4dc1cdb08f0c2ba7466b3dc42e57c8d60408be1e3fc274a4f3d868d88e48aaf5",
+      "gzipBytes": 5124,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/06.png",
+      "bytes": 5153,
+      "sha256": "f18ab9d2a51976969e92883aedf98e4f6071ab4d43e9e112e64f9e2897eb9061",
+      "gzipBytes": 5102,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/07.png",
+      "bytes": 4510,
+      "sha256": "41ae9756f4920e004f02cb91a1e2ca9b087a3116c82099f7e74aee01296a2cce",
+      "gzipBytes": 4455,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/08.png",
+      "bytes": 4864,
+      "sha256": "52d02bbcc1f7644a72da17380e5460df3175cebab7eae9cb55704a522eff6454",
+      "gzipBytes": 4839,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/09.png",
+      "bytes": 4957,
+      "sha256": "c5f5e1738fafd2cc9ad63825fce6ce9908173236815ca02872979348fec67f99",
+      "gzipBytes": 4927,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/10.png",
+      "bytes": 4439,
+      "sha256": "4d07408607baa9b05a0b85c7fde71076f73655fd8b2819c8c7bd83d23167c57a",
+      "gzipBytes": 4388,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/11.png",
+      "bytes": 5063,
+      "sha256": "4caa111afcd48a0172503c47d6802e8c3a88286831c9749fd25a0f21b140cf4f",
+      "gzipBytes": 5021,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/12.png",
+      "bytes": 5083,
+      "sha256": "3798b55729555ec1e1bc6217ffa6e1a2cce59aa3831bc187a4af1ebca65325bb",
+      "gzipBytes": 5044,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/13.png",
+      "bytes": 4979,
+      "sha256": "12d0d05e7aa55df75ad96db049d64eaffc4e77eb7cd3b30b26397978048a6fc4",
+      "gzipBytes": 4944,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/14.png",
+      "bytes": 4805,
+      "sha256": "507802533cc20c655582278c8cc6279c70a7507804bcfbd69431a34050990a48",
+      "gzipBytes": 4762,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/15.png",
+      "bytes": 4883,
+      "sha256": "be59b43896b70dfca24bca098c0b11a3a95a347177429870a9a8f09eb75740bb",
+      "gzipBytes": 4848,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/16.png",
+      "bytes": 4491,
+      "sha256": "3d25f8b618625b58d564becf72e702b725cc05ffc4b5679676e7518036ceaffc",
+      "gzipBytes": 4453,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/17.png",
+      "bytes": 4233,
+      "sha256": "300c4fce9511a032c80b224a554f507bfaab6215d84d54881717e291869a26e7",
+      "gzipBytes": 4196,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/18.png",
+      "bytes": 4648,
+      "sha256": "ed1964169d1c76ee200223f9ae6d079bcd3d52d60fa87a1b0cba5a337b6aa222",
+      "gzipBytes": 4613,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/19.png",
+      "bytes": 4443,
+      "sha256": "ba1450bf2cb9dfc774121ffc6849549d5bbcddcda513b5f2d8526fd8cd4aa556",
+      "gzipBytes": 4409,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/20.png",
+      "bytes": 4512,
+      "sha256": "5cfde7c2c2da9743d4fc8fca17a830acbf31ded1713b4ac6ef0cfe960d31707f",
+      "gzipBytes": 4461,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/21.png",
+      "bytes": 4289,
+      "sha256": "c7971378f48019701f7a91b2bdbb6b082ca509c214fc2f7aeb16fa0415480272",
+      "gzipBytes": 4230,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/22.png",
+      "bytes": 4270,
+      "sha256": "78e3e9141bd17523c58cd65c740c738aa10a8cc3dc9e01ed4e13def1af1984a6",
+      "gzipBytes": 4230,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/23.png",
+      "bytes": 4294,
+      "sha256": "3373bfe5827475c726d9f6cc3e5f99ae9611fe0cfb4f921c7fd0fd53648433c5",
+      "gzipBytes": 4259,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/24.png",
+      "bytes": 4564,
+      "sha256": "6df68bee8f26862defb2a213b7efcdbdc7cd71cdc40fb5b133f9e0ab4121f13c",
+      "gzipBytes": 4513,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/25.png",
+      "bytes": 4276,
+      "sha256": "16092d6bcf2c87e3b48be8a52d6d75a8e63d943877f6c16004ba6ca41e1601a4",
+      "gzipBytes": 4237,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/26.png",
+      "bytes": 4694,
+      "sha256": "5eacc8b8fd81a4b69c0a3031b789b055ddef32d904f28ddb29526fe005ae96d8",
+      "gzipBytes": 4652,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/27.png",
+      "bytes": 4499,
+      "sha256": "6211de813d7049073fa2400e4a51d29fd735699141967b45c10fbd78c4e38db9",
+      "gzipBytes": 4451,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/28.png",
+      "bytes": 4698,
+      "sha256": "1272bc4d487c3a0f389106694dedc5da98c563728eaa94b5bac40b70ab8633c5",
+      "gzipBytes": 4655,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/29.png",
+      "bytes": 4851,
+      "sha256": "552974cde6a55acc53ae2f3e7281a6aad737c6e4c066782d3963947594773c82",
+      "gzipBytes": 4805,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/30.png",
+      "bytes": 4937,
+      "sha256": "f340105d3ba98f3deffa1e81e86deb48df0099a893d8af9546e06f12244c7cc5",
+      "gzipBytes": 4901,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/31.png",
+      "bytes": 4315,
+      "sha256": "adf5c1ed59dfe0983adab641cfc4930fcb1a4ac2946bfcc908da95ebe8357cac",
+      "gzipBytes": 4276,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/atlas.png",
+      "bytes": 155436,
+      "sha256": "d770ab29b520c72991d2bc49a2342dbdb31760ffc08b7857a3d9361677d74bcd",
+      "gzipBytes": 151415,
+      "width": 1024,
+      "height": 640,
+      "decodedBytes": 2621440
+    },
+    {
+      "path": "assets/fighters/vamp/w00.png",
+      "bytes": 5171,
+      "sha256": "445b94e629fc1992b7417ac7138881af5f3e60fd5bdc587f65eb86de2a92d4d9",
+      "gzipBytes": 5140,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w01.png",
+      "bytes": 5080,
+      "sha256": "2f8df2cc414a0a5258afe828184bc23c3d17840a884942af9e71e322e54f00aa",
+      "gzipBytes": 5049,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w02.png",
+      "bytes": 5103,
+      "sha256": "eee9b480bbf8784754af7298b7f5959700227bf2cfcf4754fe56de20dcc09905",
+      "gzipBytes": 5071,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w03.png",
+      "bytes": 5094,
+      "sha256": "804b1dc4394ef820d4b44df385803796127f6290eda5b77f2857ba16e882a8f9",
+      "gzipBytes": 5064,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w04.png",
+      "bytes": 5017,
+      "sha256": "9fe5b3060cf95f5ee73b68a8289a72d115ed9fd0c52c7dcd980b1a019645c649",
+      "gzipBytes": 4987,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w05.png",
+      "bytes": 5069,
+      "sha256": "8d337eb9a8eff87c5834019b421a6fa7fe8245dcdf9e7887b36f483e98f3d6de",
+      "gzipBytes": 5037,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w06.png",
+      "bytes": 5155,
+      "sha256": "4dc1cdb08f0c2ba7466b3dc42e57c8d60408be1e3fc274a4f3d868d88e48aaf5",
+      "gzipBytes": 5124,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fighters/vamp/w07.png",
+      "bytes": 5187,
+      "sha256": "f12ef6bb84708f7d21ac72bc786845cf3e97a264592de1e2b25984352c165cf8",
+      "gzipBytes": 5155,
+      "width": 128,
+      "height": 128,
+      "decodedBytes": 65536
+    },
+    {
+      "path": "assets/fx/burst.png",
+      "bytes": 4705,
+      "sha256": "71d8a9c92be318b8c6a39d9acd133499ea898e2e8fb437eff16caeaebb7067a8",
+      "gzipBytes": 4581,
+      "width": 192,
+      "height": 96,
+      "decodedBytes": 73728
+    },
+    {
+      "path": "assets/fx/flame.png",
+      "bytes": 2893,
+      "sha256": "bb572701daa65e4079a72317f031de15cc43b5f799a18cd8161da58eca8ca714",
+      "gzipBytes": 2778,
+      "width": 104,
+      "height": 46,
+      "decodedBytes": 19136
+    },
+    {
+      "path": "assets/fx/lights.png",
+      "bytes": 2510,
+      "sha256": "6b849d2d511759e8ec42b8789e78b2e1367846083108bfbf294fc9220805cc63",
+      "gzipBytes": 2462,
+      "width": 76,
+      "height": 56,
+      "decodedBytes": 17024
+    },
+    {
+      "path": "assets/fx/spikes.png",
+      "bytes": 2969,
+      "sha256": "23bede2c66cc88ae2b0e97d5bf01a840babcfc1cdbc920003db2915b02d9a2ee",
+      "gzipBytes": 2855,
+      "width": 168,
+      "height": 87,
+      "decodedBytes": 58464
+    },
+    {
+      "path": "assets/stages/01-back.jpg",
+      "bytes": 47669,
+      "sha256": "5fa282c8fb3081110176a2ac775ad682876a0753e52d37a140660d0f7020d0f8",
+      "gzipBytes": 47288,
+      "width": 602,
+      "height": 226,
+      "decodedBytes": 544208
+    },
+    {
+      "path": "assets/stages/01-floor.png",
+      "bytes": 75723,
+      "sha256": "b9e2ced4e32d91a2b9b93527aab8237e0e181774019f596e5fc45433a15e0cdd",
+      "gzipBytes": 75766,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/02-back.jpg",
+      "bytes": 39607,
+      "sha256": "2cb32ec925c3868ea9db097faf5d22e07bce7f49b35c64f970e53d9da5df02f2",
+      "gzipBytes": 39183,
+      "width": 720,
+      "height": 226,
+      "decodedBytes": 650880
+    },
+    {
+      "path": "assets/stages/02-floor.png",
+      "bytes": 77258,
+      "sha256": "a563fe8b6fef320f1936f890bfdb4fcabb0c0862d3b98019b2f82991a9b2dbd4",
+      "gzipBytes": 77301,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/03-back.jpg",
+      "bytes": 40698,
+      "sha256": "4eb8ba92c78cc920c009f596372519d1710e4d33d6943f839472015978c5e5a3",
+      "gzipBytes": 40578,
+      "width": 666,
+      "height": 226,
+      "decodedBytes": 602064
+    },
+    {
+      "path": "assets/stages/03-floor.png",
+      "bytes": 117071,
+      "sha256": "bab2537717d73ff60781fdeba3dd9faefca7b71f0d838af0515b8c60f4a16620",
+      "gzipBytes": 117129,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/04-back.jpg",
+      "bytes": 32149,
+      "sha256": "c38a4874419fdfd2950055c0a1845e350ff4cb2763d3249b8c32f63fac2a142b",
+      "gzipBytes": 31324,
+      "width": 761,
+      "height": 226,
+      "decodedBytes": 687944
+    },
+    {
+      "path": "assets/stages/04-floor.png",
+      "bytes": 61043,
+      "sha256": "31279b2f701abb3899f915ac5594689465f5632a977fd119f2cabac4354436d4",
+      "gzipBytes": 61081,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/05-back.jpg",
+      "bytes": 55454,
+      "sha256": "78d163452efb647d5598a98e07ce29e1fa2bf7726df087ea212c832a99ab57d3",
+      "gzipBytes": 55300,
+      "width": 740,
+      "height": 226,
+      "decodedBytes": 668960
+    },
+    {
+      "path": "assets/stages/05-floor.png",
+      "bytes": 67375,
+      "sha256": "35a475605745584e6721b6f4ad5083be50e2f609c3d81e2fd16991a84cd51419",
+      "gzipBytes": 67418,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/06-back.jpg",
+      "bytes": 58160,
+      "sha256": "f883fda61d45b649f0eab10b2fd2632271917d58afaca7fcf32c617a1cf95667",
+      "gzipBytes": 58018,
+      "width": 650,
+      "height": 226,
+      "decodedBytes": 587600
+    },
+    {
+      "path": "assets/stages/06-floor.png",
+      "bytes": 69429,
+      "sha256": "49265320e21e9aa02f5c57020fb7f3d92b680fad7110cb4f1d2f5b4e992f88a8",
+      "gzipBytes": 69472,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/07-back.jpg",
+      "bytes": 41218,
+      "sha256": "98593e7b21b0c77ba3acc7e5e76a11c1446622cdb1ccce2b98bef8e8de1eb20e",
+      "gzipBytes": 41096,
+      "width": 666,
+      "height": 226,
+      "decodedBytes": 602064
+    },
+    {
+      "path": "assets/stages/07-floor.png",
+      "bytes": 104464,
+      "sha256": "0ebe2cbc520eb1cb6c3aa3cb231edc1be62efee9bb03040d5b7b3ab4618f1754",
+      "gzipBytes": 104517,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/08-back.jpg",
+      "bytes": 44310,
+      "sha256": "8da9293ad5bde3febf717437d8a96e869132715f0bdc5df6927d30ab65e2eb22",
+      "gzipBytes": 44123,
+      "width": 666,
+      "height": 226,
+      "decodedBytes": 602064
+    },
+    {
+      "path": "assets/stages/08-floor.png",
+      "bytes": 86644,
+      "sha256": "e6f5fe9216ac12ad24d0a250ad0cf6b92bd045c48a05ea86364c8278ae1a6c83",
+      "gzipBytes": 86692,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/09-back.jpg",
+      "bytes": 64821,
+      "sha256": "bb9c315657dee13c02638c0d63374ea4d2314de99bbccbf5b7fb20f6ad5627b9",
+      "gzipBytes": 64711,
+      "width": 666,
+      "height": 226,
+      "decodedBytes": 602064
+    },
+    {
+      "path": "assets/stages/09-floor.png",
+      "bytes": 96756,
+      "sha256": "edc1addbcc1b4a10ecfff81908ed3687d8a0227068cc9964eaded033fe721211",
+      "gzipBytes": 96804,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/10-back.jpg",
+      "bytes": 47519,
+      "sha256": "9963d15ccf79b9bd2aa0809ac4ce0cb28c774ce28e7c85995d9953be37be5922",
+      "gzipBytes": 47395,
+      "width": 491,
+      "height": 226,
+      "decodedBytes": 443864
+    },
+    {
+      "path": "assets/stages/10-floor.png",
+      "bytes": 99362,
+      "sha256": "8d37b2785bdb64eb827a00a09352d1428543d0698239900d7e5093c7e7563e59",
+      "gzipBytes": 99415,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/11-back.jpg",
+      "bytes": 58689,
+      "sha256": "13b501b2ceceddaad3020264e465b88a677c89aaf6ae9efdec3a9a3fb7c5aa2d",
+      "gzipBytes": 58574,
+      "width": 975,
+      "height": 226,
+      "decodedBytes": 881400
+    },
+    {
+      "path": "assets/stages/11-floor.png",
+      "bytes": 72414,
+      "sha256": "ee4e64d440dc9b9ef4ad192f76562fcf6a8f5a0665765aae0c5b864d15d6ca1a",
+      "gzipBytes": 72457,
+      "width": 512,
+      "height": 150,
+      "decodedBytes": 307200
+    },
+    {
+      "path": "assets/stages/12-back.jpg",
+      "bytes": 19955,
+      "sha256": "37622a03bac5bccc5c03a8bf3f7a8025a5e2bdc24306aa3066df60d7ee5c244d",
+      "gzipBytes": 19830,
+      "width": 239,
+      "height": 226,
+      "decodedBytes": 216056
+    },
+    {
+      "path": "assets/stages/12-floor.png",
+      "bytes": 41981,
+      "sha256": "27dc75d1469739ed08e2d0c0867b9f58838862aa474a2960ee49dae8b94b6088",
+      "gzipBytes": 42014,
+      "width": 312,
+      "height": 150,
+      "decodedBytes": 187200
+    },
+    {
+      "path": "assets/ufo/beach-ball.png",
+      "bytes": 6315,
+      "sha256": "88b193e0aa3929d6ff527419df973b56b5802c8aa18f9c8f22294e9ad66395a8",
+      "gzipBytes": 6338,
+      "width": 61,
+      "height": 62,
+      "decodedBytes": 15128
+    },
+    {
+      "path": "assets/ufo/cockpit-front.png",
+      "bytes": 13959,
+      "sha256": "b180564dfb9e906b5bd5372fc7afaabd7dae798507c38a6fcb7957e9f7a1d12d",
+      "gzipBytes": 13929,
+      "width": 188,
+      "height": 102,
+      "decodedBytes": 76704
+    },
+    {
+      "path": "assets/ufo/cockpit-rear.png",
+      "bytes": 2941,
+      "sha256": "7ca61a8eff5a849f0179e38d9e7f5f57cbaea146237aca238da9198e7f0f996a",
+      "gzipBytes": 2928,
+      "width": 188,
+      "height": 102,
+      "decodedBytes": 76704
+    },
+    {
+      "path": "assets/ufo/idle.png",
+      "bytes": 22762,
+      "sha256": "0743bee814d3a059e9b5064f564f1403e41290f6801993371a06b13d41c41f51",
+      "gzipBytes": 22790,
+      "width": 188,
+      "height": 102,
+      "decodedBytes": 76704
+    },
+    {
+      "path": "assets/ufo/laser.png",
+      "bytes": 2616,
+      "sha256": "3b814ab33783426442476901195d02ff0197932a11e4828b13d2d35b032d3703",
+      "gzipBytes": 2639,
+      "width": 75,
+      "height": 18,
+      "decodedBytes": 5400
+    },
+    {
+      "path": "assets/ufo/muzzle.png",
+      "bytes": 1666,
+      "sha256": "a1a44056bd7f03d4cac80654225da2699b6634fb90b94ab0334c85df92bb8103",
+      "gzipBytes": 1689,
+      "width": 40,
+      "height": 35,
+      "decodedBytes": 5600
+    },
+    {
+      "path": "assets/ufo/red-laser.png",
+      "bytes": 3041,
+      "sha256": "1996b6426b9ae18c7012fe9b4233fa5fad19732b6a190b783e13ae96e41df1a0",
+      "gzipBytes": 3064,
+      "width": 115,
+      "height": 17,
+      "decodedBytes": 7820
+    },
+    {
+      "path": "assets/ufo/shield1.png",
+      "bytes": 25327,
+      "sha256": "27903642f3845d55c9ba6f2485151c00fef3d71e43e8233620493dcde69c74f0",
+      "gzipBytes": 25355,
+      "width": 218,
+      "height": 134,
+      "decodedBytes": 116848
+    },
+    {
+      "path": "assets/ufo/shield2.png",
+      "bytes": 30589,
+      "sha256": "b7b4c8f4bd90e55eb3884481bca77e6a13a2c8d4a906da7a4e46aac490003b63",
+      "gzipBytes": 30617,
+      "width": 218,
+      "height": 134,
+      "decodedBytes": 116848
+    },
+    {
+      "path": "assets/ufo/shield3.png",
+      "bytes": 27893,
+      "sha256": "79e3be35a2041f225d81dff6bb02a07372e616de207c6a353899fa561beef623",
+      "gzipBytes": 27921,
+      "width": 218,
+      "height": 134,
+      "decodedBytes": 116848
+    },
+    {
+      "path": "assets/ufo/shield4.png",
+      "bytes": 24549,
+      "sha256": "d9156ae24c6b6d23535458ecdddd10587adde63f4698ae347b96114659b373f5",
+      "gzipBytes": 24577,
+      "width": 218,
+      "height": 134,
+      "decodedBytes": 116848
+    },
+    {
+      "path": "assets/ufo/thrust.png",
+      "bytes": 24587,
+      "sha256": "13ea3fda9adb299d258fcf29957332c95c4d0e8596754c1c6c64a913b294faba",
+      "gzipBytes": 24615,
+      "width": 188,
+      "height": 102,
+      "decodedBytes": 76704
+    },
+    {
+      "path": "index.html",
+      "bytes": 3577,
+      "sha256": "f1ff11974e899a5b63d46c392440744b7991a01601681deb34fd88cb9e859fb5"
+    },
+    {
+      "path": "js/ai.js",
+      "bytes": 8662,
+      "sha256": "6a1af96f2f8aeeac6192d10f833cf6fd9e1091ff5d2916ce5398ed9fea5aa2ce"
+    },
+    {
+      "path": "js/asset-loader.js",
+      "bytes": 14490,
+      "sha256": "b1e6efa9bef2bd922c11d6de87e26406dd324286bc892283223d9f84077ab011"
+    },
+    {
+      "path": "js/audio.js",
+      "bytes": 17559,
+      "sha256": "4ae0f477d57d9fc5c783680da17040b753c5511267a7f84dac3188b968995beb"
+    },
+    {
+      "path": "js/crash.js",
+      "bytes": 10796,
+      "sha256": "5840c6540469bc679d4151e0d467aebcfe84684fd74f98dc91be8547435ff23a"
+    },
+    {
+      "path": "js/feedback-link.js",
+      "bytes": 10962,
+      "sha256": "4148ce8bfa3e2c49c4af0f96c04e76241d9e65d13113410b792f32ba782da6e9"
+    },
+    {
+      "path": "js/gamepad.js",
+      "bytes": 7225,
+      "sha256": "956f34ef10e62060604e2addb92262967c4b222c160ba4e44253e082ac2e4461"
+    },
+    {
+      "path": "js/hub-config.js",
+      "bytes": 624,
+      "sha256": "f6be869812814fb502641ebe7b446c7498d010d93bd62deef2e527c0ddb1e8c0"
+    },
+    {
+      "path": "js/hub-link.js",
+      "bytes": 20804,
+      "sha256": "06590875ed9c1b738b991d13dc3ddad4384c252b762861723aa86864184e2007"
+    },
+    {
+      "path": "js/input.js",
+      "bytes": 13369,
+      "sha256": "9df3ebe80de86494df20b4340158edbddd6bed0bc4f30818f057b7d7d54d8639"
+    },
+    {
+      "path": "js/main.js",
+      "bytes": 63787,
+      "sha256": "cb6d03268eb8b1bedd45229157c1911ad65b8ea41704cfcdfbe07b2331c5d2eb"
+    },
+    {
+      "path": "js/manifest.js",
+      "bytes": 9745,
+      "sha256": "76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a"
+    },
+    {
+      "path": "js/net-hub.js",
+      "bytes": 35870,
+      "sha256": "46c9b077272e5ed1e4815d2ba2ec2417270e3e86fb5dfefdc9dba5038cf378eb"
+    },
+    {
+      "path": "js/net-protocol.js",
+      "bytes": 17453,
+      "sha256": "2eb2136076b4baa3999c817316e4d9f0d3804c7cf0e75cd16ac36763794a4a2f"
+    },
+    {
+      "path": "js/net.js",
+      "bytes": 928,
+      "sha256": "3424854719e01e48db7c675a7da0e4a946550cfda39e8309589ea146db252ee0"
+    },
+    {
+      "path": "js/render-fx.js",
+      "bytes": 11587,
+      "sha256": "dd7a016249788b17dbea908eb90c53313c4f0a8a74e93af505f96ac64ccbe5b5"
+    },
+    {
+      "path": "js/render.js",
+      "bytes": 38625,
+      "sha256": "0c569a17dfcbd520d04fabd0f073e7d65cf190f883a1afb5bbcc3c7ae0965ee2"
+    },
+    {
+      "path": "js/sim.js",
+      "bytes": 72073,
+      "sha256": "aecb10d962786645d5c290c23f2efd347cc7497cfadedff6bee03804c096aaf2"
+    }
+  ]
+}

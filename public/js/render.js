@@ -436,12 +436,13 @@ function drawHead(g, fid, variant, x, y, size) {
 function drawHud(g, snap) {
   const pw = W / S.SLOTS;
   snap.players.forEach((p, i) => {
+    if (p.c === 'none') return; // an empty seat has no Sproto and no panel
     const x = i * pw + 2, y = 2, col = S.SLOT_COLORS[p.s];
     g.fillStyle = 'rgba(8,6,16,.78)'; g.fillRect(x, y, pw - 4, 38);
     g.fillStyle = col; g.fillRect(x, y, pw - 4, 2);
     drawHead(g, p.f, variantOf(snap, p), x + 2, y + 5, 22);
     text(g, 'P' + (p.s + 1), x + 26, y + 9, 7, col);
-    text(g, p.c === 'cpu' ? 'CPU' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 6, '#9a98b8');
+    text(g, p.c === 'cpu' ? 'CPU' : p.c === 'away' ? 'AWAY' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 6, '#9a98b8');
     text(g, String(p.n).slice(0, 15), x + 26, y + 18, String(p.n).length > 8 ? 4.5 : 6, '#fff');
     if (p.st === 'dead') {
       text(g, 'DEAD', x + 26, y + 30, 7, '#ff4d4d');
@@ -491,7 +492,7 @@ function drawWorld(g, snap, opts) {
   for (const it of snap.items) list.push({ y: it.y - (it.k === 'ufo' ? 0.5 : 0), d: () => drawItem(g, it, camX, snap.t) });
   // Downed players are drawn first so standing teammates appear over them while reviving.
   for (const p of snap.players) {
-    if (p.st === 'dead') continue;
+    if (p.st === 'dead' || p.c === 'none') continue;
     const sx = p.x - camX, sy = FLOOR_TOP + p.y;
     list.push({ y: p.y - (p.st === 'down' ? 1 : 0), d: () => {
       shadow(g, sx, sy, p.st === 'ufo' ? 26 : 13);

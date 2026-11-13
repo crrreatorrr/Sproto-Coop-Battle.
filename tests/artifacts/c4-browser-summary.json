@@ -1,58 +1,58 @@
 {
-  "nakama": "http://127.0.0.1:45489",
-  "practice": "http://127.0.0.1:33907/",
+  "nakama": "http://127.0.0.1:56072",
+  "practice": "http://127.0.0.1:56073/",
   "rewards": 0,
   "ledgerWrites": 0,
   "screenshots": [
     "c4-two-browser.png",
     "c4-reconnect.png",
     "c4-mixed-devices.png",
-    "c4-six-accounts.png",
+    "c4-four-accounts.png",
     "c4-latency.png",
     "c4-double-tab.png"
   ],
   "latency": {
     "100": {
-      "rtt": 107.7000000000935,
-      "jitter": 1,
+      "rtt": 101.5000000238415,
+      "jitter": 6,
       "rewards": 0,
       "ledger": 0
     },
     "200": {
-      "rtt": 206.0999999999076,
-      "jitter": 5,
+      "rtt": 188.000000047683,
+      "jitter": 6,
       "rewards": 0,
       "ledger": 0
     }
   },
-  "room": "KG7GFEFHCZVR",
+  "room": "HZD37EAHCDX3",
   "twoBrowser": {
-    "x": 306.5,
+    "x": 375.1,
     "from": 60,
     "ctrl": "local",
-    "st": "dash",
+    "st": "walk",
     "phase": "playing",
     "rewards": 0,
     "ledger": 0,
     "yours": [
       "k1"
     ],
-    "rtt": 5.999999999906777,
+    "rtt": 4.400000047683534,
     "rejects": [
-      "stale",
-      "stale",
-      "stale",
-      "stale",
+      "future",
+      "future",
+      "future",
+      "future",
       "future",
       "future",
       "future",
       "future"
     ],
-    "tick": 96,
-    "sent": 97,
-    "serverTick": 96,
-    "seq": 93,
-    "bias": -1,
+    "tick": 90,
+    "sent": 93,
+    "serverTick": 90,
+    "seq": 89,
+    "bias": -10,
     "held": {
       "keys": [
         "KeyD"
@@ -62,16 +62,6 @@
   },
   "reconnect": {
     "before": [
-      {
-        "hp": 100,
-        "lives": 2,
-        "powers": []
-      },
-      {
-        "hp": 100,
-        "lives": 2,
-        "powers": []
-      },
       {
         "hp": 100,
         "lives": 2,
@@ -113,28 +103,26 @@
         "hp": 100,
         "lives": 2,
         "powers": []
-      },
-      {
-        "hp": 100,
-        "lives": 2,
-        "powers": []
-      },
-      {
-        "hp": 100,
-        "lives": 2,
-        "powers": []
       }
     ],
     "generation": 2
   },
   "rejects": [
-    "stale",
-    "stale",
-    "stale",
-    "stale",
-    "stale",
-    "stale",
-    "stale",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
+    "future",
     "future",
     "future",
     "future",
@@ -149,6 +137,8 @@
     "future",
     "future",
     "future",
+    "future",
+    "future",
     "future"
   ],
   "mixedDevices": [
@@ -156,14 +146,12 @@
     "k2",
     "gp0"
   ],
-  "humans": 6,
+  "humans": 4,
   "accounts": [
-    "six-ada",
-    "six-bea",
-    "six-cy",
-    "six-dee",
-    "six-eli",
-    "six-fay"
+    "four-ada",
+    "four-bea",
+    "four-cy",
+    "four-dee"
   ],
   "doubleTab": "Another tab took this account. This tab cannot host the banked run."
 }
