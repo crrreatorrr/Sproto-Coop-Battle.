@@ -1,23 +1,83 @@
 {
   "hardware": {
-    "host": "Kens-MacBook-Pro.local",
-    "platform": "darwin 25.4.0",
-    "cpu": "Apple M5 Pro",
-    "cores": 18,
-    "memoryBytes": 51539607552,
-    "node": "v22.22.3"
+    "host": "cursor",
+    "platform": "linux 6.12.113+",
+    "cpu": "Intel(R) Xeon(R) Processor",
+    "cores": 4,
+    "memoryBytes": 16780623872,
+    "node": "v22.23.4"
   },
-  "four": {
-    "shot": "c5-four-player.png",
-    "rtt": 15.899999999999636,
-    "sampleMs": 2501,
-    "sentBytes": 14064,
-    "receivedBytes": 60473,
-    "sentPerSec": 5623,
-    "receivedPerSec": 24180,
-    "humans": 4,
-    "accounts": 4,
+  "six": {
+    "shot": "c5-six-player.png",
+    "rtt": 38.89999999986048,
+    "sampleMs": 2510,
+    "sentBytes": 11850,
+    "receivedBytes": 109249,
+    "sentPerSec": 4721,
+    "receivedPerSec": 43525,
+    "humans": 6,
+    "accounts": 6,
     "ledgerWrites": 0
   },
-  "live": null
+  "live": {
+    "version": {
+      "protocol": 1,
+      "fingerprint": "f8705ec4b68e5643e7ce7e3f0014308e9546ddf43d55a506f4805e4091b07f1e",
+      "bundleSha256": "28f9236d0df78c62cf600ad08c9924f8dd260b6948d7a73baf60230936934fac",
+      "commit": "9a0b5d9f97460617b4b2bb8445dae6849f163d51",
+      "repo": "crrreatorrr/Sproto-Coop-Battle.",
+      "loopHz": 20,
+      "substeps": 3,
+      "simHz": 60,
+      "snapshotHz": 10,
+      "snapshotMaxHz": 15,
+      "reconnectS": 15,
+      "codeTtlS": 600,
+      "rewards": 0,
+      "hostTakeover": 0,
+      "match": "sproto_coop",
+      "enabled": true,
+      "opcodes": {
+        "hello": 1,
+        "welcome": 2,
+        "ready": 3,
+        "start": 4,
+        "input": 10,
+        "snapshot": 11,
+        "seats": 12,
+        "reject": 13,
+        "resume": 14,
+        "end": 15,
+        "release": 16,
+        "ping": 17,
+        "pong": 18,
+        "command": 19
+      }
+    },
+    "room": "2X2EHYERKGA2",
+    "rewards": 0,
+    "hostTakeover": 0,
+    "resumeClientState": "rejected",
+    "expiredStatus": 401,
+    "six": {
+      "shot": "c5-six-player-nakama.png",
+      "rtt": 56.0999999998603,
+      "sampleMs": 2519,
+      "sentBytes": 5236,
+      "receivedBytes": 440992,
+      "sentPerSec": 2079,
+      "receivedPerSec": 175066,
+      "humans": 6,
+      "accounts": 6,
+      "balances": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "code": "F63M6ZTJWNP6"
+    }
+  }
 }
