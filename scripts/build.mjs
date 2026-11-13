@@ -8,7 +8,7 @@ import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from '.
 
 const SDK_REL = 'vendor/hub-sdk/dist/hub-sdk.iife.js';
 const SDK_PIN = 'vendor/hub-sdk/SOURCE.pin.json';
-const SDK_IIFE_SHA256 = 'c0ea77abad144abfd8f01d8f21c29b5e1d869bfcb4462db318ea3982f591aab4';
+const SDK_IIFE_SHA256 = '833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b602b21f309';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');

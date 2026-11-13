@@ -9,10 +9,10 @@ This phase is session init, Ticket balance, and return only. It does not award T
 | Item | Value |
 |---|---|
 | Package | `@metaverse/hub-sdk` 0.8.0 |
-| Hub commit | `dbbf398` (`claude/account-progress`; re-vendor from `main` once that merges) |
+| Hub commit | `c9d01b3` (`claude/account-progress`; re-vendor from `main` once that merges) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
-| IIFE sha256 | `c0ea77abad144abfd8f01d8f21c29b5e1d869bfcb4462db318ea3982f591aab4` |
+| IIFE sha256 | `833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b602b21f309` |
 | Pin | `vendor/hub-sdk/SOURCE.pin.json` |
 
 Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
