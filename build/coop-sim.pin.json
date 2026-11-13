@@ -10,11 +10,11 @@
   "snapshotMaxHz": 15,
   "files": {
     "manifest.js": "76a5b9e847eedbd5abc6f53ce1a272314bddc2c25b27610aa5e332d3cd14d82a",
-    "sim.js": "aecb10d962786645d5c290c23f2efd347cc7497cfadedff6bee03804c096aaf2",
+    "sim.js": "7697c8e1bcf00c3fc4a677db34740ca17951aea23cf50d1768d903493df75e6d",
     "ai.js": "6a1af96f2f8aeeac6192d10f833cf6fd9e1091ff5d2916ce5398ed9fea5aa2ce",
     "net-protocol.js": "2eb2136076b4baa3999c817316e4d9f0d3804c7cf0e75cd16ac36763794a4a2f"
   },
-  "bundleSha256": "6674cc86732704173f5bf583a76467a119804d3a0e2c9be7602d3cf4340b5b15",
+  "bundleSha256": "38543a5f45a5960d11461e7c46846b311d0adf960fc13ba700c7a561b6ac9727",
   "contentSha256": "fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72",
   "goja": "github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc",
   "node": ">=22"

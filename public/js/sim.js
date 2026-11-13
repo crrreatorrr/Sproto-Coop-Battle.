@@ -139,12 +139,14 @@ function startStage(state, i) {
   state.mode = 'play'; state.clearT = 0; state.humans = 0;
   for (const c of state.stage.crates) state.items.push({ id: state.nextId++, kind: 'crate', x: c.x, y: c.y, z: 0, hp: 12 });
   state.players.forEach((p, k) => {
-    if (!seated(p)) return; // an empty seat stays out
+    if (p.fresh) return; // a seat nobody has taken stays out
     Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
     // Dead Sprotos return for the next stage: CPUs as before, and a human who was put out comes
     // back on a last life. Everyone can be revived by a CPU once more.
     if (p.dead && p.ctrl !== 'cpu') p.lives = Math.max(p.lives, 1);
     p.hp = p.dead ? 60 : Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
+    // A player who left gets the same stage recovery, and stays out until they take the seat again.
+    if (!seated(p)) { p.awaySt = 'idle'; setState(p, 'out'); }
   });
   state.banner = { text: 'STAGE ' + (i + 1), sub: (root.MANIFEST ? root.MANIFEST.bosses[i % 12].stage : ''), t: 150 };
   ev(state, 'stage');
@@ -1096,7 +1098,8 @@ function seatIn(state, slot, cfg) {
   const p = state.players[slot];
   if (!p) throw new Error('seat');
   const c = cfg || {};
-  if (p.fresh) {
+  const fresh = p.fresh === true;
+  if (fresh) {
     Object.assign(p, newPlayer(slot, { fid: p.fid, weapon: p.weapon, ctrl: c.ctrl, owner: c.owner, name: p.name }));
     delete p.fresh;
     p.hp = Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
@@ -1107,7 +1110,10 @@ function seatIn(state, slot, cfg) {
   p.ctrl = c.ctrl; p.owner = c.owner || 0;
   const back = p.awaySt;
   delete p.awaySt;
-  Object.assign(p, { x: clamp(state.camX + 60 + slot * 16, state.camX + 40, state.camX + W - 40), y: 14 + slot * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, inv: 120, ufoT: 0, revive: 0 });
+  Object.assign(p, { x: clamp(state.camX + 60 + slot * 16, state.camX + 40, state.camX + W - 40), y: 14 + slot * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, ufoT: 0, revive: 0 });
+  // Only a new Sproto gets spawn protection. A returning one keeps the timer it left with, so
+  // leaving and retaking a seat never refreshes invulnerability.
+  if (fresh) p.inv = 120;
   setState(p, back === 'down' || back === 'dead' ? back : 'idle');
   return p;
 }
