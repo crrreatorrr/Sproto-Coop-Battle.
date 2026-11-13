@@ -10,8 +10,11 @@ window.MANIFEST={"bosses":[{"key":"01-marina-bront","stage":"Tidebreak Marina","
 (function (root) {
 'use strict';
 const W = 640, H = 360, DEPTH = 120, FLOOR_TOP = 218; // belt is drawn from screen y FLOOR_TOP to FLOOR_TOP+DEPTH
-// Always four Sprotos: humans take seats, CPU Sprotos fill the rest.
+// Up to four Sprotos, one per seated human. A seat nobody has taken stays empty (ctrl 'none'):
+// its Sproto is out of the run, and no CPU Sproto fills it.
 const SLOTS = 4;
+const EMPTY = 'none';
+const seated = p => p.ctrl !== EMPTY;
 const SLOT_COLORS = ['#ff4d4d', '#3da5ff', '#4dff7a', '#ffd23d'];
 
 // Weapons: every Sproto fights armed. reach/dmg per combo hit; startup/active/recovery in ticks.
@@ -77,7 +80,7 @@ function rng(state) { // mulberry32 stored in state.seed
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
-function seatedHumans(state) { let n = 0; for (const p of state.players) if (p.ctrl !== 'cpu') n++; return clamp(n, 1, SLOTS); }
+function seatedHumans(state) { let n = 0; for (const p of state.players) if (p.ctrl !== 'cpu' && seated(p)) n++; return clamp(n, 1, SLOTS); }
 const humansOf = state => state.humans || seatedHumans(state);
 function lockHumans(state) { if (!state.humans) state.humans = seatedHumans(state); }
 // Local and relay drop-in: when more humans are seated than the stage was counted for, what is left
@@ -121,10 +124,14 @@ function newPlayer(slot, cfg) {
   };
 }
 
+// An empty seat holds a placeholder Sproto that is out of the run until a human takes the seat. It
+// already carries a fresh Sproto's lives and hp, so taking the seat moves no life fact.
+function emptySeat(p) { Object.assign(p, { st: 'out', t: 0, fresh: true }); return p; }
+
 function create(slots, seed, firstStage) {
   const state = {
     t: 0, seed: seed >>> 0 || 1234567, mode: 'play', stageIdx: 0, stage: null, camX: 0, lockX: null,
-    players: slots.map((c, i) => newPlayer(i, c)), enemies: [], projs: [], items: [], fx: [], boss: null,
+    players: slots.map((c, i) => (c.ctrl === EMPTY ? emptySeat(newPlayer(i, c)) : newPlayer(i, c))), enemies: [], projs: [], items: [], fx: [], boss: null,
     banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0, god: false,
   };
   startStage(state, Math.max(0, Math.min(11, firstStage | 0)));
@@ -138,6 +145,7 @@ function startStage(state, i) {
   state.mode = 'play'; state.clearT = 0; state.humans = 0;
   for (const c of state.stage.crates) state.items.push({ id: state.nextId++, kind: 'crate', x: c.x, y: c.y, z: 0, hp: 12 });
   state.players.forEach((p, k) => {
+    if (!seated(p)) return; // an empty seat stays out
     Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
     // Dead Sprotos return for the next stage: CPUs as before, and a human who was put out comes
     // back on a last life. Everyone can be revived by a CPU once more.
@@ -503,7 +511,7 @@ function die(state, p) {
   if (p.lives <= 0) {
     // Out until the next stage. The run only ends when no human is left in it.
     p.lives = 0; setState(p, 'dead'); p.dead = true;
-    if (!state.players.some(q => q.ctrl !== 'cpu' && !q.dead)) gameOver(state, 'No human Sproto is left');
+    if (!state.players.some(q => q.ctrl !== 'cpu' && seated(q) && !q.dead)) gameOver(state, 'No human Sproto is left');
     return;
   }
   respawn(state, p, false);
@@ -1017,7 +1025,7 @@ function ballBoom(state, pr) {
 // ---------------- flow ----------------
 function stageClear(state) {
   state.mode = 'clear'; state.clearT = 0;
-  state.banner = { text: 'STAGE CLEAR!', sub: 'All four Sprotos advance', t: 200 };
+  state.banner = { text: 'STAGE CLEAR!', sub: 'Every Sproto advances', t: 200 };
   ev(state, 'clear');
   for (const p of state.players) if (p.st === 'down') { p.hp = 40; setState(p, 'idle'); }
 }
@@ -1061,6 +1069,7 @@ function step(state) {
   if (state.banner && --state.banner.t <= 0) state.banner = null;
   if (state.mode === 'gameover' || state.mode === 'victory') return;
   for (const p of state.players) {
+    if (!seated(p)) continue;
     if (p.ctrl === 'cpu') root.SproAI ? root.SproAI.think(state, p) : null;
     updatePlayer(state, p);
   }
@@ -1085,6 +1094,40 @@ function step(state) {
     for (const p of state.players) if (p.st === 'down' && p.ctrl !== 'cpu' && p.lives > 1) die(state, p);
     if (state.mode === 'play' && !state.players.some(alive)) gameOver(state, 'Every Sproto is down');
   }
+}
+
+// A human takes seat `slot`. A seat that never had a Sproto gets a fresh one, placed as a stage start
+// would place it. A Sproto whose player left comes back as it was: lives, hp and powers are kept.
+function seatIn(state, slot, cfg) {
+  const p = state.players[slot];
+  if (!p) throw new Error('seat');
+  const c = cfg || {};
+  if (p.fresh) {
+    Object.assign(p, newPlayer(slot, { fid: p.fid, weapon: p.weapon, ctrl: c.ctrl, owner: c.owner, name: p.name }));
+    delete p.fresh;
+    p.hp = Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
+  } else if (p.ctrl !== EMPTY) {
+    p.ctrl = c.ctrl; p.owner = c.owner || 0;
+    return p;
+  }
+  p.ctrl = c.ctrl; p.owner = c.owner || 0;
+  const back = p.awaySt;
+  delete p.awaySt;
+  Object.assign(p, { x: clamp(state.camX + 60 + slot * 16, state.camX + 40, state.camX + W - 40), y: 14 + slot * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, inv: 120, ufoT: 0, revive: 0 });
+  setState(p, back === 'down' || back === 'dead' ? back : 'idle');
+  return p;
+}
+// The human in seat `slot` leaves. Their Sproto steps out of the run with its lives, hp and powers.
+function seatOut(state, slot) {
+  const p = state.players[slot];
+  if (!p) throw new Error('seat');
+  if (!seated(p)) return p;
+  releaseGrab(state, p);
+  p.awaySt = p.st;
+  p.ctrl = EMPTY; p.owner = 0;
+  p.in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
+  setState(p, 'out');
+  return p;
 }
 
 // Compact, render-only view of the state (used for rendering and network snapshots).
@@ -1227,7 +1270,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -1499,7 +1542,8 @@ function createMatch(opts) {
 function blankSlots(manifest) {
   const n = manifest && manifest.fighters ? manifest.fighters.length : 6;
   const slots = [];
-  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: i % 6, ctrl: 'cpu', name: 'CPU' + (i + 1) });
+  // Seats start empty. A human taking one brings a Sproto in; no CPU Sproto fills a seat.
+  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: i % 6, ctrl: 'none', name: 'P' + (i + 1) });
   return slots;
 }
 
@@ -1527,7 +1571,7 @@ function assignSeat(session, req) {
   seat.generation = req.generation;
   seat.device = req.device;
   seat.human = true;
-  player.ctrl = 'local';
+  simApi().seatIn(session.state, req.slot, { ctrl: 'local' });
   const after = lifeFacts(session.state);
   if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('life-reset');
   return { ok: true, seat: seat, lives: player.lives, hp: player.hp, powers: player.powers.slice() };
@@ -1543,7 +1587,7 @@ function releaseSeat(session, req) {
   seat.generation = 0;
   seat.device = '';
   seat.human = false;
-  player.ctrl = 'cpu';
+  simApi().seatOut(session.state, req.slot);
   const after = lifeFacts(session.state);
   if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('life-reset');
   return { ok: true, seat: seat, lives: player.lives, hp: player.hp, powers: player.powers.slice() };

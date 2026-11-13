@@ -283,7 +283,7 @@ function createStore(opts) {
 // Totals for the end-of-run panel, from a render snapshot. Kills, revives and parries are per
 // player counters in the snapshot (k, rvn, pa); a snapshot without them shows dashes.
 function summarize(snap) {
-  const rows = (snap.players || []).map(p => ({ slot: p.s, name: p.n, cpu: p.c === 'cpu', score: p.sc | 0, kills: p.k, revives: p.rvn, parries: p.pa }));
+  const rows = (snap.players || []).filter(p => p.c !== 'none').map(p => ({ slot: p.s, name: p.n, cpu: p.c === 'cpu', score: p.sc | 0, kills: p.k, revives: p.rvn, parries: p.pa }));
   return { stage: (snap.si | 0) + 1, ticks: snap.t | 0, victory: snap.mode === 'victory', score: rows.reduce((s, r) => s + r.score, 0), rows: rows };
 }
 function clock(ticks) {

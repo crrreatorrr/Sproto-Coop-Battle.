@@ -102,7 +102,7 @@ function createAuthorityMatch(opts) {
       const row = opts.restore.accounts[id];
       state.accounts[id] = { userId: id, sessionId: '', generation: row.generation || 1, ready: false, leftLoop: state.loop, devices: row.devices.slice() };
       for (let i = 0; i < session.seats.length; i++) {
-        if (session.seats[i].accountId === id) session.state.players[i].ctrl = 'cpu';
+        if (session.seats[i].accountId === id) session.state.players[i].ctrl = 'away';
       }
     }
   }
@@ -287,7 +287,7 @@ function createAuthorityMatch(opts) {
     } else if (state.phase === 'playing') {
       account.leftLoop = state.loop;
       for (let i = 0; i < session.seats.length; i++) {
-        if (session.seats[i].human && session.seats[i].accountId === account.userId) session.state.players[i].ctrl = 'cpu';
+        if (session.seats[i].human && session.seats[i].accountId === account.userId) session.state.players[i].ctrl = 'away';
       }
     }
     broadcastSeats();

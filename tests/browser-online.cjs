@@ -1,4 +1,5 @@
-// Host + guest practice-relay smoke, plus local four-slot and all-CPU screenshots.
+// Host + guest practice-relay smoke, plus the local four-seat lobby (empty seats stay empty) and the
+// all-CPU ?demo attract game, the only place CPU Sprotos appear.
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -115,8 +116,8 @@ async function main() {
     await local.waitForFunction(() => window.SprotoApp.screen === 'lobby', null, { timeout: 10000 });
     const localSlots = await local.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.localSlots = localSlots;
-    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'cpu').length !== 3) {
-      throw new Error('local lobby is not one human plus three CPU: ' + localSlots.join(','));
+    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'none').length !== 3) {
+      throw new Error('local lobby is not one human plus three empty seats: ' + localSlots.join(','));
     }
     await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
     summary.screenshots.push('local-lobby-four-slots.png');

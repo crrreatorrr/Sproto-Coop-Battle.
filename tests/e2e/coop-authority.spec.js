@@ -80,7 +80,7 @@ function authority() {
   const beforeLife = JSON.stringify(CoopProtocol.lifeFacts(one.session.state));
   CoopProtocol.releaseSeat(one.session, { slot: 3, accountId: 'acct-ada', generation: 1 });
   assert.strictEqual(JSON.stringify(CoopProtocol.lifeFacts(one.session.state)), beforeLife);
-  assert.strictEqual(one.session.state.players[3].ctrl, 'cpu');
+  assert.strictEqual(one.session.state.players[3].ctrl, 'none', 'a released seat empties; no CPU takes it');
 
   const four = CoopProtocol.createMatch({ mode: 'banked', seed: 4, matchId: 'four-humans' });
   const names = ['ada', 'bea', 'cy', 'dee'];
@@ -102,7 +102,8 @@ function authority() {
   const mixedFacts = CoopProtocol.participationFacts(mixed.session);
   assert.strictEqual(mixedFacts.accounts.length, 2);
   assert.strictEqual(mixedFacts.accounts.find(row => row.accountId === 'acct-ada').slots.length, 2);
-  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 1);
+  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'none').length, 1, 'the fourth seat stays empty');
+  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 0);
 
   const late = CoopProtocol.createMatch({ mode: 'banked', seed: 6, matchId: 'late' });
   CoopProtocol.assignSeat(late.session, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 });

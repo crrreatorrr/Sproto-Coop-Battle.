@@ -123,7 +123,8 @@ function createMatch(opts) {
 function blankSlots(manifest) {
   const n = manifest && manifest.fighters ? manifest.fighters.length : 6;
   const slots = [];
-  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: i % 6, ctrl: 'cpu', name: 'CPU' + (i + 1) });
+  // Seats start empty. A human taking one brings a Sproto in; no CPU Sproto fills a seat.
+  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: i % 6, ctrl: 'none', name: 'P' + (i + 1) });
   return slots;
 }
 
@@ -151,7 +152,7 @@ function assignSeat(session, req) {
   seat.generation = req.generation;
   seat.device = req.device;
   seat.human = true;
-  player.ctrl = 'local';
+  simApi().seatIn(session.state, req.slot, { ctrl: 'local' });
   const after = lifeFacts(session.state);
   if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('life-reset');
   return { ok: true, seat: seat, lives: player.lives, hp: player.hp, powers: player.powers.slice() };
@@ -167,7 +168,7 @@ function releaseSeat(session, req) {
   seat.generation = 0;
   seat.device = '';
   seat.human = false;
-  player.ctrl = 'cpu';
+  simApi().seatOut(session.state, req.slot);
   const after = lifeFacts(session.state);
   if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('life-reset');
   return { ok: true, seat: seat, lives: player.lives, hp: player.hp, powers: player.powers.slice() };

@@ -93,7 +93,7 @@
       var acct = app.role === 'banked' && app.authority && app.authority.accountId ? app.authority.accountId() : null;
       for (var i = 0; i < slots.length; i++) {
         var s = slots[i];
-        if (!s || s.ctrl === 'cpu') continue;
+        if (!s || s.ctrl === 'none' || s.ctrl === 'cpu') continue;
         if (app.role === 'guest') { if (s.ctrl === 'remote' && s.owner === app.myId) return i; }
         else if (app.role === 'banked') { if (acct != null && s.owner === acct) return i; }
         else if (s.ctrl === 'local') return i;
@@ -108,7 +108,7 @@
         var mode = role === 'banked' ? 'server match' : role === 'local' ? 'local practice' : 'relay practice (' + role + ')';
         var slots = app.slots || [];
         var humans = 0;
-        for (var i = 0; i < slots.length; i++) if (slots[i] && slots[i].ctrl !== 'cpu') humans++;
+        for (var i = 0; i < slots.length; i++) if (slots[i] && slots[i].ctrl !== 'none' && slots[i].ctrl !== 'cpu') humans++;
         var extra = {
           role: role,
           screen: String(app.screen || ''),
