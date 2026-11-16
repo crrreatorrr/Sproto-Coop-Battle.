@@ -30,6 +30,9 @@ const SFX = {
   special: () => tone(200, 0.35, 'sawtooth', 4, 0.3), bosshit: () => noise(0.06, 0.35, 900), bossfire: () => tone(500, 0.2, 'sawtooth', 0.3, 0.25),
   boom: () => noise(0.4, 0.7, 600), heal: () => { tone(600, 0.1); setTimeout(() => tone(900, 0.12), 80); }, coin: () => { tone(988, 0.08); setTimeout(() => tone(1319, 0.2), 70); },
   ufo: () => tone(400, 0.6, 'sine', 3, 0.4), laser: () => tone(1200, 0.08, 'square', 0.4, 0.12), ball: () => tone(250, 0.2, 'sine', 2, 0.3),
+  bowfire: () => { tone(460, 0.07, 'triangle', 0.35, 0.22); noise(0.045, 0.16, 3500); },
+  magicbolt: () => tone(670, 0.12, 'triangle', 1.65, 0.2),
+  orbcast: () => { tone(190, 0.28, 'sine', 2.5, 0.35); tone(440, 0.16, 'triangle', 1.8, 0.2); },
   shield: () => tone(800, 0.1, 'triangle', 0.5, 0.3), down: () => tone(400, 0.6, 'triangle', 0.25, 0.4), revive: () => { tone(500, 0.1); setTimeout(() => tone(750, 0.1), 90); setTimeout(() => tone(1000, 0.2), 180); },
   respawn: () => tone(300, 0.3, 'triangle', 3, 0.3), crate: () => noise(0.15, 0.5, 1200), wave: () => tone(220, 0.3, 'square', 1.5, 0.2), go: () => { tone(660, 0.1); setTimeout(() => tone(880, 0.15), 120); },
   bossin: () => { tone(110, 0.8, 'sawtooth', 0.5, 0.4); [0, 220, 440].forEach(d => setTimeout(() => tone(740, 0.16, 'square', 0.8, 0.3), d)); }, transform: () => tone(90, 1.2, 'sawtooth', 3, 0.35), bossdown: () => noise(1.2, 0.8, 500),
@@ -133,6 +136,15 @@ const KEY = 'sproto-coop-progress-v1';
 const SETTINGS_KEY = 'sproto-coop-settings-v1';
 const STAGES = 12;
 const int = (v, lo, hi, d) => (Number.isInteger(v) && v >= lo && v <= hi ? v : d);
+const ALL_CLEARS = (1 << STAGES) - 1;
+// Old saves only tracked the deepest stage reached and the best run.
+const legacyClears = data => data.best && data.best.victory ? ALL_CLEARS : (1 << (data.unlocked - 1)) - 1;
+const weaponClears = data => int(data.weaponClears, 0, ALL_CLEARS, legacyClears(data));
+function withClears(data, cleared) {
+  if (cleared === legacyClears(data)) delete data.weaponClears;
+  else data.weaponClears = cleared;
+  return data;
+}
 function blank() { return { unlocked: 1, best: null }; }
 function defaultStore() { try { return root.localStorage || null; } catch (err) { return null; } }
 function readJson(store, key) {
@@ -148,7 +160,7 @@ function normalize(raw) {
   if (b && typeof b === 'object' && Number.isInteger(b.stage)) {
     out.best = { stage: int(b.stage, 1, STAGES, 1), score: int(b.score, 0, 1e12, 0), ticks: int(b.ticks, 0, 1e9, 0), victory: b.victory === true };
   }
-  return out;
+  return withClears(out, int(raw.weaponClears, 0, ALL_CLEARS, legacyClears(out)));
 }
 // Orders two runs, positive when a is the better one: a win beats any loss, then the furthest
 // stage, then the higher score, then the faster run. Zero only when all four are equal, so the
@@ -165,7 +177,7 @@ function bestOf(a, b) { return !a ? b : !b ? a : compare(a, b) >= 0 ? a : b; }
 // Combines two copies of progress without losing anything either earned. Commutative,
 // associative and idempotent, so tabs, devices and the cloud copy merge in any order.
 function merge(a, b) {
-  return { unlocked: Math.max(a.unlocked, b.unlocked), best: bestOf(a.best, b.best) };
+  return withClears({ unlocked: Math.max(a.unlocked, b.unlocked), best: bestOf(a.best, b.best) }, weaponClears(a) | weaponClears(b));
 }
 const model = { empty: blank, normalize, merge };
 
@@ -173,14 +185,24 @@ const model = { empty: blank, normalize, merge };
 function recordRun(data, run, god) {
   const mine = { stage: run.stage, score: run.score, ticks: run.ticks, victory: !!run.victory };
   const isBest = !god && better(mine, data.best);
-  const next = isBest ? { unlocked: data.unlocked, best: mine } : data;
+  const next = isBest ? withClears({ ...data, best: mine }, weaponClears(data)) : data;
   return { data: next, best: next.best, newBest: isBest, counted: !god };
 }
 // Clearing stage N (1-based) opens stage N + 1. opened is true when that opened a new stage.
 function clearStage(data, stageNumber) {
-  const next = Math.min(STAGES, (stageNumber | 0) + 1);
-  if (next <= data.unlocked) return { data, opened: false };
-  return { data: { unlocked: next, best: data.best }, opened: true };
+  if (!Number.isInteger(stageNumber) || stageNumber < 1 || stageNumber > STAGES) return { data, opened: false, weaponOpened: false, recorded: false };
+  const previous = weaponClears(data);
+  const cleared = previous | (1 << (stageNumber - 1));
+  const next = withClears({ ...data, unlocked: Math.max(data.unlocked, Math.min(STAGES, stageNumber + 1)) }, cleared);
+  const opened = next.unlocked > data.unlocked;
+  const weaponOpened = weaponTier(next) > weaponTier(data);
+  const recorded = previous !== cleared;
+  return { data: opened || recorded ? next : data, opened, weaponOpened, recorded };
+}
+// A Free Play clear is remembered, but it does not grant the earlier weapons.
+function weaponTier(data) {
+  const combat = root.CombatKernel || require('./combat.js');
+  return combat.unlockedTier(weaponClears(data), STAGES + 1);
 }
 const isOpen = (data, index, freePlay) => !!freePlay || index < data.unlocked;
 
@@ -291,7 +313,7 @@ function clock(ticks) {
   const s = Math.floor(ticks / 60);
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
-const Progress = { KEY, SETTINGS_KEY, STAGES, blank, normalize, merge, model, compare, better, recordRun, clearStage, isOpen, loadSettings, saveSettings, createStore, summarize, clock };
+const Progress = { KEY, SETTINGS_KEY, STAGES, blank, normalize, merge, model, compare, better, recordRun, clearStage, weaponTier, isOpen, loadSettings, saveSettings, createStore, summarize, clock };
 root.Progress = Progress;
 if (typeof module !== 'undefined' && module.exports) module.exports = Progress;
 })(typeof window !== 'undefined' ? window : globalThis);

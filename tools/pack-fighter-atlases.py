@@ -26,7 +26,8 @@ import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-POSE_DIR = ROOT / 'public' / 'assets' / 'fighters'
+POSE_DIR = ROOT / 'art' / 'fighter-poses'
+ATLAS_DIR = ROOT / 'public' / 'assets' / 'fighters'
 PROVENANCE = ROOT / 'tests' / 'fixtures' / 'atlas-provenance.json'
 FIGHTERS = ('sproto3106', 'vamp', 'guest09', 'guest10', 'rivet', 'dumpstar')
 CELL = 128
@@ -293,7 +294,7 @@ def write_all():
     doc = provenance_shell(atlases)
     PROVENANCE.parent.mkdir(parents=True, exist_ok=True)
     for fid, blob in blobs.items():
-        target = POSE_DIR / fid / 'atlas.png'
+        target = ATLAS_DIR / fid / 'atlas.png'
         target.write_bytes(blob)
     PROVENANCE.write_text(json.dumps(doc, indent=2) + '\n', encoding='utf-8')
     print(f'wrote {len(blobs)} atlases, png {doc["pngBytes"]} bytes, webp {doc["webp"]["bytes"]} bytes')
@@ -318,7 +319,7 @@ def check_all():
         problems.append('recorded webp is not smaller than png')
     for fid in FIGHTERS:
         info = (doc.get('atlases') or {}).get(fid)
-        path = POSE_DIR / fid / 'atlas.png'
+        path = ATLAS_DIR / fid / 'atlas.png'
         if not info or not path.exists():
             problems.append('missing atlas for ' + fid)
             continue

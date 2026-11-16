@@ -13,7 +13,7 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 const pinPath = path.join(root, 'build', 'coop-sim.pin.json');
 const bundlePath = path.join(root, 'build', 'coop-sim.js');
-const PINNED = ['manifest.js', 'sim.js', 'ai.js', 'net-protocol.js'];
+const PINNED = ['manifest.js', 'combat.js', 'sim.js', 'ai.js', 'net-protocol.js'];
 const REPIN = 'Run `npm run build:server-sim`, commit build/, and re-pin the hub.';
 
 function sha256(buf) {

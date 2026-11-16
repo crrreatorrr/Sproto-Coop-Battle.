@@ -35,6 +35,12 @@ function fakeStore(initial) {
   assert.strictEqual(step(3), false, 'unlocks never go backwards');
   assert.strictEqual(step(12), true);
   assert.strictEqual(d.unlocked, 12);
+  assert.strictEqual(P.weaponTier(d), 2, 'Free Play does not award tiers for stages skipped');
+  for (let i = 2; i <= 11; i++) step(i);
+  assert.strictEqual(P.weaponTier(d), 13, 'the previously recorded final clear opens the final tier');
+  assert.strictEqual(P.weaponTier(P.normalize({ unlocked: 12 })), 12, 'reaching the final stage is not a clear');
+  assert.strictEqual(P.weaponTier(P.normalize({ unlocked: 5 })), 5, 'existing progress carries over');
+  assert.strictEqual(P.weaponTier(P.merge(d, P.blank())), 13, 'sync keeps the final unlock');
   for (let i = 0; i < 12; i++) assert.strictEqual(P.isOpen(d, i, false), true);
   const before = P.blank();
   P.clearStage(before, 4);
@@ -46,6 +52,7 @@ function fakeStore(initial) {
   const d = P.blank();
   assert.strictEqual(P.isOpen(d, 11, true), true);
   assert.strictEqual(d.unlocked, 1);
+  assert.strictEqual(P.weaponTier(d), 1, 'the free play toggle does not give out weapons');
   const st = fakeStore();
   assert.strictEqual(P.saveSettings({ freePlay: true }, st), true);
   assert.deepStrictEqual(P.loadSettings(st), { freePlay: true });
@@ -87,7 +94,7 @@ function fakeStore(initial) {
   s.update(d => P.recordRun(d, { stage: 5, score: 1234, ticks: 7200, victory: false }, false).data);
   assert.strictEqual(s.persistent(), true);
   assert.deepStrictEqual(P.createStore({ storage: st }).get(), s.get());
-  assert.deepStrictEqual(JSON.parse(st.getItem(P.KEY)), { unlocked: 5, best: { stage: 5, score: 1234, ticks: 7200, victory: false } });
+  assert.deepStrictEqual(JSON.parse(st.getItem(P.KEY)), { unlocked: 5, best: { stage: 5, score: 1234, ticks: 7200, victory: false }, weaponClears: 8 });
   // update can only advance: handing back less keeps what was there.
   s.update(() => P.blank());
   assert.strictEqual(s.get().unlocked, 5);

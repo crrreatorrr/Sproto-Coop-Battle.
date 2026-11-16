@@ -21,6 +21,7 @@ const FIGHTER_META_SHA256 = 'abf8ee18e934ecf5921aa92043d7fd45015f0db56592ad0a47c
 const SYNTAX = [
   'server/server.js',
   'public/js/ai.js',
+  'public/js/combat.js',
   'public/js/audio.js',
   'public/js/gamepad.js',
   'public/js/input.js',
@@ -84,12 +85,15 @@ export function runtimeBudget(report) {
     return bytes.get(rel);
   }, scripts, bytes.get('index.html'));
   const atlasFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/atlas\.png$/.test(file.path));
-  const poseFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(file.path));
+  const poses = path.join(root, 'art', 'fighter-poses');
+  const poseCount = fs.readdirSync(poses, { withFileTypes: true })
+    .filter(dir => dir.isDirectory())
+    .reduce((count, dir) => count + fs.readdirSync(path.join(poses, dir.name)).filter(name => /^(?:\d\d|w0\d)\.png$/.test(name)).length, 0);
   return Object.assign(budget, {
     staticBytes: report.publicBytes,
     atlasCount: atlasFiles.length,
     atlasEdge: atlasFiles.reduce((max, file) => Math.max(max, file.width || 0, file.height || 0), 0),
-    poseCount: poseFiles.length,
+    poseCount,
     fighterMetaSha256: fighterMetaSha256(),
   });
 }

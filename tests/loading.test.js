@@ -150,7 +150,9 @@ async function main() {
   assert.strictEqual(plan.firstBoss.length, 4);
   assert.strictEqual(plan.ufo.length, 8);
   assert.ok(plan.all.includes('assets/fighters/vamp/atlas.png'));
-  assert.ok(!plan.all.some(src => /\/(?:\d\d|w0\d)\.png$/.test(src)));
+  assert.ok(!plan.all.some(src => /\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(src)));
+  assert.strictEqual(plan.shadows.length, 12);
+  assert.ok(plan.shadows.every(src => plan.all.includes(src) && !plan.startup.includes(src)));
   const startup = memory.loader.preload(plan.startup);
   await memory.drain();
   await startup;
@@ -163,6 +165,7 @@ async function main() {
   assert.ok(stat.resident.boss <= 8, 'boss resident ' + stat.resident.boss);
   assert.ok(stat.decoded.boss <= 8 * 1024 * 1024 * 4, 'boss decoded ' + stat.decoded.boss);
   assert.ok(stat.resident.stage <= plan.startup.filter(src => src.includes('/stages/')).length + 2 + memory.AssetLoader.STAGE_EXTRA);
+  assert.ok((stat.resident.shadow || 0) <= 2, 'shadow resident ' + stat.resident.shadow);
   assert.strictEqual(stat.resident.fighter, 6);
   assert.strictEqual(stat.error, 0);
   console.log('loading ok');

@@ -161,6 +161,8 @@ export function inventory() {
     stage: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
     ufo: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
     boss: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
+    fx: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
+    shadow: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
   };
   const unreadable = [];
   for (const file of publicFiles) {
@@ -184,6 +186,8 @@ export function inventory() {
       if (rel.startsWith('assets/fighters/')) cat = 'fighter';
       else if (rel.startsWith('assets/stages/')) cat = 'stage';
       else if (rel.startsWith('assets/bosses/')) cat = 'boss';
+      else if (rel.startsWith('assets/fx/')) cat = 'fx';
+      else if (rel.startsWith('assets/shadows/')) cat = 'shadow';
       addCost(categories[cat], buf.length, gzipBytes, decoded);
       if (preloadSet.has(rel)) addCost(preloadCost, buf.length, gzipBytes, decoded);
     }

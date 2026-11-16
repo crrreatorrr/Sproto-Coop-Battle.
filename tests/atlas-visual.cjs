@@ -97,6 +97,11 @@ async function measure(page) {
 }
 
 async function compareCells(page) {
+  await page.route('**/__atlas_reference__/*/*.png', route => {
+    const reference = new URL(route.request().url()).pathname.match(/^\/__atlas_reference__\/([a-z0-9]+)\/((?:\d\d|w0\d)\.png)$/);
+    if (!reference) return route.abort();
+    return route.fulfill({ path: path.join(root, 'art', 'fighter-poses', reference[1], reference[2]), contentType: 'image/png' });
+  });
   return page.evaluate(async () => {
     const load = src => new Promise((resolve, reject) => {
       const image = new Image();
@@ -112,7 +117,7 @@ async function compareCells(page) {
       for (let i = 0; i < 40; i++) {
         const name = i < 32 ? String(i).padStart(2, '0') : 'w0' + (i - 32);
         const pose = i < 32 ? i : name;
-        const png = await load('assets/fighters/' + id + '/' + name + '.png');
+        const png = await load('__atlas_reference__/' + id + '/' + name + '.png');
         const cell = Render.frameCanvas(fid, pose, 0);
         checked++;
         if (!cell) { bad++; first = first || id + ' ' + name + ' missing'; continue; }
@@ -133,6 +138,8 @@ async function compareCells(page) {
 }
 
 async function paintBoss(page) {
+  await page.evaluate(() => Render.enterStage(0));
+  await page.waitForFunction(() => window.RenderFx);
   return page.evaluate(async () => {
     const plan = AssetLoader.groups(MANIFEST);
     await AssetLoader.shared().preload(plan.firstBoss);

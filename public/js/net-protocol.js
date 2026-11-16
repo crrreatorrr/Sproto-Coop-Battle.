@@ -74,6 +74,8 @@ function contentManifest(manifest) {
     stages: stages,
     fighters: fighters.map((f, i) => ({ id: f.id, name: f.name, passive: sim.PASSIVES[i % sim.PASSIVES.length].id })),
     weapons: sim.WEAPONS.map(w => w.id),
+    classes: sim.CLASSES.map(c => c.id),
+    shadows: manifest.shadows ? manifest.shadows.stages.map(rows => rows.map(row => [row.id, row.role])) : [],
   };
 }
 
@@ -124,7 +126,7 @@ function blankSlots(manifest) {
   const n = manifest && manifest.fighters ? manifest.fighters.length : 6;
   const slots = [];
   // Seats start empty. A human taking one brings a Sproto in; no CPU Sproto fills a seat.
-  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: i % 6, ctrl: 'none', name: 'P' + (i + 1) });
+  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: 0, ctrl: 'none', name: 'P' + (i + 1) });
   return slots;
 }
 
@@ -132,7 +134,7 @@ function validAccount(id) { return typeof id === 'string' && ACCOUNT_RE.test(id)
 function validDevice(device) { return typeof device === 'string' && DEVICE_RE.test(device); }
 function validGeneration(n) { return Number.isInteger(n) && n >= 1 && n <= LIMITS.maxSeq; }
 
-function assignSeat(session, req) {
+function assignSeat(session, req, earnedTier) {
   if (!session || !session.state || !session.seats) return fail('schema');
   if (!req || !Number.isInteger(req.slot) || req.slot < 0 || req.slot >= LIMITS.maxSeats) return fail('seat');
   if (!validAccount(req.accountId) || !validDevice(req.device) || !validGeneration(req.generation)) return fail('owner');
@@ -143,6 +145,7 @@ function assignSeat(session, req) {
     if (i !== req.slot && other.human && other.accountId === req.accountId && other.device === req.device) return fail('device');
   }
   const player = session.state.players[req.slot];
+  const newOwner = !seat.human;
   const before = lifeFacts(session.state);
   for (let i = 0; i < session.seats.length; i++) {
     const other = session.seats[i];
@@ -153,9 +156,59 @@ function assignSeat(session, req) {
   seat.device = req.device;
   seat.human = true;
   simApi().seatIn(session.state, req.slot, { ctrl: 'local' });
+  if (newOwner && earnedTier !== undefined) {
+    const sim = simApi();
+    player.weapon = sim.weaponFor(sim.classOf(player).id, player.weapon, earnedTier);
+  }
   const after = lifeFacts(session.state);
   if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('life-reset');
   return { ok: true, seat: seat, lives: player.lives, hp: player.hp, powers: player.powers.slice() };
+}
+
+// Lobby picks are keyed by claimed device so changing one local player's loadout
+// cannot also change a second player sharing the same account and socket.
+function parseLoadouts(raw, devices) {
+  if (raw === undefined) return { ok: true, picks: {} };
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return fail('loadout');
+  const picks = {};
+  for (const device of Object.keys(raw)) {
+    const row = raw[device];
+    if (!validDevice(device) || badPickKey(device) || !devices.includes(device) ||
+        !row || typeof row !== 'object' || Array.isArray(row) ||
+        !Object.keys(row).length || Object.keys(row).some(k => !['fighter', 'weapon', 'classId'].includes(k)) ||
+        Object.keys(row).some(k => typeof row[k] !== 'string' || !/^[a-zA-Z0-9-]{1,32}$/.test(row[k]))) return fail('loadout');
+    picks[device] = row;
+  }
+  return { ok: true, picks };
+}
+const badPickKey = key => key === '__proto__' || key === 'constructor' || key === 'prototype';
+
+// The host supplies the earned tier separately. The player's message supplies
+// only IDs. Changing a pick keeps the existing seat, ownership, and generation.
+function selectLoadout(session, req, earnedTier) {
+  if (!session || !session.state || !session.seats) return fail('schema');
+  if (!req || !Number.isInteger(req.slot) || req.slot < 0 || req.slot >= LIMITS.maxSeats) return fail('seat');
+  if (session.state.t !== 0) return fail('phase');
+  const seat = session.seats[req.slot];
+  if (!seat.human || seat.accountId !== req.accountId || seat.generation !== req.generation) return fail('owner');
+  const sim = simApi();
+  const p = session.state.players[req.slot];
+  const classId = req.classId === undefined ? sim.classOf(p).id : req.classId;
+  if (!sim.CLASSES.some(c => c.id === classId)) return fail('class');
+  const fighters = session.manifest.fighters;
+  const fid = req.fighter === undefined ? p.fid : fighters.findIndex(f => f.id === req.fighter);
+  if (fid < 0) return fail('fighter');
+  const tier = Number.isInteger(earnedTier) && earnedTier >= 1 ? earnedTier : 1;
+  const requested = req.weapon === undefined ? p.weapon : sim.WEAPONS.findIndex(w => w.id === req.weapon);
+  const weapon = sim.weaponFor(classId, requested, tier);
+  if (req.weapon !== undefined && weapon !== requested) return fail('weapon_locked');
+  sim.setClass(p, classId);
+  // The fighter passive can affect max HP; preserve the same health fraction.
+  const hp = sim.maxHp(p);
+  p.fid = fid;
+  if (hp !== sim.maxHp(p)) p.hp = Math.round(p.hp * sim.maxHp(p) / hp);
+  p.weapon = weapon;
+  return { ok: true };
 }
 
 function releaseSeat(session, req) {
@@ -435,6 +488,9 @@ const CoopProtocol = {
   contentManifest: contentManifest,
   createMatch: createMatch,
   assignSeat: assignSeat,
+  parseLoadouts: parseLoadouts,
+  selectLoadout: selectLoadout,
+  weaponTier: (clears) => simApi().Combat.unlockedTier(clears, 13),
   releaseSeat: releaseSeat,
   acceptInput: acceptInput,
   command: command,

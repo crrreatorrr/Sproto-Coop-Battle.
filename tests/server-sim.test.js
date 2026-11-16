@@ -43,14 +43,14 @@ for (const [id, expected] of legacy) {
 }
 
 {
-  const row = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed3-stage1'));
+  const row = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed9-stage1'));
   assert.ok(row.flags.ufo > 0, 'UFO');
   assert.ok(row.flags.revive > 0, 'revive');
   assert.ok(row.flags.dead > 0, 'death');
   assert.ok(row.flags.power > 0, 'power');
   assert.ok(row.flags.boss > 0, 'boss');
-  const phase2 = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed16-stage1'));
-  assert.ok(phase2.flags.bossPhase >= 1, 'boss phase 2 (seed 16)');
+  const phase2 = Scenarios.runCase(Scenarios.caseList().find(spec => spec.id === 'human-seed64-stage1'));
+  assert.ok(phase2.flags.bossPhase >= 1, 'boss phase 2 (seed 64)');
   assert.ok(row.resume && row.resume.hash, 'resume');
   assert.strictEqual(row.resume.steps, 120);
   console.log('stage1 coverage', row.flags, 'resume', row.resume.hash, 'bytes', row.stateBytes);

@@ -121,6 +121,28 @@ async function main() {
     }
     await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
     summary.screenshots.push('local-lobby-four-slots.png');
+    const equipped = page => page.evaluate(() => {
+      const slot = window.SprotoApp.slots[0];
+      return { classId: slot.classId, tier: Sim.WEAPONS[slot.weapon].tier };
+    });
+    await local.keyboard.press('KeyS');
+    if ((await equipped(local)).tier !== 1) throw new Error('a fresh local lobby can equip a locked tier');
+    await local.keyboard.press('Enter');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'stages');
+    await local.keyboard.press('KeyF');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim);
+    await local.evaluate(() => { window.SprotoApp.sim.mode = 'clear'; });
+    await local.waitForFunction(() => Progress.weaponTier(window.SprotoApp.progress.get()) === 2);
+    await local.evaluate(() => { window.SprotoApp.sim.mode = 'gameover'; });
+    await local.keyboard.press('Enter');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'lobby');
+    for (const [i, id] of ['fighter', 'mage', 'healer', 'ranged'].entries()) {
+      if (i) await local.keyboard.press('KeyR');
+      await local.waitForFunction(role => window.SprotoApp.slots[0].classId === role, id);
+      await local.keyboard.press('KeyS');
+      await local.waitForFunction(() => Sim.WEAPONS[window.SprotoApp.slots[0].weapon].tier === 2);
+    }
+    summary.universalWeaponUnlock = true;
 
     const demo = await mk(acquired.url + '?demo=1');
     await demo.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim && window.SprotoApp.sim.players.length === 4, null, { timeout: 45000 });
@@ -155,6 +177,10 @@ async function main() {
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
     if (onlineSlots.length !== 4) throw new Error('online room lost a seat');
+    for (const [role, key] of [['mage', 'Quote'], ['healer', 'Quote']]) {
+      await guest.keyboard.press(key);
+      await guest.waitForFunction(id => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.classId === id), role);
+    }
     await guest.waitForTimeout(400);
     await guest.screenshot({ path: path.join(out, 'online-lobby-guest.png') });
     summary.screenshots.push('online-lobby-guest.png');
@@ -162,6 +188,19 @@ async function main() {
     await host.waitForFunction(() => window.SprotoApp.screen === 'stages', null, { timeout: 5000 });
     await host.keyboard.press('KeyF');
     await guest.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.snap, null, { timeout: 10000 });
+    await host.evaluate(() => {
+      const sim = window.SprotoApp.sim;
+      sim.players[0].hp = 30;
+      sim.players[1].x = sim.players[0].x + 12;
+      sim.players[1].y = sim.players[0].y;
+    });
+    await guest.keyboard.down('Quote');
+    await guest.waitForFunction(() => {
+      const snap = window.SprotoApp.snap;
+      return snap.players[0].hp > 30 && snap.players[1].ac > 0 && snap.fx.some(f => f.k === 'class-heal');
+    }, null, { timeout: 5000 });
+    await guest.keyboard.up('Quote');
+    summary.relayHeal = true;
     await guest.keyboard.down('ArrowRight');
     await guest.waitForTimeout(1200);
     await guest.keyboard.up('ArrowRight');

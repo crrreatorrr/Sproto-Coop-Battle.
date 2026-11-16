@@ -31,7 +31,7 @@ async function main() {
     assert.ok(atlas.width <= 1024 && atlas.height <= 1024);
     assert.ok(fs.existsSync(path.join(root, 'public', 'assets', 'fighters', id, 'atlas.png')));
     for (const name of doc.order) {
-      assert.ok(fs.existsSync(path.join(root, 'public', 'assets', 'fighters', id, name + '.png')));
+      assert.ok(fs.existsSync(path.join(root, 'art', 'fighter-poses', id, name + '.png')));
     }
   }
   const budgets = await import('../scripts/check-budgets.mjs');

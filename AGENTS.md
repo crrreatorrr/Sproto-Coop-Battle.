@@ -7,7 +7,7 @@ and no bundler. `README.md` describes the modes and controls. `docs/` holds the 
 
 - The hub game id is `sproto-coop-battle`, with no trailing dot. Only the GitHub repo name ends in a
   dot.
-- `public/js/sim.js`, `ai.js`, `net-protocol.js` and `manifest.js` are pinned. The hub runs them,
+- `public/js/combat.js`, `sim.js`, `ai.js`, `net-protocol.js` and `manifest.js` are pinned. The hub runs them,
   concatenated as `build/coop-sim.js`, in its banked `sproto_coop` match. Any byte change to one of
   them, comments included, changes the sha256 pins and needs a re-pin. Every other file is free to
   change.
