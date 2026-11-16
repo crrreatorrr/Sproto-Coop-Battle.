@@ -103,6 +103,8 @@ async function compareCells(page) {
     return route.fulfill({ path: path.join(root, 'art', 'fighter-poses', reference[1], reference[2]), contentType: 'image/png' });
   });
   return page.evaluate(async () => {
+    const originals = MANIFEST.fighters.filter(f => !f.cell);
+    await AssetLoader.shared().preload(originals.map(AssetLoader.atlasPath));
     const load = src => new Promise((resolve, reject) => {
       const image = new Image();
       image.onload = () => resolve(image);
@@ -112,8 +114,8 @@ async function compareCells(page) {
     let checked = 0;
     let bad = 0;
     let first = '';
-    for (let fid = 0; fid < MANIFEST.fighters.length; fid++) {
-      const id = MANIFEST.fighters[fid].id;
+    for (let fid = 0; fid < originals.length; fid++) {
+      const id = originals[fid].id;
       for (let i = 0; i < 40; i++) {
         const name = i < 32 ? String(i).padStart(2, '0') : 'w0' + (i - 32);
         const pose = i < 32 ? i : name;
@@ -128,12 +130,62 @@ async function compareCells(page) {
         g.imageSmoothingEnabled = false;
         g.drawImage(png, 0, 0);
         const want = g.getImageData(0, 0, 128, 128).data;
-        for (let p = 0; p < got.length; p++) {
-          if (got[p] !== want[p]) { bad++; first = first || id + ' ' + name + ' byte ' + p; break; }
+        for (let p = 0; p < got.length; p += 4) {
+          const alpha = want[p + 3];
+          // WebP and PNG decoders can round premultiplied translucent edges differently.
+          const tolerance = alpha === 255 ? 0 : 1;
+          let mismatch = got[p + 3] !== alpha;
+          for (let channel = 0; channel < 3; channel++) {
+            const a = Math.round(got[p + channel] * alpha / 255);
+            const b = Math.round(want[p + channel] * alpha / 255);
+            if (Math.abs(a - b) > tolerance) mismatch = true;
+          }
+          if (mismatch) { bad++; first = first || id + ' ' + name + ' byte ' + p; break; }
         }
       }
     }
     return { checked, bad, first };
+  });
+}
+
+async function verifyImportedFrames(page) {
+  await page.evaluate(async () => {
+    const plan = AssetLoader.groups(MANIFEST);
+    await AssetLoader.shared().preload(plan.atlas.slice(6).concat(plan.motion, AssetLoader.portraits));
+    Render.enterStage(0);
+  });
+  await page.waitForFunction(() => window.RenderFx);
+  return page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 640; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = '#201830'; ctx.fillRect(0, 0, 640, 256);
+    let count = 0;
+    for (const [fid, f] of MANIFEST.fighters.entries()) {
+      if (f.cell) {
+        const idle = Render.frameCanvas(fid, 0, 0);
+        const a = Render.frameCanvas(fid, 'w00', 0);
+        const b = Render.frameCanvas(fid, 'w04', 0);
+        if (!idle || !a || !b || a.toDataURL() === b.toDataURL()) throw new Error(f.id + ' has no distinct walk frames');
+        if (!Render.drawPortrait(ctx, fid, 48 + count % 5 * 128, 21 + Math.floor(count / 5) * 120, 36)) {
+          throw new Error(f.id + ' has no roster thumbnail');
+        }
+        Render.drawFighter(ctx, { f: fid, st: 'walk', t: 15, z: 0, fc: 1, cl: 'fighter', w: 0 },
+          64 + count % 5 * 128, 105 + Math.floor(count / 5) * 120, 0, 'katana', Sim.WEAPONS[0]);
+        count++;
+      }
+      if (f.clips?.cast) {
+        const w = Sim.weaponChoices('mage', 1)[0];
+        const shot = Sim.classMoveTiming('mage', w, false);
+        const at = t => RenderFx.pose({ f: fid, cl: 'mage', st: 'cast', t, w }, Sim.WEAPONS[w].id, Sim.WEAPONS[w]).pose;
+        const before = at(shot.windup - 1), release = at(shot.windup);
+        if (before < 40 || release !== before + 1 || !Render.frameCanvas(fid, release, 0)) {
+          throw new Error(f.id + ' has no authored release frame at the cast tick');
+        }
+      }
+    }
+    return { count, png: canvas.toDataURL() };
   });
 }
 
@@ -184,6 +236,9 @@ async function main() {
         await opened.page.screenshot({ path: path.join(out, 'c2-title.png') });
         const cells = await compareCells(opened.page);
         if (cells.bad || cells.checked !== 240) throw new Error('atlas cells differ from poses: ' + JSON.stringify(cells));
+        const roster = await verifyImportedFrames(opened.page);
+        if (roster.count !== 10) throw new Error('expected ten imported fighters');
+        fs.writeFileSync(path.join(out, 'coop-imported-fighters.png'), Buffer.from(roster.png.replace(/^data:image\/png;base64,/, ''), 'base64'));
         const boss = await paintBoss(opened.page);
         if (!boss.ready || boss.width !== 1024) throw new Error('boss sheet was not ready: ' + JSON.stringify(boss));
         if (boss.errors.length) throw new Error('boss load errors: ' + boss.errors.join(','));

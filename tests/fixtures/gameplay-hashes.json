@@ -22,7 +22,7 @@
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "6523832b36022cccc3da079d007787681fe09acca250e8d81320b27b9b9575b7"
+    "snapSha256": "2127289b72adbc7a97b98d3b3f936dcf857306b90cccd6b378ab0b2e2e3cf857"
   },
   "fourLocalSeed99Tick1800": {
     "seed": 99,
@@ -37,6 +37,6 @@
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "b0739c77284a6bdb85910fa0a2ec205050f0b82c6f8a7532571522a81e9fb2da"
+    "snapSha256": "c3225865c337a5b178cdc6d7dfccf36c6e2c28862c49740d935b39d2a1510784"
   }
 }

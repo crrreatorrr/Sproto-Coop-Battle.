@@ -3,7 +3,7 @@
   "loopHz": 20,
   "substeps": 3,
   "snapshotHz": 10,
-  "content": "7994f9b549ff1665a0d12a59e5d9b0954ff488fc10bd345365a25894f23df6f8",
+  "content": "d1ca2efc4121b62c885b6f3fbf3c193c3ac76360056b9551b7301fc4085d8c61",
   "cases": [
     {
       "id": "cpu-seed42-terminal",
@@ -42,9 +42,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "1be14864ac8f3eb80462c08e42e882740e6b85995ce69b6103df01c547b69f4d",
-      "snapHash": "6523832b36022cccc3da079d007787681fe09acca250e8d81320b27b9b9575b7",
-      "stateBytes": 6639,
+      "stateHash": "7a0491d903115be0b635d95853ee63f759c1c50bf84f1a470cf8711ba5c4562f",
+      "snapHash": "2127289b72adbc7a97b98d3b3f936dcf857306b90cccd6b378ab0b2e2e3cf857",
+      "stateBytes": 6642,
       "resume": null
     },
     {
@@ -63,9 +63,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "cca9da100075af1461997b04a5f8a9ba3e20970ca03575d43b012a0165d454d6",
-      "snapHash": "b0739c77284a6bdb85910fa0a2ec205050f0b82c6f8a7532571522a81e9fb2da",
-      "stateBytes": 6135,
+      "stateHash": "532ab583664a65b26fe87095c352b5d9c59d8d25b542fbf8958651535c5975ae",
+      "snapHash": "c3225865c337a5b178cdc6d7dfccf36c6e2c28862c49740d935b39d2a1510784",
+      "stateBytes": 6137,
       "resume": null
     },
     {
@@ -92,7 +92,7 @@
         "powers": 0,
         "items": 4,
         "steps": 120,
-        "hash": "8ee95a14f25503844bfd321652b7e6b1151e03dde5dd0c34509ed2649b2a9725"
+        "hash": "122e6275b5ead0d1062521367e7c5c6f768c8b42c52eac74bd1ad959dd06253e"
       }
     },
     {
@@ -115,6 +115,33 @@
       "snapHash": "9e5eb7eb030f21568bda2d530570dd31bed5117881bbd8e9267f864bc7c28471",
       "stateBytes": 5292,
       "resume": null
+    },
+    {
+      "id": "solo-cpu-party",
+      "kind": "mixed",
+      "seed": 3,
+      "stage": 0,
+      "tick": 3800,
+      "mode": "play",
+      "stageNow": 0,
+      "flags": {
+        "ufo": 720,
+        "revive": 0,
+        "dead": 0,
+        "power": 453,
+        "boss": 597,
+        "bossPhase": 0
+      },
+      "stateHash": "38411e35704aaf0e27709caab685df2a9b27a5d18ef1b88acc7c15cef70c04d2",
+      "snapHash": "08ddc0eb5106e3ac826b40920a4682370648c76db808dd93330ee913fcfbab4c",
+      "stateBytes": 4872,
+      "resume": {
+        "lives": 8,
+        "powers": 0,
+        "items": 4,
+        "steps": 120,
+        "hash": "b6d0d4228b351d3d125834611dd4cf52974b3d218f474dfffcbe935f5da6013a"
+      }
     },
     {
       "id": "stage-0-human",
@@ -153,9 +180,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "a4855fcf83bc0b68a5a743f3c808f9116b3ebf0cf83efac38d4356dc67158791",
-      "snapHash": "a1d9babe2b73b281b5f4afb890bd85f00f46e8d7a33cd3ae64f150bd3ec284e3",
-      "stateBytes": 4842,
+      "stateHash": "b6677b330b2e4080817d5db13d0ab09391deafb39b024d5b38597f35ef212c02",
+      "snapHash": "e73321e80b4d45b3121891ce13c347afb6741fdd1bddc6e15435f76f21951694",
+      "stateBytes": 4843,
       "resume": null
     },
     {
@@ -174,8 +201,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "47cf673e35cf6a5dee54bd8a8e07c16aa332af0615d31ae325734a280194d55c",
-      "snapHash": "c8e955a506d58f8ac5b57e78bb4dac0fbd7b3a3344b947a3e7409d6cc302f4b7",
+      "stateHash": "30c0018ac8aa3691f4cdd8daebd6a5aaee2e24e0f0dc90724a375e8986d830d6",
+      "snapHash": "b149f4df2fb86609180f7990af35f68886548159de897e3ed85339ad7fddf04f",
       "stateBytes": 4472,
       "resume": null
     },
@@ -216,8 +243,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "fffb60ba16e239c134716e0a1a914b1dc6c256f2b552a5018d7a86e746d09b12",
-      "snapHash": "43c195a5a57c9e3fe0069d1b16380e0e2e3108dcf8b10f0d5f7932b84124a79b",
+      "stateHash": "9fafa5887388f080651e7e4b2d41714317e8968769e86a4634601962318f5e9d",
+      "snapHash": "b5b72cfae959adf89efa5b08d0a2400cd6a56401b1389b981efae85a9fe63bb7",
       "stateBytes": 4345,
       "resume": null
     },
@@ -237,9 +264,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "3b36cbaddd51249dac1851dedf3461394e6ee9cae3752292455ecea83a7150b9",
-      "snapHash": "9d1fdcf3d2de5495b1f0e22f2bb47cda1e5fdf04e2052a3e06702e6ad8c40d57",
-      "stateBytes": 4803,
+      "stateHash": "a119586ba491823335dccce3705e192ab2e15d7e40ed965972b4016807a02629",
+      "snapHash": "fb8c3c4948b110b2af4ab5ee35257147d4ba0547dcf3f351cbddd002f44dad8a",
+      "stateBytes": 4804,
       "resume": null
     },
     {
@@ -258,9 +285,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "3f13a5dec16490dfb224d077fd687bc1a71a94dde289cc20bdf71f28b5113338",
-      "snapHash": "fadc8f9e38869c545311bb5b3ff76c704a3a98d7fa9d664e1d113cc84caf7808",
-      "stateBytes": 4345,
+      "stateHash": "b5648e1e2b25a8396e3fd24c94de376dfb0ed5ba36f915e7e7f6d1a676d668d1",
+      "snapHash": "a4b269acd390e8e7a156967ae0db796fefffbca1a3dace7343bbdf53587fb652",
+      "stateBytes": 4346,
       "resume": null
     },
     {
@@ -279,8 +306,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "9ecda068b9fa1dd2cb558eca3653e0fec559bc730ba1ecd64eff271f7eb7edef",
-      "snapHash": "dbc465b76c4620bc8b5ba32177aa838c3d85189e9fd6471741a0d074584f63ef",
+      "stateHash": "1196ccef67771773e4249363f0456609963a60b692be5f1551f7a8f9c7d5741a",
+      "snapHash": "df9f502287e5008c3d4fc085472a7593bf120c0905835232be033995693efcd2",
       "stateBytes": 4974,
       "resume": null
     },
@@ -300,8 +327,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "2181b7e6f25e0715fcabbd6e2a299c5d0db6fb4f8ce43a0d4a569821f26eeea2",
-      "snapHash": "47a54127da5fbccffa8c05247c6f7a6a425a483fbbc029f91a465385cf597919",
+      "stateHash": "18114fa436ac9ee63a63f4b3980e8a3d434da57c5e12aee1a9ba044898bd9d66",
+      "snapHash": "a2f0eb5486adaa00e94b0e4cc94dedee4f4cbddf50b7d92e3a87a46d5e8a6e88",
       "stateBytes": 5056,
       "resume": null
     },
@@ -321,9 +348,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "4b6f8cfc2ea9dbc77c2b36fd48b04ee717000e7aac9f89d64cdc7cd00a5adc88",
-      "snapHash": "d558d66893e096f21d5e7a4674ce32480527551c8c0e60b349986e20892c0f7d",
-      "stateBytes": 5150,
+      "stateHash": "49325e5c0a1bfaa7f8ea8c29c1f1e711bfb9f9278129dad65a2a79cd302cf43a",
+      "snapHash": "46fb352de0b1fa806dad9a764503b966a0f00a66f4f5bf5950b2a720623363d4",
+      "stateBytes": 5151,
       "resume": null
     },
     {
@@ -342,8 +369,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "d96257ce1eed9f6641dd8b81e9ca18d71e5e2fbbb87342bbc5c2555f6b3131e5",
-      "snapHash": "fb6fd9bb3f7208a60f25f158612a7c6d3446d114e83ce64a9caa6814e2d1dce0",
+      "stateHash": "9c6c65f7119e78a0ef0fdace272528227d023ac1e1cac88156eb1a552c210572",
+      "snapHash": "b979b3bbbddef88fb37f01be035ac1a0deab5d220436575c92f54b2b20debd8f",
       "stateBytes": 4652,
       "resume": null
     },
@@ -363,9 +390,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "c111540d0046b547642ec063e256c08558ec9d41f1df249b450c63af688d275f",
-      "snapHash": "53451e27d21d4e91dc93161b13a6d9fa11478185b402b13a270e20a18d65f0b9",
-      "stateBytes": 5822,
+      "stateHash": "eba198df3ab0611f51749dc738b50959aa56d0b7b9c6a195f3c6e99d6d626316",
+      "snapHash": "16661bb11ca0154ebacee68fd200f24f5043f4f2361371ee639869ed844ad490",
+      "stateBytes": 5824,
       "resume": null
     },
     {
@@ -384,9 +411,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "b90e9ebebe71afa3d3e749ecb28efc0a929cd5d4a10b2bff36017c6b36980d05",
-      "snapHash": "8ce3055c6af48f9169de02a94ef0d93b466ab4bf42fc58a169ee39ab38578db8",
-      "stateBytes": 6028,
+      "stateHash": "4b2f9821cbcd1b0fce845b6ae9cd017e51b83fa6e5f8f3ba3d7203333ebaefd0",
+      "snapHash": "019e160adfc3c30eb18782b511c09b88c486ba0bab23c49390e735c814fe6157",
+      "stateBytes": 6031,
       "resume": null
     },
     {
@@ -405,8 +432,8 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "1978a4cfb671d1aaf485cbc19d8835f535ae7688ddd505c9fea3c4bbefa78be2",
-      "snapHash": "6a043cb8bc516613d74ef998515d812f02552f319479de3cde028377c47e9a0f",
+      "stateHash": "b4e225aa80f882a06cd692d3af671993a8e100dcee5cf3d4f71081f541836449",
+      "snapHash": "bc9570a5d072ce51e12c287653799df388342d641ac6d0953f26f6eec0c90f6d",
       "stateBytes": 4675,
       "resume": null
     },
@@ -426,9 +453,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "2b3ca798a86559bab5224f8a55eaf5d57f9d5a2ed55327590f99ce7e49c1e5d9",
-      "snapHash": "618a5e4d72a594565c0cdd671bace4b2f1214ecdc0f0d47f9201939c75f7a101",
-      "stateBytes": 6199,
+      "stateHash": "763a62a5f938b2233bf4fc3ef9671eda7354ce64666baa494fd81fdeb5926fd8",
+      "snapHash": "35aaaf0f247c0e2efc197c5acb9e78f1471a331bf2a886d1780029de7b48f76b",
+      "stateBytes": 6201,
       "resume": null
     },
     {
@@ -447,9 +474,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "dde952fde65a15d217cc016fa96c56d3bded77adbe6d715b678b9cf6efc05230",
-      "snapHash": "7f85a27328311eea95a3ab16a2bacb7d89d08e3849dd51660838dc4eb2cbcdd1",
-      "stateBytes": 6300,
+      "stateHash": "77c85844b6f4d8cf2efc8d8dd262f03529c20d99777457f622e4263dac38b141",
+      "snapHash": "90d70b5328b36539d3f186707a99ce3ab1fb864de67821e6578f34bc1dc006c9",
+      "stateBytes": 6303,
       "resume": null
     },
     {
@@ -468,9 +495,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "a2d2d66fed66ef68493f0a25dbae86b9cc56d5c52d3c61acdabc97b5b801c556",
-      "snapHash": "63c54b9385dbc1596404996d81787b93104bd0fc5f9125f91f25fbb8ac2116ad",
-      "stateBytes": 6656,
+      "stateHash": "42f215f2bb52cc4462108ac3385c440e9dce96e034c1814a5cb992f45fb42056",
+      "snapHash": "ac82e2202bf3ac98c5094df622c0dc62bd247c4413f87fb3b9db8367c3a0f928",
+      "stateBytes": 6658,
       "resume": null
     },
     {
@@ -489,9 +516,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "21ca4c0e2bc2325781ced05c7bbb524719073529ab1c15784533dd1e1d71ce3b",
-      "snapHash": "dcbb381da5b7384c8f544578756bed0420551d50b6b243010b36c605d523fbbc",
-      "stateBytes": 7364,
+      "stateHash": "bf57f72a89b1f9e2ce7cc4b86bcdbefb0eca1b657233796792aa6466e984d305",
+      "snapHash": "10a2e60433f99a7167b6b768ddadb20692f0c8fc4847c6360afd87e3067c85e3",
+      "stateBytes": 7367,
       "resume": null
     },
     {
@@ -510,9 +537,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "51d031e8db9dc5f4e662459dde8091269eddaefda1719a8c5195cceb36a3dfd3",
-      "snapHash": "c8ae2f0beddb7a47affe82a5856fea11c591f6f3080923cb5cd28712306611c0",
-      "stateBytes": 7022,
+      "stateHash": "de68ebc58646a6fe52370a9e13d72fb404ff796f13267d34f98fa1df0490d0a2",
+      "snapHash": "4c29171aab72eeb8cfea631c1c89ffd39b82110ef91a39aaa5aebb28e9ced42c",
+      "stateBytes": 7024,
       "resume": null
     },
     {
@@ -531,9 +558,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "1c8ce16256f0c84e2ca00af936310bf163ac46dc971aadbf596d0c67c5236075",
-      "snapHash": "bdf2235069cc93e51c801f55882d8c14e3198be42c8ac76360a85608a9da2668",
-      "stateBytes": 6490,
+      "stateHash": "ec7ee7814373baeb4b1fb4cb1a2b455bb60e25efeca0114162b239093950706f",
+      "snapHash": "02abdd3937c4492458a5438ac04dda36b087755f1bd91240cb5480be1a1b4460",
+      "stateBytes": 6494,
       "resume": null
     },
     {
@@ -552,9 +579,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "e73e06757c9807fa235cbfed7f0aa3b57fa90a98d678fc66a3cedf938ee0d9f0",
-      "snapHash": "d9d77fc29bced941309ba5391d66e3d71d31957549aafe308197247e4b0af07e",
-      "stateBytes": 7460,
+      "stateHash": "4d0b41997e0b7a86ce2028d113837b9e6f66f7e1ba3c01302816330176c569f6",
+      "snapHash": "c735ce8e2514d83380feba0423f0c23f6669af4e1b45a793bb38fe7b77da2d2c",
+      "stateBytes": 7465,
       "resume": null
     },
     {
@@ -573,9 +600,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "011729988643a4461aca7f5c0ea55f2bf493324390c441f1d435944e10aab499",
-      "snapHash": "a579c26cb9da754f7e2e5a18d252e92ee3b54952502aebfe0e25194e9d4d5aa8",
-      "stateBytes": 7090,
+      "stateHash": "4667a55cdced783006606c97d9674b472451b65c35f95cc4f84cf1f408a0235e",
+      "snapHash": "4b8686514f1fb6fdb79330c995c87b2ad6128de98750a326d1ae8173421589b3",
+      "stateBytes": 7091,
       "resume": null
     },
     {
@@ -594,9 +621,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "f228005a9a959cd2d7d3c8a6ea0e0f0b253441a8b7f6eeb92823e7ff6964a7cf",
-      "snapHash": "b2905bb10657c8586bd364dfd5b87e0e4f05678597baa96bad7fe25ae9058ac3",
-      "stateBytes": 7520,
+      "stateHash": "0badcb45d7ee715f040b6d8417ac1167111d413fa60f8d02db52a6a4438bc366",
+      "snapHash": "844d40f202b98912a2bd79b51f9808af70559f34f76c82166e8a03e56d02a51a",
+      "stateBytes": 7522,
       "resume": null
     },
     {
@@ -615,9 +642,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "a5fcc67b332629b87e559b1e06dccfb8ba4d06e1e98e06330e7161ae9b58eefb",
-      "snapHash": "6aa57ac89f612e76b9501f9f3b5455655d0faf664c81bbb7aafcfbe0a86bfe02",
-      "stateBytes": 6873,
+      "stateHash": "37a611b0cd293a32d2b67386228c168330240a3164a269fd1208e000e60bd019",
+      "snapHash": "740e1ffecd8aaf66a0e8de7f9a98ec2dab25ad1cfad4e1b64daf71748ad0159b",
+      "stateBytes": 6876,
       "resume": null
     },
     {
@@ -636,9 +663,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "581509a379057dcd36c94a659c056c72df85c28b13cbd5a0d946d00e6b007ea3",
-      "snapHash": "ebc98d96223041acb71d130038e4831c7c60ebb35daf748a34af76dab15d9214",
-      "stateBytes": 8290,
+      "stateHash": "38c3446cfb974c0f1fa65d1a497c9acc07e8712a115fa0a5867c55bc5f5010f5",
+      "snapHash": "52f44b58e5c3297eff04b6d49cd8be55971d2d312c219fcd6c4c9a91e51d41b3",
+      "stateBytes": 8298,
       "resume": null
     },
     {
@@ -657,9 +684,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "a0fdd0f0a40806f183be474a8f2ded8a38820f9cdade7b004ae6fe99dea4e6fb",
-      "snapHash": "2bb5b9f84253689ede04d055df22d22e7957acf5979ec1ddb2610580fce590c1",
-      "stateBytes": 8313,
+      "stateHash": "62b1897a3385beb328afd43f1503f3ec69222efc70faeccc5dee90a31ecc533f",
+      "snapHash": "9098ec1e624f884ce08933369a88e4c9b0b8f6dadf0b5c15ecc658a42a1efe9f",
+      "stateBytes": 8318,
       "resume": null
     },
     {
@@ -678,9 +705,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "e7ce67837eb5d10ed84965031a8de0e5ef45621626f888a5548ae72ca30f26cf",
-      "snapHash": "c78ffe706347dd6adaa3cd159208a7a935401c72614543d4c246f3cb609b6387",
-      "stateBytes": 8405,
+      "stateHash": "a04d3ca66506a201da9a4a06608f1b8459798a1e5d0b9b39ef3f7287fb483daf",
+      "snapHash": "5178dc27cf0f673e2e09617d5e92d6d8a0949c4e5229e920c776aa9a9982722b",
+      "stateBytes": 8412,
       "resume": null
     },
     {
@@ -699,9 +726,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "36d1401904e232e4958d243eb38c147bd876cc7b9ebfb47e39c0b37527fd63b2",
-      "snapHash": "3223935c5634f52f81915ac1d266a17f4971424b23addda6169cc5f0c5336b32",
-      "stateBytes": 8339,
+      "stateHash": "ec82a54d7d366bef141e2f7e8105462466f98cf1d0ce2826af8582836a99aa11",
+      "snapHash": "2f6a2c860f2ac3bec16b92a33667c6529dec13092f7c78f8a4a3c3b89bc6e62a",
+      "stateBytes": 8344,
       "resume": null
     },
     {
@@ -720,9 +747,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "fa9c2e6e05550f7a83743619185913b6275424d67f9afa191cdc469131c66a7c",
-      "snapHash": "a045a77f6b3051e91221d9e15b6e5e119358d578a559a93958d54975d8792b6f",
-      "stateBytes": 7462,
+      "stateHash": "8ff1b40586a1f0953c902c4a1d64c787e907e9b452894097304a2153608aabc0",
+      "snapHash": "95e7aca85212b623425dbef1a1095b1b311f182be5ed693c1267c8b1e7e6e08c",
+      "stateBytes": 7470,
       "resume": null
     },
     {
@@ -741,9 +768,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "4d049bd1ba67cd19790f4c1e38bedd77b902bf26c7c46a227bd7b0053451a5f3",
-      "snapHash": "78d87a1930857c1ed1393fc1554325a237748c670f27673bba691635d81ab3df",
-      "stateBytes": 8268,
+      "stateHash": "51508041bafe196deb7d311f7ae18ca71b3ec4a48bb5877c39d19da7d7f550cb",
+      "snapHash": "bfb144919d62eac779d7bfa0fb8fb44b41bbd9bc8295fe7a0de6bec8117a4cda",
+      "stateBytes": 8272,
       "resume": null
     },
     {
@@ -762,9 +789,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "0ed082949eee4aa5c155a0eee0ec89403334ce406f0b3920ce8bc846975fbdae",
-      "snapHash": "13f1dc88440b36504a0b333dbec6c1e3d4d8b43ce38b008e51228f5cc28bf1e9",
-      "stateBytes": 8137,
+      "stateHash": "ff8dcc0999b02a52b2326c9ebb71deb9d5b98fcf608935a9d41728514278eeaa",
+      "snapHash": "4e550c25ddef796b71844b717c428784435da43781e21a59574879e4b202eb5f",
+      "stateBytes": 8139,
       "resume": null
     },
     {
@@ -783,9 +810,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "5b5e9201de6521bb6c1b999eecd84d4393189124b65f4dbd496bf98f7d05db48",
-      "snapHash": "2b07d0f05a0a133d07f62e6f2b38c91155706940fb03794783aa9105a5abe8c0",
-      "stateBytes": 8212,
+      "stateHash": "84a984ab68eb584127f48aabb90a87019580f40297765d920f7ac4233aa8da1d",
+      "snapHash": "5e9d99e66adb7112c6d3b0b74a1a0455cc9088440196c7579e4917c1fc041242",
+      "stateBytes": 8218,
       "resume": null
     },
     {
@@ -804,9 +831,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "506c03898d7e8be927c1e95f4c25ab43120aae47760e9e2c7fa253091bcc7276",
-      "snapHash": "77555cc7e3e8dfb603c52388bd8e21071baf50a168dd64d303830913a3688806",
-      "stateBytes": 9376,
+      "stateHash": "961d02889a204f87b4cbe589d84d579546ebad0501b99412fb289440804b94f7",
+      "snapHash": "e1456727c56eaf42c4f9fe995dd2f50435cd9ed5b6785b7330b76ef85aab21e7",
+      "stateBytes": 9382,
       "resume": null
     },
     {
@@ -825,9 +852,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "a78c8b85d85bde4cc4848550ff0ef444e4518d00be9976b65c78a9fab32216b9",
-      "snapHash": "70ee412aa7bdf7573c59cc50ce4ed91bcc2d8bc5024647cb77d68db5841b6e51",
-      "stateBytes": 8692,
+      "stateHash": "1fbee413688c255e1d1ff575dc0f422a3d3a04af4e59d07dd4ff326ca60e51ef",
+      "snapHash": "734570e549486053a6aa45b52af169933fc4d7c6a3fe8a0993aa4d6ebab723ba",
+      "stateBytes": 8699,
       "resume": null
     },
     {
@@ -846,9 +873,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "7b103e1c018fb664189456a1c46c1ee1cbcdff0c033d4e7d6bd07dece87b2afa",
-      "snapHash": "849b83b55d5b1759224b190c1375114ceaa95cf4d32bf90f21df3ed34ae2bc60",
-      "stateBytes": 8362,
+      "stateHash": "314d859a7af67a915c770664093eff6534d3b464cdbbf25ba3f62368b451f33d",
+      "snapHash": "f3a95c788e6cee2b28b412db5bf3e1afcd64eb67f16e12920d31c26d3e60566f",
+      "stateBytes": 8363,
       "resume": null
     },
     {
@@ -867,9 +894,9 @@
         "boss": 0,
         "bossPhase": 0
       },
-      "stateHash": "bb5a65cff52ee6a9df1894b63e6473e74961d95c061a4464ebdc59bb0fba84fa",
-      "snapHash": "0c776ba017c5021adc9c87ea3ae7f1b878f821c2aa1bd9f4d0bcd4dfabe0ae6a",
-      "stateBytes": 8123,
+      "stateHash": "12ec2d5c70c83d2d41270c33a235c3e0f357463ee4c60a9dc34ae0f4cf05eec6",
+      "snapHash": "2b0ffb5141b246bd135f6ac60b53d2f1198bd9c3ded5b78b82d772857b484b11",
+      "stateBytes": 8129,
       "resume": null
     },
     {

@@ -70,6 +70,12 @@ function jpegSize(buf) {
 export function imageSize(file, buf) {
   if (file.endsWith('.png')) return pngSize(buf);
   if (file.endsWith('.jpg') || file.endsWith('.jpeg')) return jpegSize(buf);
+  if (file.endsWith('.webp') && buf.length >= 25 && buf.toString('ascii', 0, 4) === 'RIFF' &&
+      buf.toString('ascii', 8, 16) === 'WEBPVP8L' && buf[20] === 0x2f) {
+    // Lossless WebP stores (width-1) and (height-1) in two 14-bit fields.
+    const bits = buf.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 };
+  }
   return null;
 }
 

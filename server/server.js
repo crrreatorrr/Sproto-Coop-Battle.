@@ -245,8 +245,16 @@ function sanitizeGuest(msg) {
     return { t: msg.t, dev: msg.dev };
   }
   if (msg.t === 'pick') {
-    if (!devOk(msg.dev) || !['fid', 'weapon', 'classId'].includes(msg.key) || (msg.d !== 1 && msg.d !== -1)) return null;
-    const pick = { t: 'pick', dev: msg.dev, key: msg.key, d: msg.d };
+    if (!devOk(msg.dev) || !['fid', 'weapon', 'classId'].includes(msg.key)) return null;
+    const pick = { t: 'pick', dev: msg.dev, key: msg.key };
+    if (msg.fid !== undefined) {
+      // The host checks the chosen ID against its roster before applying it.
+      if (msg.key !== 'fid' || !Number.isInteger(msg.fid) || msg.fid < 0 || msg.fid > 255) return null;
+      pick.fid = msg.fid;
+    } else {
+      if (msg.d !== 1 && msg.d !== -1) return null;
+      pick.d = msg.d;
+    }
     if (msg.tier !== undefined) {
       if (!Number.isInteger(msg.tier) || msg.tier < 1 || msg.tier > 13) return null;
       pick.tier = msg.tier;

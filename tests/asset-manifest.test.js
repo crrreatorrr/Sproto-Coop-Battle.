@@ -9,7 +9,7 @@ async function main() {
   const build = await import('../scripts/build.mjs');
   const report = assets.inventory();
   assert.strictEqual(report.categories.shadow.count, 12, 'each stage has a Shadow atlas');
-  assert.strictEqual(report.preloadCount, 10);
+  assert.strictEqual(report.preloadCount, 8);
   assert.ok(report.assetBytes > 9027457);
   assert.ok(report.publicBytes <= 10 * 1024 * 1024);
   assert.deepStrictEqual(report.missingDynamic, []);
@@ -19,7 +19,7 @@ async function main() {
   assert.ok(report.unused.includes('assets/ufo/idle.png'));
   assert.ok(report.unused.includes('assets/ufo/muzzle.png'));
   assert.ok(!report.files.some(file => /assets\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(file)), 'development poses stay out of the web tree');
-  assert.ok(!report.unused.some(file => file.endsWith('/atlas.png')));
+  assert.ok(!report.unused.some(file => /\/atlas\.(png|webp)$/.test(file)));
   assert.ok(!report.unused.some(file => file.startsWith('assets/fx/')), 'boss effect sheets are in the load plan');
   assert.ok(report.literalPrefixes.includes('assets/stages/'));
   assert.ok(report.literalPrefixes.includes('assets/ufo/shield'));

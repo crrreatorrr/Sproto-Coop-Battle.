@@ -1,8 +1,8 @@
 {
   "packer": "tools/pack-fighter-atlases.py",
-  "format": "png",
-  "shipped": "png",
-  "reason": "Stdlib PNG is byte-stable and pixel-checked without Pillow. Lossless WebP was measured and is smaller when exact, but its bitstream follows libwebp, which CI does not pin.",
+  "format": "webp",
+  "shipped": "webp",
+  "reason": "Committed lossless WebP keeps the same pixels and fits the expanded roster in the asset budget.",
   "cell": 128,
   "cols": 8,
   "rows": 5,
@@ -57,19 +57,19 @@
     "rivet",
     "dumpstar"
   ],
-  "zlib": "1.3",
+  "zlib": "1.2.12",
   "pngBytes": 988221,
   "sourcePoseBytes": 1163757,
   "webp": {
-    "shipped": false,
+    "shipped": true,
     "exact": true,
-    "bytes": 665604,
-    "pillow": "13.0.0",
+    "bytes": 665718,
+    "pillow": "11.3.0",
     "flags": "lossless=True quality=100 method=6 exact=True"
   },
   "atlases": {
     "sproto3106": {
-      "file": "assets/fighters/sproto3106/atlas.png",
+      "file": "assets/fighters/sproto3106/atlas.webp",
       "sha256": "cbd5245fd6c3a6a5e673da0ef8aa5f4d649f2d695a91e2763184d322fc17b33e",
       "bytes": 210203,
       "width": 1024,
@@ -120,13 +120,14 @@
       "webp": {
         "measured": true,
         "exact": true,
-        "bytes": 157410,
-        "pillow": "13.0.0",
-        "shipped": false
+        "bytes": 157398,
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "0c23b6cc2fc4b8429e4edd222684719b50c93b31c36ed16c5694f883536e8109"
       }
     },
     "vamp": {
-      "file": "assets/fighters/vamp/atlas.png",
+      "file": "assets/fighters/vamp/atlas.webp",
       "sha256": "d770ab29b520c72991d2bc49a2342dbdb31760ffc08b7857a3d9361677d74bcd",
       "bytes": 155436,
       "width": 1024,
@@ -177,13 +178,14 @@
       "webp": {
         "measured": true,
         "exact": true,
-        "bytes": 102776,
-        "pillow": "13.0.0",
-        "shipped": false
+        "bytes": 102686,
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "a7e059839b721266b8030a89483d9a7105cdaae288362533c430b5a99a2e8734"
       }
     },
     "guest09": {
-      "file": "assets/fighters/guest09/atlas.png",
+      "file": "assets/fighters/guest09/atlas.webp",
       "sha256": "7fbefd8649381004e05e32ff7e8bfc851b9d6c1f36dbaecbe36ecf26022864c0",
       "bytes": 168206,
       "width": 1024,
@@ -235,12 +237,13 @@
         "measured": true,
         "exact": true,
         "bytes": 105410,
-        "pillow": "13.0.0",
-        "shipped": false
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "6e8874d12d10680abac9875c9db5dbccf7722ad9a8c1c63fa1f7590757b94abb"
       }
     },
     "guest10": {
-      "file": "assets/fighters/guest10/atlas.png",
+      "file": "assets/fighters/guest10/atlas.webp",
       "sha256": "6c94b366347ef2698e8d8d5d6b0b63499b8b8d50c4c1928af4fcea5cf442c5c8",
       "bytes": 156111,
       "width": 1024,
@@ -291,13 +294,14 @@
       "webp": {
         "measured": true,
         "exact": true,
-        "bytes": 106876,
-        "pillow": "13.0.0",
-        "shipped": false
+        "bytes": 106872,
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "0607c0413040693a786f1a0201afb935549160bea6c3dbaadfb58d341e4926b3"
       }
     },
     "rivet": {
-      "file": "assets/fighters/rivet/atlas.png",
+      "file": "assets/fighters/rivet/atlas.webp",
       "sha256": "5d2768c97746a357e58fcd08f994d9b5e9926a0b31a5da0ce784a58139c8b1e2",
       "bytes": 153547,
       "width": 1024,
@@ -348,13 +352,14 @@
       "webp": {
         "measured": true,
         "exact": true,
-        "bytes": 95490,
-        "pillow": "13.0.0",
-        "shipped": false
+        "bytes": 95668,
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "dd43b81703295919e325d63d53ac23de7b904d2160a3573453084e048438a9de"
       }
     },
     "dumpstar": {
-      "file": "assets/fighters/dumpstar/atlas.png",
+      "file": "assets/fighters/dumpstar/atlas.webp",
       "sha256": "43dbcd1654ca876e233d9fde61020f157fe9f9fc0a3226b5922452ec8ccefe58",
       "bytes": 144718,
       "width": 1024,
@@ -405,9 +410,10 @@
       "webp": {
         "measured": true,
         "exact": true,
-        "bytes": 97642,
-        "pillow": "13.0.0",
-        "shipped": false
+        "bytes": 97684,
+        "pillow": "11.3.0",
+        "shipped": true,
+        "sha256": "fd87ee4b0af7223c85699b41d9d7f6e9970358a808fb407b99797c2964dcf31e"
       }
     }
   }

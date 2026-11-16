@@ -101,9 +101,10 @@ function hello(match, who, devices, extra) {
   assert.deepStrictEqual(match.seatView().slice(0, 2).map(s => [s.classId, global.Sim.WEAPONS[s.weapon].id, s.generation]), [
     ['healer', healer.id, generation], ['ranged', ranged.id, generation],
   ], 'two devices choose different loadouts without releasing their seats');
+  const startingClass = match.seatView()[2].classId;
   const locked = hello(match, bea, ['k1'], { loadouts: { k1: { classId: 'ranged', weapon: ranged.id } } });
   assert.ok(locked.some(row => row.op === OP.REJECT && row.body.reason === 'weapon_locked'));
-  assert.strictEqual(match.seatView()[2].classId, 'fighter', 'a rejected weapon does not partially apply the class');
+  assert.strictEqual(match.seatView()[2].classId, startingClass, 'a rejected weapon does not partially apply the class');
   const injected = hello(match, bea, ['k1'], { loadouts: { k1: { classId: 'mage', hp: 9000 } } });
   assert.ok(injected.some(row => row.op === OP.REJECT && row.body.reason === 'loadout'));
   match.ready(ada); match.ready(bea); match.loop(1000);

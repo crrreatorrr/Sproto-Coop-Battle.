@@ -75,6 +75,7 @@ function contentManifest(manifest) {
     fighters: fighters.map((f, i) => ({ id: f.id, name: f.name, passive: sim.PASSIVES[i % sim.PASSIVES.length].id })),
     weapons: sim.WEAPONS.map(w => w.id),
     classes: sim.CLASSES.map(c => c.id),
+    party: { size: sim.SLOTS, cpuFill: true },
     shadows: manifest.shadows ? manifest.shadows.stages.map(rows => rows.map(row => [row.id, row.role])) : [],
   };
 }
@@ -104,14 +105,16 @@ function createMatch(opts) {
   const stage = mode === 'banked' ? 0 : (options.stage | 0);
   const seed = options.seed >>> 0;
   if (!seed) return fail('seed');
-  const slots = options.slots || blankSlots(options.manifest || root.MANIFEST);
-  const state = sim.create(slots, seed, stage);
+  const manifest = options.manifest || root.MANIFEST;
+  const cpuParty = options.cpuParty === true || (!options.slots && options.cpuParty !== false);
+  const slots = options.slots || sim.partySlots(manifest);
+  const state = sim.create(slots, seed, stage, { cpuParty });
   return {
     ok: true,
     session: {
       mode: mode,
       matchId: String(options.matchId || 'local'),
-      manifest: options.manifest || root.MANIFEST,
+      manifest,
       state: state,
       seats: blankSeats(),
       loops: 0,
@@ -122,14 +125,6 @@ function createMatch(opts) {
     },
   };
 }
-function blankSlots(manifest) {
-  const n = manifest && manifest.fighters ? manifest.fighters.length : 6;
-  const slots = [];
-  // Seats start empty. A human taking one brings a Sproto in; no CPU Sproto fills a seat.
-  for (let i = 0; i < LIMITS.maxSeats; i++) slots.push({ fid: i % n, weapon: 0, ctrl: 'none', name: 'P' + (i + 1) });
-  return slots;
-}
-
 function validAccount(id) { return typeof id === 'string' && ACCOUNT_RE.test(id); }
 function validDevice(device) { return typeof device === 'string' && DEVICE_RE.test(device); }
 function validGeneration(n) { return Number.isInteger(n) && n >= 1 && n <= LIMITS.maxSeq; }
@@ -173,15 +168,29 @@ function parseLoadouts(raw, devices) {
   const picks = {};
   for (const device of Object.keys(raw)) {
     const row = raw[device];
-    if (!validDevice(device) || badPickKey(device) || !devices.includes(device) ||
-        !row || typeof row !== 'object' || Array.isArray(row) ||
-        !Object.keys(row).length || Object.keys(row).some(k => !['fighter', 'weapon', 'classId'].includes(k)) ||
-        Object.keys(row).some(k => typeof row[k] !== 'string' || !/^[a-zA-Z0-9-]{1,32}$/.test(row[k]))) return fail('loadout');
+    if (!validDevice(device) || badPickKey(device) || !devices.includes(device) || !validLoadout(row)) return fail('loadout');
     picks[device] = row;
   }
   return { ok: true, picks };
 }
 const badPickKey = key => key === '__proto__' || key === 'constructor' || key === 'prototype';
+function validLoadout(row) {
+  if (!row || typeof row !== 'object' || Array.isArray(row)) return false;
+  const keys = Object.keys(row);
+  return keys.length > 0 && keys.every(key =>
+    ['fighter', 'weapon', 'classId'].includes(key) && typeof row[key] === 'string' && /^[a-zA-Z0-9-]{1,32}$/.test(row[key]));
+}
+
+function parseCpuLoadouts(raw) {
+  if (raw === undefined) return { ok: true, picks: {} };
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return fail('loadout');
+  const picks = {};
+  for (const slot of Object.keys(raw)) {
+    if (!/^[0-9]$/.test(slot) || Number(slot) >= LIMITS.maxSeats || !validLoadout(raw[slot])) return fail('loadout');
+    picks[slot] = raw[slot];
+  }
+  return { ok: true, picks };
+}
 
 // The host supplies the earned tier separately. The player's message supplies
 // only IDs. Changing a pick keeps the existing seat, ownership, and generation.
@@ -191,6 +200,20 @@ function selectLoadout(session, req, earnedTier) {
   if (session.state.t !== 0) return fail('phase');
   const seat = session.seats[req.slot];
   if (!seat.human || seat.accountId !== req.accountId || seat.generation !== req.generation) return fail('owner');
+  return applyLoadout(session, req, earnedTier);
+}
+
+function selectCpuLoadout(session, req, earnedTier) {
+  if (!session || !session.state || !session.seats) return fail('schema');
+  if (!req || !Number.isInteger(req.slot) || req.slot < 0 || req.slot >= LIMITS.maxSeats) return fail('seat');
+  if (session.state.t !== 0 || !session.state.cpuParty) return fail('phase');
+  const lead = session.seats.find(seat => seat.human);
+  if (!lead || lead.accountId !== req.accountId || lead.generation !== req.generation) return fail('owner');
+  if (session.seats[req.slot].human || session.state.players[req.slot].ctrl !== 'cpu') return fail('occupied');
+  return applyLoadout(session, req, earnedTier);
+}
+
+function applyLoadout(session, req, earnedTier) {
   const sim = simApi();
   const p = session.state.players[req.slot];
   const classId = req.classId === undefined ? sim.classOf(p).id : req.classId;
@@ -490,6 +513,8 @@ const CoopProtocol = {
   assignSeat: assignSeat,
   parseLoadouts: parseLoadouts,
   selectLoadout: selectLoadout,
+  parseCpuLoadouts: parseCpuLoadouts,
+  selectCpuLoadout: selectCpuLoadout,
   weaponTier: (clears) => simApi().Combat.unlockedTier(clears, 13),
   releaseSeat: releaseSeat,
   acceptInput: acceptInput,

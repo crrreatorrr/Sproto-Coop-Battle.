@@ -44,7 +44,7 @@ function loadStatus() {
   stat.atlasBuffers = atlasBuffers.size;
   stat.cellBytes = Cells.size * 128 * 128 * 4;
   stat.tintBytes = Tints.size * 128 * 128 * 4;
-  stat.atlasBufferBytes = atlasBuffers.size * 1024 * 640 * 4;
+  stat.atlasBufferBytes = Array.from(atlasBuffers.values()).reduce((bytes, ctx) => bytes + ctx.canvas.width * ctx.canvas.height * 4, 0);
   return stat;
 }
 
@@ -57,32 +57,38 @@ function canFilter() {
 const HUES = [0, 150, 235, 300, 60, 190];
 // Copy one atlas cell with getImageData so the 128 canvas matches the pose PNG.
 // The atlas image stays resident; cell and tint canvases are capped.
-function atlasContext(fid) {
-  const cached = atlasBuffers.get(fid);
+function atlasContext(path) {
+  const cached = atlasBuffers.get(path);
   if (cached) return cached;
-  const f = M.fighters[fid];
-  const sheet = img(root.AssetLoader.atlasPath(f.id));
+  const sheet = img(path);
   if (!ready(sheet)) return null;
   const c = document.createElement('canvas');
   c.width = sheet.naturalWidth; c.height = sheet.naturalHeight;
   const g = c.getContext('2d', { willReadFrequently: true });
   g.imageSmoothingEnabled = false;
   g.drawImage(sheet, 0, 0);
-  atlasBuffers.set(fid, g);
+  atlasBuffers.set(path, g);
   return g;
 }
 function cellCanvas(fid, pose) {
-  const rect = root.AssetLoader.frameRect(pose);
+  const f = M.fighters[fid];
+  if (!f) return null;
+  const separateMotion = !f.cell && typeof pose === 'number' && pose >= 40;
+  const path = separateMotion ? root.AssetLoader.motionPath(f) : root.AssetLoader.atlasPath(f);
+  if (!path) return null;
+  const rect = root.AssetLoader.frameRect(pose, f.cell || (separateMotion ? 64 : 128), separateMotion);
   if (!rect) return null;
   const key = fid + '|' + rect.i;
   const hit = Cells.get(key);
   if (hit) return hit;
-  const sheet = atlasContext(fid);
+  const sheet = atlasContext(path);
   if (!sheet) return null;
+  if (rect.x + rect.w > sheet.canvas.width || rect.y + rect.h > sheet.canvas.height) return null;
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   g.imageSmoothingEnabled = false;
-  g.putImageData(sheet.getImageData(rect.x, rect.y, rect.w, rect.h), 0, 0);
+  if (rect.w === 128) g.putImageData(sheet.getImageData(rect.x, rect.y, rect.w, rect.h), 0, 0);
+  else g.drawImage(sheet.canvas, rect.x, rect.y, rect.w, rect.h, 0, 0, 128, 128);
   Cells.set(key, c);
   return c;
 }
@@ -136,11 +142,21 @@ const weapon = id => weaponArt[id] || (root.RenderFx && root.RenderFx.makeStageW
 
 function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
   const f = M.fighters[o.f];
-  if (o.cl) loadFx();
+  if (!f) return;
+  if (o.cl) {
+    loadFx();
+    const motion = root.AssetLoader.motionPath(f);
+    if (motion && !atlasBuffers.has(motion)) atlasContext(motion);
+  }
   const art = root.RenderFx;
   const P = art ? art.pose(o, wpnId, wpnStats) : { pose: Math.floor(o.t / 30) % 2, ang: -52 + Math.sin(o.t / 12) * 3 };
-  const poseIdx = typeof P.pose === 'number' ? P.pose : (o.st === 'walk' ? 2 + (Math.floor(o.t / 5) % 4) : 0);
-  const fr = frameCanvas(o.f, P.pose, variant);
+  let pose = P.pose;
+  let fr = frameCanvas(o.f, pose, variant);
+  if (!fr && P.fallback !== undefined) {
+    pose = P.fallback;
+    fr = frameCanvas(o.f, pose, variant);
+  }
+  const poseIdx = typeof pose === 'number' ? pose : (f.cell ? root.AssetLoader.poseIndex(pose) : (o.st === 'walk' ? 2 + (Math.floor(o.t / 5) % 4) : 0));
   const face = o.fc || 1;
   g.save();
   g.globalAlpha = alpha == null ? 1 : alpha;
@@ -150,7 +166,7 @@ function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
   g.scale(face * FS, FS);
   g.translate(-f.foot[0], -f.foot[1]);
   // weapon behind body when raised back, in front otherwise
-  const hand = f.hands[poseIdx] || f.hands[0];
+  const hand = (poseIdx >= 40 ? f.motionHands?.[poseIdx - 40] : f.hands[poseIdx]) || f.hands[0];
   const drawW = () => {
     if (art && art.gear(g, o, wpnId, P, hand, FS, wpnStats)) return;
     if (!wpnId) return;
@@ -171,6 +187,16 @@ function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
     g.arc(hand[0], hand[1], len / FS, a - 0.9, a, false); g.stroke();
   }
   g.restore();
+}
+
+function drawPortrait(g, fid, cx, cy, size) {
+  if (!M.fighters[fid]) return false;
+  const portraits = img(root.AssetLoader.portraits);
+  if (!ready(portraits)) return false;
+  const cell = 28;
+  g.drawImage(portraits, fid % 8 * cell, Math.floor(fid / 8) * cell, cell, cell,
+    Math.round(cx - size / 2), Math.round(cy - size / 2), size, size);
+  return true;
 }
 
 // ---------- backgrounds ----------
@@ -201,10 +227,24 @@ function drawBackground(g, si, camX) {
 }
 
 // ---------- entities ----------
-function text(g, s, x, y, size, color, align) {
-  g.font = `${size}px ${FONT}`; g.textAlign = align || 'left'; g.textBaseline = 'middle';
-  g.fillStyle = '#000'; g.fillText(s, x + 1, y + 1); g.fillText(s, x - 1, y + 1); g.fillText(s, x + 1, y - 1); g.fillText(s, x - 1, y - 1);
-  g.fillStyle = color; g.fillText(s, x, y);
+function text(g, s, x, y, size, color, align, width) {
+  if (!s) return;
+  g.save();
+  g.font = `${Math.round(size)}px ${FONT}`;
+  g.textAlign = align || 'left';
+  g.textBaseline = 'middle';
+  if (width && g.measureText(s).width > width) {
+    const letters = Array.from(s);
+    while (letters.length && g.measureText(letters.join('') + '…').width > width) letters.pop();
+    s = letters.join('') + '…';
+  }
+  x = Math.round(x);
+  y = Math.round(y);
+  g.fillStyle = '#0a0814';
+  g.fillText(s, x + 1, y + 1);
+  g.fillStyle = color;
+  g.fillText(s, x, y);
+  g.restore();
 }
 
 function drawSummary(g, sum, info) { if (root.RenderFx) root.RenderFx.drawSummary(g, sum, info); }
@@ -224,6 +264,6 @@ function drawWorld(g, snap, opts) {
   for (const e of snap.enemies) drawFighter(g, e, e.x - snap.camX, FLOOR_TOP + e.y - e.z, 'shadow');
 }
 
-root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawSummary, drawFighter, drawBackground, text, weapon, frameCanvas, canFilter, FONT,
+root.Render = { W, H, img, ready, preload, enterStage, bossImages, loadStatus, drawWorld, drawSummary, drawFighter, drawPortrait, drawBackground, text, weapon, frameCanvas, canFilter, FONT,
   interpolateSnapshot: (a, b, k) => root.RenderFx ? root.RenderFx.interpolateSnapshot(a, b, k) : b || a };
 })(window);

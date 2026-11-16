@@ -12,9 +12,9 @@
   canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; background: #000; }
   #join { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.6); }
   #join[hidden] { display: none; }
-  #join form { background: #14112a; border: 3px solid #ffd23d; padding: 22px; display: grid; gap: 12px; min-width: 280px; }
-  #join label { font-size: 10px; display: grid; gap: 6px; }
-  #join input { font: inherit; font-size: 16px; padding: 8px; background: #000; color: #ffd23d; border: 2px solid #555; text-transform: uppercase; }
+  #join form { box-sizing: border-box; width: min(390px, calc(100vw - 22px)); background: #14112a; border: 3px solid #ffd23d; padding: 20px; display: grid; gap: 14px; }
+  #join label { font-size: 11px; display: grid; gap: 8px; }
+  #join input { min-width: 0; font: inherit; font-size: 16px; padding: 8px; background: #000; color: #ffd23d; border: 2px solid #8882a3; text-transform: uppercase; }
   #join button { font: inherit; font-size: 11px; padding: 10px; border: 0; cursor: pointer; background: #ffd23d; color: #000; }
   #join button.alt { background: #333; color: #fff; }
   #crash { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.7); }
@@ -30,10 +30,10 @@
 <div id="join" hidden>
   <form id="joinForm">
     <div id="joinTitle" style="font-size:12px;color:#ffd23d">JOIN ONLINE</div>
-    <div id="joinNote" style="font-size:8px;color:#c8c6e0;max-width:280px;line-height:1.5">Practice relay. No Tickets.</div>
+    <div id="joinNote" style="font-size:10px;color:#e8e6f8;line-height:1.7">Practice relay. No Tickets.</div>
     <label>Room code <input id="code" maxlength="12" autocomplete="off" required></label>
     <label>Your name <input id="name" maxlength="12" autocomplete="off" placeholder="Guest"></label>
-    <div id="joinPad" hidden style="font-size:7px;color:#9a98b8;max-width:280px;line-height:1.6">Gamepad: UP/DOWN letter · LEFT/RIGHT move · X delete · A join · B cancel</div>
+    <div id="joinPad" hidden style="font-size:9px;color:#e8e6f8;line-height:1.7">UP/DOWN changes letter · LEFT/RIGHT moves · X deletes · A joins · B cancels</div>
     <button type="submit">Join</button>
     <button type="button" class="alt" id="cancelJoin">Cancel</button>
   </form>

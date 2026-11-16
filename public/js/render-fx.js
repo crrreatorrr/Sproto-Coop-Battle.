@@ -147,7 +147,45 @@ function combatPose(o, id, weapon) {
   return null;
 }
 
-function pose(o, id, weapon) { return combatPose(o, id, weapon) || fighterPose(o, weapon); }
+const HEAVY_GEAR = new Set(['hammer', 'mace', 'cudgel', 'axe', 'greatsword', 'halberd']);
+
+function authoredPose(o, id, weapon, base) {
+  const clips = o.cl && M.fighters[o.f]?.clips;
+  if (!clips) return base;
+  let clip;
+  let frame;
+  const t = o.t;
+  switch (o.st) {
+    case 'heal': case 'cast':
+      clip = 'cast'; frame = base.phase; break;
+    case 'shoot':
+      clip = clips.ranged ? 'ranged' : 'cast'; frame = base.phase; break;
+    case 'hit':
+      clip = 'recoil'; frame = Math.floor(t / 4); break;
+    case 'dash':
+      clip = 'dash'; frame = Math.floor(t / 5); break;
+    case 'jump':
+      clip = 'jump'; frame = t < 2 ? 0 : t < 6 ? 1 : o.z > 24 && t < 18 ? 2 : 3; break;
+    case 'jumpatk':
+      clip = 'airKick'; frame = Math.floor(t / 4); break;
+    case 'special':
+      clip = 'special'; frame = Math.floor(t / 9); break;
+    case 'attack':
+      if (!weapon || !HEAVY_GEAR.has(id)) return base;
+      clip = 'heavy';
+      if (t <= weapon.startup) frame = t * 2 <= weapon.startup ? 0 : 1;
+      else if (t <= weapon.startup + weapon.active) frame = (t - weapon.startup) * 2 <= weapon.active ? 2 : 3;
+      else frame = 4;
+      break;
+    default: return base;
+  }
+  const range = clips[clip];
+  return range ? { ...base, pose: range[0] + Math.min(frame, range[1] - 1), fallback: base.pose } : base;
+}
+
+function pose(o, id, weapon) {
+  return authoredPose(o, id, weapon, combatPose(o, id, weapon) || fighterPose(o, weapon));
+}
 
 function gear(g, o, id, P, hand, scale, weapon) {
   // The thrown knife leaves the Shadow's hand on the release frame.
@@ -620,12 +658,12 @@ function drawHud(g, snap) {
   snap.players.forEach((p, i) => {
     if (p.c === 'none') return; // an empty seat has no Sproto and no panel
     const x = i * pw + 2, y = 2, col = S.SLOT_COLORS[p.s];
-    g.fillStyle = 'rgba(8,6,16,.78)'; g.fillRect(x, y, pw - 4, 38);
+    g.fillStyle = 'rgba(8,6,16,.95)'; g.fillRect(x, y, pw - 4, 38);
     g.fillStyle = col; g.fillRect(x, y, pw - 4, 2);
     drawHead(g, p.f, variantOf(snap, p), x + 2, y + 5, 22);
-    text(g, 'P' + (p.s + 1), x + 26, y + 9, 7, col);
-    text(g, p.c === 'cpu' ? 'CPU' : p.c === 'away' ? 'AWAY' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 6, '#9a98b8');
-    text(g, String(p.n).slice(0, 15), x + 26, y + 18, String(p.n).length > 8 ? 4.5 : 6, '#fff');
+    text(g, 'P' + (p.s + 1), x + 26, y + 9, 8, col);
+    text(g, p.c === 'cpu' ? 'CPU' : p.c === 'away' ? 'AWAY' : p.c === 'remote' ? 'NET' : '', x + 50, y + 9, 7, '#c8c6e0');
+    text(g, p.n, x + 26, y + 19, 8, '#fff', 'left', pw - 35);
     if (p.st === 'dead') {
       text(g, 'DEAD', x + 26, y + 30, 7, '#ff4d4d');
     } else {
@@ -633,13 +671,13 @@ function drawHud(g, snap) {
       g.fillStyle = p.hp > 30 ? '#4dff7a' : '#ff4d4d'; g.fillRect(x + 26, y + 25, (pw - 34) * Math.min(1, p.hp / (p.mh || S.MAX_HP)), 5);
       if (p.c !== 'cpu') text(g, p.l > 1 ? '♥♥' : '♥', x + 3, y + 32, 6, '#ff5a7a');
       (p.pw || []).forEach((pt, k) => powerIcon(g, pt, x + 76 + k * 9, y + 34, 3.5));
-      text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 5, '#c8c6e0');
-      if (p.st === 'down') text(g, 'DOWN ' + Math.ceil(p.dt / 60) + 's', x + 64, y + 9, 5, '#ff4d4d');
-      else if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + 64, y + 9, 5, '#7aff8a');
+      text(g, String(p.sc).padStart(6, '0'), x + 26, y + 34, 6, '#e8e6f8');
+      if (p.st === 'down') text(g, 'DOWN ' + Math.ceil(p.dt / 60) + 'S', x + pw - 9, y + 9, 7, '#ff7777', 'right');
+      else if (p.st === 'ufo') text(g, 'UFO ' + Math.ceil(p.ut / 60), x + pw - 9, y + 9, 7, '#7aff8a', 'right');
       else if (ROLE_COLORS[p.cl]) {
-        const label = p.cl === 'mage' ? 'ARC ORB' : S.classOf({ classId: p.cl }).abilityName.toUpperCase();
-        const status = p.ac ? `${Math.ceil(p.ac / 60)}s` : 'READY';
-        text(g, `${label} ${status}`, x + pw - 9, y + 9, 5, ROLE_COLORS[p.cl], 'right');
+        const label = p.cl === 'mage' ? 'ORB' : p.cl === 'healer' ? 'MEND' : 'SHOT';
+        const status = p.ac ? `${Math.ceil(p.ac / 60)}S` : 'READY';
+        text(g, `${label} ${status}`, x + pw - 9, y + 9, 7, ROLE_COLORS[p.cl], 'right');
       }
     }
   });
@@ -665,14 +703,14 @@ function drawSummary(g, sum, info) {
   if (info.why) text(g, info.why, W / 2, y + 44, 6, '#c8c6e0', 'center');
   text(g, 'STAGE ' + sum.stage + ' OF 12    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
   const cols = [[x + 330, 'SCORE'], [x + 384, 'KOS'], [x + 438, 'REVIVES'], [x + 488, 'PARRIES']];
-  for (const c of cols) text(g, c[1], c[0], y + 82, 5, '#9a98b8', 'right');
+  for (const c of cols) text(g, c[1], c[0], y + 82, 6, '#c8c6e0', 'right');
   sum.rows.forEach((r, i) => {
     const ry = y + 98 + i * 15, col = S.SLOT_COLORS[r.slot], here = (info.local || []).indexOf(r.slot) >= 0;
     if (here) { g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(x + 8, ry - 7, w - 16, 14); }
     text(g, 'P' + (r.slot + 1), x + 14, ry, 7, col);
-    text(g, String(r.name).slice(0, 15), x + 44, ry, 6, '#fff');
-    text(g, r.cpu ? 'CPU' : here ? 'YOU' : '', x + 150, ry, 5, r.cpu ? '#8a88a8' : '#7aff8a');
-    [r.score, r.kills, r.revives, r.parries].forEach((v, k) => text(g, num(v), cols[k][0], ry, 6, '#e8e6f8', 'right'));
+    text(g, r.name, x + 44, ry, 8, '#fff', 'left', 128);
+    text(g, r.cpu ? 'CPU' : here ? 'YOU' : '', x + 185, ry, 7, r.cpu ? '#c8c6e0' : '#7aff8a');
+    [r.score, r.kills, r.revives, r.parries].forEach((v, k) => text(g, num(v), cols[k][0], ry, 7, '#e8e6f8', 'right'));
   });
   const b = info.best;
   const line = info.god ? 'GOD MODE RUNS ARE NOT RECORDED' : info.newBest ? 'NEW BEST RUN!' : b ? 'BEST RUN: ' + (b.victory ? 'VICTORY' : 'STAGE ' + b.stage) + '  ·  SCORE ' + b.score + '  ·  ' + root.Progress.clock(b.ticks) : '';
