@@ -1099,8 +1099,6 @@ function bootAssets() {
     app.screen = 'title';
     const q = new URLSearchParams(location.search);
     if (q.get('room')) showJoin();
-    // ?demo is an attract mode that nobody plays, so its four Sprotos are CPUs. A real run never adds one.
-    if (q.get('demo')) { app.role = 'local'; app.slots = defaultSlots().map(s => ({ ...s, ctrl: 'cpu' })); startGame(); }
   }, err => {
     app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading';
     crash.report(err, 'boot'); // the same panel, with Retry

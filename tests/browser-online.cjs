@@ -1,5 +1,4 @@
-// Host + guest practice-relay smoke, plus the local four-seat lobby (empty seats stay empty) and the
-// all-CPU ?demo attract game, the only place CPU Sprotos appear.
+// Host + guest practice-relay smoke, plus the local four-seat lobby (empty seats stay empty).
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -122,14 +121,13 @@ async function main() {
     await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
     summary.screenshots.push('local-lobby-four-slots.png');
 
+    // There is no CPU attract game any more: ?demo=1 opens the title like any other visit.
     const demo = await mk(acquired.url + '?demo=1');
-    await demo.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim && window.SprotoApp.sim.players.length === 4, null, { timeout: 45000 });
-    const demoCtrls = await demo.evaluate(() => window.SprotoApp.sim.players.map(player => player.ctrl));
-    summary.demoCtrls = demoCtrls;
-    if (demoCtrls.some(ctrl => ctrl !== 'cpu')) throw new Error('demo was not four CPU: ' + demoCtrls.join(','));
+    await demo.waitForFunction(() => window.SprotoApp.screen === 'title', null, { timeout: 45000 });
     await demo.waitForTimeout(800);
-    await demo.screenshot({ path: path.join(out, 'demo-four-cpu.png') });
-    summary.screenshots.push('demo-four-cpu.png');
+    const demoState = await demo.evaluate(() => ({ screen: window.SprotoApp.screen, sim: !!window.SprotoApp.sim }));
+    summary.demoState = demoState;
+    if (demoState.screen !== 'title' || demoState.sim) throw new Error('?demo=1 still starts a run: ' + JSON.stringify(demoState));
 
     const host = await mk(acquired.url);
     const guest = await mk(acquired.url);
