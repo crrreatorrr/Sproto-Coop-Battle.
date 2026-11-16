@@ -197,6 +197,9 @@ async function main() {
     await guest.waitForTimeout(300);
     await guest.keyboard.press('Comma');
     await host.waitForFunction(() => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote'), null, { timeout: 10000 });
+    // The host sees the claim before its lobby broadcast reaches the guest. Wait for
+    // the guest's owned keyboard seat before sending class-selection input.
+    await guest.waitForFunction(() => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.owner === window.SprotoApp.myId && slot.dev === 'k2'), null, { timeout: 10000 });
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
     if (onlineSlots.length !== 4) throw new Error('online room lost a seat');
