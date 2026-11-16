@@ -107,7 +107,8 @@ function resumeTwin(state) {
   return { lives: lives, powers: powers, items: items, steps: 120, hash: ha };
 }
 function runCase(spec) {
-  const state = root.Sim.create(slots(spec.kind), spec.seed, spec.stage || 0);
+  const loadouts = spec.party ? root.Sim.partySlots().map((p, i) => ({ ...p, ctrl: i === 0 ? 'local' : 'cpu' })) : slots(spec.kind);
+  const state = root.Sim.create(loadouts, spec.seed, spec.stage || 0, { cpuParty: !!spec.party });
   const flags = { ufo: 0, revive: 0, dead: 0, power: 0, boss: 0, bossPhase: 0 };
   let resumed = null;
   const limit = spec.ticks;
@@ -148,11 +149,10 @@ function caseList() {
     { id: 'cpu-seed42-terminal', kind: 'cpu', seed: 42, stage: 0, ticks: 60 * 60 * 40, input: 'cpu' },
     { id: 'mixed-seed7-1800', kind: 'mixed', seed: 7, stage: 0, ticks: 1800, input: 'legacy-mixed' },
     { id: 'four-local-seed99-1800', kind: 'local', seed: 99, stage: 0, ticks: 1800, input: 'legacy-four' },
-    { id: 'human-seed3-stage1', kind: 'local', seed: 3, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },
-    // A second run of the same policy, so four-human boss phase 2 stays under a golden even when a
-    // balance change makes seed 3 lose before the phase change (it did for one tuning pass). Seed 5
-    // reached phase 2 with six seats; with four, seed 16 is the first that does.
-    { id: 'human-seed16-stage1', kind: 'local', seed: 16, stage: 0, ticks: 20000, input: 'policy' },
+    { id: 'human-seed9-stage1', kind: 'local', seed: 9, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },
+    // A second run of the same policy covers the four-human boss phase change.
+    { id: 'human-seed64-stage1', kind: 'local', seed: 64, stage: 0, ticks: 20000, input: 'policy' },
+    { id: 'solo-cpu-party', kind: 'mixed', seed: 3, stage: 0, ticks: 3800, input: 'policy', party: true, resumeAt: 2000 },
   ];
   for (let stage = 0; stage < 12; stage++) {
     list.push({ id: 'stage-' + stage + '-human', kind: 'local', seed: 4000 + stage * 17, stage: stage, ticks: 900, input: 'policy' });
@@ -161,9 +161,30 @@ function caseList() {
   }
   return list;
 }
+// One reproducible combat sequence exercised in Node, Chromium and the server's Goja VM.
+function classCombat() {
+  const roles = ['fighter', 'mage', 'healer', 'ranged'];
+  const setup = slots('local').map((cfg, i) => ({
+    ...cfg, classId: roles[i], weapon: root.Sim.weaponChoices(roles[i], 8)[i + 1],
+  }));
+  const state = root.Sim.create(setup, 444, 2);
+  state.stage.waves = [];
+  state.players[1].hp = 12;
+  const seen = { mage: false, ranged: false, heal: false };
+  for (let i = 0; i < 120; i++) {
+    for (const p of state.players) p.in = { ...N, a: i === 64 ? 1 : 0, p: i === 0 ? 1 : 0 };
+    root.Sim.step(state);
+    if (state.projs.some(p => p.kind === 'arcane-orb')) seen.mage = true;
+    if (state.projs.some(p => p.kind === 'power-arrow')) seen.ranged = true;
+    if (state.fx.some(f => f.kind === 'class-heal') && state.players[1].hp > 12) seen.heal = true;
+    state.events.length = 0;
+  }
+  if (!seen.mage || !seen.ranged || !seen.heal) throw new Error('class-combat coverage');
+  return { id: 'class-combat', seen, stateHash: hexOf(root.Sim.exportState(state)), snapHash: hexOf(root.Sim.snapshot(state)) };
+}
 function runAll() {
   const started = Date.now();
-  const cases = caseList().map(runCase);
+  const cases = caseList().map(runCase).concat(classCombat());
   return {
     protocol: root.CoopProtocol.PROTOCOL_VERSION,
     loopHz: root.CoopProtocol.LIMITS.loopHz,

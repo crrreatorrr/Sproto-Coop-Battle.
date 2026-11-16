@@ -162,15 +162,15 @@ async function main() {
 
     const phone = store(memory(), true);
     await phone.attach(cloud.as('player-d'), 'player-d');
-    assert.deepStrictEqual(phone.get(), { unlocked: 5, best: run(5, 1234, 7200) });
+    assert.deepStrictEqual(phone.get(), { unlocked: 5, best: run(5, 1234, 7200), weaponClears: 8 });
     // Each device earns something; both end up with all of it, nothing overwritten.
     clear(phone, 8);
     await phone.flush();
     best(laptop, run(6, 10, 10));
     await laptop.flush();
     await phone.attach(cloud.as('player-d'), 'player-d');
-    assert.deepStrictEqual(phone.get(), { unlocked: 9, best: run(6, 10, 10) });
-    assert.deepStrictEqual(JSON.parse(cloud.saves.get('player-d')), { unlocked: 9, best: run(6, 10, 10) });
+    assert.deepStrictEqual(phone.get(), { unlocked: 9, best: run(6, 10, 10), weaponClears: 136 });
+    assert.deepStrictEqual(JSON.parse(cloud.saves.get('player-d')), { unlocked: 9, best: run(6, 10, 10), weaponClears: 136 });
   }
 
   // ---- pending wins go to the account ----
@@ -187,7 +187,7 @@ async function main() {
     assert.strictEqual(s.get().unlocked, 3, 'the SDK store took the held progress');
     best(s, run(3, 50, 600)); // and one more while init is still running
     await s.attach(cloud.as('player-e'), 'player-e');
-    assert.deepStrictEqual(JSON.parse(cloud.saves.get('player-e')), { unlocked: 3, best: run(3, 50, 600) });
+    assert.deepStrictEqual(JSON.parse(cloud.saves.get('player-e')), { unlocked: 3, best: run(3, 50, 600), weaponClears: 2 });
     assert.strictEqual(browser.getItem(P.KEY), null, 'still nothing on the device');
     assert.ok(browser.getItem(P.KEY + '@player-e'), 'the account copy in this browser');
 

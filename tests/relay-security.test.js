@@ -96,8 +96,9 @@ async function main() {
     check(index.headers['content-type'].includes('text/html'), 'html type');
     const sim = await get(port, '/js/sim.js');
     check(sim.status === 200 && sim.headers['content-type'].includes('javascript'), 'js type');
-    const png = await get(port, '/assets/fighters/sproto3106/00.png');
-    check(png.status === 200 && png.headers['content-type'] === 'image/png', 'png type');
+    const atlas = await get(port, '/assets/fighters/sproto3106/atlas.webp');
+    check(atlas.status === 200 && atlas.headers['content-type'] === 'image/webp', 'webp type');
+    check((await get(port, '/art/fighter-poses/sproto3106/00.png')).status === 404, 'source poses are not served');
     const jpg = await get(port, '/assets/stages/01-back.jpg');
     check(jpg.status === 200 && jpg.headers['content-type'] === 'image/jpeg', 'jpeg type');
 

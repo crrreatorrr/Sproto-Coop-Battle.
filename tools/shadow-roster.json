@@ -1,0 +1,1319 @@
+{
+  "source": "0e9af1967a9bd80c9eac5b66e415860e97d77f7a",
+  "cell": 64,
+  "foot": [
+    32,
+    56
+  ],
+  "scale": 1.6,
+  "sheets": [
+    "assets/shadows/01.png",
+    "assets/shadows/02.png",
+    "assets/shadows/03.png",
+    "assets/shadows/04.png",
+    "assets/shadows/05.png",
+    "assets/shadows/06.png",
+    "assets/shadows/07.png",
+    "assets/shadows/08.png",
+    "assets/shadows/09.png",
+    "assets/shadows/10.png",
+    "assets/shadows/11.png",
+    "assets/shadows/12.png"
+  ],
+  "stages": [
+    [
+      {
+        "id": "buddhashadow",
+        "name": "SPROTO BUDDHA (Shadow Mode)",
+        "role": "ranged"
+      },
+      {
+        "id": "guest12",
+        "name": "$Bitcoin Obama",
+        "role": "melee"
+      },
+      {
+        "id": "potocaicai",
+        "name": "Poto Cai Cai",
+        "role": "melee"
+      },
+      {
+        "id": "bimba",
+        "name": "BIMBA",
+        "role": "ranged"
+      },
+      {
+        "id": "anni",
+        "name": "ANNI niM.A.T.",
+        "role": "melee"
+      },
+      {
+        "id": "sproteth",
+        "name": "sprot.eth",
+        "role": "melee"
+      },
+      {
+        "id": "sproto651",
+        "name": "Sproto Picasso",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotocius",
+        "name": "sprotocius",
+        "role": "melee"
+      },
+      {
+        "id": "rektina",
+        "name": "rektina",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1335",
+        "name": "Crackhead",
+        "role": "ranged"
+      },
+      {
+        "id": "cryptoviking420",
+        "name": "420cryptoviking",
+        "role": "melee"
+      },
+      {
+        "id": "usedtowels",
+        "name": "usedtowels",
+        "role": "melee"
+      },
+      {
+        "id": "sproto704",
+        "name": "bill and John",
+        "role": "twin"
+      },
+      {
+        "id": "loqi",
+        "name": "loqi",
+        "role": "melee"
+      },
+      {
+        "id": "dollarbitcoin",
+        "name": "$Bitcoin",
+        "role": "melee"
+      },
+      {
+        "id": "nosmileclown",
+        "name": "\ud835\udd79\ud835\udd94\ud835\udd98\ud835\udd92\ud835\udd8e\ud835\udd91\ud835\udd8a\ud835\udd88\ud835\udd91\ud835\udd94\ud835\udd9c\ud835\udd93",
+        "role": "twin"
+      },
+      {
+        "id": "razz",
+        "name": "Razz",
+        "role": "melee"
+      },
+      {
+        "id": "86gwei",
+        "name": "86.gwei",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2531",
+        "name": "Sproto Gremlin",
+        "role": "ranged"
+      },
+      {
+        "id": "sisma",
+        "name": "SISMA",
+        "role": "ranged"
+      },
+      {
+        "id": "pongohpos10i",
+        "name": "Pongo HPOS10I",
+        "role": "ranged"
+      },
+      {
+        "id": "lowernipple",
+        "name": "SPROTO",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "rivet",
+        "name": "Golden Sproto",
+        "role": "ranged"
+      },
+      {
+        "id": "guest13",
+        "name": "Jahon",
+        "role": "melee"
+      },
+      {
+        "id": "reverend",
+        "name": "Reverend Cloud",
+        "role": "melee"
+      },
+      {
+        "id": "gpm",
+        "name": "GPM",
+        "role": "ranged"
+      },
+      {
+        "id": "pinewaffle",
+        "name": "pinewaffle",
+        "role": "melee"
+      },
+      {
+        "id": "danocrypto",
+        "name": "Dano Crypto",
+        "role": "melee"
+      },
+      {
+        "id": "sproto763",
+        "name": "Snarf",
+        "role": "ranged"
+      },
+      {
+        "id": "rmacpdx",
+        "name": "RMacPDX",
+        "role": "melee"
+      },
+      {
+        "id": "melo",
+        "name": "melo",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1345",
+        "name": "whale head",
+        "role": "ranged"
+      },
+      {
+        "id": "sweatpantstrust",
+        "name": "in sweatpants we trust",
+        "role": "melee"
+      },
+      {
+        "id": "drzmoody",
+        "name": "DrZMoody",
+        "role": "melee"
+      },
+      {
+        "id": "sproto832",
+        "name": "Frog and Tonic",
+        "role": "twin"
+      },
+      {
+        "id": "marfrog",
+        "name": "MarFrog",
+        "role": "melee"
+      },
+      {
+        "id": "obamasega420",
+        "name": "YES_WE_CAN_OBAMASEGA_420",
+        "role": "melee"
+      },
+      {
+        "id": "twinnyneutron",
+        "name": "twinny neutron",
+        "role": "twin"
+      },
+      {
+        "id": "laserbach",
+        "name": "Laserbach",
+        "role": "melee"
+      },
+      {
+        "id": "zebracorn",
+        "name": "Zebracorn",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2569",
+        "name": "Clownie",
+        "role": "ranged"
+      },
+      {
+        "id": "captainhowdy",
+        "name": "Captain Howdy",
+        "role": "ranged"
+      },
+      {
+        "id": "ceo",
+        "name": "CEO",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotopia",
+        "name": "Sprotopia",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "sproto2075",
+        "name": "Twinners",
+        "role": "twin"
+      },
+      {
+        "id": "dumpstar",
+        "name": "Dumpstar",
+        "role": "melee"
+      },
+      {
+        "id": "zepump",
+        "name": "H.E. ZEPUMP",
+        "role": "melee"
+      },
+      {
+        "id": "erik",
+        "name": "Erik Stevens",
+        "role": "ranged"
+      },
+      {
+        "id": "rainman",
+        "name": "Rainman_four20",
+        "role": "melee"
+      },
+      {
+        "id": "nomis",
+        "name": "nomis",
+        "role": "melee"
+      },
+      {
+        "id": "sproto313",
+        "name": "duality",
+        "role": "ranged"
+      },
+      {
+        "id": "mrhorsemeat",
+        "name": "Mr. Horse Meat",
+        "role": "melee"
+      },
+      {
+        "id": "kern",
+        "name": "Kern",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1187",
+        "name": "Dad",
+        "role": "ranged"
+      },
+      {
+        "id": "spunow",
+        "name": "spunow habichuelas",
+        "role": "melee"
+      },
+      {
+        "id": "cam",
+        "name": "Cam",
+        "role": "melee"
+      },
+      {
+        "id": "sproto3235",
+        "name": "Cyclops and Joey",
+        "role": "twin"
+      },
+      {
+        "id": "familywagon",
+        "name": "familywagon.eth",
+        "role": "melee"
+      },
+      {
+        "id": "bigal",
+        "name": "Big al",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2381",
+        "name": "\ud835\udcae\ud835\uddc9\ud835\uddcb\ud835\uddc8\ud835\uddcb\ud835\uddba\ud835\uddbe\ud835\uddc6\ud835\uddc8\ud835\uddc7",
+        "role": "ranged"
+      },
+      {
+        "id": "freedfrida",
+        "name": "Freed Frida",
+        "role": "melee"
+      },
+      {
+        "id": "corn",
+        "name": "CORN",
+        "role": "melee"
+      },
+      {
+        "id": "loadthebags",
+        "name": "LoadTheBags",
+        "role": "ranged"
+      },
+      {
+        "id": "thesprotowholivedeth",
+        "name": "thesprotowholived.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "felixsprotoarc",
+        "name": "felix (sproto arc)",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "vamp",
+        "name": "VAMP",
+        "role": "melee"
+      },
+      {
+        "id": "mandela",
+        "name": "Bitcoin Mandela",
+        "role": "melee"
+      },
+      {
+        "id": "pirate",
+        "name": "P| RAT\u039e",
+        "role": "melee"
+      },
+      {
+        "id": "vela",
+        "name": "Morelight",
+        "role": "ranged"
+      },
+      {
+        "id": "moonshiller",
+        "name": "MoonShiller",
+        "role": "melee"
+      },
+      {
+        "id": "saburdo",
+        "name": "saburdo",
+        "role": "melee"
+      },
+      {
+        "id": "leviosa",
+        "name": "Bitcoinium Leviosa",
+        "role": "ranged"
+      },
+      {
+        "id": "chrisfowler",
+        "name": "Chris Fowler",
+        "role": "melee"
+      },
+      {
+        "id": "davidcd",
+        "name": "(Da,vid) DC",
+        "role": "melee"
+      },
+      {
+        "id": "sproto818",
+        "name": "lab experiment",
+        "role": "ranged"
+      },
+      {
+        "id": "bitcoind1rk",
+        "name": "BITCOIN D1RK D1GGLER",
+        "role": "melee"
+      },
+      {
+        "id": "janitor",
+        "name": "Janitor",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1414",
+        "name": "Chiller",
+        "role": "ranged"
+      },
+      {
+        "id": "crumpleii",
+        "name": "c\ud835\ude19\ud835\ude36\ud835\ude2eple \ud835\udc08\ud835\udc08",
+        "role": "melee"
+      },
+      {
+        "id": "teahupoo",
+        "name": "0xTeahupoo",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1499",
+        "name": "Dancing Partners",
+        "role": "twin"
+      },
+      {
+        "id": "cantankerous",
+        "name": "Can Tankerous",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2616",
+        "name": "sun god",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotosales",
+        "name": "Sproto Sales",
+        "role": "ranged"
+      },
+      {
+        "id": "azkarah",
+        "name": "Azkarah",
+        "role": "ranged"
+      },
+      {
+        "id": "cryptobartender",
+        "name": "CryptoBARTENDER",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "sproto3106",
+        "name": "Bitcoin Sheriff",
+        "role": "ranged"
+      },
+      {
+        "id": "crapto",
+        "name": "Crapto",
+        "role": "melee"
+      },
+      {
+        "id": "sprotopotamus",
+        "name": "Sprotopotamus",
+        "role": "melee"
+      },
+      {
+        "id": "lifeisameme",
+        "name": "Lifeisameme",
+        "role": "ranged"
+      },
+      {
+        "id": "wifebeater",
+        "name": "wifebeater.eth",
+        "role": "melee"
+      },
+      {
+        "id": "clobrwn",
+        "name": "CloBrwn",
+        "role": "melee"
+      },
+      {
+        "id": "sproto831",
+        "name": "The Villain",
+        "role": "ranged"
+      },
+      {
+        "id": "wyrmblvnt",
+        "name": "wyrmblvnt",
+        "role": "melee"
+      },
+      {
+        "id": "renzo",
+        "name": "RENZO",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1477",
+        "name": "Stalker",
+        "role": "ranged"
+      },
+      {
+        "id": "zippy",
+        "name": "zippy",
+        "role": "melee"
+      },
+      {
+        "id": "croy",
+        "name": "Croy",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1625",
+        "name": "schizos",
+        "role": "twin"
+      },
+      {
+        "id": "otorps",
+        "name": "Otorps",
+        "role": "melee"
+      },
+      {
+        "id": "cryptorizzler",
+        "name": "CryptoRizzler",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2789",
+        "name": "retainer",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotomidnightfx",
+        "name": "SprotoMidnightFX",
+        "role": "melee"
+      },
+      {
+        "id": "zakarum",
+        "name": "Zakarum",
+        "role": "melee"
+      },
+      {
+        "id": "sprog",
+        "name": "Sprog",
+        "role": "ranged"
+      },
+      {
+        "id": "aktree",
+        "name": "Ak Tree",
+        "role": "ranged"
+      },
+      {
+        "id": "contresens",
+        "name": "Contre-Sens",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "duo",
+        "name": "candles",
+        "role": "twin"
+      },
+      {
+        "id": "alpha777",
+        "name": "Alpha 777",
+        "role": "melee"
+      },
+      {
+        "id": "willuminati",
+        "name": "WILLUMINATI",
+        "role": "melee"
+      },
+      {
+        "id": "rune",
+        "name": "Bongraker",
+        "role": "ranged"
+      },
+      {
+        "id": "fiatfudder",
+        "name": "FIAT FUDDER",
+        "role": "melee"
+      },
+      {
+        "id": "sirbitcoin",
+        "name": "sir bitcoin",
+        "role": "melee"
+      },
+      {
+        "id": "rlarsson",
+        "name": "rlarsson.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "fplgremlin",
+        "name": "FPL Gremlin",
+        "role": "melee"
+      },
+      {
+        "id": "micsash",
+        "name": "Micsash __/acc",
+        "role": "melee"
+      },
+      {
+        "id": "sproto834",
+        "name": "Sproto #834",
+        "role": "ranged"
+      },
+      {
+        "id": "lilgoldied",
+        "name": "LilGoldieD",
+        "role": "melee"
+      },
+      {
+        "id": "stonkyleg69",
+        "name": "StonkyLeg69",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1601",
+        "name": "888",
+        "role": "ranged"
+      },
+      {
+        "id": "berserk",
+        "name": "\ud835\udd05\ud835\udd22\ud835\udd2f\ud835\udd30\ud835\udd22\ud835\udd2f\ud835\udd0e",
+        "role": "melee"
+      },
+      {
+        "id": "cryptomonger",
+        "name": "Crypto Monger",
+        "role": "melee"
+      },
+      {
+        "id": "gryph",
+        "name": "gryph",
+        "role": "twin"
+      },
+      {
+        "id": "mildtacos",
+        "name": "mildtacos",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2884",
+        "name": "Sprite",
+        "role": "ranged"
+      },
+      {
+        "id": "jasper",
+        "name": "Jasper",
+        "role": "ranged"
+      },
+      {
+        "id": "ghostsprotocol",
+        "name": "ghost sprotocol",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotosurvivor",
+        "name": "Sproto Survivor",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "bront",
+        "name": "Fat Head Dave",
+        "role": "melee"
+      },
+      {
+        "id": "bigswole",
+        "name": "Big Swole",
+        "role": "melee"
+      },
+      {
+        "id": "prim",
+        "name": "prim",
+        "role": "melee"
+      },
+      {
+        "id": "guest08",
+        "name": "Yoyo",
+        "role": "ranged"
+      },
+      {
+        "id": "godether",
+        "name": "GodEther.eth",
+        "role": "melee"
+      },
+      {
+        "id": "hermionemichelleamyrose",
+        "name": "HermioneMichelleAmyRose",
+        "role": "melee"
+      },
+      {
+        "id": "blorfo",
+        "name": "Blorfo",
+        "role": "ranged"
+      },
+      {
+        "id": "spruto",
+        "name": "Spruto",
+        "role": "melee"
+      },
+      {
+        "id": "wireitwell",
+        "name": "_wireitwell_",
+        "role": "melee"
+      },
+      {
+        "id": "sproto837",
+        "name": "Bitcoin Robin Williams",
+        "role": "ranged"
+      },
+      {
+        "id": "onememeaday",
+        "name": "1 meme a day til $10",
+        "role": "melee"
+      },
+      {
+        "id": "indiapolice",
+        "name": "IndiaPolice",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1668",
+        "name": "Goldie",
+        "role": "ranged"
+      },
+      {
+        "id": "feistyboi",
+        "name": "Feisty boi",
+        "role": "melee"
+      },
+      {
+        "id": "homosproto",
+        "name": "I Am Homo Sproto",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2010",
+        "name": "Tartarian Soldiers",
+        "role": "twin"
+      },
+      {
+        "id": "autistophrenicsprotagonist",
+        "name": "Autistophrenic Sprotagonist",
+        "role": "melee"
+      },
+      {
+        "id": "sproto3215",
+        "name": "Captain Green",
+        "role": "ranged"
+      },
+      {
+        "id": "aaron",
+        "name": "Aaron",
+        "role": "ranged"
+      },
+      {
+        "id": "degenpress",
+        "name": "degenpress.base.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "d86",
+        "name": "D86",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "zephyr",
+        "name": "Halloween 2008",
+        "role": "melee"
+      },
+      {
+        "id": "nate",
+        "name": "Little Foot Nate",
+        "role": "melee"
+      },
+      {
+        "id": "benjamin",
+        "name": "Benjamin Button",
+        "role": "melee"
+      },
+      {
+        "id": "guest09",
+        "name": "Red Kev",
+        "role": "ranged"
+      },
+      {
+        "id": "aleksander",
+        "name": "Aleksander",
+        "role": "melee"
+      },
+      {
+        "id": "julian",
+        "name": "JULIAN",
+        "role": "melee"
+      },
+      {
+        "id": "michael",
+        "name": "Michael D. Sproto - Chad Dev",
+        "role": "ranged"
+      },
+      {
+        "id": "tdeth",
+        "name": "TD.eth",
+        "role": "melee"
+      },
+      {
+        "id": "cryptoboy",
+        "name": "CryptoBoy",
+        "role": "melee"
+      },
+      {
+        "id": "sproto865",
+        "name": "Artdude",
+        "role": "ranged"
+      },
+      {
+        "id": "zudi",
+        "name": "Zudi",
+        "role": "melee"
+      },
+      {
+        "id": "veryseriousinvestor",
+        "name": "veryseriousinvestor",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1815",
+        "name": "Jessica",
+        "role": "ranged"
+      },
+      {
+        "id": "isaac",
+        "name": "Isaac",
+        "role": "melee"
+      },
+      {
+        "id": "pars",
+        "name": "PARS SPRO TOTO",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2210",
+        "name": "Suburban Couple",
+        "role": "twin"
+      },
+      {
+        "id": "kerrieanne",
+        "name": "Kerrie Anne",
+        "role": "melee"
+      },
+      {
+        "id": "vaudream",
+        "name": "\u142f\u156c\u144c\u15de\u1587\u156e\u15cb\u156c",
+        "role": "ranged"
+      },
+      {
+        "id": "brainsprot",
+        "name": "Brain Sprot",
+        "role": "ranged"
+      },
+      {
+        "id": "bs9090eth",
+        "name": "bs9090.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotolg",
+        "name": "Sproto LG",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "mox",
+        "name": "Yannix",
+        "role": "melee"
+      },
+      {
+        "id": "thxobama",
+        "name": "thxObama",
+        "role": "melee"
+      },
+      {
+        "id": "maxbiggums",
+        "name": "Max Biggums",
+        "role": "melee"
+      },
+      {
+        "id": "guest14",
+        "name": "Virtuagram",
+        "role": "ranged"
+      },
+      {
+        "id": "cyberviber",
+        "name": "cyberviber",
+        "role": "melee"
+      },
+      {
+        "id": "stoto",
+        "name": "stoto",
+        "role": "melee"
+      },
+      {
+        "id": "freshprince",
+        "name": "FreshPrinceOfBellend",
+        "role": "ranged"
+      },
+      {
+        "id": "vicoo",
+        "name": "sprotolicious",
+        "role": "melee"
+      },
+      {
+        "id": "osho",
+        "name": "Osho",
+        "role": "melee"
+      },
+      {
+        "id": "sproto943",
+        "name": "Artchick",
+        "role": "ranged"
+      },
+      {
+        "id": "forchaneth",
+        "name": "Forchan.eth",
+        "role": "melee"
+      },
+      {
+        "id": "agentsproto",
+        "name": "Agent SPROTO",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1870",
+        "name": "Error 333",
+        "role": "ranged"
+      },
+      {
+        "id": "mikemike",
+        "name": "Mike Mike",
+        "role": "melee"
+      },
+      {
+        "id": "accidentallyrich",
+        "name": "AccidentallyRich.eth",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2344",
+        "name": "Sproto #2344",
+        "role": "twin"
+      },
+      {
+        "id": "yusuf",
+        "name": "Yusuf",
+        "role": "melee"
+      },
+      {
+        "id": "uncmasterflex",
+        "name": "UNC Master Flex",
+        "role": "ranged"
+      },
+      {
+        "id": "sober",
+        "name": "Sober",
+        "role": "ranged"
+      },
+      {
+        "id": "samixsproto",
+        "name": "samiXsproto",
+        "role": "ranged"
+      },
+      {
+        "id": "gluttony",
+        "name": "GLUTTONY",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "guest07",
+        "name": "Juicy",
+        "role": "melee"
+      },
+      {
+        "id": "sproto3152",
+        "name": "Pissing Sproto",
+        "role": "melee"
+      },
+      {
+        "id": "xav",
+        "name": "Xav",
+        "role": "melee"
+      },
+      {
+        "id": "nick",
+        "name": "Nick",
+        "role": "ranged"
+      },
+      {
+        "id": "realityarchitect",
+        "name": "RealityArchitect.eth",
+        "role": "melee"
+      },
+      {
+        "id": "herbpowell",
+        "name": "Herb Powell",
+        "role": "melee"
+      },
+      {
+        "id": "mlk",
+        "name": "Bitcoin MLK",
+        "role": "ranged"
+      },
+      {
+        "id": "chonky",
+        "name": "Chonky",
+        "role": "melee"
+      },
+      {
+        "id": "bidnehhh",
+        "name": "Bidnehhh",
+        "role": "melee"
+      },
+      {
+        "id": "sproto999",
+        "name": "999",
+        "role": "ranged"
+      },
+      {
+        "id": "frej",
+        "name": "FREJ",
+        "role": "melee"
+      },
+      {
+        "id": "glow",
+        "name": "glow",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2101",
+        "name": "The Jay",
+        "role": "ranged"
+      },
+      {
+        "id": "godsson",
+        "name": "GodsSon",
+        "role": "melee"
+      },
+      {
+        "id": "np",
+        "name": "NP",
+        "role": "melee"
+      },
+      {
+        "id": "sproto3181",
+        "name": "10 Inu",
+        "role": "twin"
+      },
+      {
+        "id": "bobdobbs",
+        "name": "Bob Dobbs",
+        "role": "melee"
+      },
+      {
+        "id": "vitaliketh",
+        "name": "vitalik.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "olnoname",
+        "name": "ol\u2019 no name",
+        "role": "ranged"
+      },
+      {
+        "id": "pr0lificeth",
+        "name": "Pr0lific.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "sidelinereferee",
+        "name": "The Sideline Referee",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "guest10",
+        "name": "Sprotel Bitcoin",
+        "role": "melee"
+      },
+      {
+        "id": "satoshi",
+        "name": "Satoshi Sprototo",
+        "role": "melee"
+      },
+      {
+        "id": "emix",
+        "name": "0xEmix0",
+        "role": "melee"
+      },
+      {
+        "id": "captain",
+        "name": "Yelnacio Globulous",
+        "role": "ranged"
+      },
+      {
+        "id": "mrgoldrobe",
+        "name": "MrGoldRobe.eth",
+        "role": "melee"
+      },
+      {
+        "id": "sirdidit",
+        "name": "sirdidit",
+        "role": "melee"
+      },
+      {
+        "id": "sproto102",
+        "name": "Collector",
+        "role": "ranged"
+      },
+      {
+        "id": "giavannykitchens",
+        "name": "Giavanny Kitchens",
+        "role": "melee"
+      },
+      {
+        "id": "jayquant",
+        "name": "JayQuant",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1011",
+        "name": "Sir Sproto",
+        "role": "ranged"
+      },
+      {
+        "id": "crippledlover",
+        "name": "Crippled lover",
+        "role": "melee"
+      },
+      {
+        "id": "tingsmol",
+        "name": "tingsmol",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2177",
+        "name": "Spronic",
+        "role": "ranged"
+      },
+      {
+        "id": "tradertimmy",
+        "name": "TraderTimmy",
+        "role": "melee"
+      },
+      {
+        "id": "slabcorn",
+        "name": "Slabcorn",
+        "role": "melee"
+      },
+      {
+        "id": "sproto3224",
+        "name": "Comedy Club",
+        "role": "twin"
+      },
+      {
+        "id": "slakesly",
+        "name": "Slakesly",
+        "role": "melee"
+      },
+      {
+        "id": "urmometh",
+        "name": "urmom.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "greatcharly",
+        "name": "Great Charly.eth",
+        "role": "ranged"
+      },
+      {
+        "id": "hdizzy",
+        "name": "HDIZZY ~ 197 IQ",
+        "role": "ranged"
+      },
+      {
+        "id": "bgbadger",
+        "name": "BGBadger",
+        "role": "ranged"
+      }
+    ],
+    [
+      {
+        "id": "guest11",
+        "name": "Chode Adoration",
+        "role": "melee"
+      },
+      {
+        "id": "xalt",
+        "name": "Xalt",
+        "role": "melee"
+      },
+      {
+        "id": "peterpan",
+        "name": "0xPeterPan",
+        "role": "melee"
+      },
+      {
+        "id": "highsproto",
+        "name": "High Sproto",
+        "role": "ranged"
+      },
+      {
+        "id": "solanadelray",
+        "name": "Solana Del Ray",
+        "role": "melee"
+      },
+      {
+        "id": "ciphersproto",
+        "name": "Cipher Sproto",
+        "role": "melee"
+      },
+      {
+        "id": "sproto215",
+        "name": "Muzzle",
+        "role": "ranged"
+      },
+      {
+        "id": "seph0x",
+        "name": "Seph0x",
+        "role": "melee"
+      },
+      {
+        "id": "infinitysplitter",
+        "name": "infinitysplitter",
+        "role": "melee"
+      },
+      {
+        "id": "sproto1093",
+        "name": "GodsSon",
+        "role": "ranged"
+      },
+      {
+        "id": "pilgrim",
+        "name": "pilgrim",
+        "role": "melee"
+      },
+      {
+        "id": "johnson",
+        "name": "Johnson",
+        "role": "melee"
+      },
+      {
+        "id": "sproto282",
+        "name": "hly3",
+        "role": "twin"
+      },
+      {
+        "id": "durlan",
+        "name": "Durlan",
+        "role": "melee"
+      },
+      {
+        "id": "lestrange",
+        "name": "LeStrange",
+        "role": "melee"
+      },
+      {
+        "id": "godmod3d",
+        "name": "GodMod3D.eth",
+        "role": "twin"
+      },
+      {
+        "id": "jameskaminski",
+        "name": "James Kaminski",
+        "role": "melee"
+      },
+      {
+        "id": "sproto2322",
+        "name": "Whitey",
+        "role": "ranged"
+      },
+      {
+        "id": "chaton",
+        "name": "Chaton von Sproto",
+        "role": "ranged"
+      },
+      {
+        "id": "theo",
+        "name": "Theo",
+        "role": "ranged"
+      },
+      {
+        "id": "sprotomichaelsaylor",
+        "name": "SprotoMichaelSaylor",
+        "role": "ranged"
+      }
+    ]
+  ]
+}

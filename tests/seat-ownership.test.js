@@ -87,6 +87,35 @@ function hello(match, who, devices, extra) {
 }
 
 {
+  const ada = presence('acct-ada', 's1');
+  const bea = presence('acct-bea', 's2');
+  const match = createAuthorityMatch({ privateRoom: true, weaponTiers: { [ada.userId]: 2 } });
+  const healer = global.Sim.WEAPONS[global.Sim.weaponChoices('healer', 1)[0]];
+  const ranged = global.Sim.WEAPONS[global.Sim.weaponChoices('ranged', 2)[1]];
+  hello(match, ada, ['k1', 'k2']);
+  const generation = match.seatView()[0].generation;
+  hello(match, ada, ['k1', 'k2'], { loadouts: {
+    k1: { classId: 'healer', weapon: healer.id },
+    k2: { classId: 'ranged', weapon: ranged.id },
+  } });
+  assert.deepStrictEqual(match.seatView().slice(0, 2).map(s => [s.classId, global.Sim.WEAPONS[s.weapon].id, s.generation]), [
+    ['healer', healer.id, generation], ['ranged', ranged.id, generation],
+  ], 'two devices choose different loadouts without releasing their seats');
+  const startingClass = match.seatView()[2].classId;
+  const locked = hello(match, bea, ['k1'], { loadouts: { k1: { classId: 'ranged', weapon: ranged.id } } });
+  assert.ok(locked.some(row => row.op === OP.REJECT && row.body.reason === 'weapon_locked'));
+  assert.strictEqual(match.seatView()[2].classId, startingClass, 'a rejected weapon does not partially apply the class');
+  const injected = hello(match, bea, ['k1'], { loadouts: { k1: { classId: 'mage', hp: 9000 } } });
+  assert.ok(injected.some(row => row.op === OP.REJECT && row.body.reason === 'loadout'));
+  match.ready(ada); match.ready(bea); match.loop(1000);
+  const late = hello(match, ada, ['k1', 'k2'], { loadouts: { k1: { classId: 'mage' } } });
+  assert.ok(late.some(row => row.op === OP.REJECT && row.body.reason === 'rejected'));
+  hello(match, presence(ada.userId, 's3'), ['k1', 'k2']);
+  assert.strictEqual(match.seatView()[0].classId, 'healer', 'reconnect keeps the class');
+  console.log('banked loadouts honor per-device picks, server unlocks, and the lobby boundary');
+}
+
+{
   const state = NetHub.createState();
   const now = 5000;
   NetHub.applyMessage(state, OP.SNAPSHOT, { kind: 'sproto-coop-battle-snapshot', restart: 1, tick: 9, state: { players: [{ s: 0 }], si: 3 } }, now);

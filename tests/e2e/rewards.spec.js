@@ -17,7 +17,7 @@ function loadProtocol() {
   sandbox.globalThis = sandbox;
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  for (const file of ['public/js/manifest.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js']) {
+  for (const file of ['public/js/manifest.js', 'public/js/combat.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), sandbox, { filename: file });
   }
   return sandbox.CoopProtocol;

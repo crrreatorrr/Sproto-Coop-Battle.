@@ -92,14 +92,13 @@ function seat(session, slot, device, generation) {
 {
   const session = banked(11);
   const player = session.state.players[2];
-  // A seat nobody has taken is empty: no CPU Sproto stands in it.
-  assert.ok(session.state.players.every(p => p.ctrl === 'none' && p.st === 'out'));
+  assert.ok(session.state.players.every(p => p.ctrl === 'cpu' && p.st === 'idle'));
   const items = session.state.items.map(item => item.id);
   const first = seat(session, 2, 'k1');
   assert.strictEqual(player.ctrl, 'local');
   assert.strictEqual(first.lives, 2, 'the first human in a seat gets a fresh Sproto');
   assert.strictEqual(player.st, 'idle');
-  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'none' && p.st === 'out'), 'other seats stay empty');
+  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'cpu'), 'other seats keep their CPUs');
   player.hp = 17;
   player.lives = 1;
   player.powers = [0, 1];
@@ -118,8 +117,8 @@ function seat(session, slot, device, generation) {
   assert.strictEqual(player.lives, 1);
   const released = CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 1, slot: 2 });
   assert.strictEqual(released.ok, true);
-  assert.strictEqual(player.ctrl, 'none', 'a released seat empties; no CPU takes the Sproto');
-  assert.strictEqual(player.st, 'out');
+  assert.strictEqual(player.ctrl, 'cpu', 'a CPU takes over the released seat');
+  assert.strictEqual(player.st, 'down');
   assert.strictEqual(player.hp, 17);
   assert.strictEqual(player.lives, 1);
   assert.deepStrictEqual(player.powers, [0, 1]);
@@ -139,16 +138,16 @@ function seat(session, slot, device, generation) {
   assert.strictEqual(CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 2, slot: 2 }).ok, true);
   seat(session, 2, 'k1', 3);
   assert.strictEqual(player.inv, 0, 'a returning Sproto keeps the invulnerability it left with');
-  // A player who died and left still gets the next stage's recovery.
+  // A dead Sproto still gets the next stage's recovery under CPU control.
   Object.assign(player, { lives: 0, dead: true, hp: 0, st: 'dead' });
   assert.strictEqual(CoopProtocol.releaseSeat(session, { accountId: 'ken', generation: 3, slot: 2 }).ok, true);
   Sim.startStage(session.state, 1);
-  assert.strictEqual(player.st, 'out', 'still out until the seat is taken again');
+  assert.strictEqual(player.ctrl, 'cpu');
   seat(session, 2, 'k1', 4);
   assert.strictEqual(player.st, 'idle');
   assert.strictEqual(player.lives, 1);
-  assert.strictEqual(player.hp, 60);
-  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'none' && p.st === 'out'), 'unused seats stay out across stages');
+  assert.strictEqual(player.hp, Math.round(Sim.classOf(player).hp * 0.6));
+  assert.ok(session.state.players.filter((p, i) => i !== 2).every(p => p.ctrl === 'cpu'), 'CPU teammates persist across stages');
   console.log('join, release, and generation takeover keep lives and items');
 }
 

@@ -5,28 +5,38 @@
     "slots": "4 cpu",
     "mode": "gameover",
     "stageReached": 2,
-    "t": 12826,
+    "t": 13243,
     "players": 4,
-    "snapSha256": "5a37da4a9a1981b9c615ad28b6998ab9525e2793c7e372327d9450960319faf8"
+    "snapSha256": "f975f49488c88ccac538990272ac974380a224d860c03e76221e499e536a65f2"
   },
   "mixedSeed7Tick1800": {
     "seed": 7,
-    "slots": ["local", "local", "cpu", "cpu"],
+    "slots": [
+      "local",
+      "local",
+      "cpu",
+      "cpu"
+    ],
     "ticks": 1800,
     "input": "locals: right for 70 of every 100 ticks, attack every 10th tick, jump every 45th tick",
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "2bd493aa684e9526c847148ad9e8e69860faf5c55174d8d1276c2274f4d6a721"
+    "snapSha256": "2127289b72adbc7a97b98d3b3f936dcf857306b90cccd6b378ab0b2e2e3cf857"
   },
   "fourLocalSeed99Tick1800": {
     "seed": 99,
-    "slots": ["local", "local", "local", "local"],
+    "slots": [
+      "local",
+      "local",
+      "local",
+      "local"
+    ],
     "ticks": 1800,
     "input": "each seat: right for 70 of every 100 ticks, lane nudge from slot parity, attack when tick % 12 === slot, jump when tick % 80 === slot * 3",
     "mode": "play",
     "stageReached": 1,
     "t": 1800,
-    "snapSha256": "34fdd3ba2defe1f93895c6d6e3b6a69226cf1b37ff08691d08af001fff1348de"
+    "snapSha256": "c3225865c337a5b178cdc6d7dfccf36c6e2c28862c49740d935b39d2a1510784"
   }
 }

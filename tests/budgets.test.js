@@ -14,11 +14,11 @@ async function main() {
   assert.ok(live.firstStageBytes <= 3 * MiB, 'first stage ' + live.firstStageBytes);
   assert.ok(live.criticalRequests <= 30, 'critical ' + live.criticalRequests);
   assert.ok(live.staticBytes <= 10 * MiB, 'static ' + live.staticBytes);
-  assert.strictEqual(live.atlasCount, 6);
+  assert.strictEqual(live.atlasCount, 16);
   assert.ok(live.atlasEdge <= 1024);
   assert.strictEqual(live.poseCount, 240);
-  assert.strictEqual(live.startupImages, 10);
-  assert.strictEqual(report.preloadCount, 10);
+  assert.strictEqual(live.startupImages, 8);
+  assert.strictEqual(report.preloadCount, 8);
   const result = budgets.assertBudgets(report, null);
   assert.deepStrictEqual(result.problems, [], result.problems.join('\n'));
   console.log('budgets ok', live.titleBytes, live.firstStageBytes, live.criticalRequests, live.staticBytes);

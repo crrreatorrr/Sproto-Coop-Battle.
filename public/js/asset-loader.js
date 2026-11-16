@@ -12,9 +12,10 @@ const LOAD_SLOTS = 4;
 const DECODE_SLOTS = 2;
 const STAGE_EXTRA = 8;
 const UFO_EXTRA = 12;
+const PORTRAITS = 'assets/fighters/portraits.png';
 
 function poseIndex(pose) {
-  if (typeof pose === 'number' && pose >= 0 && pose < 32) return pose;
+  if (Number.isInteger(pose) && pose >= 0) return pose;
   if (typeof pose === 'string' && pose.charAt(0) === 'w') {
     const n = Number(pose.slice(2));
     if (n >= 0 && n < 8) return 32 + n;
@@ -22,13 +23,19 @@ function poseIndex(pose) {
   return -1;
 }
 
-function frameRect(pose) {
+function frameRect(pose, cell = CELL, separateMotion = false) {
   const i = poseIndex(pose);
-  if (i < 0 || i >= POSES) return null;
-  return { i: i, x: (i % COLS) * CELL, y: Math.floor(i / COLS) * CELL, w: CELL, h: CELL };
+  if (i < 0) return null;
+  const n = separateMotion ? i - POSES : i;
+  if (n < 0) return null;
+  return { i: i, x: (n % COLS) * cell, y: Math.floor(n / COLS) * cell, w: cell, h: cell };
 }
 
-function atlasPath(id) { return 'assets/fighters/' + id + '/atlas.png'; }
+function atlasPath(fighter) { return 'assets/fighters/' + fighter.id + '/atlas.' + (fighter.cell ? 'png' : 'webp'); }
+
+function motionPath(fighter) {
+  return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.png' : null;
+}
 
 function stageNo(i) { return String((i % 12) + 1).padStart(2, '0'); }
 
@@ -44,12 +51,18 @@ function bossPaths(manifest, i) {
   return out;
 }
 
+function stagePaths(manifest, i) {
+  const paths = scenery(i).concat(bossPaths(manifest, i));
+  const shadow = manifest.shadows?.sheets[i];
+  if (shadow) paths.push(shadow);
+  return paths;
+}
+
 // Drawn by render.js. idle.png and muzzle.png are on disk and unused.
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
-// Boss attack effects (render.js FX, packed by tools/build-boss-fx.py). Prefetched with the first
-// stage. groupOf() puts assets/fx/ in 'other', which evict() never drops.
-const FX = ['spikes', 'flame', 'lights', 'burst'].map(function (name) { return 'assets/fx/' + name + '.png'; });
+// Combat effects and gear are prefetched with the first stage and stay resident.
+const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(function (name) { return 'assets/fx/' + name + '.png'; });
 
 function unique(list) {
   const seen = new Set();
@@ -63,25 +76,29 @@ function unique(list) {
 }
 
 function groups(manifest) {
-  const atlas = manifest.fighters.map(function (f) { return atlasPath(f.id); });
+  const atlas = manifest.fighters.map(atlasPath);
+  const motion = manifest.fighters.map(motionPath).filter(Boolean);
+  const shadows = manifest.shadows?.sheets || [];
   const stages = [];
   const bosses = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
     stages.push.apply(stages, scenery(i));
     bosses.push.apply(bosses, bossPaths(manifest, i));
   }
-  // Title background is stage 1. The lobby backdrop is stage 5 (theme index 4).
-  const startup = atlas.concat(scenery(0), scenery(4));
+  // The title shows the original first four. All other bodies load when selected.
+  const startup = atlas.slice(0, 4).concat(scenery(0), scenery(4));
   const firstBoss = bossPaths(manifest, 0);
   return {
     atlas: atlas,
+    motion: motion,
     startup: startup,
     firstBoss: firstBoss,
+    shadows: shadows.slice(),
     ufo: UFO.slice(),
     fx: FX.slice(),
     stages: stages,
     bosses: bosses,
-    all: unique(atlas.concat(stages, bosses, UFO, FX)),
+    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, shadows, UFO, FX)),
     scenery: scenery,
     boss: function (i) { return bossPaths(manifest, i); },
   };
@@ -111,7 +128,13 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
   let scriptBytes = 0;
   for (let i = 0; i < scriptPaths.length; i++) scriptBytes += bytesOf(scriptPaths[i]);
   const titleBytes = htmlBytes + scriptBytes + sum(g.startup);
-  const firstStageBytes = titleBytes + sum(g.firstBoss) + sum(g.ufo);
+  // Account for the largest four possible selected bodies, including their motion and portraits.
+  const lineup = manifest.fighters.map(f => {
+    const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
+    return sum(paths);
+  }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
+  const deferred = ['js/render-fx.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const firstStageBytes = titleBytes + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
     titleBytes: titleBytes,
     firstStageBytes: firstStageBytes,
@@ -151,6 +174,7 @@ function groupOf(src) {
   if (src.indexOf('/bosses/') >= 0) return 'boss';
   if (src.indexOf('/stages/') >= 0) return 'stage';
   if (src.indexOf('/ufo/') >= 0) return 'ufo';
+  if (src.indexOf('/shadows/') >= 0) return 'shadow';
   return 'other';
 }
 
@@ -365,7 +389,7 @@ function create(opts) {
   }
 
   function evict() {
-    const extra = { boss: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
+    const extra = { boss: 0, shadow: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
     Object.keys(extra).forEach(function (group) {
       const loose = [];
       records.forEach(function (rec) {
@@ -383,8 +407,8 @@ function create(opts) {
 
   function enterStage(index, manifest) {
     if (index < 0 || index >= manifest.bosses.length) return;
-    const current = scenery(index).concat(bossPaths(manifest, index));
-    const next = index + 1 < manifest.bosses.length ? scenery(index + 1).concat(bossPaths(manifest, index + 1)) : [];
+    const current = stagePaths(manifest, index);
+    const next = index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});
@@ -434,6 +458,8 @@ root.AssetLoader = {
   poseIndex: poseIndex,
   frameRect: frameRect,
   atlasPath: atlasPath,
+  motionPath: motionPath,
+  portraits: PORTRAITS,
   groups: groups,
   resolve: resolve,
   pageScripts: pageScripts,

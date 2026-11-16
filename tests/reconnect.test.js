@@ -34,15 +34,15 @@ function hello(match, who, devices) {
   assert.strictEqual(match.seatView()[0].human, 1);
   match.loop(2000 + 299 * 50);
   assert.strictEqual(match.seatView()[0].human, 0);
-  assert.strictEqual(match.seatView()[0].ctrl, 'none', 'after the grace the seat empties');
+  assert.strictEqual(match.seatView()[0].ctrl, 'cpu', 'after the grace a CPU takes over the seat');
   // The match keeps running for those 15 s and the idle Sproto may take hits in its first wave, so
-  // the check is that nothing was refilled: no life or health went up when the seat emptied.
+  // Verify that the handoff did not refill the departing player's health, lives or powers.
   const after = match.life();
-  after.lives.forEach((n, i) => assert.ok(n <= before.lives[i], 'lives were not refilled'));
-  after.hp.forEach((n, i) => assert.ok(n <= before.hp[i], 'health was not refilled'));
+  assert.ok(after.lives[0] <= before.lives[0], 'lives were not refilled');
+  assert.ok(after.hp[0] <= before.hp[0], 'health was not refilled');
   assert.strictEqual(after.hp[0] > 0 && after.lives[0], before.lives[0], 'the parked seat kept its lives');
-  assert.deepStrictEqual(after.powers, before.powers);
-  console.log('15s grace parks the seat idle, then it empties without a life reset');
+  assert.deepStrictEqual(after.powers[0], before.powers[0]);
+  console.log('15s grace parks the seat idle, then a CPU takes over without a life reset');
 }
 
 {

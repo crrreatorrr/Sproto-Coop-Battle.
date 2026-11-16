@@ -1,4 +1,4 @@
-// CPU teammates: any slot not held by a human is a CPU Sproto, so every battle is four-strong.
+// CPU teammates fill the open slots of a party match.
 (function (root) {
 'use strict';
 function think(state, p) {
@@ -7,6 +7,8 @@ function think(state, p) {
   if (p.st === 'dead') return;
   if (p.st === 'down') return;
   const ai = p.ai;
+  const role = S.classOf(p);
+  const hasShot = !!role.shot;
   ai.t++;
   if (ai.t % 30 === 0) ai.jitter = (S.rng(state) - 0.5) * 30;
 
@@ -42,18 +44,38 @@ function think(state, p) {
     }
   }
 
-  // Grab the UFO or a snack when useful.
-  // CPUs never go for the UFO: it is for human players only.
+  if (state.cpuParty) {
+    // A human who stopped playing can still be rescued. CPUs otherwise wait for
+    // a living human so they cannot clear waves while the party is unattended.
+    const nearbyHuman = state.players.some(o => (o.ctrl === 'local' || o.ctrl === 'remote') &&
+      S.alive(o) && (o.idle || 0) < S.IDLE_AFTER);
+    if (!nearbyHuman) return;
+  }
+
+  if (role.id === 'healer' && p.abilityCd <= 1 && !p.prev.p && (p.st === 'idle' || p.st === 'walk')) {
+    const target = S.healTarget(state, p);
+    if (target && S.maxHp(target) - target.hp >= 12) { inp.p = 1; return; }
+    if (state.cpuParty) {
+      const wounded = S.healTarget(state, p, 180, 65);
+      if (wounded && wounded !== p && wounded.ctrl !== 'cpu' && S.maxHp(wounded) - wounded.hp >= 24) {
+        go(wounded.x, wounded.y, 40);
+        return;
+      }
+    }
+  }
+
+  // CPUs never go for the UFO or stored powers. Reserve gold pickups and
+  // healing snacks for humans when they would benefit from them.
   // Only items still on screen: one the camera has passed can never be reached.
-  const item = state.items.find(i => ((i.kind === 'snack' && p.hp < 35) || i.kind === 'gem') && Math.abs(i.x - p.x) < 160 && i.x > state.camX + 16 && i.x < state.camX + S.W - 16);
+  const item = state.items.find(i => ((i.kind === 'snack' && p.hp < 35) || i.kind === 'gem') &&
+    S.canPickUp(state, p, i) && Math.abs(i.x - p.x) < 160 && i.x > state.camX + 16 && i.x < state.camX + S.W - 16);
   if (item) { go(item.x, item.y, 6); return; }
 
   const foe = nearestFoe(state, p);
   if (!foe) {
     // Advance with the team, spread across the belt, but never far ahead of a human who is
     // playing: the screen follows the leader, and CPUs must not start the next wave under them.
-    // A human who has pressed nothing for five seconds is not waited for, so a run with only idle
-    // humans still moves on and ends like an all-CPU run.
+    // Keep the old autonomous behavior for the all-CPU attract mode.
     let lead = -1e9;
     for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && (o.idle || 0) < S.IDLE_AFTER && o.x > lead) lead = o.x;
     const ahead = lead > -1e9 ? lead + 50 + p.slot * 18 : 1e9;
@@ -65,7 +87,8 @@ function think(state, p) {
   const w = S.WEAPONS[p.weapon];
   const isBoss = foe.isBoss;
   // Teammates fan out: each seat keeps its own distance and lane offset from the same foe.
-  const reach = isBoss ? foe.w * 0.42 + w.reach * 0.55 : w.reach * [0.7, 0.58, 0.8, 0.64, 0.76, 0.52][p.slot];
+  const attackReach = hasShot ? S.clamp(S.classShotRange(p) * 0.45, 56, 154) : w.reach;
+  const reach = isBoss ? foe.w * 0.42 + attackReach * 0.55 : attackReach * [0.7, 0.58, 0.8, 0.64, 0.76, 0.52][p.slot];
   // When a teammate is on the same Shadow Sproto, even seats take its left and odd seats its
   // right (unless that side is off screen), so the team surrounds instead of stacking.
   let side = p.x < foe.x ? -1 : 1;
@@ -75,7 +98,7 @@ function think(state, p) {
   }
   // A guarding elite is attacked from behind when a teammate holds its attention.
   if (foe.guard && foe.aim !== p.slot) side = -foe.face;
-  const laneOff = isBoss ? [-26, 26, -12, 12, 0, -20][p.slot] : [-6, 6, -3, 3, 0, -5][p.slot];
+  const laneOff = isBoss && !hasShot ? [-26, 26, -12, 12, 0, -20][p.slot] : [-6, 6, -3, 3, 0, -5][p.slot];
   // Step out of a warned boss lane (CPUs react late, so they still get caught sometimes).
   const bs = state.boss;
   if (bs && bs.st === 'fire' && bs.warn && bs.t > 12 && S.rng(state) < 0.7) {
@@ -111,8 +134,17 @@ function think(state, p) {
     const at = p.x < foe.x ? -1 : 1; // the side this Sproto is actually on
     if (p.face !== -at) { if (at < 0) inp.r = 1; else inp.l = 1; }
     const crowd = state.enemies.filter(e => !e.dead && Math.abs(e.x - p.x) < 50 && Math.abs(e.y - p.y) < 16).length;
-    if (crowd >= 3 && p.hp > 40 && S.rng(state) < 0.02) inp.s = 1;
-    else if ((ai.t + p.slot * 5) % 17 === 0 && S.rng(state) < 0.8) { inp.a = 1; if (foe.guard && (p.x - foe.x) * foe.face >= 0) { inp.u = 1; inp.d = 0; } } // launcher: under the guard
+    if (!hasShot && crowd >= 3 && p.hp > 40 && S.rng(state) < 0.02) inp.s = 1;
+    else if ((ai.t + p.slot * 5) % 17 === 0 && S.rng(state) < 0.8) {
+      if (hasShot) {
+        inp.u = inp.d = 0;
+        if (role.abilityShot && p.abilityCd <= 1 && (p.st === 'idle' || p.st === 'walk')) inp.p = 1;
+        else inp.a = 1;
+      } else {
+        inp.a = 1;
+        if (foe.guard && (p.x - foe.x) * foe.face >= 0) { inp.u = 1; inp.d = 0; } // launch under the guard
+      }
+    }
   }
 }
 function nearestFoe(state, p) {

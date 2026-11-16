@@ -1,4 +1,4 @@
-// Host + guest practice-relay smoke, plus the local four-seat lobby (empty seats stay empty).
+// Host + guest practice-relay smoke, the four-seat CPU party lobby, and ignored ?demo links.
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -115,19 +115,66 @@ async function main() {
     await local.waitForFunction(() => window.SprotoApp.screen === 'lobby', null, { timeout: 10000 });
     const localSlots = await local.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.localSlots = localSlots;
-    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'none').length !== 3) {
-      throw new Error('local lobby is not one human plus three empty seats: ' + localSlots.join(','));
+    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'cpu').length !== 3) {
+      throw new Error('local lobby is not one human plus three CPU teammates: ' + localSlots.join(','));
     }
     await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
     summary.screenshots.push('local-lobby-four-slots.png');
+    await local.waitForFunction(() => window.PartyPicker);
+    await local.keyboard.press('KeyH');
+    await local.waitForFunction(() => window.SprotoApp.roster?.slot === 0);
+    await local.keyboard.press('KeyH');
+    await local.waitForFunction(() => window.SprotoApp.roster?.slot === 1);
+    for (const fid of [5, 9]) {
+      await local.keyboard.press('KeyS');
+      await local.waitForFunction(index => window.SprotoApp.roster?.fid === index, fid);
+    }
+    await local.keyboard.press('KeyF');
+    await local.keyboard.press('KeyR');
+    await local.waitForFunction(() => {
+      const { slots } = window.SprotoApp;
+      return slots[1].ctrl === 'cpu' && slots[1].fid === 9 && slots[1].classId === 'healer' && slots[0].fid === 0;
+    });
+    await local.screenshot({ path: path.join(out, 'cpu-roster.png') });
+    summary.screenshots.push('cpu-roster.png');
+    await local.keyboard.press('Escape');
+    await local.waitForFunction(() => !window.SprotoApp.roster);
+    const equipped = page => page.evaluate(() => {
+      const slot = window.SprotoApp.slots[0];
+      return { classId: slot.classId, tier: Sim.WEAPONS[slot.weapon].tier };
+    });
+    await local.keyboard.press('KeyS');
+    if ((await equipped(local)).tier !== 1) throw new Error('a fresh local lobby can equip a locked tier');
+    await local.keyboard.press('Enter');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'stages');
+    await local.keyboard.press('KeyF');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim);
+    const cpuLoaded = await local.evaluate(() => {
+      const p = window.SprotoApp.sim.players[1];
+      return p.ctrl === 'cpu' && p.fid === 9 && p.classId === 'healer';
+    });
+    if (!cpuLoaded) throw new Error('the configured CPU did not enter the battle with its loadout');
+    summary.cpuLoadoutInBattle = true;
+    await local.evaluate(() => { window.SprotoApp.sim.mode = 'clear'; });
+    await local.waitForFunction(() => Progress.weaponTier(window.SprotoApp.progress.get()) === 2);
+    await local.evaluate(() => { window.SprotoApp.sim.mode = 'gameover'; });
+    await local.keyboard.press('Enter');
+    await local.waitForFunction(() => window.SprotoApp.screen === 'lobby');
+    for (const [i, id] of ['fighter', 'mage', 'healer', 'ranged'].entries()) {
+      if (i) await local.keyboard.press('KeyR');
+      await local.waitForFunction(role => window.SprotoApp.slots[0].classId === role, id);
+      await local.keyboard.press('KeyS');
+      await local.waitForFunction(() => Sim.WEAPONS[window.SprotoApp.slots[0].weapon].tier === 2);
+    }
+    summary.universalWeaponUnlock = true;
 
-    // There is no CPU attract game any more: ?demo=1 opens the title like any other visit.
+    // The removed attract-mode link must not start a run or eagerly fetch its AI script.
     const demo = await mk(acquired.url + '?demo=1');
     await demo.waitForFunction(() => window.SprotoApp.screen === 'title', null, { timeout: 45000 });
     await demo.waitForTimeout(800);
-    const demoState = await demo.evaluate(() => ({ screen: window.SprotoApp.screen, sim: !!window.SprotoApp.sim }));
+    const demoState = await demo.evaluate(() => ({ screen: window.SprotoApp.screen, sim: !!window.SprotoApp.sim, aiLoaded: !!window.SproAI }));
     summary.demoState = demoState;
-    if (demoState.screen !== 'title' || demoState.sim) throw new Error('?demo=1 still starts a run: ' + JSON.stringify(demoState));
+    if (demoState.screen !== 'title' || demoState.sim || demoState.aiLoaded) throw new Error('?demo=1 still starts or preloads a run: ' + JSON.stringify(demoState));
 
     const host = await mk(acquired.url);
     const guest = await mk(acquired.url);
@@ -153,6 +200,13 @@ async function main() {
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
     if (onlineSlots.length !== 4) throw new Error('online room lost a seat');
+    const remoteClass = () => host.evaluate(() => window.SprotoApp.slots.find(slot => slot.ctrl === 'remote').classId);
+    for (let i = 0; i < 4 && await remoteClass() !== 'healer'; i++) {
+      const role = await remoteClass();
+      await guest.keyboard.press('Quote');
+      await host.waitForFunction(previous => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.classId !== previous), role);
+    }
+    if (await remoteClass() !== 'healer') throw new Error('the remote player could not choose Healer');
     await guest.waitForTimeout(400);
     await guest.screenshot({ path: path.join(out, 'online-lobby-guest.png') });
     summary.screenshots.push('online-lobby-guest.png');
@@ -160,6 +214,20 @@ async function main() {
     await host.waitForFunction(() => window.SprotoApp.screen === 'stages', null, { timeout: 5000 });
     await host.keyboard.press('KeyF');
     await guest.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.snap, null, { timeout: 10000 });
+    await host.evaluate(() => {
+      const sim = window.SprotoApp.sim;
+      sim.players[0].hp = 30;
+      sim.players[1].x = sim.players[0].x + 12;
+      sim.players[1].y = sim.players[0].y;
+      for (const p of sim.players) if (p.ctrl === 'cpu') p.abilityCd = 300;
+    });
+    await guest.keyboard.down('Quote');
+    await guest.waitForFunction(() => {
+      const snap = window.SprotoApp.snap;
+      return snap.players[0].hp > 30 && snap.players[1].ac > 0 && snap.fx.some(f => f.k === 'class-heal');
+    }, null, { timeout: 5000 });
+    await guest.keyboard.up('Quote');
+    summary.relayHeal = true;
     await guest.keyboard.down('ArrowRight');
     await guest.waitForTimeout(1200);
     await guest.keyboard.up('ArrowRight');

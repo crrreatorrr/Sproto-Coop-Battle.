@@ -22,7 +22,7 @@ function loadBundle() {
   sandbox.globalThis = sandbox;
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  const files = ['public/js/manifest.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js', 'tests/fixtures/sha256.js', 'tests/fixtures/scenarios.js'];
+  const files = ['public/js/manifest.js', 'public/js/combat.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js', 'tests/fixtures/sha256.js', 'tests/fixtures/scenarios.js'];
   for (const file of files) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), sandbox, { filename: file });
   return sandbox;
 }
@@ -58,10 +58,10 @@ function authority() {
     assert.strictEqual(ran.cases[i].stateHash, goldens.cases[i].stateHash, ran.cases[i].id);
     assert.strictEqual(ran.cases[i].mode, goldens.cases[i].mode, ran.cases[i].id);
   }
-  const stage1 = ran.cases.find(row => row.id === 'human-seed3-stage1');
+  const stage1 = ran.cases.find(row => row.id === 'human-seed9-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);
-  assert.ok(ran.cases.find(row => row.id === 'human-seed16-stage1').flags.bossPhase >= 1);
+  assert.ok(ran.cases.find(row => row.id === 'human-seed64-stage1').flags.bossPhase >= 1);
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }
@@ -80,7 +80,7 @@ function authority() {
   const beforeLife = JSON.stringify(CoopProtocol.lifeFacts(one.session.state));
   CoopProtocol.releaseSeat(one.session, { slot: 3, accountId: 'acct-ada', generation: 1 });
   assert.strictEqual(JSON.stringify(CoopProtocol.lifeFacts(one.session.state)), beforeLife);
-  assert.strictEqual(one.session.state.players[3].ctrl, 'none', 'a released seat empties; no CPU takes it');
+  assert.strictEqual(one.session.state.players[3].ctrl, 'cpu', 'a released seat becomes a CPU teammate');
 
   const four = CoopProtocol.createMatch({ mode: 'banked', seed: 4, matchId: 'four-humans' });
   const names = ['ada', 'bea', 'cy', 'dee'];
@@ -102,8 +102,7 @@ function authority() {
   const mixedFacts = CoopProtocol.participationFacts(mixed.session);
   assert.strictEqual(mixedFacts.accounts.length, 2);
   assert.strictEqual(mixedFacts.accounts.find(row => row.accountId === 'acct-ada').slots.length, 2);
-  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'none').length, 1, 'the fourth seat stays empty');
-  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 0);
+  assert.strictEqual(mixed.session.state.players.filter(player => player.ctrl === 'cpu').length, 1, 'a CPU fills the fourth seat');
 
   const late = CoopProtocol.createMatch({ mode: 'banked', seed: 6, matchId: 'late' });
   CoopProtocol.assignSeat(late.session, { slot: 0, accountId: 'acct-ada', device: 'k1', generation: 1 });
@@ -250,8 +249,7 @@ async function soak(ms) {
     const page = await browser.newPage({ viewport: { width: 960, height: 540 } });
     const client = await page.context().newCDPSession(page);
     await client.send('Performance.enable');
-    // There is no CPU attract game, so the soak starts a one-player local run through the lobby:
-    // F takes a seat from the title, then Enter opens the stage select and starts stage 1.
+    // Start a real four-seat party (one human and three CPU teammates), not the removed attract mode.
     await page.goto(staticServer.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForFunction(() => window.SprotoApp && window.SprotoApp.screen === 'title', null, { timeout: 45000 });
     await page.keyboard.press('KeyF');

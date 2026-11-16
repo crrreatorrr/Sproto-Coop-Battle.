@@ -70,6 +70,12 @@ function jpegSize(buf) {
 export function imageSize(file, buf) {
   if (file.endsWith('.png')) return pngSize(buf);
   if (file.endsWith('.jpg') || file.endsWith('.jpeg')) return jpegSize(buf);
+  if (file.endsWith('.webp') && buf.length >= 25 && buf.toString('ascii', 0, 4) === 'RIFF' &&
+      buf.toString('ascii', 8, 16) === 'WEBPVP8L' && buf[20] === 0x2f) {
+    // Lossless WebP stores (width-1) and (height-1) in two 14-bit fields.
+    const bits = buf.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 };
+  }
   return null;
 }
 
@@ -161,6 +167,8 @@ export function inventory() {
     stage: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
     ufo: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
     boss: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
+    fx: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
+    shadow: { count: 0, bytes: 0, gzipBytes: 0, decodedBytes: 0 },
   };
   const unreadable = [];
   for (const file of publicFiles) {
@@ -184,6 +192,8 @@ export function inventory() {
       if (rel.startsWith('assets/fighters/')) cat = 'fighter';
       else if (rel.startsWith('assets/stages/')) cat = 'stage';
       else if (rel.startsWith('assets/bosses/')) cat = 'boss';
+      else if (rel.startsWith('assets/fx/')) cat = 'fx';
+      else if (rel.startsWith('assets/shadows/')) cat = 'shadow';
       addCost(categories[cat], buf.length, gzipBytes, decoded);
       if (preloadSet.has(rel)) addCost(preloadCost, buf.length, gzipBytes, decoded);
     }

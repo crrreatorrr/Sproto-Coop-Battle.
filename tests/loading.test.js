@@ -15,7 +15,8 @@ function loadApi() {
 
 function sizeFor(src) {
   if (src.includes('/bosses/')) return [1024, 1024];
-  if (src.includes('/atlas.png')) return [1024, 640];
+  if (src.includes('/atlas.webp')) return [1024, 640];
+  if (src.includes('/atlas.png')) return [512, 576];
   if (src.includes('-floor')) return [512, 150];
   return [640, 226];
 }
@@ -146,15 +147,20 @@ async function main() {
 
   const memory = harness();
   const plan = memory.AssetLoader.groups(memory.manifest);
-  assert.strictEqual(plan.startup.length, 10);
+  assert.strictEqual(plan.startup.length, 8);
   assert.strictEqual(plan.firstBoss.length, 4);
   assert.strictEqual(plan.ufo.length, 8);
-  assert.ok(plan.all.includes('assets/fighters/vamp/atlas.png'));
-  assert.ok(!plan.all.some(src => /\/(?:\d\d|w0\d)\.png$/.test(src)));
+  assert.ok(plan.all.includes('assets/fighters/vamp/atlas.webp'));
+  assert.strictEqual(plan.atlas.length, 16);
+  assert.ok(plan.atlas.slice(4).every(src => !plan.startup.includes(src)), 'title defers unshown bodies');
+  assert.ok(plan.all.includes(memory.AssetLoader.portraits) && !plan.startup.includes(memory.AssetLoader.portraits));
+  assert.ok(!plan.all.some(src => /\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(src)));
+  assert.strictEqual(plan.shadows.length, 12);
+  assert.ok(plan.shadows.every(src => plan.all.includes(src) && !plan.startup.includes(src)));
   const startup = memory.loader.preload(plan.startup);
   await memory.drain();
   await startup;
-  assert.strictEqual(memory.loader.status().resident.fighter, 6);
+  assert.strictEqual(memory.loader.status().resident.fighter, 4);
   for (let i = 0; i < 12; i++) {
     memory.loader.enterStage(i, memory.manifest);
     await memory.drain();
@@ -163,7 +169,8 @@ async function main() {
   assert.ok(stat.resident.boss <= 8, 'boss resident ' + stat.resident.boss);
   assert.ok(stat.decoded.boss <= 8 * 1024 * 1024 * 4, 'boss decoded ' + stat.decoded.boss);
   assert.ok(stat.resident.stage <= plan.startup.filter(src => src.includes('/stages/')).length + 2 + memory.AssetLoader.STAGE_EXTRA);
-  assert.strictEqual(stat.resident.fighter, 6);
+  assert.ok((stat.resident.shadow || 0) <= 2, 'shadow resident ' + stat.resident.shadow);
+  assert.strictEqual(stat.resident.fighter, 4);
   assert.strictEqual(stat.error, 0);
   console.log('loading ok');
 }

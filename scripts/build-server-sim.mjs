@@ -12,6 +12,7 @@ const bundlePath = path.join(outDir, 'coop-sim.js');
 const pinPath = path.join(outDir, 'coop-sim.pin.json');
 const parts = [
   'public/js/manifest.js',
+  'public/js/combat.js',
   'public/js/sim.js',
   'public/js/ai.js',
   'public/js/net-protocol.js',
