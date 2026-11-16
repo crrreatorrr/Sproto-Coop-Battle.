@@ -266,7 +266,7 @@ function startGame() {
     return;
   }
   const cfg = app.slots.map(s => ({ fid: s.fid, weapon: s.weapon, classId: s.classId, ctrl: s.ctrl, owner: s.owner, name: fname(s.fid) }));
-  app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0, app.stageSel, { cpuParty: !app.demo });
+  app.sim = S.create(cfg, (Math.random() * 2 ** 31) | 0, app.stageSel, { cpuParty: true });
   app.runId = newRunId();
   app.screen = 'game'; app.paused = false; app.acc = 0;
   R.enterStage(app.sim.stageIdx); // C2: current stage + next, not the old eager pair
@@ -1206,13 +1206,11 @@ function bootAssets() {
   app.loadErr = '';
   app.loadK = 0;
   app.screen = 'loading';
-  return Promise.all([R.preload(k => (app.loadK = k)), fontReady, launchOptions.get('demo') ? loadGameScript('ai', 'SproAI') : null]).then(() => {
+  return Promise.all([R.preload(k => (app.loadK = k)), fontReady]).then(() => {
     if (app.booted) return;
     app.booted = true;
     app.screen = 'title';
     if (launchOptions.get('room')) showJoin();
-    // ?demo lets the four CPUs play without a human.
-    if (launchOptions.get('demo')) { app.demo = true; app.role = 'local'; app.slots = defaultSlots(); startGame(); }
   }, err => {
     app.loadErr = (err && err.message) || 'asset failed'; app.screen = 'loading';
     crash.report(err, 'boot'); // the same panel, with Retry

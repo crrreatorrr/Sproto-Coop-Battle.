@@ -1,4 +1,4 @@
-// Host + guest practice-relay smoke, the four-seat party lobby, and the all-CPU attract game.
+// Host + guest practice-relay smoke, the four-seat CPU party lobby, and ignored ?demo links.
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -168,14 +168,13 @@ async function main() {
     }
     summary.universalWeaponUnlock = true;
 
+    // The removed attract-mode link must not start a run or eagerly fetch its AI script.
     const demo = await mk(acquired.url + '?demo=1');
-    await demo.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim && window.SprotoApp.sim.players.length === 4, null, { timeout: 45000 });
-    const demoCtrls = await demo.evaluate(() => window.SprotoApp.sim.players.map(player => player.ctrl));
-    summary.demoCtrls = demoCtrls;
-    if (demoCtrls.some(ctrl => ctrl !== 'cpu')) throw new Error('demo was not four CPU: ' + demoCtrls.join(','));
+    await demo.waitForFunction(() => window.SprotoApp.screen === 'title', null, { timeout: 45000 });
     await demo.waitForTimeout(800);
-    await demo.screenshot({ path: path.join(out, 'demo-four-cpu.png') });
-    summary.screenshots.push('demo-four-cpu.png');
+    const demoState = await demo.evaluate(() => ({ screen: window.SprotoApp.screen, sim: !!window.SprotoApp.sim, aiLoaded: !!window.SproAI }));
+    summary.demoState = demoState;
+    if (demoState.screen !== 'title' || demoState.sim || demoState.aiLoaded) throw new Error('?demo=1 still starts or preloads a run: ' + JSON.stringify(demoState));
 
     const host = await mk(acquired.url);
     const guest = await mk(acquired.url);
@@ -198,6 +197,9 @@ async function main() {
     await guest.waitForTimeout(300);
     await guest.keyboard.press('Comma');
     await host.waitForFunction(() => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote'), null, { timeout: 10000 });
+    // The host sees the claim before its lobby broadcast reaches the guest. Wait for
+    // the guest's owned keyboard seat before sending class-selection input.
+    await guest.waitForFunction(() => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.owner === window.SprotoApp.myId && slot.dev === 'k2'), null, { timeout: 10000 });
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
     if (onlineSlots.length !== 4) throw new Error('online room lost a seat');

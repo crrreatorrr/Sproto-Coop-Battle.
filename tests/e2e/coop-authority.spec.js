@@ -249,8 +249,15 @@ async function soak(ms) {
     const page = await browser.newPage({ viewport: { width: 960, height: 540 } });
     const client = await page.context().newCDPSession(page);
     await client.send('Performance.enable');
-    await page.goto(staticServer.url + '?demo=1', { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForFunction(() => window.SprotoApp && window.SprotoApp.screen === 'game' && window.SprotoApp.sim, null, { timeout: 45000 });
+    // Start a real four-seat party (one human and three CPU teammates), not the removed attract mode.
+    await page.goto(staticServer.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForFunction(() => window.SprotoApp && window.SprotoApp.screen === 'title', null, { timeout: 45000 });
+    await page.keyboard.press('KeyF');
+    await page.waitForFunction(() => window.SprotoApp.screen === 'lobby', null, { timeout: 10000 });
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => window.SprotoApp.screen === 'stages', null, { timeout: 10000 });
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim, null, { timeout: 45000 });
     const started = Date.now();
     while (Date.now() - started < ms) {
       const metrics = await client.send('Performance.getMetrics');
