@@ -64,6 +64,7 @@ function contentManifest(manifest) {
       pilot: boss.pilot,
       machines: [boss.machines[0], boss.machines[1]],
       phaseCount: 2,
+      phase2Attacks: [sim.bossExtraAttack(i, 'signature'), sim.bossExtraAttack(i, 'special')],
       oneClear: true,
       length: sim.stageLength(i),
       archetype: sim.BOSS_ARCHETYPES[i % sim.BOSS_ARCHETYPES.length],
@@ -71,6 +72,7 @@ function contentManifest(manifest) {
   }
   return {
     gameId: GAME_ID,
+    bossTransformTicks: sim.BOSS_TRANSFORM_TICKS,
     stages: stages,
     fighters: fighters.map((f, i) => ({ id: f.id, name: f.name, passive: sim.PASSIVES[i % sim.PASSIVES.length].id })),
     weapons: sim.WEAPONS.map(w => w.id),

@@ -5,37 +5,33 @@ import os, json
 O = 'public/assets/'
 POSES = 'art/fighter-poses/'
 BOSSES = [
- ('01-marina-bront','Tidebreak Marina','Breakwater Tug','Dry Dock Press','#3a7bd5'),
- ('02-last-light-vela','Last Light Bar','Prism Projector','Mirror Gantry','#b04fd8'),
- ('03-mudline-crapto','Mudline Trenches','Sludge Dredger','Floodgate Pump','#7a6a3a'),
- ('04-ranch-zephyr','Sproto Ranch','Lantern Harvester','Harvest Express','#e07a26'),
- ('05-neon-sproto102','Neon Tomorrow','Salvage Strider','Billboard Rig','#22c3c9'),
- ('06-circuit-rune','Circuit Gate','Relay Walker','Gate Spider','#4fd86a'),
- ('07-moonkeep-bigswole','Moonkeep Castle','Siege Dragon','Rampart Dragon','#8a8fb8'),
- ('08-crown-alpha777','Crown Relay Chamber','Jackpot Knight','Crown Joust Rig','#e8c43a'),
- ('09-hatchery-highsproto','The Hatchery','Incubator Crane','Brood Crawler','#d85a8a'),
- ('10-verse-sprotosales','Verse Gate','Sales Carrier','Orbital Showroom','#6a5cff'),
- ('11-rooftop-sproto1668','Rooftop Breakaway','Pursuit Jetpack','Intercept Glider','#ff6a3a'),
- ('12-codebreak-sproto3106','Codebreak Ascent','Warrant Rig','Summit Lockdown','#3affc8'),
+ ('01-marina-bront','Tidebreak Marina','Abyssal Salvager','Magnetic Crusher','#3a7bd5'),
+ ('02-last-light-vela','Last Light Bar','Wrist Axe Walker','Twin Axe Press','#b04fd8'),
+ ('03-mudline-crapto','Mudline Trenches','Trench Excavator','Canister Gantry','#7a6a3a'),
+ ('04-ranch-zephyr','Sproto Ranch','Cursed Lantern','Haunted Harvest','#e07a26'),
+ ('05-neon-sproto102','Neon Tomorrow','Ceramic Railwalker','Aegis Foundry','#22c3c9'),
+ ('06-circuit-rune','Circuit Gate','Relay Breaker','Twinblade Ram','#4fd86a'),
+ ('07-moonkeep-bigswole','Moonkeep Castle','Gatebreaker','High Citadel','#8a8fb8'),
+ ('08-crown-alpha777','Crown Relay Chamber','Relay Bomb Loader','Jewel-Joust Rig','#e8c43a'),
+ ('09-hatchery-highsproto','The Hatchery','Incubator Grabber','Brood Capture Rig','#d85a8a'),
+ ('10-verse-sprotosales','Verse Gate','Scythe Duelist','Portal Interceptor','#6a5cff'),
+ ('11-rooftop-sproto1668','Rooftop Breakaway','Rooftop Stalker','Raptor Siege Rig','#ff6a3a'),
+ ('12-codebreak-sproto3106','Codebreak Ascent','Warrant Mecha','Summit Lockdown','#3affc8'),
 ]
-def bbox_union(im, cells):
-    C = im.width // 4; box = None
-    for (c, r) in cells:
-        b = im.crop((c*C, r*C, c*C+C, r*C+C)).getchannel('A').point(lambda a: 255 if a > 40 else 0).getbbox()
-        if b: box = b if box is None else (min(box[0],b[0]),min(box[1],b[1]),max(box[2],b[2]),max(box[3],b[3]))
-    return list(box) if box else [0,0,C,C]
+# Calibrated collision and projectile-origin geometry is expressed in the original 256px space.
+# Rendered sprite sheets change independently of the combat geometry.
+with open(os.path.join(os.path.dirname(__file__), 'boss-combat-geometry.json'), encoding='utf-8') as f:
+    boss_geometry = json.load(f)
 bosses = []
 for key, stage, m1, m2, color in BOSSES:
     phases = []
-    for p in ('p1','p2'):
-        im = Image.open(f'{O}bosses/{key}-{p}.png').convert('RGBA')
-        pr = Image.open(f'{O}bosses/{key}-{p}-projectiles.png').convert('RGBA')
+    if len(boss_geometry[key]) != 2:
+        raise ValueError(f'{key} must have geometry for two phases')
+    for p, geometry in zip(('p1', 'p2'), boss_geometry[key]):
         phases.append({
             'sheet': f'assets/bosses/{key}-{p}.png',
             'proj': f'assets/bosses/{key}-{p}-projectiles.png',
-            'body': bbox_union(im, [(0,0)]),            # idle frame footprint
-            'bounds': bbox_union(im, [(c,r) for c in range(4) for r in range(4)]),
-            'projRows': [bbox_union(pr, [(c,r) for c in range(4)]) for r in range(4)],
+            **geometry,
         })
     bosses.append({'key': key, 'stage': stage, 'machines': [m1, m2], 'color': color, 'pilot': key.split('-')[-1], 'phases': phases})
 def hands(fid, fb):

@@ -5,7 +5,7 @@
   'use strict';
   var PROTOCOL = 1;
   var GAME_ID = 'sproto-coop-battle';
-  var FINGERPRINT = 'd1ca2efc4121b62c885b6f3fbf3c193c3ac76360056b9551b7301fc4085d8c61';
+  var FINGERPRINT = '1bdabcabe4c41ea317d60484cb69ee0e25052bfd9384451247fac60bfb9c5248';
   var OP = {
     HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12,
     REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19,

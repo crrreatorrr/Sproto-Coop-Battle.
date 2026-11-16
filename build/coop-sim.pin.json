@@ -9,14 +9,14 @@
   "snapshotHz": 10,
   "snapshotMaxHz": 15,
   "files": {
-    "manifest.js": "52325e54ab518ad4b82f53b352fab73dfe6d89e8304d81b9651ddd3d8bed16e3",
+    "manifest.js": "d82414c2954b8ccaf1a52ffa52291504e356d677ee4c488fd5b5c8bf236ff96d",
     "combat.js": "2a28b6791593e90c95df2d030865f24bbd538ce7a9e2c36485de81a3a0fe9add",
-    "sim.js": "af6d75e4d024f8e9655f3206aa591a31fca638435f0fdfe421a0e8dcbb9e57a5",
-    "ai.js": "b59044c0eb23da8566fee50d4f17a5685d36966a72997904468c72a3699b7ac8",
-    "net-protocol.js": "ea285d5eeb3a4d16d59ee53260a72e70fbcaae048bb9688a82c8b02a921ef7a0"
+    "sim.js": "ae7acb1a1fd0df452c33f5683cd755c551997845794d4f998e77520f50257d87",
+    "ai.js": "d058452121fa52d83efbd9b4297c2e2964efc4106105b92f81d9b8cd8249c8a2",
+    "net-protocol.js": "7a92d11467b77c5cb1dd9e849e610499e4b30cc9725afbb8430352be81725269"
   },
-  "bundleSha256": "667a1772ccc62c3834333f9dabf650e2fa48bc14998f87332b7ecacb030965c7",
-  "contentSha256": "d1ca2efc4121b62c885b6f3fbf3c193c3ac76360056b9551b7301fc4085d8c61",
+  "bundleSha256": "833918e82f01d0e45ae0475486a42679c403ad006063bbead56e65b78f4d29c3",
+  "contentSha256": "1bdabcabe4c41ea317d60484cb69ee0e25052bfd9384451247fac60bfb9c5248",
   "goja": "github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc",
   "node": ">=22"
 }

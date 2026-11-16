@@ -147,6 +147,7 @@ function runCase(spec) {
 function caseList() {
   const list = [
     { id: 'cpu-seed42-terminal', kind: 'cpu', seed: 42, stage: 0, ticks: 60 * 60 * 40, input: 'cpu' },
+    { id: 'cpu-seed1-terminal', kind: 'cpu', seed: 1, stage: 0, ticks: 60 * 60 * 40, input: 'cpu' },
     { id: 'mixed-seed7-1800', kind: 'mixed', seed: 7, stage: 0, ticks: 1800, input: 'legacy-mixed' },
     { id: 'four-local-seed99-1800', kind: 'local', seed: 99, stage: 0, ticks: 1800, input: 'legacy-four' },
     { id: 'human-seed9-stage1', kind: 'local', seed: 9, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },

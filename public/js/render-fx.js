@@ -8,6 +8,11 @@ const BS = S.BOSS_SCALE, img = R.img, ready = R.ready, text = R.text;
 const { frameCanvas, canFilter, drawFighter, drawBackground, weapon } = R;
 const fxImg = k => img('assets/fx/' + k + '.png');
 
+// Actor rows: walk, lane/lob, spread, homing, charge, sweep, transform keys, summon.
+// Projectile rows: lane/lob, spread, homing, impact. The art faces screen-left.
+const BOSS_CELL = 176, BOSS_FX_CELL = 96, BOSS_FOOT = 165;
+const BOSS_WALK = [0, 1, 2, 1];
+
 // Grip-centered equipment, right-facing shots and centered effects share this grid.
 // See tools/build-combat-sprites.py for the source art.
 const CELL = 64;
@@ -332,6 +337,33 @@ function windup(g, b, sx, sy, ph) {
 
 function drawFx(g, f, camX) {
   const sx = f.x - camX, sy = FLOOR_TOP + f.y - f.z;
+  if (f.k === 'bossSpecialImpact') {
+    const ph = M.bosses[f.bi].phases[f.ph], color = S.bossExtraAttack(f.bi, 'special').color;
+    const size = f.sm, age = f.t / 36, alpha = Math.max(0, 1 - age);
+    const radius = size * (0.18 + age * 0.74);
+    g.save();
+    g.globalAlpha = alpha * 0.8;
+    g.strokeStyle = color; g.lineWidth = 4 - age * 3;
+    g.beginPath(); g.ellipse(sx, sy + 9, radius, radius * 0.35, 0, 0, 7); g.stroke();
+    g.globalAlpha = alpha * 0.55;
+    g.strokeStyle = '#fff4d9'; g.lineWidth = 1.5;
+    g.beginPath(); g.ellipse(sx, sy + 9, radius * 0.85, radius * 0.3, 0, 0, 7); g.stroke();
+    g.fillStyle = color;
+    for (let i = 0; i < 10; i++) {
+      const angle = i * 0.628 + (f.id % 19) * 0.21;
+      const dx = Math.cos(angle) * radius, dy = Math.sin(angle) * radius * 0.55;
+      g.fillRect(Math.round(sx + dx), Math.round(sy + dy - 35 * age), i % 2 ? 4 : 2, 2);
+    }
+    g.globalAlpha = alpha;
+    drawBossFx(g, ph, 3, Math.min(3, Math.floor(f.t / 8)), sx, sy, size + 25, false);
+    g.restore();
+    return;
+  }
+  if (f.k === 'bossImpact') {
+    const ph = M.bosses[f.bi]?.phases[f.ph];
+    if (ph && drawBossFx(g, ph, 3, Math.min(3, Math.floor(f.t / 6)), sx, sy, f.sm || 82, false)) return;
+    f = { ...f, k: 'boom' };
+  }
   if (HIT_ROWS[f.k] !== undefined) {
     const heal = f.k === 'class-heal', frameTicks = heal ? 6 : 3;
     const frame = Math.min(3, Math.floor(f.t / frameTicks));
@@ -407,6 +439,34 @@ function drawFx(g, f, camX) {
   }
 }
 
+function bossExtraWarnings(g, boss, camX) {
+  const attack = S.bossExtraAttack(boss.bi, boss.st);
+  const color = attack.color || '#ffad68';
+  g.save();
+  for (const [x, depth, wide, deep, delay, rounded] of boss.az) {
+    const until = attack.warning + delay - boss.t;
+    if (until <= 0) continue;
+    const cx = x - camX, y = FLOOR_TOP + depth;
+    g.globalAlpha = 0.32 + 0.26 * (1 - Math.min(1, until / attack.warning));
+    g.fillStyle = '#b42346'; g.strokeStyle = color; g.lineWidth = 2;
+    g.beginPath();
+    if (rounded) g.ellipse(cx, y, wide, deep, 0, 0, 7);
+    else g.rect(cx - wide, y - deep, wide * 2, deep * 2);
+    g.fill(); g.globalAlpha = 0.95; g.stroke();
+    const scale = Math.min(1, until / attack.warning);
+    g.globalAlpha = 0.8; g.lineWidth = 1; g.beginPath();
+    if (rounded) g.ellipse(cx, y, wide * scale, deep * scale, 0, 0, 7);
+    else g.rect(cx - wide * scale, y - deep * scale, wide * scale * 2, deep * scale * 2);
+    g.stroke();
+  }
+  if (boss.t < attack.warning) {
+    g.globalAlpha = 1;
+    const special = boss.st === 'special';
+    text(g, attack.name.toUpperCase(), W / 2, FLOOR_TOP - 15, special ? 10 : 8, color, 'center');
+  }
+  g.restore();
+}
+
 function floor(g, snap, camX, list) {
   // Lock the warning line to the host's actual aim path, with dash marks and a target cap.
   for (const e of snap.enemies) {
@@ -444,6 +504,7 @@ function floor(g, snap, camX, list) {
   }
   // Boss lane warnings: a red stripe along each lane about to be shot.
   const bw = snap.boss;
+  if (bw?.az) bossExtraWarnings(g, bw, camX);
   if (bw && bw.wl && bw.st === 'fire' && bw.t < 30) {
     const k = bw.t / 30, x0 = bw.x - camX;
     // bo: a mid-arena boss fires both ways.
@@ -684,9 +745,9 @@ function drawHud(g, snap) {
   if (snap.god) text(g, 'GOD MODE · 2x ATTACK · UNLIMITED HP', W / 2, 58, 7, '#8ef8d6', 'center');
   const b = snap.boss;
   if (b) {
-    const info = M.bosses[b.bi];
     g.fillStyle = 'rgba(8,6,16,.8)'; g.fillRect(120, H - 22, 400, 18);
-    text(g, info.machines[b.ph].toUpperCase(), 126, H - 13, 7, '#ff8a8a');
+    const label = b.st === 'transform' ? 'TRANSFORMING' : M.bosses[b.bi].machines[b.ph].toUpperCase();
+    text(g, label, 126, H - 13, 7, '#ff8a8a', 'left', 168);
     g.fillStyle = '#300'; g.fillRect(300, H - 17, 214, 8);
     g.fillStyle = b.ph ? '#ff4d4d' : '#ffa23d'; g.fillRect(300, H - 17, 214 * Math.max(0, b.hp) / b.mh, 8);
   }
@@ -718,41 +779,85 @@ function drawSummary(g, sum, info) {
   if (info.prompt && info.blink) text(g, info.prompt, W / 2, y + 244, 8, '#fff', 'center');
 }
 
+function bossPose(b, sx) {
+  const t = b.t;
+  if (b.st === 'transform') {
+    const key = Math.floor(t / (S.BOSS_TRANSFORM_TICKS / 6));
+    if (key === 0) return [0, 0, 0];
+    if (key < 5) return [0, 6, key - 1];
+    return [1, 0, 0];
+  }
+  if (b.st === 'signature' || b.st === 'special') {
+    const attack = S.bossExtraAttack(b.bi, b.st);
+    const end = attack.warning + attack.zones[attack.zones.length - 1][4] + 6;
+    const col = t < Math.ceil(attack.warning / 2) ? 0 : t < attack.warning ? 1 : t < end ? 2 : 3;
+    return [b.ph, b.st === 'signature' ? 6 : b.ar === 2 ? 8 : 7, col];
+  }
+  if (b.st === 'fire') {
+    const row = b.mi ? 3 : b.row === 2 ? 2 : 1;
+    const multishot = row === 1 && b.ar !== 2 && b.ar !== 3;
+    const active = multishot ? (b.ph ? 3 : 2) : 1;
+    const age = t - 30;
+    const firing = age % 8 < 4 && Math.floor(age / 8) < active;
+    return [b.ph, row, age < 0 ? 0 : firing ? 1 : 2];
+  }
+  if (b.st === 'charge') {
+    const remaining = b.fc < 0 ? sx - 60 : W - 60 - sx;
+    return [b.ph, 4, t < (b.ar === 1 ? 36 : 24) ? 0 : remaining < 34 ? 2 : 1];
+  }
+  if (b.st === 'sweep') return [b.ph, 5, t < S.SWEEP_WARN ? 0 : t < S.SWEEP_WARN + 6 ? 1 : 2];
+  if (b.st === 'idle' && b.ar === 2 && b.su !== undefined) return [b.ph, 7, b.su < 12 ? 1 : 2];
+  return [b.ph, 0, b.st === 'dead' ? 0 : BOSS_WALK[Math.floor(t / 9) % BOSS_WALK.length]];
+}
+
 function drawBoss(g, b, camX) {
-  const info = M.bosses[b.bi], ph = info.phases[b.ph];
-  const sheet = img(ph.sheet);
   const sx = b.x - camX, sy = FLOOR_TOP + b.y;
+  const [phase, row, col] = bossPose(b, sx);
+  const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
+  const C = BOSS_CELL, scale = BS * 256 / C;
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
   if (!ready(sheet)) return;
-  let row = 0, col = Math.floor(b.t / 9) % 4;
-  if (b.st === 'fire') { row = b.mi ? 3 : b.row; col = b.t < 12 ? 0 : b.t < 24 ? 1 : b.t < 36 ? 2 : 3; }
-  const C = 256;
   g.save();
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
-  if (b.st === 'transform' && b.t % 8 < 4) g.globalAlpha = 0.4;
-  const shake = (b.st === 'charge' && b.t < (b.ar === 1 ? 40 : 30)) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) ? (b.t % 4 < 2 ? 2 : -2) : 0;
+  const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
-  g.scale(b.fc > 0 ? -BS : BS, BS);
-  const cx = (ph.body[0] + ph.body[2]) / 2, by = ph.body[3];
-  g.drawImage(sheet, col * C, row * C, C, C, -cx, -by, C, C);
-  if (b.fl > 0 && canFilter()) { g.globalAlpha = 0.6; g.filter = 'brightness(4) saturate(0)'; g.drawImage(sheet, col * C, row * C, C, C, -cx, -by, C, C); g.filter = 'none'; }
+  g.scale(b.fc > 0 ? -scale : scale, scale);
+  g.drawImage(sheet, col * C, row * C, C, C, -C / 2, -BOSS_FOOT, C, C);
+  if (b.fl > 0 && canFilter()) {
+    g.globalAlpha = 0.6; g.filter = 'brightness(4) saturate(0)';
+    g.drawImage(sheet, col * C, row * C, C, C, -C / 2, -BOSS_FOOT, C, C);
+  }
   g.restore();
   windup(g, b, sx, sy, ph);
+  if (b.su !== undefined && b.st !== 'idle' && b.st !== 'transform' && b.st !== 'dead') {
+    g.save();
+    g.globalAlpha = (27 - b.su) / 27;
+    drawBossFx(g, ph, 3, Math.min(3, Math.floor(b.su / 7)), sx - b.fc * 62, sy - 74, 42, false);
+    g.restore();
+  }
+}
+
+function drawBossFx(g, ph, row, col, x, y, size, flip) {
+  const sheet = img(ph.proj), C = BOSS_FX_CELL;
+  if (!ready(sheet)) return false;
+  g.save();
+  g.translate(Math.round(x), Math.round(y));
+  if (flip) g.scale(-1, 1);
+  g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
+  g.restore();
+  return true;
 }
 
 function drawProj(g, p, camX, shadowSheet) {
   const sx = p.x - camX, sy = FLOOR_TOP + p.y - p.z;
   if (projectile(g, p, sx, sy, shadowSheet)) return;
   if (p.k === 'boss') {
-    const ph = M.bosses[p.bi].phases[p.ph], sheet = img(ph.proj);
+    const ph = M.bosses[p.bi].phases[p.ph];
     shadow(g, sx, FLOOR_TOP + p.y, 7);
-    if (!ready(sheet)) { g.fillStyle = '#ff5'; g.fillRect(sx - 4, sy - 4, 8, 8); return; }
-    const rb = ph.projRows[p.r], col = Math.floor(p.t / 4) % 4, C = 256;
-    const sc = p.r === 3 ? 0.42 : 0.36;
-    g.save(); g.translate(Math.round(sx), Math.round(sy)); g.scale(p.vx > 0 ? -sc : sc, sc);
-    const w = rb[2] - rb[0], h = rb[3] - rb[1];
-    g.drawImage(sheet, col * C + rb[0], p.r * C + rb[1], w, h, -w / 2, -h / 2, w, h);
-    g.restore();
+    const row = p.r === 3 ? 2 : p.r === 1 ? 1 : 0;
+    if (!drawBossFx(g, ph, row, Math.floor(p.t / 4) % 4, sx, sy, row === 2 ? 68 : 60, p.vx > 0)) {
+      g.fillStyle = '#ff5'; g.fillRect(sx - 4, sy - 4, 8, 8);
+    }
   } else if (p.k === 'laser') {
     const im = img('assets/ufo/laser.png'); if (!ready(im)) return;
     g.save(); g.translate(sx, sy); g.scale(p.vx < 0 ? -0.8 : 0.8, 0.8); g.drawImage(im, -im.width / 2, -im.height / 2); g.restore();
@@ -776,11 +881,14 @@ function localMarker(g, x, y, col) {
 function drawBanner(g, snap) {
   const bn = snap.banner; if (!bn) return;
   if (bn.arrow) { if (Math.floor(snap.t / 12) % 2) text(g, 'GO! >>>', W - 20, 120, 16, '#ffd23d', 'right'); return; }
+  const b = bn.boss && snap.boss;
+  const name = b && M.bosses[b.bi].machines[b.ph].toUpperCase();
+  const changing = b && b.st === 'transform';
   const a = Math.min(1, bn.t / 20);
   g.globalAlpha = a;
   g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 128, W, bn.sub ? 62 : 44);
-  text(g, bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.power ? '#8ef8ff' : bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
-  if (bn.sub) text(g, bn.sub, W / 2, 176, 8, '#fff', 'center');
+  text(g, changing ? 'TRANSFORMING' : name || bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.power ? '#8ef8ff' : bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
+  if (bn.sub) text(g, changing ? name : bn.sub, W / 2, 176, 8, '#fff', 'center');
   g.globalAlpha = 1;
 }
 

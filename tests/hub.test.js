@@ -12,7 +12,7 @@ const root = path.join(__dirname, '..');
 const IIFE = path.join(root, 'vendor/hub-sdk/dist/hub-sdk.iife.js');
 const PIN = path.join(root, 'vendor/hub-sdk/SOURCE.pin.json');
 const EXPECTED = '833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b602b21f309';
-const SIM = '667a1772ccc62c3834333f9dabf650e2fa48bc14998f87332b7ecacb030965c7';
+const SIM = '833918e82f01d0e45ae0475486a42679c403ad006063bbead56e65b78f4d29c3';
 
 function memory() {
   const map = new Map();
