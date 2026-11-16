@@ -56,6 +56,11 @@ for fid, name, color in [('sproto3106','Sproto Sheriff','#ff655e'),('vamp','VAMP
     im = Image.open(f'{POSES}{fid}/00.png').convert('RGBA')
     b = im.getchannel('A').getbbox()
     fighters.append({'id': fid, 'name': name, 'color': color, 'foot': [ (b[0]+b[2])//2, b[3] ], 'box': list(b), 'hands': hands(fid, b)})
+with open(os.path.join(os.path.dirname(__file__), 'playable-roster.json'), encoding='utf-8') as f:
+    roster = json.load(f)
+for fighter in fighters:
+    fighter.update(roster['originals'].get(fighter['id'], {}))
+fighters.extend(roster['additions'])
 with open(os.path.join(os.path.dirname(__file__), 'shadow-roster.json'), encoding='utf-8') as f:
     shadows = json.load(f)
 roles = ['melee', 'ranged', 'twin']

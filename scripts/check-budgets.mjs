@@ -28,6 +28,7 @@ const SYNTAX = [
   'public/js/main.js',
   'public/js/manifest.js',
   'public/js/net.js',
+  'public/js/party-picker.js',
   'public/js/asset-loader.js',
   'public/js/crash.js',
   'public/js/feedback-link.js',
@@ -70,7 +71,7 @@ function sameList(a, b) {
 export function fighterMetaSha256() {
   const sandbox = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'public', 'js', 'manifest.js'), 'utf8'), sandbox, { filename: 'manifest.js' });
-  const fighters = sandbox.window.MANIFEST.fighters.map(f => ({ id: f.id, foot: f.foot, box: f.box, hands: f.hands }));
+  const fighters = sandbox.window.MANIFEST.fighters.filter(f => !f.cell).map(f => ({ id: f.id, foot: f.foot, box: f.box, hands: f.hands }));
   return crypto.createHash('sha256').update(JSON.stringify(fighters)).digest('hex');
 }
 
@@ -84,7 +85,7 @@ export function runtimeBudget(report) {
     if (!bytes.has(rel)) throw new Error('budget missing ' + rel);
     return bytes.get(rel);
   }, scripts, bytes.get('index.html'));
-  const atlasFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/atlas\.png$/.test(file.path));
+  const atlasFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/atlas\.(png|webp)$/.test(file.path));
   const poses = path.join(root, 'art', 'fighter-poses');
   const poseCount = fs.readdirSync(poses, { withFileTypes: true })
     .filter(dir => dir.isDirectory())
@@ -125,7 +126,7 @@ export function assertBudgets(report, built) {
     if (budget.firstStageBytes > FIRST_STAGE_BUDGET_BYTES) problems.push(`first stage bytes ${budget.firstStageBytes} exceed ${FIRST_STAGE_BUDGET_BYTES}`);
     if (budget.criticalRequests > CRITICAL_REQUESTS) problems.push(`critical requests ${budget.criticalRequests} exceed ${CRITICAL_REQUESTS}`);
     if (budget.staticBytes > STATIC_BUDGET_BYTES) problems.push(`public bytes ${budget.staticBytes} exceed ${STATIC_BUDGET_BYTES}`);
-    if (budget.atlasCount !== 6) problems.push('expected 6 fighter atlases, got ' + budget.atlasCount);
+    if (budget.atlasCount !== 16) problems.push('expected 16 fighter atlases, got ' + budget.atlasCount);
     if (budget.atlasEdge > 1024) problems.push('atlas edge ' + budget.atlasEdge);
     if (budget.poseCount !== 240) problems.push('source poses changed: ' + budget.poseCount);
     if (budget.fighterMetaSha256 !== FIGHTER_META_SHA256) problems.push('fighter foot/hand/box metadata changed');
@@ -135,8 +136,8 @@ export function assertBudgets(report, built) {
   }
   if (report.publicBytes > STATIC_BUDGET_BYTES) problems.push(`public bytes ${report.publicBytes} exceed ${STATIC_BUDGET_BYTES}`);
   const provenance = JSON.parse(fs.readFileSync(provenancePath, 'utf8'));
-  if (provenance.shipped !== 'png' || provenance.webp.shipped !== false || provenance.webp.exact !== true) {
-    problems.push('atlas provenance is not an exact-webp measurement with shipped png');
+  if (provenance.shipped !== 'webp' || provenance.webp.shipped !== true || provenance.webp.exact !== true) {
+    problems.push('classic atlas provenance is not exact lossless WebP');
   }
   for (const [name, cat] of Object.entries(expected.categories)) {
     eq(name + '.count', report.categories[name].count, cat.count);

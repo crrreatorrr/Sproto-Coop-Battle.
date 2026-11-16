@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Pack the 40 existing fighter poses into one lossless PNG atlas per character.
+"""Pack the 40 existing fighter poses into one lossless WebP atlas per character.
 
 The pose PNGs stay on disk. Nothing here draws new pixels, deletes a source,
 or edits feet, hands, or hit boxes. The grid is 8 by 5 cells of 128, row-major,
 poses 00-31 then w00-w07, with no padding. Cells are copied on integer
 coordinates, so a crop is the original bitmap.
 
-PNG bytes come from a stdlib encoder (fixed filters, zlib level 9) so the file
-does not depend on Pillow. Lossless WebP is measured when Pillow is importable
-and recorded in the provenance file; it is not the shipped format because the
-bitstream moves with libwebp and CI does not have Pillow.
+Generating WebP requires Pillow. Verify decoded frames against the PNG sources.
+Without Pillow, check the committed WebP hashes and source PNGs. Browser CI
+independently compares every decoded pixel against the corresponding source.
 
 Usage:
   python3 tools/pack-fighter-atlases.py          # write atlases + provenance
@@ -201,24 +200,22 @@ def sha256(buf):
     return hashlib.sha256(buf).hexdigest()
 
 
-def measure_webp(width, height, rows):
-    try:
-        from PIL import Image
-        import PIL
-    except Exception as err:
-        return {'measured': False, 'reason': str(err)}
+def encode_webp(width, height, rows):
+    from PIL import Image
+    import PIL
     raw = b''.join(rows)
     image = Image.frombytes('RGBA', (width, height), raw)
     buf = io.BytesIO()
     image.save(buf, format='WEBP', lossless=True, quality=100, method=6, exact=True)
     data = buf.getvalue()
     back = Image.open(io.BytesIO(data)).convert('RGBA')
-    return {
+    return data, {
         'measured': True,
         'exact': back.tobytes() == raw,
         'bytes': len(data),
         'pillow': getattr(PIL, '__version__', 'unknown'),
-        'shipped': False,
+        'shipped': True,
+        'sha256': sha256(data),
     }
 
 
@@ -226,7 +223,7 @@ def blank_rows():
     return [bytearray(COLS * CELL * 4) for _ in range(ROWS * CELL)]
 
 
-def build_one(fid, measure):
+def build_one(fid):
     rows, sources = pack_rows(fid)
     blob = encode_png(COLS * CELL, ROWS * CELL, rows)
     back_w, back_h, back_rows = decode_png(blob)
@@ -236,7 +233,7 @@ def build_one(fid, measure):
     if bad:
         raise ValueError(fid + ' packed cells do not match sources: ' + ','.join(bad))
     info = {
-        'file': f'assets/fighters/{fid}/atlas.png',
+        'file': f'assets/fighters/{fid}/atlas.webp',
         'sha256': sha256(blob),
         'bytes': len(blob),
         'width': COLS * CELL,
@@ -244,9 +241,10 @@ def build_one(fid, measure):
         'decodedBytes': COLS * CELL * ROWS * CELL * 4,
         'sources': {name: sha256((POSE_DIR / fid / f'{name}.png').read_bytes()) for name in ORDER},
     }
-    if measure:
-        info['webp'] = measure_webp(COLS * CELL, ROWS * CELL, rows)
-    return blob, info
+    webp, info['webp'] = encode_webp(COLS * CELL, ROWS * CELL, rows)
+    if not info['webp']['exact']:
+        raise ValueError(fid + ' encoded WebP is not pixel-exact')
+    return webp, info
 
 
 def provenance_shell(fighters):
@@ -260,9 +258,9 @@ def provenance_shell(fighters):
         pillow = next(iter(fighters.values()))['webp']['pillow']
     return {
         'packer': 'tools/pack-fighter-atlases.py',
-        'format': 'png',
-        'shipped': 'png',
-        'reason': 'Stdlib PNG is byte-stable and pixel-checked without Pillow. Lossless WebP was measured and is smaller when exact, but its bitstream follows libwebp, which CI does not pin.',
+        'format': 'webp',
+        'shipped': 'webp',
+        'reason': 'Committed lossless WebP keeps the same pixels and fits the expanded roster in the asset budget.',
         'cell': CELL,
         'cols': COLS,
         'rows': ROWS,
@@ -273,7 +271,7 @@ def provenance_shell(fighters):
         'pngBytes': png_total,
         'sourcePoseBytes': sum((POSE_DIR / fid / f'{name}.png').stat().st_size for fid in FIGHTERS for name in ORDER),
         'webp': {
-            'shipped': False,
+            'shipped': True,
             'exact': webp_exact,
             'bytes': webp_total,
             'pillow': pillow,
@@ -287,14 +285,14 @@ def write_all():
     atlases = {}
     blobs = {}
     for fid in FIGHTERS:
-        blob, info = build_one(fid, True)
+        blob, info = build_one(fid)
         blobs[fid] = blob
         atlases[fid] = info
         print(f'{fid} png {info["bytes"]} webp {info["webp"].get("bytes")} exact {info["webp"].get("exact")}')
     doc = provenance_shell(atlases)
     PROVENANCE.parent.mkdir(parents=True, exist_ok=True)
     for fid, blob in blobs.items():
-        target = ATLAS_DIR / fid / 'atlas.png'
+        target = ATLAS_DIR / fid / 'atlas.webp'
         target.write_bytes(blob)
     PROVENANCE.write_text(json.dumps(doc, indent=2) + '\n', encoding='utf-8')
     print(f'wrote {len(blobs)} atlases, png {doc["pngBytes"]} bytes, webp {doc["webp"]["bytes"]} bytes')
@@ -310,25 +308,34 @@ def check_all():
         problems.append('grid metadata changed')
     if doc.get('order') != ORDER:
         problems.append('pose order changed')
-    if doc.get('shipped') != 'png':
-        problems.append('shipped format is not png')
+    if doc.get('shipped') != 'webp':
+        problems.append('shipped format is not webp')
     webp = doc.get('webp') or {}
-    if webp.get('shipped') or not webp.get('exact') or not webp.get('bytes'):
+    if not webp.get('shipped') or not webp.get('exact') or not webp.get('bytes'):
         problems.append('lossless webp measurement missing or inexact')
     if webp.get('bytes') and doc.get('pngBytes') and webp['bytes'] >= doc['pngBytes']:
         problems.append('recorded webp is not smaller than png')
     for fid in FIGHTERS:
         info = (doc.get('atlases') or {}).get(fid)
-        path = ATLAS_DIR / fid / 'atlas.png'
+        path = ATLAS_DIR / fid / 'atlas.webp'
         if not info or not path.exists():
             problems.append('missing atlas for ' + fid)
             continue
         blob = path.read_bytes()
-        if sha256(blob) != info['sha256'] or len(blob) != info['bytes']:
+        if sha256(blob) != info['webp']['sha256'] or len(blob) != info['webp']['bytes']:
             problems.append(fid + ' atlas bytes do not match provenance')
-        width, height, rows = decode_png(blob)
-        if (width, height) != (info['width'], info['height']) or width > 1024 or height > 1024:
-            problems.append(fid + ' atlas is outside the 1024 square')
+        try:
+            from PIL import Image
+        except ImportError:
+            Image = None
+        rows = None
+        if Image:
+            atlas = Image.open(io.BytesIO(blob)).convert('RGBA')
+            if atlas.size != (info['width'], info['height']):
+                problems.append(fid + ' atlas dimensions changed')
+            raw = atlas.tobytes()
+            stride = atlas.width * 4
+            rows = [raw[i:i + stride] for i in range(0, len(raw), stride)]
         sources = []
         for name in ORDER:
             pose = POSE_DIR / fid / f'{name}.png'
@@ -342,13 +349,13 @@ def check_all():
             if (pw, ph) != (CELL, CELL):
                 problems.append(fid + ' ' + name + ' is not 128')
             sources.append(prows)
-        if len(sources) == len(ORDER):
+        if rows is not None and len(sources) == len(ORDER):
             bad = cells_match(rows, sources)
             if bad:
                 problems.append(fid + ' pixels differ: ' + ','.join(bad))
     if problems:
         raise SystemExit('atlas check failed:\n' + '\n'.join(problems))
-    print(f'atlas pixels match {len(FIGHTERS) * len(ORDER)} poses; png {doc["pngBytes"]} webp {webp["bytes"]} (not shipped)')
+    print(f'checked six committed lossless WebP atlases and {len(FIGHTERS) * len(ORDER)} original poses')
 
 
 def main():

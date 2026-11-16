@@ -16,20 +16,20 @@ async function main() {
   });
   assert.strictEqual(checked.status, 0, (checked.stdout || '') + (checked.stderr || ''));
   const doc = JSON.parse(fs.readFileSync(path.join(root, 'tests', 'fixtures', 'atlas-provenance.json'), 'utf8'));
-  assert.strictEqual(doc.shipped, 'png');
+  assert.strictEqual(doc.shipped, 'webp');
   assert.strictEqual(doc.padding, 0);
   assert.strictEqual(doc.cell, 128);
   assert.strictEqual(doc.cols, 8);
   assert.strictEqual(doc.rows, 5);
   assert.strictEqual(doc.order.length, 40);
-  assert.strictEqual(doc.webp.shipped, false);
+  assert.strictEqual(doc.webp.shipped, true);
   assert.strictEqual(doc.webp.exact, true);
   assert.ok(doc.webp.bytes < doc.pngBytes);
   assert.ok(doc.pngBytes < doc.sourcePoseBytes);
   for (const id of doc.fighters) {
     const atlas = doc.atlases[id];
     assert.ok(atlas.width <= 1024 && atlas.height <= 1024);
-    assert.ok(fs.existsSync(path.join(root, 'public', 'assets', 'fighters', id, 'atlas.png')));
+    assert.ok(fs.existsSync(path.join(root, 'public', 'assets', 'fighters', id, 'atlas.webp')));
     for (const name of doc.order) {
       assert.ok(fs.existsSync(path.join(root, 'art', 'fighter-poses', id, name + '.png')));
     }

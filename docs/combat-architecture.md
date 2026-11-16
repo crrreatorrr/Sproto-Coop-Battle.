@@ -15,7 +15,9 @@ When porting this to another fighting game, keep its own roster, hitboxes, movem
 
 All four classes have a starter weapon and 12 more tiers. An earned tier applies to every class. Practice records stage clears on the device or the signed-in Hub profile; Free Play can open a stage for practice but does not earn weapons for skipped stages. An out-of-order clear is remembered. Banked play has a separate server-verified record, because the practice profile can be edited by clients. The server advances that record on confirmed stage clears and uses it to check lobby loadouts. Credit does not depend on the class or on a Ticket payment. A reconnect restores the chosen class, weapon, HP, and ability cooldown from the match.
 
-Banked lobby messages may contain `loadouts: { device: { fighter?, classId?, weapon? } }`. Acknowledged seats expose `classId` and `weaponTier`. Only the owner can configure a seat, with a matching generation, before play. The host supplies the validated tier; the message never supplies HP, damage, or progression.
+Banked lobby messages may contain `loadouts: { device: { fighter?, classId?, weapon? } }`. The lobby lead, the account in the first occupied seat, can also send `cpuLoadouts` with seat indices as keys. The server validates the account, connection generation, and earned tiers before applying either pick. When the lobby lead changes, their tier also applies to the CPU weapons at match start.
+
+In a party, CPUs fill the unclaimed seats and take over when a player releases a seat. A human who takes over a CPU inherits its current health, lives and class. The human ownership table still drives participation and rewards, while the simulation includes both humans and CPUs when it resolves combat.
 
 ## Release
 

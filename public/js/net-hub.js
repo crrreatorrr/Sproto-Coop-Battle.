@@ -5,7 +5,7 @@
   'use strict';
   var PROTOCOL = 1;
   var GAME_ID = 'sproto-coop-battle';
-  var FINGERPRINT = '7994f9b549ff1665a0d12a59e5d9b0954ff488fc10bd345365a25894f23df6f8';
+  var FINGERPRINT = 'd1ca2efc4121b62c885b6f3fbf3c193c3ac76360056b9551b7301fc4085d8c61';
   var OP = {
     HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12,
     REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19,
@@ -95,6 +95,7 @@
       yours: [],
       wanted: [],
       picks: {},
+      cpuPicks: {},
       snapshot: null,
       prevSnapshot: null,
       snapAt: 0,
@@ -163,7 +164,7 @@
     var n = fighterCount();
     var slots = [];
     for (var i = 0; i < SEATS; i++) {
-      slots.push({ ctrl: 'none', owner: 0, dev: '', fid: i % n, weapon: 0, classId: 'fighter', label: '', lives: null, hp: null, grace: false });
+      slots.push({ ctrl: 'cpu', owner: 0, dev: '', fid: i % n, weapon: 0, classId: 'fighter', label: 'CPU', lives: null, hp: null, grace: false });
     }
     for (var s = 0; s < state.seats.length; s++) {
       var seat = state.seats[s];
@@ -174,13 +175,13 @@
       // During the reconnect grace the server keeps the seat and the Sproto stands idle ('away').
       var grace = human && seat.ctrl === 'away';
       slots[index] = {
-        ctrl: human ? (mine ? 'local' : 'remote') : 'none',
+        ctrl: human ? (mine ? 'local' : 'remote') : seat.ctrl,
         owner: human ? seat.accountId : 0,
         dev: human ? seat.device : '',
         fid: seat.fighter | 0,
         weapon: seat.weapon | 0,
         classId: seat.classId,
-        weaponTier: seat.weaponTier,
+        weaponTier: human ? seat.weaponTier : ((state.seats.find(function (row) { return row.human; }) || {}).weaponTier || 1),
         label: (seat.name || (human ? 'P' + (index + 1) : '')) + (grace ? ' AWAY' : ''),
         lives: seat.lives,
         hp: seat.hp,
@@ -188,6 +189,10 @@
       };
     }
     return slots;
+  }
+  function canEditCpu(state) {
+    var host = state.seats.find(function (seat) { return seat.human; });
+    return state.phase === 'lobby' && !!host && host.accountId === state.accountId;
   }
   function learnAccount(state) {
     if (state.accountId) return;
@@ -368,6 +373,7 @@
       seats: state.seats,
       yours: state.yours.slice(),
       slots: slotsOf(state),
+      canEditCpu: canEditCpu(state),
       snapshot: state.snapshot,
       prevSnapshot: state.prevSnapshot,
       snapAt: state.snapAt,
@@ -445,6 +451,17 @@
           picks[dev] = { classId: pick.classId, fighter: fighterId(pick.fid), weapon: weaponId(pick.weapon) };
         }
         if (Object.keys(picks).length) body.loadouts = picks;
+        if (canEditCpu(state)) {
+          var cpu = {};
+          Object.keys(state.cpuPicks).forEach(function (slot) {
+            var seat = state.seats.find(function (row) { return row.slot === Number(slot); });
+            var pick = state.cpuPicks[slot];
+            if (seat && !seat.human && seat.ctrl === 'cpu') {
+              cpu[slot] = { classId: pick.classId, fighter: fighterId(pick.fid), weapon: weaponId(pick.weapon) };
+            }
+          });
+          if (Object.keys(cpu).length) body.cpuLoadouts = cpu;
+        }
       }
       return body;
     }
@@ -677,25 +694,58 @@
       state.wanted = left;
       if (state.yours.indexOf(dev) >= 0) send(OP.RELEASE, { t: 'release', device: dev });
     }
-    function cycle(dev, key, dir) {
+    function draft(seat, store, id) {
+      var pick = store[id];
+      return pick ? Object.assign({}, pick) : { fid: seat.fighter, weapon: seat.weapon, classId: seat.classId };
+    }
+    function setPick(pick, key, value, tier) {
+      var sim = root.Sim;
+      if (key === 'fid' && Number.isInteger(value) && value >= 0 && value < fighterCount()) pick.fid = value;
+      else if (key === 'classId' && sim.CLASSES.some(function (row) { return row.id === value; })) {
+        pick.classId = value;
+        pick.weapon = sim.weaponFor(value, pick.weapon, tier);
+      } else if (key === 'weapon' && sim.weaponChoices(pick.classId, tier).indexOf(value) >= 0) pick.weapon = value;
+      else return false;
+      return true;
+    }
+    function ownSeat(dev) {
       if (state.phase !== 'lobby' || state.yours.indexOf(dev) < 0) return;
-      var seat = state.seats.find(function (row) { return row.device === dev && row.accountId === state.accountId; });
+      return state.seats.find(function (row) { return row.device === dev && row.accountId === state.accountId; });
+    }
+    function pickSeat(dev, key, value) {
+      var seat = ownSeat(dev);
+      if (!seat || !root.Sim) return;
+      var pick = draft(seat, state.picks, dev);
+      if (!setPick(pick, key, value, seat.weaponTier)) return;
+      state.picks[dev] = pick;
+      sendHello();
+    }
+    function pickCpu(slot, key, value) {
+      if (!canEditCpu(state) || !root.Sim) return;
+      var seat = state.seats.find(function (row) { return row.slot === slot && !row.human && row.ctrl === 'cpu'; });
+      if (!seat) return;
+      var host = state.seats.find(function (row) { return row.human; });
+      var pick = draft(seat, state.cpuPicks, slot);
+      if (!setPick(pick, key, value, host.weaponTier)) return;
+      state.cpuPicks[slot] = pick;
+      sendHello();
+    }
+    function cycle(dev, key, dir) {
+      var seat = ownSeat(dev);
       var sim = root.Sim;
       if (!seat || !sim || !sim.weaponChoices) return;
-      var pick = state.picks[dev] || { fid: seat.fighter, weapon: seat.weapon, classId: seat.classId };
-      if (key === 'fid') pick.fid = (pick.fid + dir + fighterCount()) % fighterCount();
+      var pick = draft(seat, state.picks, dev);
+      var value;
+      if (key === 'fid') value = (pick.fid + dir + fighterCount()) % fighterCount();
       else if (key === 'classId') {
         var ci = sim.CLASSES.findIndex(function (row) { return row.id === pick.classId; });
-        pick.classId = sim.CLASSES[(ci + dir + sim.CLASSES.length) % sim.CLASSES.length].id;
-        pick.weapon = sim.weaponFor(pick.classId, -1, seat.weaponTier);
+        value = sim.CLASSES[(ci + dir + sim.CLASSES.length) % sim.CLASSES.length].id;
       } else if (key === 'weapon') {
         var choices = sim.weaponChoices(pick.classId, seat.weaponTier);
         var wi = choices.indexOf(pick.weapon);
-        pick.weapon = choices[(wi + dir + choices.length) % choices.length];
+        value = choices[(wi + dir + choices.length) % choices.length];
       } else return;
-      state.picks[dev] = pick;
-      sendHello();
-      emit();
+      pickSeat(dev, key, value);
     }
     function pump(t) {
       if (state.phase === 'reconnecting') expireReconnect(t);
@@ -758,6 +808,8 @@
       claim: claim,
       release: release,
       cycle: cycle,
+      pick: pickSeat,
+      pickCpu: pickCpu,
       ready: function () { if (state.phase === 'lobby') send(OP.READY, { t: 'ready' }); },
       toggleHold: function () {
         state.held = !state.held;

@@ -107,7 +107,8 @@ function resumeTwin(state) {
   return { lives: lives, powers: powers, items: items, steps: 120, hash: ha };
 }
 function runCase(spec) {
-  const state = root.Sim.create(slots(spec.kind), spec.seed, spec.stage || 0);
+  const loadouts = spec.party ? root.Sim.partySlots().map((p, i) => ({ ...p, ctrl: i === 0 ? 'local' : 'cpu' })) : slots(spec.kind);
+  const state = root.Sim.create(loadouts, spec.seed, spec.stage || 0, { cpuParty: !!spec.party });
   const flags = { ufo: 0, revive: 0, dead: 0, power: 0, boss: 0, bossPhase: 0 };
   let resumed = null;
   const limit = spec.ticks;
@@ -151,6 +152,7 @@ function caseList() {
     { id: 'human-seed9-stage1', kind: 'local', seed: 9, stage: 0, ticks: 20000, input: 'policy', resumeAt: 2000 },
     // A second run of the same policy covers the four-human boss phase change.
     { id: 'human-seed64-stage1', kind: 'local', seed: 64, stage: 0, ticks: 20000, input: 'policy' },
+    { id: 'solo-cpu-party', kind: 'mixed', seed: 3, stage: 0, ticks: 3800, input: 'policy', party: true, resumeAt: 2000 },
   ];
   for (let stage = 0; stage < 12; stage++) {
     list.push({ id: 'stage-' + stage + '-human', kind: 'local', seed: 4000 + stage * 17, stage: stage, ticks: 900, input: 'policy' });

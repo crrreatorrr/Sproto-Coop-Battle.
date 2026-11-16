@@ -10,7 +10,7 @@ const path = require('path');
 const { WebSocketServer } = require('ws');
 
 const root = path.join(__dirname, '..');
-const FINGERPRINT = '7994f9b549ff1665a0d12a59e5d9b0954ff488fc10bd345365a25894f23df6f8';
+const FINGERPRINT = 'd1ca2efc4121b62c885b6f3fbf3c193c3ac76360056b9551b7301fc4085d8c61';
 const PROTOCOL = 1;
 const OP = { HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12, REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19 };
 const DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
@@ -140,8 +140,9 @@ function createAuthorityMatch(opts) {
     return -1;
   }
   function freeSlot() {
-    for (let i = 0; i < session.seats.length; i++) if (!session.seats[i].human) return i;
-    return -1;
+    const open = session.seats.filter(s => !s.human);
+    const available = state.phase === 'playing' ? open.find(s => Sim.alive(session.state.players[s.slot])) : null;
+    return available ? available.slot : (open[0] ? open[0].slot : -1);
   }
   function countHuman() {
     let n = 0;
@@ -170,9 +171,11 @@ function createAuthorityMatch(opts) {
     if (banned(msg)) return reject(presence, 'rejected');
     const devices = parseDevices(msg.devices);
     if (!devices) return reject(presence, 'device');
-    if (state.phase === 'playing' && (msg.fighter !== undefined || msg.weapon !== undefined || msg.loadouts !== undefined)) return reject(presence, 'rejected');
+    if (state.phase === 'playing' && (msg.fighter !== undefined || msg.weapon !== undefined || msg.loadouts !== undefined || msg.cpuLoadouts !== undefined)) return reject(presence, 'rejected');
     const loadouts = CoopProtocol.parseLoadouts(msg.loadouts, devices);
     if (!loadouts.ok) return reject(presence, loadouts.reason);
+    const cpuLoadouts = CoopProtocol.parseCpuLoadouts(msg.cpuLoadouts);
+    if (!cpuLoadouts.ok) return reject(presence, cpuLoadouts.reason);
     let fighter = -1;
     let weapon = -1;
     if (msg.fighter !== undefined) {
@@ -227,6 +230,12 @@ function createAuthorityMatch(opts) {
         if (seat.accountId !== presence.userId || !pick) continue;
         const selected = CoopProtocol.selectLoadout(session, {
           ...pick, slot: seat.slot, accountId: presence.userId, generation: account.generation,
+        }, weaponTiers[presence.userId] || 1);
+        if (!selected.ok) reject(presence, selected.reason);
+      }
+      for (const [slot, pick] of Object.entries(cpuLoadouts.picks)) {
+        const selected = CoopProtocol.selectCpuLoadout(session, {
+          ...pick, slot: Number(slot), accountId: presence.userId, generation: account.generation,
         }, weaponTiers[presence.userId] || 1);
         if (!selected.ok) reject(presence, selected.reason);
       }
@@ -326,6 +335,11 @@ function createAuthorityMatch(opts) {
         if (member && member.devices.length && state.present[state.roster[i]]) joined++;
       }
       if (joined < state.roster.length && state.loop < 15 * 20) return;
+    }
+    const lead = session.seats.find(s => s.human);
+    for (const cpu of session.seats.filter(s => !s.human)) {
+      CoopProtocol.selectCpuLoadout(session, { slot: cpu.slot, accountId: lead.accountId, generation: lead.generation },
+        weaponTiers[lead.accountId] || 1);
     }
     const begun = CoopProtocol.beginEncounter(session);
     if (!begun.ok) return;
@@ -788,10 +802,21 @@ async function main() {
     await guest.click('#joinForm button[type=submit]');
     await guest.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'lobby', null, { timeout: 15000 });
     await guest.waitForFunction(() => window.SprotoApp.authority.view().yours.includes('k1'));
-    for (const role of ['mage', 'healer']) {
+    await host.waitForFunction(() => window.SprotoApp.authority.view().seats.filter(s => s.human).length === 2);
+    await host.evaluate(() => {
+      const auth = window.SprotoApp.authority;
+      auth.pickCpu(2, 'fid', 10);
+      auth.pickCpu(2, 'classId', 'fighter');
+    });
+    await guest.waitForFunction(() => window.SprotoApp.authority.view().seats.some(s => s.slot === 2 && s.ctrl === 'cpu' && s.fighter === 10 && s.classId === 'fighter'));
+    summary.bankedCpuLoadout = true;
+    const readClass = () => guest.evaluate(() => window.SprotoApp.authority.view().seats.find(s => s.accountId === 'acct-bea').classId);
+    for (let i = 0; i < 4 && await readClass() !== 'healer'; i++) {
+      const role = await readClass();
       await guest.keyboard.press('KeyR');
-      await guest.waitForFunction(id => window.SprotoApp.authority.view().seats.some(s => s.accountId === 'acct-bea' && s.classId === id), role);
+      await guest.waitForFunction(previous => window.SprotoApp.authority.view().seats.some(s => s.accountId === 'acct-bea' && s.classId !== previous), role);
     }
+    if (await readClass() !== 'healer') throw new Error('guest could not choose Healer');
     await host.keyboard.press('Enter');
     await guest.keyboard.press('Enter');
     await host.waitForFunction(() => {

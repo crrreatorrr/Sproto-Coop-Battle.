@@ -1,6 +1,6 @@
 # Sproto Coop Battle
 
-A 4-player co-op pixel beat-'em-up. Four armed Sprotos fight their way through Shadow Sproto gangs and twelve two-phase machine bosses. Up to four Sprotos are on the field, one per player. Humans can play locally, online, or both at once. A seat nobody takes stays empty: there are no CPU teammates. A new player can drop into an empty seat at any time by pressing ATTACK.
+A 4-player co-op pixel beat-'em-up. Four armed Sprotos fight their way through Shadow Sproto gangs and twelve two-phase machine bosses. Every run has a four-seat party. Humans can play locally, online, or both, and CPU teammates fill the remaining seats. Press Attack on an unused device to take control of a CPU seat.
 
 ## Run it
 
@@ -17,7 +17,7 @@ npm start            # http://localhost:8080
 - **Host Online:** creates a 4-letter room code. The host's own local players join as usual.
 - **Join Online:** enter the code. Each guest can bring several local players. Guests can also open `/?room=CODE`.
 - **Mixed:** any mix of local and online players, up to four in total.
-- `/?demo=1` starts an attract game played by four CPU Sprotos. It is the only place they appear; no real run adds one.
+- `/?demo=1` starts an attract game played by four CPU Sprotos.
 
 ## Controls
 
@@ -52,7 +52,7 @@ Any standard controller works with no setup (Xbox names; PlayStation and Switch 
 | Leave the run for the main menu? | Attack or Enter confirms; Jump or Esc cancels | A or Start confirms, B cancels |
 | Controller settings | up/down row, left/right device (or the dead zone), Enter / Attack rebinds, Esc back | same with the pad; A rebinds, B back |
 
-Online guests wait for the host to pick the stage. In a server match Start / Enter in the lobby means ready. Local play pauses under the pause menu. Online and server matches keep running; the menu only holds the inputs of the device that opened it (both keyboard sides for the keyboard).
+The party editor shows all 16 Sprotos and separates character, class, and weapon. Press Special (LB on a pad), or click a seat, to open it. Special switches between seats you can edit. The room host can configure the CPU teammates. Online guests wait for the host to pick the stage. In a server match Start / Enter in the lobby means ready. Local play pauses under the pause menu. Online and server matches keep running; the menu only holds the inputs of the device that opened it (both keyboard sides for the keyboard).
 
 **Local multiplayer:** the device that picks LOCAL PLAY or HOST ONLINE is P1. Every other keyboard side or pad presses Attack (A on a pad) to take the next free slot, so pad 1 is P1 and pad 2 is P2 when they join in that order. Any pad can drive the menus.
 
@@ -68,10 +68,11 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 |---|---|---|---|
 | Fighter | Katana · 100 HP | Melee combos | Uses a saved power-up |
 | Mage | Apprentice Wand · 65 HP | Strong arcane bolt. Takes 30% more damage from attacks. | **Arcane Orb** pierces up to three targets. 4.5 second cooldown. |
-| Healer | Mending Rod · 80 HP | Light bolt with a small solo damage bonus | **Mend** restores 24 HP with the starting rod. It heals the most injured living teammate in range, or the Healer if no nearby teammate needs it. 5 second cooldown. |
+| Healer | Mending Rod · 80 HP | Light bolt | **Mend** restores 24 HP with the starting rod. It heals the most injured living teammate in range, or the Healer if no nearby teammate needs it. 5 second cooldown. |
 | Ranged | Shortbow · 90 HP | Quick arrows with medium damage | **Power Shot** pierces up to two targets. 3.5 second cooldown. |
 
 - **Weapons:** Start with one weapon per class. Campaign clears open the next tier for every class, so you can switch roles and equip the weapons you've earned. Each class has 13 weapons, including the final weapon earned by clearing stage 12. Free Play opens stages for practice. Stage clears earn weapons.
+- **CPU teammates:** They use their chosen class, including healing and ranged attacks. Players take over the existing Sproto when they join, keeping its health and inventory. Difficulty scales with the human party size.
 - **Combos:** The Fighter's ground Attack strings a 3-hit combo (4 on the Katana), and the last hit knocks down. An Attack press up to 0.1 seconds early is remembered. Every class can use melee launchers, dash strikes, spin attacks, throws and the Jump + Attack diving strike.
 - **Dash:** double-tap left or right. The first frames dodge through attacks; Attack during a dash is a knockdown dash strike. The end of any attack can be cancelled into a dash.
 - **Block and parry:** Special blocks **the moment it is pressed** (75% less damage from the front) for as long as it is held. A hit that lands in the first 8 ticks after the press is a **parry**: no damage, and the attacker is left dazed. A block raised within 0.4 s of the last one still blocks but cannot parry, so parries are timed, not mashed. A quick tap of Special (let go within 0.1 s without blocking anything) is the spin attack, which costs 6 HP.
@@ -110,7 +111,7 @@ Only these sprites are reused:
 - **Bosses:** the 24 boss phase sheets and 24 projectile sheets from [Sproto-Arcade](https://github.com/crrreatorrr/Sproto-Arcade) (`art/generated/bosses/*/p{1,2}.png`, `p{1,2}-projectiles.png`). They are downscaled to 1024² and palette-quantized in `public/assets/bosses/`. Row 0 is idle and rows 1–3 are the three firing weapons, which map to the boss's three attacks.
 - **Boss attack effects:** four small sheets in `public/assets/fx/` (13 KB in all), reused from the sibling games and packed at half size by `python3 tools/build-boss-fx.py` (it reads `../Sproto-Arcade` and `../Sproto-Fighter` in place). The rear sweep erupts as a rippling field of crystal floor spikes over glowing cracks (Arcade's ground eruption), charger fire lanes burn with animated flames (Arcade's barn fire), warned lanes, charge and sweep wind-ups and missile volleys flash amber warning lights (Arcade's bunker lights), bomb marks get a searchlight, and explosions use Fighter's 4-frame impact bursts. `render.js` falls back to the old procedural drawing until a sheet has loaded.
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
-- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (Sproto-Fighter `public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Here they live in `public/assets/fighters/<id>/`. The game loads one `atlas.png` per character (`tools/pack-fighter-atlases.py`). The 40 original pose PNGs per fighter are preserved under `art/fighter-poses/` outside the web build. Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette.
+- **Playable Sprotos:** sixteen characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters. The original six keep their 128px poses in lossless WebP. The additional ten are a seeded sample of solo fighters with authored walk and action sheets. `tools/import-playable-roster.py` builds their compact atlases, the portrait grid, and supplemental attack clips. The original source poses are preserved under `art/fighter-poses/`.
 - **Shadows:** `tools/import-shadow-roster.py` reads the 254 playable identities, source poses and projectile art or signatures from Sproto Fighter commit `0e9af196`. It applies a dark palette inspired by Sproto Buddha and creates one atlas for each stage in `public/assets/shadows/`. It reads Git objects without modifying the Fighter repository. `tools/build-manifest.py` folds the generated roster into Coop's runtime manifest.
 
 - **Stages:** the half-speed scenery comes from Sproto Arcade (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, and `art/codebreak/shaft.webp`). The shipped fighting floors in `public/assets/stages/` were generated with Higgsfield using each backdrop and original floor as references, then sized and color-matched for the game. `tools/build-backgrounds.py` regenerates the original procedural floor art and overwrites these assets.
@@ -125,11 +126,11 @@ The class weapons and combat effects use an animated pixel sheet made with `tool
 |---|---|
 | `public/js/combat.js` | Portable combat kernel for hit windows, healing, aim and swept collisions. **Pinned** |
 | `public/js/sim.js` | Simulation: players, Shadow Sprotos, bosses, UFO, waves, snapshots, restart state. **Pinned** |
-| `public/js/ai.js` | CPU Sprotos, used only by the `?demo` attract game and the headless checks. **Pinned** |
+| `public/js/ai.js` | Class-aware CPU teammates and the CPU attract game. **Pinned** |
 | `public/js/net-protocol.js` | Banked-match rules (seats, input limits, terminal facts). Runs only inside the server bundle; `index.html` does not load it. **Pinned** |
 | `public/js/manifest.js` | Sprite bounds and hand positions, generated by `tools/build-manifest.py`. **Pinned** |
 | `public/js/render.js` | Canvas renderer; draws snapshots only, so every client looks identical |
-| `public/js/main.js` | Title, lobby, drop-in, game loop, relay netcode glue |
+| `public/js/main.js`, `party-picker.js` | Title, party roster editor, drop-in, game loop and relay client |
 | `public/js/asset-loader.js` | Staged image loading: fighter atlases, stages, bosses, UFO |
 | `public/js/input.js`, `gamepad.js`, `audio.js`, `net.js` | Keyboard layouts and devices, and the controller settings (`Input.Controls`: bindings, storage, press-to-bind; `tests/controls.test.js`); pure gamepad mapping (deadzone, latch on connect, menu repeat); synthesized SFX and music, plus the `Progress` module (best run and stage unlocks, owned by the device or the hub player through the hub SDK's progress store, kept in this file because the page is at its cap of 30 startup requests; `tests/progress.test.js`, `tests/account-progress.test.js`); relay WebSocket client |
 | `public/js/hub-config.js`, `hub-link.js` | Hub settings, and the hub session (ticket redeem, balance chip, Return to Hub) |
@@ -139,7 +140,7 @@ The class weapons and combat effects use an animated pixel sheet made with `tool
 | `scripts/build.mjs`, `build-server-sim.mjs` | `dist/` build; the server bundle `build/coop-sim.js` and its pin |
 | `scripts/check-assets.mjs`, `check-budgets.mjs` | Asset inventory and transfer budgets |
 
-The four **pinned** files are hashed into `build/coop-sim.pin.json`, which the hub vendors. See `AGENTS.md` before editing them.
+The five **pinned** files are hashed into `build/coop-sim.pin.json`, which the hub vendors. See `AGENTS.md` before editing them.
 
 There are two kinds of online play:
 

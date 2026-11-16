@@ -596,7 +596,6 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
 
 // D3: each Sproto has one small passive.
 {
-  assert.strictEqual(Sim.PASSIVES.length, MANIFEST.fighters.length, 'one passive per Sproto');
   assert.strictEqual(new Set(Sim.PASSIVES.map(p => p.id)).size, 6);
   const withFid = fid => { const a = arena(); a.me.fid = fid; return a; };
   const fidOf = id => Sim.PASSIVES.findIndex(p => p.id === id);

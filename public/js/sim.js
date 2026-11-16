@@ -169,6 +169,10 @@ function classShotPower(classId, weaponIndex, ability) {
   const shot = CLASS_SHOTS[ability ? role.abilityShot : role.shot];
   return shot ? shot.dmg + weapon.shotPower * (ability ? 2 : 1) : HEAL_AMOUNT + (weapon.heal || 0);
 }
+function classShotRange(p) {
+  const shot = CLASS_SHOTS[classOf(p).shot];
+  return shot ? shot.speed * shot.life + WEAPONS[p.weapon].shotRange : 0;
+}
 // Fighting: dash (double-tap), block/parry (Special), grab/throw, launcher + juggles, slam.
 // Block rises on the tick Special is pressed and the parry window is its first PARRY_WINDOW ticks.
 // Letting go within SPIN_TAP ticks without having blocked anything is the spin attack. A block
@@ -227,7 +231,8 @@ function rng(state) { // mulberry32 stored in state.seed
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
-function seatedHumans(state) { let n = 0; for (const p of state.players) if (p.ctrl !== 'cpu' && seated(p)) n++; return clamp(n, 1, SLOTS); }
+const isHuman = p => p.ctrl !== 'cpu' && seated(p);
+function seatedHumans(state) { let n = 0; for (const p of state.players) if (isHuman(p)) n++; return clamp(n, 1, SLOTS); }
 const humansOf = state => state.humans || seatedHumans(state);
 function lockHumans(state) { if (!state.humans) state.humans = seatedHumans(state); }
 // Local and relay drop-in: when more humans are seated than the stage was counted for, what is left
@@ -276,12 +281,29 @@ function newPlayer(slot, cfg) {
 // already carries a fresh Sproto's lives and hp, so taking the seat moves no life fact.
 function emptySeat(p) { Object.assign(p, { st: 'out', t: 0, fresh: true }); return p; }
 
-function create(slots, seed, firstStage) {
+function partySlots(manifest = root.MANIFEST) {
+  const count = manifest && manifest.fighters ? manifest.fighters.length : SLOTS;
+  return Array.from({ length: SLOTS }, (_, i) => {
+    const role = CLASSES[i % CLASSES.length];
+    return { fid: i % count, classId: role.id, weapon: weaponFor(role.id, -1), ctrl: 'cpu', name: 'P' + (i + 1) };
+  });
+}
+
+function create(slots, seed, firstStage, options) {
+  const cpuParty = !!(options && options.cpuParty);
+  if (cpuParty) {
+    slots = partySlots().map((fallback, i) => {
+      const slot = slots[i];
+      if (!slot) return fallback;
+      return slot.ctrl === EMPTY ? { ...slot, ctrl: 'cpu' } : slot;
+    });
+  }
   const state = {
     t: 0, seed: seed >>> 0 || 1234567, mode: 'play', stageIdx: 0, stage: null, camX: 0, lockX: null,
     players: slots.map((c, i) => (c.ctrl === EMPTY ? emptySeat(newPlayer(i, c)) : newPlayer(i, c))), enemies: [], projs: [], items: [], fx: [], boss: null,
     banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0, god: false,
   };
+  if (cpuParty) state.cpuParty = true;
   startStage(state, Math.max(0, Math.min(11, firstStage | 0)));
   return state;
 }
@@ -297,7 +319,7 @@ function startStage(state, i) {
     Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0, abilityCd: 0, ability: false });
     // Dead Sprotos return for the next stage: CPUs as before, and a human who was put out comes
     // back on a last life. Everyone can be revived by a CPU once more.
-    if (p.dead && p.ctrl !== 'cpu') p.lives = Math.max(p.lives, 1);
+    if (p.dead && (p.ctrl !== 'cpu' || state.cpuParty)) p.lives = Math.max(p.lives, 1);
     const stageHp = Math.round(classOf(p).hp * 0.6);
     p.hp = p.dead ? stageHp : Math.max(p.hp, stageHp); p.dead = false; p.npcRevived = false;
     // A player who left gets the same stage recovery, and stays out until they take the seat again.
@@ -322,6 +344,13 @@ function toggleGod(state) {
 }
 const alive = p => p.st !== 'down' && p.st !== 'out' && p.st !== 'dead';
 function activePlayers(state) { return state.players.filter(alive); }
+
+function canPickUp(state, p, item) {
+  if (p.ctrl !== 'cpu') return true;
+  if (!state.cpuParty) return item.kind !== 'ufo';
+  if (item.kind !== 'snack' || p.hp >= 35) return false;
+  return !state.players.some(o => isHuman(o) && alive(o) && o.hp < maxHp(o) - 12 && Math.abs(o.x - item.x) < 160);
+}
 
 function setState(p, st) { p.st = st; p.t = 0; p.ability = false; }
 
@@ -481,7 +510,7 @@ function updatePlayer(state, p) {
     // Pick up items by walking over them.
     for (const it of state.items) {
       if (it.kind === 'crate' || it.taken) continue;
-      if (it.kind === 'ufo' && p.ctrl === 'cpu') continue; // only human players can take the UFO
+      if (!canPickUp(state, p, it)) continue;
       if (Math.abs(it.x - p.x) < 20 && Math.abs(it.y - p.y) < 14) takeItem(state, p, it);
     }
   }
@@ -495,14 +524,17 @@ function startClassMove(state, p, role, ability) {
   p.bufA = 0; p.combo = 0; p.comboT = 0; p.launch = false; p.vx = 0; p.vy = 0;
 }
 
-function healTarget(state, p) {
+function healTarget(state, p, reach = HEAL_REACH, depth = HEAL_DEPTH) {
   let target = null;
-  let missing = 0;
+  let priority = 0;
+  const assist = state.cpuParty && p.ctrl === 'cpu';
   for (const ally of state.players) {
     if (ally === p || !seated(ally) || !alive(ally) || ally.st === 'ufo') continue;
-    if (Math.abs(ally.x - p.x) > HEAL_REACH || Math.abs(ally.y - p.y) > HEAL_DEPTH) continue;
+    if (Math.abs(ally.x - p.x) > reach || Math.abs(ally.y - p.y) > depth) continue;
     const needs = maxHp(ally) - ally.hp;
-    if (needs > missing) { target = ally; missing = needs; }
+    // CPU healers serve injured humans before healing their teammates.
+    const score = needs > 0 && assist && isHuman(ally) ? needs + 2 * MAX_HP : needs;
+    if (score > priority) { target = ally; priority = score; }
   }
   return target || (p.hp < maxHp(p) ? p : null);
 }
@@ -516,13 +548,15 @@ function updateClassMove(state, p, dash, god) {
     if (p.st === 'heal') {
       const ally = healTarget(state, p);
       if (ally) {
-        const hp = Combat.healthAfterHeal(ally.hp, maxHp(ally), classShotPower(role.id, p.weapon, true));
+        const assisted = state.cpuParty && p.ctrl === 'cpu';
+        const power = classShotPower(role.id, p.weapon, true);
+        const hp = Combat.healthAfterHeal(ally.hp, maxHp(ally), assisted ? Math.ceil(power * 0.6) : power);
         const amount = hp - ally.hp;
         ally.hp = hp;
         fx(state, 'class-heal', ally.x, ally.y, ally.z + 28);
         fx(state, 'text', ally.x, ally.y, ally.z + 70, { text: '+' + amount + ' HP' });
         ev(state, 'heal');
-        p.abilityCd = role.cooldown;
+        p.abilityCd = assisted ? Math.ceil(role.cooldown * 1.5) : role.cooldown;
       }
     } else {
       fireClassShot(state, p, role);
@@ -555,7 +589,7 @@ function fireClassShot(state, p, role) {
   const { vx, vy } = Combat.aimVector(dx * p.face, dy, speed);
   let baseDamage = classShotPower(role.id, p.weapon, p.ability);
   // A solo Healer has no teammate to cover damage during long boss fights.
-  if (role.id === 'healer' && humansOf(state) === 1) baseDamage += 2;
+  if (role.id === 'healer' && !state.cpuParty && humansOf(state) === 1) baseDamage += 2;
   const hit = has(p, 'brawler') ? Math.round(baseDamage * 1.1) : baseDamage;
   const dmg = p.ctrl === 'cpu' ? Math.ceil(hit * cpuDmg(state)) : hit;
   state.projs.push({ id: state.nextId++, kind, owner: p.slot, weapon: p.weapon, x, y, z, vx, vy, vz: 0, dmg, t: 0, life: Math.round(range / speed), hit: [], classShot: true });
@@ -783,12 +817,12 @@ function hurtPlayer(state, p, dmg, dir, knock, src) {
 function die(state, p) {
   p.hp = 0; p.revive = 0; releaseGrab(state, p);
   fx(state, 'text', p.x, p.y, 70, { text: p.name + ' DIED' }); ev(state, 'ko');
-  if (p.ctrl === 'cpu') { setState(p, 'dead'); p.dead = true; p.lives = 0; return; }
+  if (p.ctrl === 'cpu' && !state.cpuParty) { setState(p, 'dead'); p.dead = true; p.lives = 0; return; }
   p.lives--;
   if (p.lives <= 0) {
     // Out until the next stage. The run only ends when no human is left in it.
     p.lives = 0; setState(p, 'dead'); p.dead = true;
-    if (!state.players.some(q => q.ctrl !== 'cpu' && seated(q) && !q.dead)) gameOver(state, 'No human Sproto is left');
+    if (isHuman(p) && !state.players.some(q => isHuman(q) && !q.dead)) gameOver(state, 'No human Sproto is left');
     return;
   }
   respawn(state, p, false);
@@ -1381,7 +1415,8 @@ function updateCamera(state) {
   // A human who has pressed nothing for IDLE_AFTER ticks is not waited for (the CPUs already go
   // on without them), so the screen follows everyone else. With four seats, two idle humans at
   // the left edge would otherwise hold the average back and the run would never move on.
-  const all = activePlayers(state), busy = all.filter(p => p.ctrl === 'cpu' || (p.idle || 0) < IDLE_AFTER);
+  const all = activePlayers(state).filter(p => !state.cpuParty || isHuman(p));
+  const busy = all.filter(p => p.ctrl === 'cpu' || (p.idle || 0) < IDLE_AFTER);
   const ps = busy.length ? busy : all;
   if (!ps.length) return;
   const lead = Math.max(...ps.map(p => p.x)), avg = ps.reduce((s, p) => s + p.x, 0) / ps.length;
@@ -1441,6 +1476,13 @@ function step(state) {
     for (const p of state.players) if (p.st === 'down' && p.ctrl !== 'cpu' && p.lives > 1) die(state, p);
     if (state.mode === 'play' && !state.players.some(alive)) gameOver(state, 'Every Sproto is down');
   }
+  if (state.cpuParty && state.mode === 'play' && !state.players.some(p => isHuman(p) && !p.dead)) gameOver(state, 'No human Sproto is left');
+}
+
+function resetSeatInput(p) {
+  p.in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
+  p.prev = { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 };
+  p.bufA = 0; p.tapDir = 0; p.tapT = -99;
 }
 
 // A human takes seat `slot`. A seat that never had a Sproto gets a fresh one, placed as a stage start
@@ -1455,6 +1497,7 @@ function seatIn(state, slot, cfg) {
     delete p.fresh;
     p.hp = Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
   } else if (p.ctrl !== EMPTY) {
+    if (state.cpuParty && p.ctrl !== c.ctrl) resetSeatInput(p);
     p.ctrl = c.ctrl; p.owner = c.owner || 0;
     return p;
   }
@@ -1468,12 +1511,18 @@ function seatIn(state, slot, cfg) {
   setState(p, back === 'down' || back === 'dead' ? back : 'idle');
   return p;
 }
-// The human in seat `slot` leaves. Their Sproto steps out of the run with its lives, hp and powers.
+// A CPU takes over a released party seat with the Sproto's current health, lives and equipment.
 function seatOut(state, slot) {
   const p = state.players[slot];
   if (!p) throw new Error('seat');
   if (!seated(p)) return p;
   releaseGrab(state, p);
+  if (state.cpuParty) {
+    if (p.st === 'grab') setState(p, 'idle');
+    p.ctrl = 'cpu'; p.owner = 0;
+    resetSeatInput(p);
+    return p;
+  }
   p.awaySt = p.st;
   p.ctrl = EMPTY; p.owner = 0;
   p.in = { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 };
@@ -1621,7 +1670,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, Combat, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, classShotRange, healTarget, canPickUp, partySlots, Combat, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1,5 +1,4 @@
-// Host + guest practice-relay smoke, plus the local four-seat lobby (empty seats stay empty) and the
-// all-CPU ?demo attract game, the only place CPU Sprotos appear.
+// Host + guest practice-relay smoke, the four-seat party lobby, and the all-CPU attract game.
 // Starts the practice server when nothing is already healthy on :8080.
 // Usage: node tests/browser-online.cjs [outDir]
 'use strict';
@@ -116,11 +115,30 @@ async function main() {
     await local.waitForFunction(() => window.SprotoApp.screen === 'lobby', null, { timeout: 10000 });
     const localSlots = await local.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.localSlots = localSlots;
-    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'none').length !== 3) {
-      throw new Error('local lobby is not one human plus three empty seats: ' + localSlots.join(','));
+    if (localSlots.length !== 4 || localSlots.filter(ctrl => ctrl === 'local').length !== 1 || localSlots.filter(ctrl => ctrl === 'cpu').length !== 3) {
+      throw new Error('local lobby is not one human plus three CPU teammates: ' + localSlots.join(','));
     }
     await local.screenshot({ path: path.join(out, 'local-lobby-four-slots.png') });
     summary.screenshots.push('local-lobby-four-slots.png');
+    await local.waitForFunction(() => window.PartyPicker);
+    await local.keyboard.press('KeyH');
+    await local.waitForFunction(() => window.SprotoApp.roster?.slot === 0);
+    await local.keyboard.press('KeyH');
+    await local.waitForFunction(() => window.SprotoApp.roster?.slot === 1);
+    for (const fid of [5, 9]) {
+      await local.keyboard.press('KeyS');
+      await local.waitForFunction(index => window.SprotoApp.roster?.fid === index, fid);
+    }
+    await local.keyboard.press('KeyF');
+    await local.keyboard.press('KeyR');
+    await local.waitForFunction(() => {
+      const { slots } = window.SprotoApp;
+      return slots[1].ctrl === 'cpu' && slots[1].fid === 9 && slots[1].classId === 'healer' && slots[0].fid === 0;
+    });
+    await local.screenshot({ path: path.join(out, 'cpu-roster.png') });
+    summary.screenshots.push('cpu-roster.png');
+    await local.keyboard.press('Escape');
+    await local.waitForFunction(() => !window.SprotoApp.roster);
     const equipped = page => page.evaluate(() => {
       const slot = window.SprotoApp.slots[0];
       return { classId: slot.classId, tier: Sim.WEAPONS[slot.weapon].tier };
@@ -131,6 +149,12 @@ async function main() {
     await local.waitForFunction(() => window.SprotoApp.screen === 'stages');
     await local.keyboard.press('KeyF');
     await local.waitForFunction(() => window.SprotoApp.screen === 'game' && window.SprotoApp.sim);
+    const cpuLoaded = await local.evaluate(() => {
+      const p = window.SprotoApp.sim.players[1];
+      return p.ctrl === 'cpu' && p.fid === 9 && p.classId === 'healer';
+    });
+    if (!cpuLoaded) throw new Error('the configured CPU did not enter the battle with its loadout');
+    summary.cpuLoadoutInBattle = true;
     await local.evaluate(() => { window.SprotoApp.sim.mode = 'clear'; });
     await local.waitForFunction(() => Progress.weaponTier(window.SprotoApp.progress.get()) === 2);
     await local.evaluate(() => { window.SprotoApp.sim.mode = 'gameover'; });
@@ -177,10 +201,13 @@ async function main() {
     const onlineSlots = await host.evaluate(() => window.SprotoApp.slots.map(slot => slot.ctrl));
     summary.onlineSlots = onlineSlots;
     if (onlineSlots.length !== 4) throw new Error('online room lost a seat');
-    for (const [role, key] of [['mage', 'Quote'], ['healer', 'Quote']]) {
-      await guest.keyboard.press(key);
-      await guest.waitForFunction(id => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.classId === id), role);
+    const remoteClass = () => host.evaluate(() => window.SprotoApp.slots.find(slot => slot.ctrl === 'remote').classId);
+    for (let i = 0; i < 4 && await remoteClass() !== 'healer'; i++) {
+      const role = await remoteClass();
+      await guest.keyboard.press('Quote');
+      await host.waitForFunction(previous => window.SprotoApp.slots.some(slot => slot.ctrl === 'remote' && slot.classId !== previous), role);
     }
+    if (await remoteClass() !== 'healer') throw new Error('the remote player could not choose Healer');
     await guest.waitForTimeout(400);
     await guest.screenshot({ path: path.join(out, 'online-lobby-guest.png') });
     summary.screenshots.push('online-lobby-guest.png');
@@ -193,6 +220,7 @@ async function main() {
       sim.players[0].hp = 30;
       sim.players[1].x = sim.players[0].x + 12;
       sim.players[1].y = sim.players[0].y;
+      for (const p of sim.players) if (p.ctrl === 'cpu') p.abilityCd = 300;
     });
     await guest.keyboard.down('Quote');
     await guest.waitForFunction(() => {
