@@ -27,7 +27,7 @@ npm start            # http://localhost:8080
 | Keys 2 (right side) | Arrows | `,` / K / Num1 | `.` / L / Num2 | `/` / ; / Num3 | `'` / Num4 | Esc or P |
 | Gamepad | Left stick / D-pad | X (or RB) | A | B (or LB) | Y (or LT / RT) | Start |
 
-Two people can share one keyboard, so WASD and the arrows are two separate players: the arrows never move the WASD player. Down + Special also fires a saved power-up. Dash is a double tap of left or right on any device. M mutes sound. B (the key) returns to the Bar from any screen; a live run asks first.
+Two people can share one keyboard, so WASD and the arrows are two separate players. In battle, Power uses your class ability. Down + Special or Down + Power uses a saved power-up. The Fighter can also press Power alone to use a saved item. Dash is a double tap of left or right on any device. M mutes sound. B (the key) returns to the Bar from any screen and asks for confirmation during a run.
 
 **N twice: send feedback.** When the hub opened the game and you are signed in, pressing N twice (or SEND FEEDBACK in the pause menu) opens the hub's feedback window with a screenshot. Local play freezes and resumes exactly where it was; online and server matches keep running. Without the hub it does nothing. See `docs/coop-hub.md`.
 
@@ -41,7 +41,7 @@ Any standard controller works with no setup (Xbox names; PlayStation and Switch 
 |---|---|---|
 | Menus (all) | W/S or arrows move, Enter / Space / Attack confirm, Esc or Jump back | D-pad or left stick move (held repeats), A confirms, B backs out |
 | Title | the hub items, then RETURN TO BAR, CONTROLLER SETTINGS and FULL SCREEN | same |
-| Lobby | Tab opens the menu (below). Attack takes a slot, left/right Sproto, up/down weapon, Jump leaves the slot, Enter picks a stage, Esc to the title | A (or X) takes a slot, left/right Sproto, up/down weapon, B leaves the slot, B again to the title, Start picks a stage, View opens the menu |
+| Lobby | Attack takes a slot, left/right picks a Sproto, up/down picks a weapon, Power cycles class, Jump leaves the slot, Enter picks a stage, Esc backs out, Tab opens the menu | A or X takes a slot, left/right picks a Sproto, up/down picks a weapon, Y cycles class, B leaves the slot, Start picks a stage, View opens the menu |
 | Stage select | Enter / Space / Attack fight, Esc or Jump back, Tab menu | A or Start fight, B back, View menu |
 | Battle | Attack on a free keyboard side drops in | A or X on a free pad drops in |
 | Pause menu (Resume, Sound, Send Feedback when signed in to the hub, Controller Settings, Full Screen, Main Menu, Return to Bar) | Esc, P or Tab opens and closes, Enter / Space selects | Start or View opens, A selects, B, Start or View resumes |
@@ -56,7 +56,7 @@ Online guests wait for the host to pick the stage. In a server match Start / Ent
 
 **Local multiplayer:** the device that picks LOCAL PLAY or HOST ONLINE is P1. Every other keyboard side or pad presses Attack (A on a pad) to take the next free slot, so pad 1 is P1 and pad 2 is P2 when they join in that order. Any pad can drive the menus.
 
-**Why this pad layout:** A is jump, the most frequent button, and X attack sits right next to it, so the right thumb rolls between attack, jump and B block the way most beat-'em-ups play. Holding block on B while attacking on X is awkward on one thumb, so LB also blocks and RB also attacks for players who like the shoulders. Power-ups are rare and deliberate, so they go on Y and both triggers. Start is the only menu button; View and Home are unused.
+**Why this pad layout:** A jumps, X attacks, and B blocks. LB and RB also block and attack so you can use those actions together. Y and both triggers are Power. Start opens the battle menu, and View opens the lobby menu.
 
 Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages, then fight. The run continues from that stage.
 
@@ -64,21 +64,29 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 
 ## How it plays
 
-- **Every Sproto is armed:** Katana, Bo Staff, War Hammer, Spear, Battle Axe or Chain Flail. Each has its own reach, speed and damage.
-- **Combos:** Attack strings a 3-hit combo (4 on the Katana); the last hit knocks down. An Attack press up to 0.1 s early is remembered, so a press late in a swing or a landing still comes out. Hits freeze attacker and target for a moment (hitstop) and big hits shake the screen. Jump + Attack is a diving strike.
+| Class | Starting weapon and health | Ground attack | Power ability |
+|---|---|---|---|
+| Fighter | Katana · 100 HP | Melee combos | Uses a saved power-up |
+| Mage | Apprentice Wand · 65 HP | Strong arcane bolt. Takes 30% more damage from attacks. | **Arcane Orb** pierces up to three targets. 4.5 second cooldown. |
+| Healer | Mending Rod · 80 HP | Light bolt with a small solo damage bonus | **Mend** restores 24 HP with the starting rod. It heals the most injured living teammate in range, or the Healer if no nearby teammate needs it. 5 second cooldown. |
+| Ranged | Shortbow · 90 HP | Quick arrows with medium damage | **Power Shot** pierces up to two targets. 3.5 second cooldown. |
+
+- **Weapons:** Start with one weapon per class. Campaign clears open the next tier for every class, so you can switch roles and equip the weapons you've earned. Each class has 13 weapons, including the final weapon earned by clearing stage 12. Free Play opens stages for practice. Stage clears earn weapons.
+- **Combos:** The Fighter's ground Attack strings a 3-hit combo (4 on the Katana), and the last hit knocks down. An Attack press up to 0.1 seconds early is remembered. Every class can use melee launchers, dash strikes, spin attacks, throws and the Jump + Attack diving strike.
 - **Dash:** double-tap left or right. The first frames dodge through attacks; Attack during a dash is a knockdown dash strike. The end of any attack can be cancelled into a dash.
 - **Block and parry:** Special blocks **the moment it is pressed** (75% less damage from the front) for as long as it is held. A hit that lands in the first 8 ticks after the press is a **parry**: no damage, and the attacker is left dazed. A block raised within 0.4 s of the last one still blocks but cannot parry, so parries are timed, not mashed. A quick tap of Special (let go within 0.1 s without blocking anything) is the spin attack, which costs 6 HP.
 - **Grab and throw:** walk into a dazed enemy (after a parry or a long combo) to grab it. Attack knees it twice, then throws it; push a direction while pressing Attack to throw that way. A thrown Sproto knocks down everyone it flies into.
 - **Launcher and juggles:** Up + Attack launches an enemy into the air; anyone can keep hitting it to juggle (each juggle hit does 15% less).
 - **Ground slam:** Down + Attack in the air slams down with a shockwave that also hits enemies lying on the floor.
-- **Weapons play differently:** Katana: 4-hit combo. Bo Staff: hit 2 strikes behind you too. War Hammer: the finisher sends a shockwave along the lane. Spear: the finisher pierces the whole lane. Battle Axe: hits make enemies bleed. Chain Flail: hits pull enemies toward you.
+- **Weapons play differently:** The Scimitar strikes quickly for light damage, and the Mace trades speed for much stronger hits. The Bo Staff's second hit strikes behind you. The War Hammer's finisher sends a shockwave along the lane. The Spear's finisher pierces the lane. The Battle Axe makes enemies bleed, and the Chain Flail pulls them in. Caster weapons and bows trade damage, speed and range. Healer weapons can also improve Mend.
 - **Special** (a quick tap, or Attack + Jump together): a spinning weapon sweep that hits all around you and costs a little health.
 - **Down, dead, game over:** a Sproto at 0 HP is down for **10 seconds**. Players can revive anyone, as often as needed, by standing over them. A Sproto nobody revives in time dies. A human who dies drops back in once (shown as ♥♥ → ♥ in the HUD); a second death puts that human out for the rest of the stage. Dead Sprotos return at the next stage on one life. If every Sproto is down at once, downed humans with a spare life use it on the spot. **The run is lost when no human is left in it, or when every Sproto on screen is down or dead.**
 - **Dodging:** before a boss fires, red stripes mark the lanes it will shoot along. Shots fly straight down those lanes and low to the ground: **stand in a stripe and you get hit; step out of it or jump over the shot and you don't.** Spreads always leave gaps. A weapon swing knocks thrown knives and homing missiles out of the air.
 - **Difficulty:** four waves of Shadow Sprotos per stage (up to 12 on screen), tougher and more aggressive as stages go on. **Everything scales with the number of human players**, counted when a stage's first fight starts (in local and relay play a later drop-in grows what is left of that stage to the new count; it never shrinks): with `h` humans, waves are `50% + 10%·h` of full size, Shadow Sproto health is `58% + 10.2%·h` and boss health is `35% + 15%·h` (one human: 60% / 68% / 50%; four: 90% / 99% / 95%). Shadow Sprotos spread over the team and take the emptier side of whoever they pick. The screen stops waiting for a player who has pressed nothing for five seconds.
+- **Shadow roles:** every stage fields a different mix of melee and ranged Shadows. Ranged Shadows show where they will shoot before releasing a projectile. Paired Shadows appear as **Shadow Twins**: the dashed warning remains after the first shot because a second one is coming. Step out of the line or interrupt their windup.
 - **The UFO (from Sproto Arcade):** an empty saucer drops mid-stage and when a boss changes phase. The player who grabs it pilots the saucer for 12 seconds. Attack fires the green laser, Jump/Special drops the beach-ball bomb, and the saucer's shield absorbs 4 hits.
 - **Crates** hold health snacks, gems and power-ups.
-- **Power-ups (save them for big crowds):** human players can hold up to 3 (shown in the HUD) and fire one with the Power button. They drop from crates, every cleared wave, the boss phase change and the occasional defeated enemy.
+- **Power-ups (save them for big crowds):** human players can hold up to 3, shown in the HUD. Fire one with Down + Special or Down + Power. The Fighter can use Power alone. They drop from crates, every cleared wave, the boss phase change and the occasional defeated enemy.
     - **Sproto Storm:** a shockwave around you that knocks down everything within about 260 px and wipes out enemy shots.
     - **Meteor Rain:** 12 meteors land on the enemies across the whole screen over 1.5 seconds.
     - **Chain Lightning:** lightning strikes the 10 nearest enemies on screen, and the boss.
@@ -102,16 +110,20 @@ Only these sprites are reused:
 - **Bosses:** the 24 boss phase sheets and 24 projectile sheets from [Sproto-Arcade](https://github.com/crrreatorrr/Sproto-Arcade) (`art/generated/bosses/*/p{1,2}.png`, `p{1,2}-projectiles.png`). They are downscaled to 1024² and palette-quantized in `public/assets/bosses/`. Row 0 is idle and rows 1–3 are the three firing weapons, which map to the boss's three attacks.
 - **Boss attack effects:** four small sheets in `public/assets/fx/` (13 KB in all), reused from the sibling games and packed at half size by `python3 tools/build-boss-fx.py` (it reads `../Sproto-Arcade` and `../Sproto-Fighter` in place). The rear sweep erupts as a rippling field of crystal floor spikes over glowing cracks (Arcade's ground eruption), charger fire lanes burn with animated flames (Arcade's barn fire), warned lanes, charge and sweep wind-ups and missile volleys flash amber warning lights (Arcade's bunker lights), bomb marks get a searchlight, and explosions use Fighter's 4-frame impact bursts. `render.js` falls back to the old procedural drawing until a sheet has loaded.
 - **UFO:** the saucer (cockpit layers, laser, muzzle, beach ball and shield) from Sproto-Arcade `art/attacks/player/higgsfield/saucer*`.
-- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (Sproto-Fighter `public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Here they live in `public/assets/fighters/<id>/`. The game loads one `atlas.png` per character (`tools/pack-fighter-atlases.py`); the 40 single-pose PNGs next to it are the atlas sources and are not requested. Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette. Shadow Sprotos (the regular enemies) are darkened versions of the same six.
+- **Playable Sprotos:** six characters from the [Sproto-Fighter](https://github.com/crrreatorrr/Sproto-Fighter) fighters that have complete pose sets (Sproto-Fighter `public/fighters/poses/`): **Sproto Sheriff** (`sproto3106`), **VAMP** (`vamp`), **Red Kev** (`guest09`), **Sprotel Bitcoin** (`guest10`), **Golden Sproto** (`rivet`) and **Dumpstar** (`dumpstar`), downscaled to 128². Here they live in `public/assets/fighters/<id>/`. The game loads one `atlas.png` per character (`tools/pack-fighter-atlases.py`). The 40 original pose PNGs per fighter are preserved under `art/fighter-poses/` outside the web build. Each lobby slot starts on a different Sproto; if two players pick the same one, the duplicate gets a hue-shifted palette.
+- **Shadows:** `tools/import-shadow-roster.py` reads the 254 playable identities, source poses and projectile art or signatures from Sproto Fighter commit `0e9af196`. It applies a dark palette inspired by Sproto Buddha and creates one atlas for each stage in `public/assets/shadows/`. It reads Git objects without modifying the Fighter repository. `tools/build-manifest.py` folds the generated roster into Coop's runtime manifest.
 
 - **Stages:** the half-speed scenery comes from Sproto Arcade (`art/level-01…10.jpg`, `art/rooftop-chase/01.webp`, and `art/codebreak/shaft.webp`). The shipped fighting floors in `public/assets/stages/` were generated with Higgsfield using each backdrop and original floor as references, then sized and color-matched for the game. `tools/build-backgrounds.py` regenerates the original procedural floor art and overwrites these assets.
 
-The weapons, items and effects are drawn in code (`public/js/render.js`). `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
+The class weapons and combat effects use an animated pixel sheet made with `tools/build-combat-sprites.py`, aligned to the characters by `public/js/render-fx.js`. `tools/build-manifest.py` measures sprite bounds and hand positions and writes `public/js/manifest.js`.
 
 ## Code map
 
+[Combat architecture and host contract](docs/combat-architecture.md).
+
 | File | Role |
 |---|---|
+| `public/js/combat.js` | Portable combat kernel for hit windows, healing, aim and swept collisions. **Pinned** |
 | `public/js/sim.js` | Simulation: players, Shadow Sprotos, bosses, UFO, waves, snapshots, restart state. **Pinned** |
 | `public/js/ai.js` | CPU Sprotos, used only by the `?demo` attract game and the headless checks. **Pinned** |
 | `public/js/net-protocol.js` | Banked-match rules (seats, input limits, terminal facts). Runs only inside the server bundle; `index.html` does not load it. **Pinned** |
@@ -142,4 +154,4 @@ npm run test:browser     # relay host + guest, atlas visuals, browser goldens, b
 npm run test:e2e         # hub round trip, authority, rewards, reconnect
 ```
 
-The headless campaign check runs four CPU Sprotos on seed 42 until the run ends. CPU teammates are deliberately weak, so that team reaches game over on stage 2 (tick 12826 in `tests/fixtures/gameplay-hashes.json`); it does not clear the 12 stages. `AGENTS.md` lists the full check order.
+The headless campaign check runs four CPU Sprotos on seed 42 until the run ends. CPU teammates are deliberately weak, so that team reaches game over on stage 2 (tick 13243 in `tests/fixtures/gameplay-hashes.json`); it does not clear the 12 stages. `AGENTS.md` lists the full check order.

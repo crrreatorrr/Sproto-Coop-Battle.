@@ -245,8 +245,13 @@ function sanitizeGuest(msg) {
     return { t: msg.t, dev: msg.dev };
   }
   if (msg.t === 'pick') {
-    if (!devOk(msg.dev) || (msg.key !== 'fid' && msg.key !== 'weapon') || (msg.d !== 1 && msg.d !== -1)) return null;
-    return { t: 'pick', dev: msg.dev, key: msg.key, d: msg.d };
+    if (!devOk(msg.dev) || !['fid', 'weapon', 'classId'].includes(msg.key) || (msg.d !== 1 && msg.d !== -1)) return null;
+    const pick = { t: 'pick', dev: msg.dev, key: msg.key, d: msg.d };
+    if (msg.tier !== undefined) {
+      if (!Number.isInteger(msg.tier) || msg.tier < 1 || msg.tier > 13) return null;
+      pick.tier = msg.tier;
+    }
+    return pick;
   }
   if (msg.t === 'in') {
     if (!inpOk(msg.inp)) return null;

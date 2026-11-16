@@ -22,7 +22,7 @@ function loadBundle() {
   sandbox.globalThis = sandbox;
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  const files = ['public/js/manifest.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js', 'tests/fixtures/sha256.js', 'tests/fixtures/scenarios.js'];
+  const files = ['public/js/manifest.js', 'public/js/combat.js', 'public/js/sim.js', 'public/js/ai.js', 'public/js/net-protocol.js', 'tests/fixtures/sha256.js', 'tests/fixtures/scenarios.js'];
   for (const file of files) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), sandbox, { filename: file });
   return sandbox;
 }
@@ -58,10 +58,10 @@ function authority() {
     assert.strictEqual(ran.cases[i].stateHash, goldens.cases[i].stateHash, ran.cases[i].id);
     assert.strictEqual(ran.cases[i].mode, goldens.cases[i].mode, ran.cases[i].id);
   }
-  const stage1 = ran.cases.find(row => row.id === 'human-seed3-stage1');
+  const stage1 = ran.cases.find(row => row.id === 'human-seed9-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);
-  assert.ok(ran.cases.find(row => row.id === 'human-seed16-stage1').flags.bossPhase >= 1);
+  assert.ok(ran.cases.find(row => row.id === 'human-seed64-stage1').flags.bossPhase >= 1);
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }

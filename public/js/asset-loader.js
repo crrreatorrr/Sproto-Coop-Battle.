@@ -44,12 +44,18 @@ function bossPaths(manifest, i) {
   return out;
 }
 
+function stagePaths(manifest, i) {
+  const paths = scenery(i).concat(bossPaths(manifest, i));
+  const shadow = manifest.shadows?.sheets[i];
+  if (shadow) paths.push(shadow);
+  return paths;
+}
+
 // Drawn by render.js. idle.png and muzzle.png are on disk and unused.
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
-// Boss attack effects (render.js FX, packed by tools/build-boss-fx.py). Prefetched with the first
-// stage. groupOf() puts assets/fx/ in 'other', which evict() never drops.
-const FX = ['spikes', 'flame', 'lights', 'burst'].map(function (name) { return 'assets/fx/' + name + '.png'; });
+// Combat effects and gear are prefetched with the first stage and stay resident.
+const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(function (name) { return 'assets/fx/' + name + '.png'; });
 
 function unique(list) {
   const seen = new Set();
@@ -64,6 +70,7 @@ function unique(list) {
 
 function groups(manifest) {
   const atlas = manifest.fighters.map(function (f) { return atlasPath(f.id); });
+  const shadows = manifest.shadows?.sheets || [];
   const stages = [];
   const bosses = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
@@ -77,11 +84,12 @@ function groups(manifest) {
     atlas: atlas,
     startup: startup,
     firstBoss: firstBoss,
+    shadows: shadows.slice(),
     ufo: UFO.slice(),
     fx: FX.slice(),
     stages: stages,
     bosses: bosses,
-    all: unique(atlas.concat(stages, bosses, UFO, FX)),
+    all: unique(atlas.concat(stages, bosses, shadows, UFO, FX)),
     scenery: scenery,
     boss: function (i) { return bossPaths(manifest, i); },
   };
@@ -111,7 +119,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
   let scriptBytes = 0;
   for (let i = 0; i < scriptPaths.length; i++) scriptBytes += bytesOf(scriptPaths[i]);
   const titleBytes = htmlBytes + scriptBytes + sum(g.startup);
-  const firstStageBytes = titleBytes + sum(g.firstBoss) + sum(g.ufo);
+  const firstStageBytes = titleBytes + bytesOf('js/render-fx.js') + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
     titleBytes: titleBytes,
     firstStageBytes: firstStageBytes,
@@ -151,6 +159,7 @@ function groupOf(src) {
   if (src.indexOf('/bosses/') >= 0) return 'boss';
   if (src.indexOf('/stages/') >= 0) return 'stage';
   if (src.indexOf('/ufo/') >= 0) return 'ufo';
+  if (src.indexOf('/shadows/') >= 0) return 'shadow';
   return 'other';
 }
 
@@ -365,7 +374,7 @@ function create(opts) {
   }
 
   function evict() {
-    const extra = { boss: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
+    const extra = { boss: 0, shadow: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
     Object.keys(extra).forEach(function (group) {
       const loose = [];
       records.forEach(function (rec) {
@@ -383,8 +392,8 @@ function create(opts) {
 
   function enterStage(index, manifest) {
     if (index < 0 || index >= manifest.bosses.length) return;
-    const current = scenery(index).concat(bossPaths(manifest, index));
-    const next = index + 1 < manifest.bosses.length ? scenery(index + 1).concat(bossPaths(manifest, index + 1)) : [];
+    const current = stagePaths(manifest, index);
+    const next = index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});

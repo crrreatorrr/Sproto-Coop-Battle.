@@ -10,7 +10,7 @@ const path = require('path');
 const { WebSocketServer } = require('ws');
 
 const root = path.join(__dirname, '..');
-const FINGERPRINT = 'fb9f2679528b6810dfd3a42ce41bb6f2ed3ac8e75eb3741e2ad30ccd9a4b9a72';
+const FINGERPRINT = '7994f9b549ff1665a0d12a59e5d9b0954ff488fc10bd345365a25894f23df6f8';
 const PROTOCOL = 1;
 const OP = { HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12, REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19 };
 const DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];
@@ -74,6 +74,7 @@ function createAuthorityMatch(opts) {
   const made = CoopProtocol.createMatch({ mode: 'banked', seed: seed === 0 ? 1 : seed, matchId: opts.id || 'm' });
   if (!made.ok) throw new Error('sim');
   const session = made.session;
+  const weaponTiers = opts.weaponTiers || {};
   if (opts.restore) {
     session.state = Sim.importState(opts.restore.exported);
     session.seats = opts.restore.seats;
@@ -122,6 +123,7 @@ function createAuthorityMatch(opts) {
         slot: seat.slot, accountId: seat.human && seat.accountId ? seat.accountId : '', device: seat.human ? seat.device : '',
         generation: seat.human ? seat.generation : 0, human: seat.human ? 1 : 0, ctrl: player.ctrl,
         lives: player.lives, hp: player.hp, fighter: player.fid, weapon: player.weapon, name: player.name,
+        classId: player.classId || 'fighter', weaponTier: weaponTiers[seat.accountId] || 1,
       });
     }
     return out;
@@ -168,7 +170,9 @@ function createAuthorityMatch(opts) {
     if (banned(msg)) return reject(presence, 'rejected');
     const devices = parseDevices(msg.devices);
     if (!devices) return reject(presence, 'device');
-    if (state.phase === 'playing' && (msg.fighter !== undefined || msg.weapon !== undefined)) return reject(presence, 'rejected');
+    if (state.phase === 'playing' && (msg.fighter !== undefined || msg.weapon !== undefined || msg.loadouts !== undefined)) return reject(presence, 'rejected');
+    const loadouts = CoopProtocol.parseLoadouts(msg.loadouts, devices);
+    if (!loadouts.ok) return reject(presence, loadouts.reason);
     let fighter = -1;
     let weapon = -1;
     if (msg.fighter !== undefined) {
@@ -207,15 +211,26 @@ function createAuthorityMatch(opts) {
       if (holds(account, devices[i])) continue;
       const slot = freeSlot();
       if (slot < 0) return reject(presence, 'match_full');
-      const assigned = CoopProtocol.assignSeat(session, { slot: slot, accountId: presence.userId, device: devices[i], generation: account.generation });
+      const assigned = CoopProtocol.assignSeat(session, { slot: slot, accountId: presence.userId, device: devices[i], generation: account.generation }, weaponTiers[presence.userId] || 1);
       if (!assigned.ok) return reject(presence, assigned.reason);
       account.devices.push(devices[i]);
       const player = session.state.players[slot];
-      if (fighter >= 0) player.fid = fighter;
-      if (weapon >= 0) player.weapon = weapon;
+      if (!loadouts.picks[devices[i]] && (fighter >= 0 || weapon >= 0)) {
+        loadouts.picks[devices[i]] = { fighter: msg.fighter, weapon: msg.weapon };
+      }
       player.name = String(state.names[presence.userId] || presence.username || 'P' + (slot + 1)).slice(0, 16);
     }
     if (JSON.stringify(life()) !== before) throw new Error('life-reset');
+    if (state.phase === 'lobby') {
+      for (const seat of session.seats) {
+        const pick = loadouts.picks[seat.device];
+        if (seat.accountId !== presence.userId || !pick) continue;
+        const selected = CoopProtocol.selectLoadout(session, {
+          ...pick, slot: seat.slot, accountId: presence.userId, generation: account.generation,
+        }, weaponTiers[presence.userId] || 1);
+        if (!selected.ok) reject(presence, selected.reason);
+      }
+    }
     state.present[presence.userId] = presence;
     const kind = reclaimed || account.generation > 1 ? 'resume' : 'welcome';
     emit(presence, kind === 'resume' ? OP.RESUME : OP.WELCOME, viewBody(account, kind));
@@ -772,6 +787,11 @@ async function main() {
     await guest.fill('#code', code);
     await guest.click('#joinForm button[type=submit]');
     await guest.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'lobby', null, { timeout: 15000 });
+    await guest.waitForFunction(() => window.SprotoApp.authority.view().yours.includes('k1'));
+    for (const role of ['mage', 'healer']) {
+      await guest.keyboard.press('KeyR');
+      await guest.waitForFunction(id => window.SprotoApp.authority.view().seats.some(s => s.accountId === 'acct-bea' && s.classId === id), role);
+    }
     await host.keyboard.press('Enter');
     await guest.keyboard.press('Enter');
     await host.waitForFunction(() => {
@@ -779,6 +799,19 @@ async function main() {
       return view && view.phase === 'playing' && typeof view.rtt === 'number';
     }, null, { timeout: 10000 });
     await guest.waitForFunction(() => window.SprotoApp.authority && window.SprotoApp.authority.view().phase === 'playing', null, { timeout: 10000 });
+    const activeMatch = standin.matches.get(await host.evaluate(() => window.SprotoApp.authority.view().matchId));
+    const [target, healer] = activeMatch.state.session.state.players;
+    target.hp = 30;
+    healer.x = target.x + 12;
+    healer.y = target.y;
+    await guest.bringToFront();
+    await guest.keyboard.down('KeyR');
+    await guest.waitForFunction(() => {
+      const snap = window.SprotoApp.authority.view().snapshot;
+      return snap.players[0].hp > 30 && snap.players[1].ac > 0 && snap.fx.some(f => f.k === 'class-heal');
+    }, null, { timeout: 5000 });
+    await guest.keyboard.up('KeyR');
+    summary.bankedHeal = true;
     const startX = await host.evaluate(() => window.SprotoApp.authority.view().snapshot.players[0].x);
     await host.bringToFront();
     await host.keyboard.down('KeyD');

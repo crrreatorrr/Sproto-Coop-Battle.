@@ -1,5 +1,7 @@
 # Sproto Coop Battle server contract (C3)
 
+The C3 pins below are historical. The current combat kernel, loadout messages, and rollout are described in [the combat architecture](combat-architecture.md); see `build/coop-sim.pin.json` for the current hashes.
+
 The seeded 60 Hz sim and CPU AI in `public/js/sim.js` and `public/js/ai.js` are unchanged. This phase adds a restart-state codec, a classic-script server bundle, and the banked ingress rules. It does not mint Tickets, submit scores, or make the practice relay authoritative.
 
 Game id: `sproto-coop-battle` (no terminal dot). Practice play, God Mode, and stage select in the existing client are unchanged.

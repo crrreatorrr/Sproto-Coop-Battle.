@@ -62,11 +62,11 @@ function assertCoverage(result) {
   for (let stage = 0; stage < 12; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ids.includes('stage-' + stage + '-' + kind));
   }
-  const stage1 = result.cases.find(row => row.id === 'human-seed3-stage1');
+  const stage1 = result.cases.find(row => row.id === 'human-seed9-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);
   assert.ok(stage1.resume && stage1.resume.hash);
-  const phase2 = result.cases.find(row => row.id === 'human-seed16-stage1');
+  const phase2 = result.cases.find(row => row.id === 'human-seed64-stage1');
   assert.ok(phase2.flags.bossPhase >= 1 && phase2.flags.ufo > 0 && phase2.flags.revive > 0);
   const terminal = result.cases.find(row => row.id === 'cpu-seed42-terminal');
   assert.strictEqual(terminal.mode, 'gameover');
@@ -137,7 +137,7 @@ async function main() {
   // Timing depends on the machine, so npm test only logs it. `npm run bench:goja` enforces the
   // 25 ms substep budget.
   if (!(parallel.p95LoopMs < 25)) console.warn('warning: goja p95 loop ' + parallel.p95LoopMs + 'ms is over the 25 ms substep budget (see npm run bench:goja)');
-  const stage1 = normalized.cases.find(row => row.id === 'human-seed3-stage1');
+  const stage1 = normalized.cases.find(row => row.id === 'human-seed9-stage1');
   const stage = JSON.parse(go([
     'run', '.',
     built.bundlePath,

@@ -3,6 +3,8 @@
 // World: x scrolls right, y is belt depth (0 = back, DEPTH = front), z is height.
 (function (root) {
 'use strict';
+
+const Combat = root.CombatKernel || (typeof require === 'function' ? require('./combat.js') : null);
 const W = 640, H = 360, DEPTH = 120, FLOOR_TOP = 218; // belt is drawn from screen y FLOOR_TOP to FLOOR_TOP+DEPTH
 // Up to four Sprotos, one per seated human. A seat nobody has taken stays empty (ctrl 'none'):
 // its Sproto is out of the run, and no CPU Sproto fills it.
@@ -12,23 +14,161 @@ const seated = p => p.ctrl !== EMPTY;
 const SLOT_COLORS = ['#ff4d4d', '#3da5ff', '#4dff7a', '#ffd23d'];
 
 // Weapons: every Sproto fights armed. reach/dmg per combo hit; startup/active/recovery in ticks.
-const WEAPONS = [
-  { id: 'katana', name: 'Katana',      reach: 46, dmg: 9,  startup: 4, active: 4, recovery: 7,  knock: 3.2 },
-  { id: 'bo',     name: 'Bo Staff',    reach: 60, dmg: 8,  startup: 5, active: 5, recovery: 8,  knock: 3.6 },
-  { id: 'hammer', name: 'War Hammer',  reach: 44, dmg: 14, startup: 8, active: 4, recovery: 11, knock: 5.0 },
-  { id: 'spear',  name: 'Spear',       reach: 68, dmg: 9,  startup: 6, active: 4, recovery: 9,  knock: 3.0 },
-  { id: 'axe',    name: 'Battle Axe',  reach: 48, dmg: 12, startup: 7, active: 4, recovery: 10, knock: 4.2 },
-  { id: 'flail',  name: 'Chain Flail', reach: 56, dmg: 10, startup: 6, active: 6, recovery: 10, knock: 3.8 },
-];
+const FIGHTER_WEAPONS = [
+  { id: 'katana', name: 'Katana', tier: 1, reach: 46, dmg: 9, startup: 4, active: 4, recovery: 7, knock: 3.2 },
+  { id: 'bo', name: 'Bo Staff', tier: 4, reach: 60, dmg: 8, startup: 5, active: 5, recovery: 8, knock: 3.6 },
+  { id: 'hammer', name: 'War Hammer', tier: 8, reach: 44, dmg: 14, startup: 8, active: 4, recovery: 11, knock: 5.0 },
+  { id: 'spear', name: 'Spear', tier: 5, reach: 68, dmg: 9, startup: 6, active: 4, recovery: 9, knock: 3.0 },
+  { id: 'axe', name: 'Battle Axe', tier: 6, reach: 48, dmg: 12, startup: 7, active: 4, recovery: 10, knock: 4.2 },
+  { id: 'flail', name: 'Chain Flail', tier: 7, reach: 56, dmg: 10, startup: 6, active: 6, recovery: 10, knock: 3.8 },
+  { id: 'scimitar', name: 'Scimitar', tier: 2, reach: 42, dmg: 7, startup: 3, active: 4, recovery: 6, knock: 2.8 },
+  { id: 'mace', name: 'Mace', tier: 3, reach: 42, dmg: 16, startup: 9, active: 4, recovery: 13, knock: 5.5 },
+  { id: 'rapier', name: 'Rapier', tier: 9, reach: 59, dmg: 7, startup: 4, active: 3, recovery: 6, knock: 2.5, tint: '#8ec9ef' },
+  { id: 'greatsword', name: 'Greatsword', tier: 10, reach: 58, dmg: 15, startup: 8, active: 5, recovery: 12, knock: 4.8, tint: '#e1a4ef' },
+  { id: 'cudgel', name: 'Cudgel', tier: 11, reach: 38, dmg: 11, startup: 4, active: 5, recovery: 8, knock: 4.6, tint: '#e8ad69' },
+  { id: 'halberd', name: 'Halberd', tier: 12, reach: 72, dmg: 13, startup: 9, active: 5, recovery: 11, knock: 4.0, tint: '#7ce2ac' },
+  { id: 'twin-blades', name: 'Twin Blades', tier: 13, reach: 45, dmg: 10, startup: 3, active: 5, recovery: 7, knock: 3.1, tint: '#ffd57f' },
+].map(w => ({ ...w, classId: 'fighter', gear: w.id }));
+
+// Caster and bow profiles keep melee moves available. Their gear determines close range timing,
+// while each tier trades projectile power, speed, reach, and windup for different attack rhythms.
+const GEAR_MELEE = {
+  wand: { reach: 32, dmg: 8, startup: 4, active: 4, recovery: 7, knock: 2.7 },
+  rod: { reach: 42, dmg: 9, startup: 6, active: 4, recovery: 8, knock: 3.2 },
+  staff: { reach: 54, dmg: 8, startup: 6, active: 5, recovery: 9, knock: 3.3 },
+  scepter: { reach: 39, dmg: 10, startup: 7, active: 4, recovery: 9, knock: 3.8 },
+  bow: { reach: 39, dmg: 8, startup: 5, active: 4, recovery: 8, knock: 3.0 },
+  crossbow: { reach: 34, dmg: 10, startup: 7, active: 4, recovery: 10, knock: 3.9 },
+};
+function shotWeapons(classId, tiers) {
+  return tiers.map(([id, name, gear, tint, shotPower, shotSpeed, shotRange, tempo, heal = 0], i) => ({
+    ...GEAR_MELEE[gear], id, name, classId, tier: i + 1, gear, tint, shotPower, shotSpeed, shotRange, tempo, heal,
+  }));
+}
+const WEAPONS = FIGHTER_WEAPONS.concat(
+  shotWeapons('mage', [
+    ['apprentice-wand', 'Apprentice Wand', 'wand', '#b38dff', 0, 0, 0, 0],
+    ['ember-wand', 'Ember Wand', 'wand', '#ff996b', 1, 1, -20, -1],
+    ['frost-staff', 'Frost Staff', 'staff', '#a3e8ff', 3, -0.5, 20, 2],
+    ['storm-rod', 'Storm Rod', 'rod', '#f1e98b', 0, 1.5, 18, 0],
+    ['glass-scepter', 'Glass Scepter', 'scepter', '#ffafde', 5, -0.5, 0, 3],
+    ['runic-staff', 'Runic Staff', 'staff', '#a393ff', 2, 0, 32, 1],
+    ['cinder-staff', 'Cinder Staff', 'staff', '#f66e56', 4, 0, -15, 1],
+    ['prism-wand', 'Prism Wand', 'wand', '#e8b5ff', 1, 1, 12, -2],
+    ['rift-scepter', 'Rift Scepter', 'scepter', '#f080bf', 6, -0.5, 30, 4],
+    ['thunder-staff', 'Thunder Staff', 'staff', '#fbe87e', 4, 1, 22, 2],
+    ['astral-rod', 'Astral Rod', 'rod', '#8bbaff', 2, 1.5, 34, 0],
+    ['void-staff', 'Void Staff', 'staff', '#b279fa', 7, -1, 40, 4],
+    ['nova-scepter', 'Nova Scepter', 'scepter', '#f7b6f8', 5, 1, 24, 1],
+  ]),
+  shotWeapons('healer', [
+    ['mending-rod', 'Mending Rod', 'rod', '#9cf2ae', 0, 0, 0, 0],
+    ['field-staff', 'Field Staff', 'staff', '#d4e590', 0, -0.5, 12, 1, 3],
+    ['mercy-scepter', 'Mercy Scepter', 'scepter', '#f0d89a', 1, 0, 0, 2, 4],
+    ['bloom-rod', 'Bloom Rod', 'rod', '#f8a8c7', 0, 1, -14, -1, 2],
+    ['sanctuary-staff', 'Sanctuary Staff', 'staff', '#83d9c6', 0, -1, 22, 3, 7],
+    ['dawn-scepter', 'Dawn Scepter', 'scepter', '#ffbf8e', 2, 1, 0, 2, 2],
+    ['grove-staff', 'Grove Staff', 'staff', '#b5ed7e', 1, 0, 28, 1, 4],
+    ['halo-rod', 'Halo Rod', 'rod', '#f2e885', 0, 1.5, 8, -2, 3],
+    ['haven-scepter', 'Haven Scepter', 'scepter', '#83c9ee', 0, -0.5, 26, 2, 8],
+    ['renewal-staff', 'Renewal Staff', 'staff', '#97d69a', 1, 0, 18, 0, 6],
+    ['beacon-rod', 'Beacon Rod', 'rod', '#f5bfa3', 2, 1, 14, 1, 5],
+    ['concord-scepter', 'Concord Scepter', 'scepter', '#d5afff', 1, 0.5, 24, 3, 10],
+    ['marina-staff', 'Marina Staff', 'staff', '#99efdf', 1, 1, 22, 0, 8],
+  ]),
+  shotWeapons('ranged', [
+    ['shortbow', 'Shortbow', 'bow', '#f7c171', 0, 0, 0, 0],
+    ['recurve', 'Recurve', 'bow', '#fcca8e', 0, 1, 6, -1],
+    ['longbow', 'Longbow', 'bow', '#bde18a', 2, 0, 38, 2],
+    ['hand-crossbow', 'Hand Crossbow', 'crossbow', '#b5cee9', 3, 1, -15, 2],
+    ['reflex-bow', 'Reflex Bow', 'bow', '#77dabe', 1, 1.5, -12, -1],
+    ['warbow', 'Warbow', 'bow', '#fa9a76', 4, 0.5, 20, 3],
+    ['scout-crossbow', 'Scout Crossbow', 'crossbow', '#e0dc95', 2, 1, 18, 0],
+    ['compound-bow', 'Compound Bow', 'bow', '#91cff2', 3, 1, 24, 1],
+    ['greatbow', 'Greatbow', 'bow', '#f2ab79', 5, 0, 45, 4],
+    ['repeater', 'Repeater', 'crossbow', '#f1b1d0', 2, 2, 8, -1],
+    ['piercer-bow', 'Piercer Bow', 'bow', '#d3d98e', 4, 1, 38, 2],
+    ['siege-crossbow', 'Siege Crossbow', 'crossbow', '#d2b2ed', 6, 1, 40, 4],
+    ['starbow', 'Starbow', 'bow', '#ffdd95', 4, 2, 30, 1],
+  ]),
+);
+const WEAPON_TRACKS = {};
+for (const [i, weapon] of WEAPONS.entries()) {
+  if (!WEAPON_TRACKS[weapon.classId]) WEAPON_TRACKS[weapon.classId] = [];
+  WEAPON_TRACKS[weapon.classId][weapon.tier - 1] = i;
+}
+function weaponChoices(classId, unlockedTier = 13) {
+  const id = classOf({ classId }).id;
+  return WEAPON_TRACKS[id].slice(0, clamp(unlockedTier | 0, 1, 13));
+}
+function weaponFor(classId, preferredIndex, unlockedTier = 13) {
+  const id = classOf({ classId }).id;
+  const weapon = Number.isInteger(preferredIndex) && WEAPONS[preferredIndex];
+  return weapon && weapon.classId === id && weapon.tier <= unlockedTier ? preferredIndex : WEAPON_TRACKS[id][0];
+}
 const ENEMY_WEAPONS = [
   { id: 'club',   reach: 40, dmg: 7, startup: 16, active: 4, recovery: 22 },
   { id: 'knife',  reach: 32, dmg: 5, startup: 10, active: 3, recovery: 16 },
   { id: 'pike',   reach: 62, dmg: 8, startup: 20, active: 5, recovery: 24 },
-  { id: 'knife',  reach: 32, dmg: 5, startup: 22, active: 3, recovery: 18, thrower: true },
+  { id: 'knife',  reach: 32, dmg: 5, startup: 12, active: 3, recovery: 18,
+    ranged: { kind: 'knife', range: 220, speed: 4.2, startup: 28, recovery: 16, cooldown: 76, dmg: 6 } },
+  { id: 'bow',    reach: 28, dmg: 4, startup: 14, active: 3, recovery: 18,
+    ranged: { kind: 'enemyArrow', range: 290, speed: 5.2, startup: 32, recovery: 22, cooldown: 96, dmg: 8 } },
+  { id: 'club',   reach: 32, dmg: 5, startup: 14, active: 3, recovery: 18,
+    ranged: { kind: 'enemyBolt', range: 240, speed: 4.6, startup: 32, recovery: 20, cooldown: 90, dmg: 6 } },
+  { id: 'club',   reach: 40, dmg: 7, startup: 15, active: 4, recovery: 20,
+    ranged: { kind: 'enemyTwin', range: 295, speed: 5.8, startup: 38, echo: 18, recovery: 22, cooldown: 108, dmg: 9 } },
 ];
+const ENEMY_SHOT_ORIGIN = 16, ENEMY_SHOT_HEIGHT = 18, ENEMY_SHOT_MIN_RANGE = 56, ENEMY_SHOT_MAX_DEPTH = 42;
+const KNIFE_THROWER = 3, SHADOW_ARCHER = 4, SHADOW_CASTER = 5, SHADOW_TWIN = 6;
+const SHADOW_SHOTS = new Set(['knife', 'enemyArrow', 'enemyBolt', 'enemyTwin']);
+const isShadowShot = pr => SHADOW_SHOTS.has(pr.kind);
 // Each human may die once and drop back in; the second death puts that human out until the next
 // stage. The run is lost when no human is left, or when every Sproto is down.
 const SPECIAL_COST = 6, MAX_HP = 100, START_LIVES = 2;
+const CLASSES = [
+  { id: 'fighter', name: 'Fighter', hp: MAX_HP, taken: 1, melee: 1, text: 'Melee combos · 100 HP' },
+  {
+    id: 'mage', name: 'Mage', hp: 65, taken: 1.3, melee: 0.75, text: 'Heavy bolts · 65 HP · Fragile',
+    shot: 'mage-bolt', shotWindup: 10, shotDuration: 27,
+    abilityName: 'Arcane Orb', abilityText: 'Pierces up to three targets', abilityWindup: 16, abilityDuration: 39, cooldown: 270, abilityShot: 'arcane-orb',
+  },
+  {
+    id: 'healer', name: 'Healer', hp: 80, taken: 1, melee: 0.35, text: 'Light bolts · 80 HP',
+    shot: 'healer-bolt', shotWindup: 8, shotDuration: 26,
+    abilityName: 'Mend', abilityText: 'Heals a nearby teammate', abilityWindup: 14, abilityDuration: 34, cooldown: 300,
+  },
+  {
+    id: 'ranged', name: 'Ranged', hp: 90, taken: 1, melee: 0.9, text: 'Quick arrows · 90 HP',
+    shot: 'arrow', shotWindup: 7, shotDuration: 22,
+    abilityName: 'Power Shot', abilityText: 'Pierces up to two targets', abilityWindup: 12, abilityDuration: 32, cooldown: 210, abilityShot: 'power-arrow',
+  },
+];
+const CLASS_SHOTS = {
+  'mage-bolt': { speed: 6, life: 37, dmg: 19, hits: 1, fx: 'mage-hit' },
+  'arcane-orb': { speed: 5, life: 48, dmg: 36, hits: 3, fx: 'mage-hit' },
+  'healer-bolt': { speed: 7, life: 28, dmg: 4, hits: 1, fx: 'healer-hit' },
+  arrow: { speed: 8, life: 28, dmg: 11, hits: 1, fx: 'arrow-hit' },
+  'power-arrow': { speed: 9, life: 30, dmg: 21, hits: 2, fx: 'arrow-hit' },
+};
+const HEAL_AMOUNT = 24, HEAL_REACH = 100, HEAL_DEPTH = 42;
+const classOf = p => CLASSES.find(c => c.id === p.classId) || CLASSES[0];
+function classMoveTiming(classId, weaponIndex, ability) {
+  const role = classOf({ classId });
+  const weapon = WEAPONS[weaponFor(role.id, weaponIndex)];
+  if (!role.shot) return { windup: weapon.startup, duration: weapon.startup + weapon.active + weapon.recovery };
+  return {
+    windup: (ability ? role.abilityWindup : role.shotWindup) + weapon.tempo,
+    duration: (ability ? role.abilityDuration : role.shotDuration) + weapon.tempo * 2,
+  };
+}
+function classShotPower(classId, weaponIndex, ability) {
+  const role = classOf({ classId });
+  const weapon = WEAPONS[weaponFor(role.id, weaponIndex)];
+  if (!role.shot) return weapon.dmg;
+  const shot = CLASS_SHOTS[ability ? role.abilityShot : role.shot];
+  return shot ? shot.dmg + weapon.shotPower * (ability ? 2 : 1) : HEAL_AMOUNT + (weapon.heal || 0);
+}
 // Fighting: dash (double-tap), block/parry (Special), grab/throw, launcher + juggles, slam.
 // Block rises on the tick Special is pressed and the parry window is its first PARRY_WINDOW ticks.
 // Letting go within SPIN_TAP ticks without having blocked anything is the spin attack. A block
@@ -61,7 +201,20 @@ const PASSIVES = [
   { id: 'sprinter', name: 'Sprinter', text: 'walks 10% faster' },
 ];
 const has = (p, id) => PASSIVES[p.fid % PASSIVES.length].id === id;
-const maxHp = p => MAX_HP + (has(p, 'tough') ? 10 : 0);
+const maxHp = p => classOf(p).hp + (has(p, 'tough') ? 10 : 0);
+const meleeDamage = (p, dmg) => p ? Math.max(1, Math.round(dmg * classOf(p).melee)) : dmg;
+function setClass(p, classId) {
+  const role = CLASSES.find(c => c.id === classId);
+  if (!role) return false;
+  if (classOf(p).id === role.id) { p.classId = role.id; return true; }
+  const previousMax = maxHp(p);
+  p.classId = role.id;
+  p.weapon = weaponFor(role.id, p.weapon);
+  p.hp = p.hp > 0 ? clamp(Math.round(p.hp * maxHp(p) / previousMax), 1, maxHp(p)) : 0;
+  p.abilityCd = 0;
+  p.ability = false;
+  return true;
+}
 // Boss scripts, by boss index % 4. Elite Shadow Sprotos: a guard that stops frontal hits.
 const BOSS_ARCHETYPES = ['gunner', 'charger', 'summoner', 'bomber'];
 const ELITE_FROM_STAGE = 1, ELITE_MAX = 2, GUARD_HITS = 6, GUARD_REGEN = 300;
@@ -110,9 +263,10 @@ function makeStage(state, i) {
 
 function newPlayer(slot, cfg) {
   return {
-    id: 'p' + slot, slot, fid: cfg.fid, weapon: cfg.weapon, ctrl: cfg.ctrl, owner: cfg.owner || 0, name: cfg.name || ('P' + (slot + 1)),
+    id: 'p' + slot, slot, fid: cfg.fid, weapon: weaponFor(cfg.classId, cfg.weapon), ctrl: cfg.ctrl, owner: cfg.owner || 0, name: cfg.name || ('P' + (slot + 1)),
     x: 80 + slot * 14, y: 18 + slot * 17, z: 0, vx: 0, vy: 0, vz: 0, face: 1,
-    hp: MAX_HP + (PASSIVES[cfg.fid % PASSIVES.length].id === 'tough' ? 10 : 0), lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
+    classId: classOf(cfg).id, abilityCd: 0, ability: false,
+    hp: maxHp(cfg), lives: START_LIVES, score: 0, st: 'idle', t: 0, combo: 0, comboT: 0, hitDone: null,
     inv: 90, downT: 0, revive: 0, ufoT: 0, ufoShield: 0, shotCd: 0, ballCd: 0, out: false, contT: 0,
     in: { l: 0, r: 0, u: 0, d: 0, a: 0, j: 0, s: 0, p: 0 }, prev: { a: 0, j: 0, s: 0, p: 0, l: 0, r: 0 }, powers: [], hs: 0, bufA: 0, tapDir: 0, tapT: -99, dashDir: 0, grab: null, knees: 0, kills: 0, revs: 0, parries: 0, ai: { t: 0, tx: 0, ty: 0, jitter: 0 },
   };
@@ -140,11 +294,12 @@ function startStage(state, i) {
   for (const c of state.stage.crates) state.items.push({ id: state.nextId++, kind: 'crate', x: c.x, y: c.y, z: 0, hp: 12 });
   state.players.forEach((p, k) => {
     if (p.fresh) return; // a seat nobody has taken stays out
-    Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0 });
+    Object.assign(p, { x: 60 + k * 16, y: 14 + k * 18, z: 0, vx: 0, vy: 0, vz: 0, face: 1, st: 'idle', t: 0, inv: 120, ufoT: 0, downT: 0, revive: 0, abilityCd: 0, ability: false });
     // Dead Sprotos return for the next stage: CPUs as before, and a human who was put out comes
     // back on a last life. Everyone can be revived by a CPU once more.
     if (p.dead && p.ctrl !== 'cpu') p.lives = Math.max(p.lives, 1);
-    p.hp = p.dead ? 60 : Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
+    const stageHp = Math.round(classOf(p).hp * 0.6);
+    p.hp = p.dead ? stageHp : Math.max(p.hp, stageHp); p.dead = false; p.npcRevived = false;
     // A player who left gets the same stage recovery, and stays out until they take the seat again.
     if (!seated(p)) { p.awaySt = 'idle'; setState(p, 'out'); }
   });
@@ -168,10 +323,11 @@ function toggleGod(state) {
 const alive = p => p.st !== 'down' && p.st !== 'out' && p.st !== 'dead';
 function activePlayers(state) { return state.players.filter(alive); }
 
-function setState(p, st) { p.st = st; p.t = 0; }
+function setState(p, st) { p.st = st; p.t = 0; p.ability = false; }
 
 function updatePlayer(state, p) {
   const inp = p.in;
+  if (p.abilityCd > 0) p.abilityCd--;
   if (p.hs > 0) { // hitstop: frozen for a few ticks on impact; an Attack tap during it is kept
     if (inp.a && !p.prev.a) p.bufA = ATTACK_BUFFER;
     p.prev.a = inp.a; p.hs--; return;
@@ -227,12 +383,14 @@ function updatePlayer(state, p) {
     if (p.z === 0 && p.t > 8) { p.vx = 0; setState(p, 'lying'); }
   } else if (p.st === 'lying') {
     if (p.t > 40) { setState(p, 'idle'); p.inv = 60; }
+  } else if (p.st === 'cast' || p.st === 'shoot' || p.st === 'heal') {
+    updateClassMove(state, p, dash, god);
   } else if (p.st === 'attack') {
     const w = WEAPONS[p.weapon];
     const fin = isFinisher(p);
     const tot = w.startup + w.active + w.recovery + (fin ? 6 : 0);
     p.vx *= 0.7; p.vy = 0;
-    if (p.t > w.startup && p.t <= w.startup + w.active) {
+    if (Combat.isActiveTick(p.t, w.startup, w.active)) {
       if (p.launch) meleeHit(state, p, w.reach, w.dmg, false, 1, false, { launch: true });
       else {
         // Bo Staff: hit 2 also strikes behind you.
@@ -292,19 +450,22 @@ function updatePlayer(state, p) {
     else if (pressA) { setState(p, 'jumpatk'); p.hitDone = new Set(); ev(state, 'swing'); }
     if (p.z === 0 && p.t > 2) { setState(p, 'land'); p.vx = 0; p.vy = 0; }
   } else { // idle / walk
+    const role = classOf(p);
     const sp = (p.ctrl === 'cpu' && p.ai.rescue ? 3.6 : 2.3) * (has(p, 'sprinter') ? 1.1 : 1); // a rescuing CPU sprints
     let mx = (inp.r ? 1 : 0) - (inp.l ? 1 : 0), my = (inp.d ? 1 : 0) - (inp.u ? 1 : 0);
     p.vx = mx * sp; p.vy = my * sp * 0.62;
     if (mx) p.face = mx;
     p.st = mx || my ? 'walk' : 'idle';
     const dazed = mx ? state.enemies.find(e => e.st === 'hit' && e.stun >= 2 && !e.dead && Math.abs(e.y - p.y) < 10 && (e.x - p.x) * mx > 0 && Math.abs(e.x - p.x) < 26) : null;
-    if ((pressP || (pressS && inp.d)) && p.powers.length) {
+    if (((pressP && (!role.abilityName || inp.d)) || (pressS && inp.d)) && p.powers.length) {
       usePower(state, p, p.powers.shift());
     } else if (dash) {
       startDash(state, p, dash);
     } else if (inp.s && !(inp.d && p.powers.length)) {
       // Block on press. Held from an earlier move it rises on the first free tick.
       setState(p, 'block'); p.blockHit = false; p.noParry = state.t < (p.parryLock || 0); ev(state, 'shield');
+    } else if (pressP && !inp.d && role.abilityName && p.abilityCd <= 0 && (role.id !== 'healer' || healTarget(state, p))) {
+      startClassMove(state, p, role, true);
     } else if (dazed && p.ctrl !== 'cpu' || (dazed && p.ctrl === 'cpu' && rng(state) < 0.02)) {
       startGrab(state, p, dazed);
     } else if (wantA && inp.u) {
@@ -313,7 +474,10 @@ function updatePlayer(state, p) {
       startSpin(state, p, god);
     } else if (pressJ) {
       setState(p, 'jump'); p.vz = 8.6; p.vx = mx * 2.6; p.vy = my * 1.4; ev(state, 'jump');
-    } else if (wantA) startAttack(state, p, inp);
+    } else if (wantA) {
+      if (role.shot) startClassMove(state, p, role, false);
+      else startAttack(state, p, inp);
+    }
     // Pick up items by walking over them.
     for (const it of state.items) {
       if (it.kind === 'crate' || it.taken) continue;
@@ -322,6 +486,120 @@ function updatePlayer(state, p) {
     }
   }
   clampPlayer(state, p);
+}
+
+function startClassMove(state, p, role, ability) {
+  const healing = ability && role.id === 'healer';
+  setState(p, healing ? 'heal' : role.id === 'ranged' ? 'shoot' : 'cast');
+  p.ability = ability;
+  p.bufA = 0; p.combo = 0; p.comboT = 0; p.launch = false; p.vx = 0; p.vy = 0;
+}
+
+function healTarget(state, p) {
+  let target = null;
+  let missing = 0;
+  for (const ally of state.players) {
+    if (ally === p || !seated(ally) || !alive(ally) || ally.st === 'ufo') continue;
+    if (Math.abs(ally.x - p.x) > HEAL_REACH || Math.abs(ally.y - p.y) > HEAL_DEPTH) continue;
+    const needs = maxHp(ally) - ally.hp;
+    if (needs > missing) { target = ally; missing = needs; }
+  }
+  return target || (p.hp < maxHp(p) ? p : null);
+}
+
+function updateClassMove(state, p, dash, god) {
+  const role = classOf(p);
+  const timing = classMoveTiming(role.id, p.weapon, p.ability);
+  const before = p.t - 1;
+  if (god) p.t++;
+  if (before < timing.windup && p.t >= timing.windup) {
+    if (p.st === 'heal') {
+      const ally = healTarget(state, p);
+      if (ally) {
+        const hp = Combat.healthAfterHeal(ally.hp, maxHp(ally), classShotPower(role.id, p.weapon, true));
+        const amount = hp - ally.hp;
+        ally.hp = hp;
+        fx(state, 'class-heal', ally.x, ally.y, ally.z + 28);
+        fx(state, 'text', ally.x, ally.y, ally.z + 70, { text: '+' + amount + ' HP' });
+        ev(state, 'heal');
+        p.abilityCd = role.cooldown;
+      }
+    } else {
+      fireClassShot(state, p, role);
+      if (p.ability) p.abilityCd = role.cooldown;
+    }
+  }
+  if (dash && p.t > timing.windup) startDash(state, p, dash);
+  else if (p.t >= timing.duration) setState(p, 'idle');
+}
+
+function fireClassShot(state, p, role) {
+  const kind = p.ability ? role.abilityShot : role.shot;
+  const shot = CLASS_SHOTS[kind];
+  const weapon = WEAPONS[p.weapon];
+  const speed = shot.speed + weapon.shotSpeed;
+  const range = shot.speed * shot.life + weapon.shotRange;
+  const x = p.x + p.face * 12, y = p.y, z = p.z + 24;
+  let aim = null;
+  let distance = Infinity;
+  // Auto-aim only into the facing lane. Turning around and changing lanes still take input.
+  for (const target of state.enemies.concat(state.boss || [])) {
+    if (target.hp <= 0 || target.st === 'lying' || target.st === 'grabbed' || target.st === 'enter' || target.st === 'transform') continue;
+    const dx = (target.x - p.x) * p.face, dy = Math.abs(target.y - y);
+    if (dx <= 0 || dx > range || dy > 32) continue;
+    const score = dx + dy * 3;
+    if (score < distance) { aim = target; distance = score; }
+  }
+  const dx = aim ? Math.max(12, Math.abs(aim.x - x)) : 1;
+  const dy = aim ? clamp(aim.y - y, -dx * 0.5, dx * 0.5) : 0;
+  const { vx, vy } = Combat.aimVector(dx * p.face, dy, speed);
+  let baseDamage = classShotPower(role.id, p.weapon, p.ability);
+  // A solo Healer has no teammate to cover damage during long boss fights.
+  if (role.id === 'healer' && humansOf(state) === 1) baseDamage += 2;
+  const hit = has(p, 'brawler') ? Math.round(baseDamage * 1.1) : baseDamage;
+  const dmg = p.ctrl === 'cpu' ? Math.ceil(hit * cpuDmg(state)) : hit;
+  state.projs.push({ id: state.nextId++, kind, owner: p.slot, weapon: p.weapon, x, y, z, vx, vy, vz: 0, dmg, t: 0, life: Math.round(range / speed), hit: [], classShot: true });
+  ev(state, role.id === 'ranged' ? 'bowfire' : p.ability ? 'orbcast' : 'magicbolt');
+}
+
+function updateClassProjectile(state, pr, x, y, z) {
+  const shot = CLASS_SHOTS[pr.kind];
+  const owner = state.players[pr.owner];
+  const dir = Math.sign(pr.vx) || 1;
+  const contacts = [];
+  function contact(body, kind, halfX, halfY, low, high) {
+    const id = kind === 'boss' ? 'boss' : body.id;
+    if (pr.hit.includes(id)) return;
+    if (!Combat.segmentHitsBox(x, y, z, pr.x, pr.y, pr.z, body.x - halfX, body.x + halfX, body.y - halfY, body.y + halfY, low, high)) return;
+    contacts.push({ body, kind, id, dist: Math.max(0, (body.x - x) * dir - halfX) });
+  }
+  for (const e of state.enemies) {
+    if (e.hp > 0 && e.st !== 'lying' && e.st !== 'grabbed') contact(e, 'enemy', 15, 11, e.z - 4, e.z + 54);
+  }
+  const b = state.boss;
+  if (b && b.hp > 0 && b.st !== 'enter' && b.st !== 'transform') contact(b, 'boss', b.w / 2, 27, 0, 100);
+  for (const it of state.items) {
+    if (it.kind === 'crate' && !it.taken) contact(it, 'crate', 11, 10, 0, 34);
+  }
+  contacts.sort((a, b) => a.dist - b.dist);
+  for (const { body, kind, id } of contacts) {
+    pr.hit.push(id);
+    if (kind === 'enemy' && guarding(body, { x: body.x - dir })) {
+      if (--body.guard <= 0) breakGuard(state, body);
+      fx(state, 'shield', body.x, body.y, pr.z); ev(state, 'shield');
+      pr.remove = true;
+      break;
+    }
+    fx(state, shot.fx, pr.x, pr.y, pr.z);
+    if (kind === 'enemy') hurtEnemy(state, body, pr.dmg, false, dir, 2, owner);
+    else if (kind === 'boss') hurtBoss(state, body, pr.dmg, owner);
+    else {
+      body.hp -= pr.dmg;
+      ev(state, 'hit');
+      if (body.hp <= 0) breakCrate(state, body);
+    }
+    if (pr.hit.length >= shot.hits || kind === 'boss') { pr.remove = true; break; }
+  }
 }
 
 // The spin attack costs a little health; without enough of it the Sproto just stands.
@@ -356,7 +634,7 @@ function startDash(state, p, dir) {
 function shake(state, n) { state.shake = Math.max(state.shake || 0, n); }
 // Weapon finishers: each weapon's last combo hit has its own effect.
 function weaponFinisher(state, p, w) {
-  const dmg = p.ctrl === 'cpu' ? Math.ceil(10 * cpuDmg(state)) : 10;
+  const dmg = p.ctrl === 'cpu' ? Math.ceil(meleeDamage(p, 10) * cpuDmg(state)) : meleeDamage(p, 10);
   if (w.id === 'hammer' || w.id === 'spear') {
     // Hammer: a shockwave rolls along the lane. Spear: the thrust pierces the whole lane.
     const len = w.id === 'hammer' ? 170 : 150;
@@ -390,7 +668,7 @@ function updateGrab(state, p, pressA, inp) {
   if (pressA) p.bufA = 0;
   if (pressA && !dir && p.knees < 2) {
     // Knee strike.
-    p.knees++; p.kneeT = state.t; hurtEnemy(state, e, p.ctrl === 'cpu' ? 4 : 7, false, p.face, 0, p);
+    p.knees++; p.kneeT = state.t; hurtEnemy(state, e, meleeDamage(p, p.ctrl === 'cpu' ? 4 : 7), false, p.face, 0, p);
     p.hs = 3; e.hs = 3; ev(state, 'hit');
     // A knee that kills lets go. Holding on used to put the dead enemy back on its feet as a
     // Shadow Sproto that could attack but never be hit.
@@ -399,7 +677,7 @@ function updateGrab(state, p, pressA, inp) {
     // Throw: forward, or the way you are pushing. The thrown Sproto bowls over the crowd.
     const d = dir || p.face;
     p.face = d; e.st = 'knock'; e.t = 0; e.vx = d * 7.5; e.vz = 4.5; e.thrown = p.slot; e.x = p.x + d * 10;
-    hurtEnemy(state, e, p.ctrl === 'cpu' ? 6 : 12, true, d, 7.5, p);
+    hurtEnemy(state, e, meleeDamage(p, p.ctrl === 'cpu' ? 6 : 12), true, d, 7.5, p);
     if (!e.dead) { e.st = 'knock'; e.vx = d * 7.5; }
     p.grab = null; setState(p, 'throw'); ev(state, 'throw'); shake(state, 3);
   }
@@ -408,6 +686,7 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
   opt = opt || {};
   const hits = p.hitDone || (p.hitDone = new Set());
   const w = WEAPONS[p.weapon];
+  dmg = meleeDamage(p, dmg);
   const hit = has(p, 'brawler') ? Math.round(dmg * 1.1) : dmg;
   for (const e of state.enemies) {
     if (e.hp <= 0 || hits.has(e.id) || e.st === 'grabbed' || (e.st === 'lying' && !opt.lying)) continue;
@@ -443,9 +722,9 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
     it.hp -= dmg; fx(state, 'spark', it.x, it.y, 18); ev(state, 'hit');
     if (it.hp <= 0) breakCrate(state, it);
   }
-  // Swinging into a thrown knife or a missile knocks it out of the air.
+  // Swinging into a Shadow Sproto's projectile or a missile knocks it out of the air.
   for (const pr of state.projs) {
-    if (!pr.enemy || !(pr.kind === 'knife' || pr.homing) || pr.remove) continue;
+    if (!pr.enemy || !(isShadowShot(pr) || pr.homing) || pr.remove) continue;
     const dx = (pr.x - p.x) * (around ? Math.sign(pr.x - p.x) || 1 : p.face);
     if (dx > -10 && dx < reach + 6 && Math.abs(pr.y - p.y) < 16 && Math.abs(pr.z - (p.z + 26)) < 40) {
       pr.remove = true; p.score += 100; fx(state, 'spark', pr.x, pr.y, pr.z); ev(state, 'shield');
@@ -466,6 +745,8 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
 
 function hurtPlayer(state, p, dmg, dir, knock, src) {
   if (p.inv > 0 || !alive(p) || p.st === 'special') return false;
+  const taken = classOf(p).taken;
+  if (taken !== 1) dmg = Math.round(dmg * taken);
   // Blocking (hold Special) stops 75% of a frontal hit; blocking just before the hit is a parry.
   if (p.st === 'block' && Math.sign(dir) === -p.face) {
     p.blockHit = true;
@@ -623,17 +904,35 @@ function ejectUfo(state, p) {
 
 // ---------------- enemies (Shadow Sprotos) ----------------
 function spawnEnemy(state, side, plain) {
-  let kind = Math.floor(rng(state) * ENEMY_WEAPONS.length);
+  let kind = Math.floor(rng(state) * (KNIFE_THROWER + 1));
+  const roster = root.MANIFEST && root.MANIFEST.shadows && root.MANIFEST.shadows.stages[state.stageIdx];
+  // Run through a stage's cast before repeating anyone. The roster is authored in mixed order.
+  const sh = roster && (state.stage.shadowSpawns || 0) % roster.length;
+  const role = roster && roster[sh].role;
+  const prefersRange = role === 'twin' || role === 'ranged';
+  if (roster) state.stage.shadowSpawns = (state.stage.shadowSpawns || 0) + 1;
   // From stage 2 on, some are elites (never more than two at once): a club or a pike, more health,
   // harder hits and a guard.
   let elites = 0;
   for (const o of state.enemies) if (o.elite && !o.dead) elites++;
-  const elite = !plain && state.stageIdx >= ELITE_FROM_STAGE && elites < ELITE_MAX && rng(state) < 0.08 + 0.01 * state.stageIdx;
+  const eliteRoll = !plain && state.stageIdx >= ELITE_FROM_STAGE && elites < ELITE_MAX && rng(state) < 0.08 + 0.01 * state.stageIdx;
+  const elite = eliteRoll && !prefersRange;
   if (elite) kind = kind % 2 ? 2 : 0;
+  else if (role === 'twin') kind = SHADOW_TWIN;
+  else if (kind === KNIFE_THROWER || (!plain && prefersRange)) {
+    let ranged = 0;
+    for (const e of state.enemies) {
+      if (e.dead || !ENEMY_WEAPONS[e.weapon].ranged) continue;
+      ranged++;
+    }
+    if (ranged >= Math.min(3, humansOf(state))) { if (kind === KNIFE_THROWER) kind = 1; }
+    else if (!plain && prefersRange) kind = SHADOW_CASTER;
+    else if (!plain && state.stageIdx > 0 && rng(state) < 0.5) kind = SHADOW_ARCHER;
+  }
   const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx) * GRUNT_HP_SCALE(humansOf(state)) * (elite ? 1.6 : 1));
   const x = side > 0 ? state.camX + W + 30 + rng(state) * 40 : state.camX - 30 - rng(state) * 40;
   state.enemies.push({
-    id: state.nextId++, fid: Math.floor(rng(state) * (root.MANIFEST ? root.MANIFEST.fighters.length : 3)), weapon: kind, x, y: rng(state) * DEPTH, z: 0, vx: 0, vy: 0, vz: 0,
+    id: state.nextId++, fid: Math.floor(rng(state) * (root.MANIFEST ? root.MANIFEST.fighters.length : 3)), sh, weapon: kind, x, y: rng(state) * DEPTH, z: 0, vx: 0, vy: 0, vz: 0,
     face: -side, hp, maxHp: hp, st: 'walk', t: 0, cd: 25 + Math.floor(rng(state) * 40), target: null, inv: 0, hitDone: null,
     // Each Shadow Sproto keeps its own lane offset and stand-off distance, so a crowd fans out.
     offY: (rng(state) - 0.5) * 16, offX: (rng(state) - 0.5) * 56,
@@ -662,6 +961,42 @@ function hurtEnemy(state, e, dmg, knockdown, dir, knockF, p, launch) {
   if (air) { e.vz = Math.max(e.vz, 4.6); e.vx = dir * 0.9; e.t = 0; return; } // keep them up in the air
   if (knockdown || (e.st === 'hit' && e.t < 4 && e.stun > 2)) { e.st = 'knock'; e.t = 0; e.vx = dir * knockF; e.vz = 5.5; e.stun = 0; }
   else { e.st = 'hit'; e.t = 0; e.vx = dir * 1.2; e.stun = (e.stun || 0) + 1; }
+}
+
+const enemyShotLife = ranged => Math.ceil(ranged.range / ranged.speed);
+const lastEnemyShot = ranged => ranged.startup + (ranged.echo || 0);
+
+function startEnemyShot(state, e, p, ranged) {
+  const x = e.x + e.face * ENEMY_SHOT_ORIGIN;
+  const { vx, vy } = Combat.aimVector(p.x - x, p.y - e.y, ranged.speed);
+  e.shotVX = vx;
+  e.shotVY = vy;
+  const life = enemyShotLife(ranged);
+  // Stop the warning at the same belt edge or travel limit as the projectile.
+  const beltExit = e.shotVY > 0 ? (DEPTH - e.y) / e.shotVY : e.shotVY < 0 ? -e.y / e.shotVY : life;
+  const travel = Math.min(life, beltExit);
+  e.aimX = x + e.shotVX * travel;
+  e.aimY = e.y + e.shotVY * travel;
+  e.st = 'ranged'; e.t = 0; e.vx = 0; e.vy = 0;
+  ev(state, 'warn', e.x);
+}
+
+function updateEnemyShot(state, e, ranged) {
+  const lastShot = lastEnemyShot(ranged);
+  if (e.t === ranged.startup || e.t === lastShot) {
+    state.projs.push({
+      id: state.nextId++, kind: ranged.kind, enemy: true,
+      sh: ranged.kind === 'enemyBolt' || ranged.kind === 'enemyTwin' ? e.sh : undefined,
+      x: e.x + e.face * ENEMY_SHOT_ORIGIN, y: e.y, z: ENEMY_SHOT_HEIGHT,
+      vx: e.shotVX, vy: e.shotVY, vz: 0,
+      dmg: Math.round(ranged.dmg * ENEMY_DMG(state.stageIdx)),
+      t: 0, life: enemyShotLife(ranged),
+    });
+    ev(state, 'throw', e.x);
+  }
+  if (e.t >= lastShot + ranged.recovery) {
+    e.st = 'walk'; e.t = 0; e.cd = ranged.cooldown + Math.floor(rng(state) * 24);
+  }
 }
 
 function updateEnemy(state, e) {
@@ -693,6 +1028,7 @@ function updateEnemy(state, e) {
     return;
   }
   if (e.st === 'lying') { if (e.dead ? e.t > 50 : e.t > 46) { if (e.dead) e.remove = true; else { e.st = 'walk'; e.t = 0; e.stun = 0; } } return; }
+  if (e.st === 'ranged') { updateEnemyShot(state, e, w.ranged); return; }
 
   // Choose target: nearest active non-UFO player (UFO pilots are targeted less).
   const ps = activePlayers(state);
@@ -715,12 +1051,7 @@ function updateEnemy(state, e) {
   if (e.cd > 0) e.cd--;
   if (e.st === 'attack') {
     e.vx = 0; e.vy = 0;
-    if (w.thrower) {
-      if (e.t === w.startup) {
-        state.projs.push({ id: state.nextId++, kind: 'knife', x: e.x + e.face * 16, y: e.y, z: 18, vx: e.face * 4, vy: 0, vz: 0, dmg: Math.round(6 * ENEMY_DMG(state.stageIdx)), t: 0, life: 120, enemy: true });
-        ev(state, 'throw');
-      }
-    } else if (e.t > w.startup && e.t <= w.startup + w.active) {
+    if (e.t > w.startup && e.t <= w.startup + w.active) {
       for (const q of ps) {
         const dx = (q.x - e.x) * e.face;
         if (dx > -8 && dx < w.reach && Math.abs(q.y - e.y) < 14 && q.z < 40 && !(e.hitDone && e.hitDone.has(q.slot))) {
@@ -732,11 +1063,13 @@ function updateEnemy(state, e) {
     if (e.t >= w.startup + w.active + w.recovery) { e.st = 'walk'; e.t = 0; e.cd = 30 + Math.floor(rng(state) * 45); }
     return;
   }
-  // Approach: stand off at weapon reach on the near side, in the same lane.
+  // Ranged enemies back up on their current side. Melee enemies can move around their target.
   const side = e.side || (e.x < p.x ? -1 : 1);
-  const want = w.thrower ? 150 + (e.offX || 0) : w.reach * (0.66 + (e.offX || 0) * 0.007); // 46%..86% of reach: always close enough to swing
-  // Stand-off points are kept on screen so every Shadow Sproto is reachable.
-  const tx = clamp(p.x + side * want, state.camX + 24, state.camX + W - 24), ty = clamp(p.y + e.offY, 0, DEPTH);
+  const want = w.ranged ? 150 + (e.offX || 0) : w.reach * (0.66 + (e.offX || 0) * 0.007);
+  const approachSide = w.ranged ? (e.x < p.x ? -1 : 1) : side;
+  // Stand-off points stay inside the player movement bounds so every Shadow Sproto is reachable.
+  const margin = w.ranged ? 72 : 24;
+  const tx = clamp(p.x + approachSide * want, state.camX + margin, state.camX + W - margin), ty = clamp(p.y + e.offY, 0, DEPTH);
   const dx = tx - e.x, dy = ty - e.y;
   const sp = w.id === 'knife' ? 1.5 : 1.1;
   e.vx = Math.abs(dx) > 4 ? Math.sign(dx) * sp : 0;
@@ -748,8 +1081,16 @@ function updateEnemy(state, e) {
   }
   e.face = p.x > e.x ? 1 : -1;
   e.st = e.vx || e.vy ? 'walk' : 'idle';
-  const inRange = Math.abs(p.x - e.x) < (w.thrower ? 220 : w.reach) && Math.abs(p.y - e.y) < 10;
-  if (inRange && e.cd === 0) { e.st = 'attack'; e.t = 0; e.hitDone = null; ev(state, 'eswing'); }
+  if (e.cd !== 0) return;
+  const across = Math.abs(p.x - e.x), depth = Math.abs(p.y - e.y);
+  if (across < w.reach && depth < 10) {
+    e.st = 'attack'; e.t = 0; e.hitDone = null; ev(state, 'eswing');
+  } else if (w.ranged && across >= ENEMY_SHOT_MIN_RANGE && across <= w.ranged.range && depth <= ENEMY_SHOT_MAX_DEPTH &&
+             e.x >= state.camX + 24 && e.x <= state.camX + W - 24) {
+    // Limit overlapping warnings so a solo player has time to react. A hit interrupts the windup.
+    const aiming = state.enemies.filter(o => o.st === 'ranged' && o.t < lastEnemyShot(ENEMY_WEAPONS[o.weapon].ranged)).length;
+    if (aiming < Math.ceil(humansOf(state) / 2)) startEnemyShot(state, e, p, w.ranged);
+  }
 }
 
 // ---------------- boss (Sproto Arcade machines) ----------------
@@ -983,20 +1324,30 @@ function updateProjs(state) {
       pr.vx = clamp(pr.vx, -1.9, 1.9); pr.vy = clamp(pr.vy, -0.7, 0.7);
       pr.z += (24 - pr.z) * 0.02;
     }
+    const x0 = pr.x, y0 = pr.y, z0 = pr.z;
     pr.x += pr.vx; pr.y += pr.vy; pr.z += pr.vz;
     if (pr.kind === 'ball') { pr.vz -= 0.3; if (pr.z <= 0) { pr.z = 0; pr.life = 0; ballBoom(state, pr); } }
     if (pr.t > pr.life || pr.x < state.camX - 80 || pr.x > state.camX + W + 80) { pr.remove = true; continue; }
     if (pr.enemy) {
+      const shadowShot = isShadowShot(pr);
+      if (shadowShot && (pr.y < 0 || pr.y > DEPTH)) { pr.remove = true; continue; }
       for (const p of ps) {
-        if (Math.abs(p.x - pr.x) < 14 && Math.abs(p.y - pr.y) < 9 && pr.z >= p.z - 4 && pr.z <= p.z + 54) {
+        const hit = shadowShot
+          ? Combat.segmentHitsBox(x0, y0, z0, pr.x, pr.y, pr.z, p.x - 14, p.x + 14, p.y - 9, p.y + 9, p.z - 4, p.z + 54)
+          : Math.abs(p.x - pr.x) < 14 && Math.abs(p.y - pr.y) < 9 && pr.z >= p.z - 4 && pr.z <= p.z + 54;
+        if (hit) {
           if (hurtPlayer(state, p, pr.dmg, Math.sign(pr.vx) || 1, !!pr.boom || pr.row === 2)) {
             pr.remove = true;
+            if (shadowShot) fx(state, 'enemyShotHit', pr.x, pr.y, pr.z);
             if (pr.boom) { fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
             break;
           }
         }
       }
       if (pr.homing && pr.t > 280) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
+    } else if (pr.classShot) {
+      if (pr.y < -8 || pr.y > DEPTH + 8) pr.remove = true;
+      else updateClassProjectile(state, pr, x0, y0, z0);
     } else if (pr.kind === 'laser') {
       for (const e of state.enemies) {
         if (e.hp <= 0 || pr.hit.includes(e.id)) continue;
@@ -1100,7 +1451,7 @@ function seatIn(state, slot, cfg) {
   const c = cfg || {};
   const fresh = p.fresh === true;
   if (fresh) {
-    Object.assign(p, newPlayer(slot, { fid: p.fid, weapon: p.weapon, ctrl: c.ctrl, owner: c.owner, name: p.name }));
+    Object.assign(p, newPlayer(slot, { fid: p.fid, weapon: p.weapon, classId: p.classId, ctrl: c.ctrl, owner: c.owner, name: p.name }));
     delete p.fresh;
     p.hp = Math.max(p.hp, 60); p.dead = false; p.npcRevived = false;
   } else if (p.ctrl !== EMPTY) {
@@ -1136,9 +1487,9 @@ function snapshot(state) {
   return {
     t: state.t, sk: r1(state.shake || 0), god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
-    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice(), k: p.kills || 0, rvn: p.revs || 0, pa: p.parries || 0, mh: maxHp(p) })),
-    enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0, el: e.elite ? (e.guard > 0 ? 2 : 1) : 0 })),
-    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), t: p.t })),
+    players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice(), k: p.kills || 0, rvn: p.revs || 0, pa: p.parries || 0, mh: maxHp(p), cl: p.classId || 'fighter', ac: p.abilityCd || 0, ab: p.ability ? 1 : 0 })),
+    enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0, el: e.elite ? (e.guard > 0 ? 2 : 1) : 0, ax: e.st === 'ranged' ? r1(e.aimX) : undefined, ay: e.st === 'ranged' ? r1(e.aimY) : undefined, sh: e.sh })),
+    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
     boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0, bo: state.boss.st === 'fire' && state.boss.both ? 1 : 0, w: Math.round(state.boss.w), ar: state.boss.arch || 0 },
@@ -1270,7 +1621,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, Combat, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);
