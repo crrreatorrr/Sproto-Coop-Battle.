@@ -34,6 +34,8 @@ const SYNTAX = [
   'public/js/feedback-link.js',
   'public/js/render.js',
   'public/js/render-fx.js',
+  'public/js/boss-morph.js',
+  'public/js/boss-morph-field.js',
   'public/js/sim.js',
   'tests/sim.test.js',
   'tests/browser-online.cjs',

@@ -133,7 +133,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const deferred = ['js/render-fx.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
   const firstStageBytes = titleBytes + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
     titleBytes: titleBytes,

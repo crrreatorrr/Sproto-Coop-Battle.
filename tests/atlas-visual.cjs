@@ -229,20 +229,29 @@ async function paintBoss(page) {
 async function verifyBossPlayback(page) {
   return page.evaluate(async () => {
     const ACTOR = 220, FX = 96;
+    const transformKeys = [0, 78, 159, 243, 336, 429];
+    const reviewTicks = [0, 39, 78, 120, 159, 201, 243, 291, 336, 381, 429, 480];
     const summoners = new Set(['crapto', 'bigswole', 'sproto1668']);
     const plan = AssetLoader.groups(MANIFEST), loader = AssetLoader.shared();
     const canvas = document.createElement('canvas');
     canvas.width = Sim.W; canvas.height = Sim.H;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.imageSmoothingEnabled = false;
     const calls = [], drawImage = ctx.drawImage.bind(ctx);
     ctx.drawImage = (image, ...args) => {
+      let asset;
       if (image instanceof HTMLImageElement) {
-        const asset = new URL(image.src).pathname.replace(/^\//, '');
-        if (asset.startsWith('assets/bosses/')) {
-          const matrix = ctx.getTransform();
-          calls.push({ asset, source: args.slice(0, 4), facing: Math.sign(matrix.a) });
-        }
+        const source = new URL(image.src).pathname.replace(/^\//, '');
+        if (source.startsWith('assets/bosses/')) asset = source;
+      } else if (image instanceof HTMLCanvasElement && image.width === ACTOR && image.height === ACTOR) {
+        asset = null;
+      }
+      if (asset !== undefined) {
+        const matrix = ctx.getTransform();
+        calls.push({
+          asset, source: args.slice(0, 4), facing: Math.sign(matrix.a), alpha: ctx.globalAlpha,
+          image: asset === null ? image : undefined,
+        });
       }
       return drawImage(image, ...args);
     };
@@ -254,11 +263,133 @@ async function verifyBossPlayback(page) {
       Render.drawWorld(ctx, snap, { noBanner: true });
       return calls;
     };
-    const checkDraw = (snap, wanted, label) => {
-      const actual = draw(snap);
+    const checkDrawCalls = (actual, wanted, label) => {
       const keys = records => records.map(({ asset, source, facing }) => JSON.stringify([asset, source, facing])).sort().join('\n');
       check(keys(actual) === keys(wanted), label + ' drew ' + JSON.stringify(actual) +
         ' expected ' + JSON.stringify(wanted));
+    };
+    const checkDraw = (snap, wanted, label) => checkDrawCalls(draw(snap), wanted, label);
+    const panelsPerSheet = 4, panelWidth = 152, panelHeight = 166;
+    const contactSheets = Array.from({ length: Math.ceil(MANIFEST.bosses.length / panelsPerSheet) }, () => {
+      const sheet = document.createElement('canvas');
+      sheet.width = reviewTicks.length * panelWidth;
+      sheet.height = panelsPerSheet * panelHeight;
+      return sheet;
+    });
+    const drawReviewFrame = (snapshot, tick, pilot) => {
+      const column = reviewTicks.indexOf(tick);
+      if (column < 0) return;
+      const boss = snapshot.boss, row = boss.bi % panelsPerSheet;
+      const target = contactSheets[Math.floor(boss.bi / panelsPerSheet)].getContext('2d');
+      const x = column * panelWidth, y = row * panelHeight;
+      const center = Math.round(boss.x - snapshot.camX);
+      const bottom = Math.round(Sim.FLOOR_TOP + boss.y + 4);
+      target.imageSmoothingEnabled = false;
+      target.drawImage(canvas, center - 124, bottom - 245, 248, 245, x, y, panelWidth, panelHeight - 16);
+      target.fillStyle = '#171422';
+      target.fillRect(x, y + panelHeight - 16, panelWidth, 16);
+      target.font = '10px monospace';
+      target.fillStyle = '#f5e9db';
+      target.fillText(pilot + '  ' + (tick / 60).toFixed(2) + 's', x + 3, y + panelHeight - 5);
+    };
+    const actorPixels = snapshot => {
+      const center = Math.round(snapshot.boss.x - snapshot.camX);
+      const floor = Math.round(Sim.FLOOR_TOP + snapshot.boss.y);
+      // The HUD and the ground shadow do not belong to the actor.
+      return ctx.getImageData(center - 122, 40, 244, floor - 84).data;
+    };
+    const paletteCanvas = document.createElement('canvas');
+    paletteCanvas.width = paletteCanvas.height = ACTOR;
+    const paletteCtx = paletteCanvas.getContext('2d', { willReadFrequently: true });
+    const rgbAt = (rgba, i) => (rgba[i] << 16) | (rgba[i + 1] << 8) | rgba[i + 2];
+    const paletteFor = ([sheet, row, col]) => {
+      paletteCtx.clearRect(0, 0, ACTOR, ACTOR);
+      paletteCtx.drawImage(Render.img(sheet), col * ACTOR, row * ACTOR, ACTOR, ACTOR, 0, 0, ACTOR, ACTOR);
+      const rgba = paletteCtx.getImageData(0, 0, ACTOR, ACTOR).data;
+      const colors = new Set();
+      for (let i = 0; i < rgba.length; i += 4) {
+        if (rgba[i + 3] === 255) colors.add(rgbAt(rgba, i));
+      }
+      return colors;
+    };
+    const morphPixels = (cel, firstColors, nextColors, label) => {
+      const rgba = cel.getContext('2d').getImageData(0, 0, ACTOR, ACTOR).data;
+      let ink = 0, blended = 0, hash = 2166136261;
+      for (let i = 0; i < rgba.length; i += 4) {
+        if (rgba[i + 3] === 0) continue;
+        ink++;
+        if (rgba[i + 3] === 255) {
+          const color = rgbAt(rgba, i);
+          if (!firstColors.has(color) && !nextColors.has(color)) blended++;
+        }
+        for (let channel = 0; channel < 4; channel++) {
+          hash = Math.imul(hash ^ rgba[i + channel], 16777619);
+        }
+      }
+      check(ink > 500 && ink < ACTOR * ACTOR, label + ' has missing artwork or an opaque background');
+      check(blended === 0, label + ' mixes the texture colors of adjacent poses in ' + blended + ' pixels');
+      return hash;
+    };
+    const verifyTransformation = (state, firstSheet, secondSheet, pilot) => {
+      const duration = Sim.BOSS_TRANSFORM_TICKS;
+      check(duration === 480, 'transformation must run for eight seconds at 60 Hz');
+      const poses = [[firstSheet, 0, 0], [firstSheet, 6, 0], [firstSheet, 6, 1],
+        [firstSheet, 6, 2], [firstSheet, 6, 3], [secondSheet, 0, 0]];
+      const palettes = poses.map(paletteFor);
+      const finalKey = transformKeys.length - 1;
+      const sampledMorphs = new Set();
+      let lastSnapshot;
+      let renders = 0, morphs = 0;
+      for (let tick = 0; tick <= duration; tick++) {
+        if (tick > 0) Sim.step(state);
+        const transforming = tick < duration;
+        check(state.boss.phase === 1 && state.boss.st === (transforming ? 'transform' : 'idle') &&
+          state.boss.t === (transforming ? tick : 0), pilot + ' unexpected transform state at tick ' + tick);
+        if (tick % 3 !== 0 && tick !== duration - 1) continue;
+
+        const snapshot = renderSnapshot(state);
+        const art = { ...snapshot, players: [], enemies: [], items: [], projs: [], fx: [], hz: [] };
+        const key = tick >= transformKeys[finalKey] ? finalKey : transformKeys.indexOf(tick);
+        for (const facing of [-1, 1]) {
+          const frame = { ...art, boss: { ...art.boss, fc: facing, fl: 0, su: undefined } };
+          const caption = pilot + ' transform tick ' + tick + (facing < 0 ? ' left' : ' right');
+          const actual = draw(frame);
+          check(actual.length === 1 && actual[0].alpha === 1, caption + ' must draw exactly one opaque actor');
+          if (key >= 0) {
+            const [sheet, row, col] = poses[key];
+            checkDrawCalls(actual, [expected(sheet, ACTOR, row, col, -facing)], caption);
+          } else {
+            checkDrawCalls(actual, [expected(null, ACTOR, 0, 0, -facing)], caption);
+            morphs++;
+            if (facing === -1 && reviewTicks.includes(tick)) {
+              const nextKey = transformKeys.findIndex(at => at > tick);
+              sampledMorphs.add(morphPixels(actual[0].image, palettes[nextKey - 1], palettes[nextKey], caption));
+            }
+          }
+          if (facing === -1) drawReviewFrame(frame, tick, pilot);
+          if (tick === 0 || tick === duration - 1) {
+            const transformed = actorPixels(frame);
+            draw({ ...frame, boss: { ...frame.boss, st: 'idle', ph: Number(tick > 0), t: 0 } });
+            const actorPixelsIdle = actorPixels(frame);
+            check(transformed.every((byte, i) => byte === actorPixelsIdle[i]), caption + ' mismatches the idle sprite');
+          }
+          renders++;
+        }
+
+        if (reviewTicks.includes(tick) && key < 0) {
+          const newer = { ...art, boss: { ...art.boss, t: tick + 6 } };
+          const blend = Render.interpolateSnapshot(art, newer, 0.25);
+          check(blend.boss.t === tick + 1.5 && !('z' in blend.boss) && newer.boss.t === tick + 6,
+            pilot + ' lost sub-tick progress between online snapshots');
+        }
+        if (tick === duration - 1) lastSnapshot = snapshot;
+        if (tick === duration) {
+          const handoff = Render.interpolateSnapshot(lastSnapshot, snapshot, 0.5);
+          check(handoff.boss.st === 'idle' && handoff.boss.t === 0, pilot + ' interpolated across the Phase 2 handoff');
+        }
+      }
+      check(sampledMorphs.size === transformKeys.length - 1, pilot + ' has repeated representative morph frames');
+      return { renders, morphs };
     };
     const projectileArt = new Set();
     const assertAtlas = (asset, cell, rows) => {
@@ -366,9 +497,10 @@ async function verifyBossPlayback(page) {
     };
 
     let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
+    let transformRenders = 0, transformMorphs = 0;
     for (const [bi, boss] of MANIFEST.bosses.entries()) {
       Render.enterStage(bi);
-      await loader.preload(plan.boss(bi));
+      await loader.preload([...plan.boss(bi), ...plan.scenery(bi)]);
       const snap = { si: bi, t: 12, sk: 0, camX: 0, items: [], players: [], enemies: [], fx: [], projs: [] };
       const ar = bi % Sim.BOSS_ARCHETYPES.length;
       for (const [ph, { sheet, proj }] of boss.phases.entries()) {
@@ -381,6 +513,7 @@ async function verifyBossPlayback(page) {
           checkDraw({ ...snap, boss: b }, [expected(sheet, ACTOR, row, col, -b.fc)], label + ' ' + caption);
         };
         pose({ st: 'idle', t: 0 }, 0, 0, 'idle');
+        pose({ st: 'idle', t: 0, fc: 1 }, 0, 0, 'idle right');
         pose({ st: 'enter', t: 9, fc: 1 }, 0, 1, 'walk right');
         for (const [row, attack] of [[1, 'lane or lob'], [2, 'spread'], [3, 'homing']]) {
           const firing = { st: 'fire', row, mi: Number(row === 3) };
@@ -464,7 +597,7 @@ async function verifyBossPlayback(page) {
         }
         if (ph === 0) {
           // Cross the health threshold through ordinary projectile damage.
-          // Sample the key poses, intermediate strips and the eight-second handoff.
+          // Check the source artwork and the eight-second handoff.
           s.enemies = [];
           s.fx = [];
           s.projs = [];
@@ -484,40 +617,9 @@ async function verifyBossPlayback(page) {
           Sim.step(s);
           player.in.p = 0;
           const secondSheet = boss.phases[1].sheet;
-          check(Sim.BOSS_TRANSFORM_TICKS === 480, 'transformation must run for eight seconds at 60 Hz');
-          const stops = [
-            [0, sheet, 0, 0], [86, sheet, 6, 0], [173, sheet, 6, 1],
-            [259, sheet, 6, 2], [346, sheet, 6, 3], [432, secondSheet, 0, 0],
-            [479, secondSheet, 0, 0], [480, secondSheet, 0, 0],
-          ];
-          let previous = 0;
-          for (const [tick, sprite, row, col] of stops) {
-            for (let t = previous; t < tick; t++) Sim.step(s);
-            const snap = renderSnapshot(s), transforming = tick < Sim.BOSS_TRANSFORM_TICKS;
-            check(snap.boss.ph === 1 && snap.boss.st === (transforming ? 'transform' : 'idle') &&
-              snap.boss.t === (transforming ? tick : 0), label + ' unexpected state at transformation tick ' + tick);
-            checkDraw(snap, [expected(sprite, ACTOR, row, col, 1)], label + ' transformation at tick ' + tick);
-            previous = tick;
-          }
-          const final = renderSnapshot(s);
-          for (let i = 0; i < 5; i++) {
-            const [start, from, fromRow, fromCol] = stops[i];
-            const [end, to, toRow, toCol] = stops[i + 1];
-            const at = Math.round((start + end) / 2);
-            const morph = { ...final, boss: { ...final.boss, st: 'transform', t: at, fc: 1 } };
-            const slices = draw(morph);
-            check(slices.length === 2, label + ' must blend both transformation keys at tick ' + at);
-            const cut = slices[0].source[3];
-            check(cut > ACTOR * 0.45 && cut < ACTOR * 0.55, label + ' expected moving strips near their midpoint');
-            checkDraw(morph, [
-              { asset: from, facing: -1, source: [fromCol * ACTOR, fromRow * ACTOR, ACTOR, cut] },
-              { asset: to, facing: -1, source: [toCol * ACTOR, toRow * ACTOR + cut, ACTOR, ACTOR - cut] },
-            ], label + ' intermediate transformation at tick ' + at);
-            const newer = { ...morph, boss: { ...morph.boss, t: at + 6 } };
-            const blend = Render.interpolateSnapshot(morph, newer, 0.25);
-            check(blend.boss.t === at + 1.5 && !('z' in blend.boss) && newer.boss.t === at + 6,
-              label + ' lost sub-tick progress between online snapshots');
-          }
+          const transform = verifyTransformation(s, sheet, secondSheet, boss.pilot);
+          transformRenders += transform.renders;
+          transformMorphs += transform.morphs;
           transitions++;
           s.items = [];
           const secondProj = boss.phases[1].proj;
@@ -528,7 +630,10 @@ async function verifyBossPlayback(page) {
         phases++;
       }
     }
-    return { phases, launched, impacts, summons, transitions, extraAttacks, projectileDesigns: projectileArt.size };
+    return {
+      phases, launched, impacts, summons, transitions, extraAttacks, transformRenders, transformMorphs,
+      projectileDesigns: projectileArt.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
+    };
   });
 }
 
@@ -562,11 +667,17 @@ async function main() {
         if (boss.errors.length) throw new Error('boss load errors: ' + boss.errors.join(','));
         if (boss.actor < 1000 || boss.shot < 100) throw new Error('boss and shot pixels did not paint: ' + boss.actor + ', ' + boss.shot);
         fs.writeFileSync(path.join(out, 'c2-boss-phase.png'), Buffer.from(boss.png.replace(/^data:image\/png;base64,/, ''), 'base64'));
-        bossPlayback = await verifyBossPlayback(opened.page);
+        const { contacts, ...coverage } = await verifyBossPlayback(opened.page);
+        bossPlayback = coverage;
         if (bossPlayback.phases !== 24 || bossPlayback.impacts !== 72 || bossPlayback.summons !== 6 ||
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
+            bossPlayback.transformRenders !== 3888 || bossPlayback.transformMorphs !== 3312 ||
             bossPlayback.projectileDesigns !== 96) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
+        }
+        for (const [i, png] of contacts.entries()) {
+          fs.writeFileSync(path.join(out, 'c2-boss-transformations-' + (i + 1) + '.png'),
+            Buffer.from(png.replace(/^data:image\/png;base64,/, ''), 'base64'));
         }
         if (opened.errors.length) throw new Error('page errors during atlas playback: ' + opened.errors.join(' | '));
       }
