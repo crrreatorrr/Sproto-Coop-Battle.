@@ -1,13 +1,13 @@
 {
   "description": "Four-seat Coop client with 24 lossless 220px mecha actor atlases and 24 themed projectile atlases. Includes eight-second transformations, signature attacks and specials under the existing byte and request caps.",
   "assetCount": 123,
-  "assetBytes": 9884496,
-  "assetMegabytesDecimal": 9.884496,
-  "assetMebibytes": 9.427,
+  "assetBytes": 9853780,
+  "assetMegabytesDecimal": 9.85378,
+  "assetMebibytes": 9.397,
   "publicFileCount": 145,
-  "publicBytes": 10387785,
-  "assetTreeSha256": "e2fbf3bb002a16c9ad5399b945c6533c25ff90e4aafb4a48ab602ff886863302",
-  "publicTreeSha256": "d669ca1ace8e968097fb9e3cb320a1e6ec38bec6833281cdc3b8401cf9968e2b",
+  "publicBytes": 10357069,
+  "assetTreeSha256": "9a50591b21248bd24e0c0c0788961498731a3b58f4c2cd4700266d191deac494",
+  "publicTreeSha256": "deb3331eb0a3ab81a012efc9a957635460046863f4d615179880847b5dfe0927",
   "preloadCount": 8,
   "preloadBytes": 718587,
   "preloadGzipBytes": 717670,
@@ -47,8 +47,8 @@
     },
     "boss": {
       "count": 48,
-      "bytes": 6128813,
-      "gzipBytes": 6125955,
+      "bytes": 6098097,
+      "gzipBytes": 6095234,
       "decodedBytes": 158194176
     },
     "fx": {
