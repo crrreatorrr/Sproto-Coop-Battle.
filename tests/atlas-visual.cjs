@@ -425,6 +425,25 @@ async function verifyBossPlayback(page) {
       }
     };
 
+    const verifyZephyrClawClearance = (asset, phase) => {
+      // The second claw used to fill these spaces in the authored cels.
+      const windows = phase === 0 ? [[6, 1, 28, 138], [6, 2, 40, 150], [6, 3, 36, 151]] : [
+        [0, 0, 45, 161], [0, 1, 44, 162], [0, 2, 40, 163], [0, 3, 44, 162],
+        [1, 1, 54, 160], [2, 1, 39, 148], [3, 1, 40, 151], [4, 2, 35, 177],
+        [5, 1, 25, 129], [6, 0, 47, 159], [7, 1, 151, 57], [7, 2, 149, 52],
+      ];
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 8;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      for (const [row, col, x, y] of windows) {
+        ctx.clearRect(0, 0, 8, 8);
+        ctx.drawImage(Render.img(asset), col * ACTOR + x, row * ACTOR + y, 8, 8, 0, 0, 8, 8);
+        const data = ctx.getImageData(0, 0, 8, 8).data;
+        check(data.every((value, index) => index % 4 !== 3 || value === 0),
+          asset + ' has a second claw in cell ' + row + '/' + col);
+      }
+    };
+
     const verifyExtraAttack = (state, mode, sheet, proj, row, label) => {
       const player = state.players[0];
       player.inv = 1000;
@@ -506,6 +525,7 @@ async function verifyBossPlayback(page) {
       for (const [ph, { sheet, proj }] of boss.phases.entries()) {
         assertAtlas(sheet, ACTOR, 7 + ph + Number(summoners.has(boss.pilot)));
         assertAtlas(proj, FX, 4);
+        if (boss.pilot === 'zephyr') verifyZephyrClawClearance(sheet, ph);
         const status = { bi, ph, ar, x: 420, y: 36, fc: -1, hp: 50, mh: 100, fl: 0, w: 130 };
         const label = boss.pilot + ' phase ' + (ph + 1);
         const pose = (state, row, col, caption) => {
