@@ -1129,7 +1129,7 @@ function updateEnemy(state, e) {
 
 // ---------------- bosses ----------------
 const BOSS_SCALE = 0.95;
-const BOSS_TRANSFORM_TICKS = 5 * 60;
+const BOSS_TRANSFORM_TICKS = 8 * 60;
 
 // Phase-two attacks lock their danger areas and warning durations at the start.
 // Zone entries: [relative X, relative Y, half width, half depth, delay, rounded].
@@ -1233,7 +1233,7 @@ function startBoss(state) {
 function hurtBoss(state, b, dmg, p) {
   b.hp -= dmg; b.flash = 6;
   if (p) p.score += dmg * 15;
-  fx(state, 'spark', b.x + (p ? Math.sign(p.x - b.x) * b.w * 0.3 : 0), b.y, 50 + rng(state) * 40);
+  fx(state, 'bossHit', b.x + (p ? Math.sign(p.x - b.x) * b.w * 0.3 : 0), b.y, 50 + rng(state) * 40, { bi: b.bi });
   ev(state, 'bosshit');
   if (b.phase === 0 && b.hp <= b.maxHp / 2) {
     b.hp = Math.max(1, b.hp);
@@ -1270,9 +1270,6 @@ function updateBoss(state) {
   if (b.st === 'transform') {
     if (b.transformAt !== undefined) b.t = state.t - b.transformAt;
     if (b.t >= BOSS_TRANSFORM_TICKS) { b.st = 'idle'; b.t = 0; delete b.transformAt; }
-    else if (b.t > 0 && b.t % (BOSS_TRANSFORM_TICKS / 6) === 0) {
-      fx(state, 'boom', b.x + (rng(state) - 0.5) * b.w, b.y, 40 + rng(state) * 80);
-    }
     return;
   }
   if (b.st === 'dead') {

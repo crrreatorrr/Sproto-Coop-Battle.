@@ -10,8 +10,11 @@ const fxImg = k => img('assets/fx/' + k + '.png');
 
 // Actor rows: walk, lane/lob, spread, homing, charge, sweep, transform keys, summon.
 // Projectile rows: lane/lob, spread, homing, impact. The art faces screen-left.
-const BOSS_CELL = 176, BOSS_FX_CELL = 96, BOSS_FOOT = 165;
+const BOSS_CELL = 220, BOSS_FX_CELL = 96, BOSS_FOOT = 206;
 const BOSS_WALK = [0, 1, 2, 1];
+const BOSS_TRANSFORM_POSES = [[0, 0, 0], [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [1, 0, 0]];
+const BOSS_TRANSFORM_SETTLE = 0.9;
+const BOSS_DRAW_SCALE = BS * 256 / BOSS_CELL;
 
 // Grip-centered equipment, right-facing shots and centered effects share this grid.
 // See tools/build-combat-sprites.py for the source art.
@@ -346,7 +349,7 @@ function drawFx(g, f, camX) {
     g.strokeStyle = color; g.lineWidth = 4 - age * 3;
     g.beginPath(); g.ellipse(sx, sy + 9, radius, radius * 0.35, 0, 0, 7); g.stroke();
     g.globalAlpha = alpha * 0.55;
-    g.strokeStyle = '#fff4d9'; g.lineWidth = 1.5;
+    g.strokeStyle = color; g.lineWidth = 1.5;
     g.beginPath(); g.ellipse(sx, sy + 9, radius * 0.85, radius * 0.3, 0, 0, 7); g.stroke();
     g.fillStyle = color;
     for (let i = 0; i < 10; i++) {
@@ -356,6 +359,19 @@ function drawFx(g, f, camX) {
     }
     g.globalAlpha = alpha;
     drawBossFx(g, ph, 3, Math.min(3, Math.floor(f.t / 8)), sx, sy, size + 25, false);
+    g.restore();
+    return;
+  }
+  if (f.k === 'bossHit') {
+    const color = S.bossExtraAttack(f.bi, 'special').color;
+    const r = 6 + f.t * 1.6;
+    g.save();
+    g.globalAlpha = Math.max(0, 1 - f.t / 14);
+    g.fillStyle = color;
+    for (let i = 0; i < 5; i++) {
+      const angle = i * Math.PI * 0.4 + f.id;
+      g.fillRect(Math.round(sx + Math.cos(angle) * r), Math.round(sy + Math.sin(angle) * r), 5, 3);
+    }
     g.restore();
     return;
   }
@@ -750,6 +766,11 @@ function drawHud(g, snap) {
     text(g, label, 126, H - 13, 7, '#ff8a8a', 'left', 168);
     g.fillStyle = '#300'; g.fillRect(300, H - 17, 214, 8);
     g.fillStyle = b.ph ? '#ff4d4d' : '#ffa23d'; g.fillRect(300, H - 17, 214 * Math.max(0, b.hp) / b.mh, 8);
+    if (b.st === 'transform') {
+      const progress = S.clamp(b.t / S.BOSS_TRANSFORM_TICKS, 0, 1);
+      g.fillStyle = S.bossExtraAttack(b.bi, 'special').color;
+      g.fillRect(300, H - 7, Math.round(214 * progress), 2);
+    }
   }
 }
 
@@ -781,12 +802,6 @@ function drawSummary(g, sum, info) {
 
 function bossPose(b, sx) {
   const t = b.t;
-  if (b.st === 'transform') {
-    const key = Math.floor(t / (S.BOSS_TRANSFORM_TICKS / 6));
-    if (key === 0) return [0, 0, 0];
-    if (key < 5) return [0, 6, key - 1];
-    return [1, 0, 0];
-  }
   if (b.st === 'signature' || b.st === 'special') {
     const attack = S.bossExtraAttack(b.bi, b.st);
     const end = attack.warning + attack.zones[attack.zones.length - 1][4] + 6;
@@ -810,11 +825,67 @@ function bossPose(b, sx) {
   return [b.ph, 0, b.st === 'dead' ? 0 : BOSS_WALK[Math.floor(t / 9) % BOSS_WALK.length]];
 }
 
+const ease = x => x * x * (3 - 2 * x);
+
+function drawTransformSlice(g, phases, [phase, row, col], top, bottom) {
+  const C = BOSS_CELL, h = bottom - top;
+  if (h <= 0) return;
+  const sheet = img(phases[phase].sheet);
+  if (ready(sheet)) {
+    g.drawImage(sheet, col * C, row * C + top, C, h, -C / 2, top - BOSS_FOOT, C, h);
+  }
+}
+
+function drawTransformEnergy(g, sx, sy, width, progress, color) {
+  const envelope = Math.sin(Math.PI * progress);
+  // Three staggered waves travel outwards as the power plant comes online.
+  g.save();
+  g.strokeStyle = color;
+  for (let i = 0; i < 3; i++) {
+    const travel = (progress * 4 + i / 3) % 1;
+    const radius = width * (0.23 + ease(travel) * 0.59);
+    g.globalAlpha = 0.62 * envelope * Math.sin(Math.PI * travel);
+    g.lineWidth = 3 - travel * 2;
+    g.beginPath();
+    g.ellipse(sx, sy, radius, radius * 0.28, 0, 0, Math.PI * 2);
+    g.stroke();
+  }
+  g.restore();
+}
+
+function drawBossTransform(g, b, sx, sy) {
+  const C = BOSS_CELL, phases = M.bosses[b.bi].phases;
+  const p = S.clamp(b.t / S.BOSS_TRANSFORM_TICKS, 0, 1);
+  const keyCount = BOSS_TRANSFORM_POSES.length - 1;
+  const position = keyCount * Math.min(1, p / BOSS_TRANSFORM_SETTLE);
+  const key = Math.min(keyCount - 1, Math.floor(position));
+  const motion = position - key;
+  const reveal = ease(S.clamp((motion - 0.08) / 0.84, 0, 1));
+  // Replace each strip from the feet up. A single solid silhouette keeps the
+  // cockpit legible even when neighboring poses have different outlines.
+  const cut = Math.round(C * (1 - reveal));
+  const shift = Math.sin(Math.PI * motion) * Math.sin(Math.PI * p);
+  const width = (phases[0].body[2] - phases[0].body[0]) * (1 - p) +
+    (phases[1].body[2] - phases[1].body[0]) * p;
+  const color = S.bossExtraAttack(b.bi, 'special').color;
+  shadow(g, sx, sy, width * BS * 0.45);
+  if (p > 0 && p < 1) drawTransformEnergy(g, sx, sy, width, p, color);
+
+  g.save();
+  g.translate(Math.round(sx - b.fc * shift * 4), Math.round(sy));
+  g.scale(BOSS_DRAW_SCALE * (b.fc > 0 ? -1 : 1), BOSS_DRAW_SCALE * (1 - shift * 0.045));
+  if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
+  drawTransformSlice(g, phases, BOSS_TRANSFORM_POSES[key], 0, cut);
+  drawTransformSlice(g, phases, BOSS_TRANSFORM_POSES[key + 1], cut, C);
+  g.restore();
+}
+
 function drawBoss(g, b, camX) {
   const sx = b.x - camX, sy = FLOOR_TOP + b.y;
+  if (b.st === 'transform') return drawBossTransform(g, b, sx, sy);
   const [phase, row, col] = bossPose(b, sx);
   const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
-  const C = BOSS_CELL, scale = BS * 256 / C;
+  const C = BOSS_CELL, scale = BOSS_DRAW_SCALE;
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
   if (!ready(sheet)) return;
   g.save();
@@ -822,14 +893,11 @@ function drawBoss(g, b, camX) {
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
   g.scale(b.fc > 0 ? -scale : scale, scale);
+  if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
   g.drawImage(sheet, col * C, row * C, C, C, -C / 2, -BOSS_FOOT, C, C);
-  if (b.fl > 0 && canFilter()) {
-    g.globalAlpha = 0.6; g.filter = 'brightness(4) saturate(0)';
-    g.drawImage(sheet, col * C, row * C, C, C, -C / 2, -BOSS_FOOT, C, C);
-  }
   g.restore();
   windup(g, b, sx, sy, ph);
-  if (b.su !== undefined && b.st !== 'idle' && b.st !== 'transform' && b.st !== 'dead') {
+  if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
     g.globalAlpha = (27 - b.su) / 27;
     drawBossFx(g, ph, 3, Math.min(3, Math.floor(b.su / 7)), sx - b.fc * 62, sy - 74, 42, false);
@@ -883,12 +951,18 @@ function drawBanner(g, snap) {
   if (bn.arrow) { if (Math.floor(snap.t / 12) % 2) text(g, 'GO! >>>', W - 20, 120, 16, '#ffd23d', 'right'); return; }
   const b = bn.boss && snap.boss;
   const name = b && M.bosses[b.bi].machines[b.ph].toUpperCase();
-  const changing = b && b.st === 'transform';
   const a = Math.min(1, bn.t / 20);
+  if (b && b.st === 'transform') {
+    g.save();
+    g.globalAlpha = a;
+    text(g, name, W / 2, 59, 12, S.bossExtraAttack(b.bi, 'special').color, 'center', W - 24);
+    g.restore();
+    return;
+  }
   g.globalAlpha = a;
   g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 128, W, bn.sub ? 62 : 44);
-  text(g, changing ? 'TRANSFORMING' : name || bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.power ? '#8ef8ff' : bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
-  if (bn.sub) text(g, changing ? name : bn.sub, W / 2, 176, 8, '#fff', 'center');
+  text(g, name || bn.text, W / 2, 150, bn.boss ? 18 : 22, bn.power ? '#8ef8ff' : bn.boss ? '#ff6a6a' : '#ffd23d', 'center');
+  if (bn.sub) text(g, bn.sub, W / 2, 176, 8, '#fff', 'center');
   g.globalAlpha = 1;
 }
 
@@ -971,12 +1045,25 @@ function interpolateSnapshot(a, b, k) {
   const byId = (arr, key) => { const m = new Map(); for (const o of arr || []) m.set(o[key], o); return m; };
   const pa = byId(a.players, 's'), ea = byId(a.enemies, 'id'), ra = byId(a.projs, 'id');
   const mix = (o, p) => (p ? Object.assign({}, o, { x: L(p.x, o.x), y: L(p.y, o.y), z: L(p.z, o.z) }) : o);
+  const nextBoss = b.boss, previousBoss = a.boss;
+  let boss = nextBoss;
+  if (nextBoss && previousBoss && a.si === b.si && nextBoss.bi === previousBoss.bi) {
+    boss = { ...nextBoss, x: L(previousBoss.x, nextBoss.x), y: L(previousBoss.y, nextBoss.y) };
+    if (nextBoss.st === previousBoss.st && nextBoss.ph === previousBoss.ph && nextBoss.t >= previousBoss.t) {
+      boss.t = L(previousBoss.t, nextBoss.t);
+    }
+  }
   return Object.assign({}, b, {
     camX: a.si === b.si ? L(a.camX, b.camX) : b.camX,
     players: (b.players || []).map(o => mix(o, pa.get(o.s))),
     enemies: (b.enemies || []).map(o => mix(o, ea.get(o.id))),
-    projs: (b.projs || []).map(o => mix(o, ra.get(o.id))),
-    boss: b.boss && a.boss ? Object.assign({}, b.boss, { x: L(a.boss.x, b.boss.x), y: L(a.boss.y, b.boss.y) }) : b.boss,
+    projs: (b.projs || []).map(o => {
+      const prev = ra.get(o.id);
+      const projectile = mix(o, prev);
+      if (prev && o.k === 'boss' && prev.k === o.k && a.si === b.si) projectile.t = L(prev.t, o.t);
+      return projectile;
+    }),
+    boss,
   });
 }
 
