@@ -1,5 +1,5 @@
-// Browser proof: atlas cells match the pose PNGs, pose files are not requested,
-// and a stage-1 boss plus projectile still paints. Three cold loads record medians.
+// Three cold loads record medians. The first also exercises fighter and boss
+// atlas playback through the Canvas 2D renderer.
 'use strict';
 
 const { spawn } = require('child_process');
@@ -195,22 +195,322 @@ async function paintBoss(page) {
   return page.evaluate(async () => {
     const plan = AssetLoader.groups(MANIFEST);
     await AssetLoader.shared().preload(plan.firstBoss);
-    const canvas = document.getElementById('game');
+    const canvas = document.createElement('canvas');
+    canvas.width = Sim.W; canvas.height = Sim.H;
     const ctx = canvas.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.imageSmoothingEnabled = false;
     const snap = {
       camX: 0, sk: 0, si: 0, t: 12, items: [], players: [], enemies: [], fx: [], banner: null,
       boss: { bi: 0, ph: 0, x: 420, y: 36, z: 0, t: 12, st: 'idle', fc: -1, fl: 0, mi: 0, row: 0, hp: 1800, mh: 2600 },
-      projs: [{ k: 'boss', bi: 0, ph: 0, r: 0, t: 8, x: 220, y: 48, z: 16, vx: -4 }],
+      projs: [{ k: 'boss', bi: 0, ph: 0, r: 0, t: 8, x: 220, y: 48, z: 45, vx: -4 }],
     };
+    // Compare above each ground shadow and outside the HUD against the same
+    // background. Counting opaque pixels would also pass without either sprite.
+    const read = (...rect) => ctx.getImageData(...rect).data;
+    const actor = [340, 100, 160, 120], shot = [192, 193, 56, 56];
+    Render.drawWorld(ctx, { ...snap, boss: null, projs: [] });
+    const bgActor = read(...actor), bgShot = read(...shot);
     Render.drawWorld(ctx, snap);
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let ink = 0;
-    for (let i = 3; i < data.length; i += 16) if (data[i] > 16) ink++;
-    const sheet = plan.firstBoss[0];
-    const image = Render.img(sheet);
-    return { ink, ready: Render.ready(image), width: image.naturalWidth, errors: Render.loadStatus().errors, png: canvas.toDataURL('image/png') };
+    const changed = (after, before) => {
+      let count = 0;
+      for (let i = 0; i < after.length; i += 4) {
+        if (after[i] !== before[i] || after[i + 1] !== before[i + 1] || after[i + 2] !== before[i + 2]) count++;
+      }
+      return count;
+    };
+    return {
+      actor: changed(read(...actor), bgActor), shot: changed(read(...shot), bgShot),
+      errors: Render.loadStatus().errors, png: canvas.toDataURL('image/png'),
+    };
+  });
+}
+
+async function verifyBossPlayback(page) {
+  return page.evaluate(async () => {
+    const ACTOR = 176, FX = 96;
+    const summoners = new Set(['crapto', 'bigswole', 'sproto1668']);
+    const plan = AssetLoader.groups(MANIFEST), loader = AssetLoader.shared();
+    const canvas = document.createElement('canvas');
+    canvas.width = Sim.W; canvas.height = Sim.H;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    const calls = [], drawImage = ctx.drawImage.bind(ctx);
+    ctx.drawImage = (image, ...args) => {
+      if (image instanceof HTMLImageElement) {
+        const asset = new URL(image.src).pathname.replace(/^\//, '');
+        if (asset.startsWith('assets/bosses/')) {
+          const matrix = ctx.getTransform();
+          calls.push({ asset, source: args.slice(0, 4), facing: Math.sign(matrix.a) });
+        }
+      }
+      return drawImage(image, ...args);
+    };
+    const check = (predicate, message) => { if (!predicate) throw new Error(message); };
+    const expected = (asset, cell, row, col, facing) => ({ asset, source: [col * cell, row * cell, cell, cell], facing });
+    const renderSnapshot = state => JSON.parse(JSON.stringify(Sim.snapshot(state)));
+    const draw = snap => {
+      calls.length = 0;
+      Render.drawWorld(ctx, snap, { noBanner: true });
+      return calls;
+    };
+    const checkDraw = (snap, wanted, label) => {
+      const actual = draw(snap);
+      const keys = records => records.map(call => JSON.stringify(call)).sort().join('\n');
+      check(keys(actual) === keys(wanted), label + ' drew ' + JSON.stringify(actual) +
+        ' expected ' + JSON.stringify(wanted));
+    };
+    const projectileArt = new Set();
+    const assertAtlas = (asset, cell, rows) => {
+      const image = Render.img(asset);
+      check(Render.ready(image) && image.naturalWidth === 4 * cell && image.naturalHeight === rows * cell,
+        asset + ' has incorrect atlas dimensions');
+      const sheet = document.createElement('canvas');
+      sheet.width = image.naturalWidth; sheet.height = image.naturalHeight;
+      const pixels = sheet.getContext('2d', { willReadFrequently: true });
+      pixels.drawImage(image, 0, 0);
+      for (let row = 0; row < rows; row++) {
+        const frames = new Set();
+        for (let col = 0; col < 4; col++) {
+          const rgba = pixels.getImageData(col * cell, row * cell, cell, cell).data;
+          let ink = 0, hash = 2166136261;
+          for (let i = 0; i < rgba.length; i++) {
+            if (i % 4 === 3 && rgba[i] > 0) ink++;
+            hash = Math.imul(hash ^ rgba[i], 16777619);
+          }
+          check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
+          if (cell === FX && col === 0) {
+            check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row);
+            projectileArt.add(hash);
+          }
+          frames.add(hash);
+        }
+        const distinct = cell === ACTOR && asset.endsWith('-p2.png') && row === rows - 1 ? 4 : 3;
+        check(frames.size >= distinct, asset + ' has too few distinct frames in row ' + row);
+      }
+    };
+
+    const verifyExtraAttack = (state, mode, sheet, proj, row, label) => {
+      const player = state.players[0];
+      player.inv = 1000;
+      for (let waited = 0; waited < 480 && state.boss.st !== mode; waited++) Sim.step(state);
+      const start = renderSnapshot(state);
+      const spec = Sim.bossExtraAttack(state.boss.bi, mode);
+      const name = label + ' ' + spec.name;
+      check(start.boss.ph === 1 && start.boss.st === mode && start.boss.t === 0 &&
+        start.boss.az?.length === spec.zones.length, name + ' did not publish its locked areas on entry');
+
+      // Other weapons, hazards and Shadow Sprotos are unrelated to this hit.
+      state.enemies = [];
+      state.projs = [];
+      state.items = [];
+      state.fx = [];
+      state.hazards = [];
+      state.boss.addT = 0;
+      const [x, y] = start.boss.az.find(zone => zone[4] === 0);
+      Object.assign(player, { x, y, z: 0, vx: 0, vy: 0, vz: 0, st: 'idle', inv: 0, hp: Sim.MAX_HP });
+
+      const ready = renderSnapshot(state), facing = -ready.boss.fc;
+      const actor = col => expected(sheet, ACTOR, row, col, facing);
+      checkDraw(ready, [actor(0)], name + ' ready');
+      const warning = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
+      draw({ ...ready, boss: { ...ready.boss, az: [] } });
+      const clean = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
+      check(warning.some((byte, i) => byte !== clean[i]), name + ' floor warning did not paint');
+
+      const lock = JSON.stringify(start.boss.az);
+      const preImpactHp = player.hp;
+      const midpoint = Math.ceil(spec.warning / 2);
+      for (let tick = 1; tick < spec.warning; tick++) {
+        Sim.step(state);
+        const warningSnap = renderSnapshot(state);
+        check(player.hp === preImpactHp && JSON.stringify(warningSnap.boss.az) === lock &&
+          !warningSnap.fx.some(f => f.k === 'bossImpact' || f.k === 'bossSpecialImpact'),
+        name + ' damaged a player or moved its warning before the strike at tick ' + tick);
+        if (tick === midpoint - 1 || tick === midpoint ||
+            tick === spec.warning - 1) {
+          checkDraw(warningSnap, [actor(tick < midpoint ? 0 : 1)], name + ' warning frame at tick ' + tick);
+        }
+      }
+
+      const eventKind = mode === 'special' ? 'bossSpecialImpact' : 'bossImpact';
+      const verifyWave = (snap, delay) => {
+        const zones = start.boss.az.filter(zone => zone[4] === delay);
+        const effects = snap.fx.filter(f => f.k === eventKind && f.t === 1);
+        check(effects.length === zones.length && zones.every(([x, y]) => effects.some(f =>
+          f.x === x && f.y === y && f.bi === state.boss.bi && f.ph === 1)),
+        name + ' impact did not match the locked areas at delay ' + delay);
+        return effects;
+      };
+      Sim.step(state);
+      const strike = renderSnapshot(state);
+      const effects = verifyWave(strike, 0);
+      check(player.hp < preImpactHp, name + ' did not damage the marked player on release');
+      const art = effects.map(() => expected(proj, FX, 3, 0, 1));
+      checkDraw(strike, [actor(2), ...art], name + ' strike');
+
+      player.inv = 1000;
+      const lastDelay = Math.max(...start.boss.az.map(zone => zone[4]));
+      for (let tick = 1; tick <= lastDelay + 6; tick++) {
+        Sim.step(state);
+        verifyWave(renderSnapshot(state), tick);
+      }
+      // Existing impact effects use their own timeline, so isolate the
+      // actor's recovery frame here.
+      const recovery = renderSnapshot(state);
+      checkDraw({ ...recovery, fx: [] }, [actor(3)], name + ' recovery');
+    };
+
+    let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
+    for (const [bi, boss] of MANIFEST.bosses.entries()) {
+      Render.enterStage(bi);
+      await loader.preload(plan.boss(bi));
+      const snap = { si: bi, t: 12, sk: 0, camX: 0, items: [], players: [], enemies: [], fx: [], projs: [] };
+      const ar = bi % Sim.BOSS_ARCHETYPES.length;
+      for (const [ph, { sheet, proj }] of boss.phases.entries()) {
+        assertAtlas(sheet, ACTOR, 7 + ph + Number(summoners.has(boss.pilot)));
+        assertAtlas(proj, FX, 4);
+        const status = { bi, ph, ar, x: 420, y: 36, fc: -1, hp: 50, mh: 100, fl: 0, w: 130 };
+        const label = boss.pilot + ' phase ' + (ph + 1);
+        const pose = (state, row, col, caption) => {
+          const b = { ...status, ...state };
+          checkDraw({ ...snap, boss: b }, [expected(sheet, ACTOR, row, col, -b.fc)], label + ' ' + caption);
+        };
+        pose({ st: 'idle', t: 0 }, 0, 0, 'idle');
+        pose({ st: 'enter', t: 9, fc: 1 }, 0, 1, 'walk right');
+        for (const [row, attack] of [[1, 'lane or lob'], [2, 'spread'], [3, 'homing']]) {
+          const firing = { st: 'fire', row, mi: Number(row === 3) };
+          pose({ ...firing, t: 4 }, row, 0, attack + ' wind-up');
+          pose({ ...firing, t: 30 }, row, 1, attack + ' release');
+          pose({ ...firing, t: 50 }, row, 2, attack + ' recovery');
+        }
+        if (ar < 2) {
+          pose({ st: 'fire', row: 1, t: 34 }, 1, 2, 'lane shot between releases');
+          pose({ st: 'fire', row: 1, t: 38 }, 1, 1, 'lane shot second release');
+          pose({ st: 'fire', row: 1, t: 46 }, 1, ph ? 1 : 2, 'lane shot final release only in phase two');
+        }
+        const chargeAt = ar === 1 ? 36 : 24;
+        pose({ st: 'charge', t: 2 }, 4, 0, 'charge wind-up');
+        pose({ st: 'charge', t: chargeAt }, 4, 1, 'charge starts moving');
+        pose({ st: 'charge', t: chargeAt + 15, x: 76 }, 4, 2, 'charge brakes near arena edge');
+        pose({ st: 'sweep', t: 2 }, 5, 0, 'rear sweep wind-up');
+        pose({ st: 'sweep', t: Sim.SWEEP_WARN, fc: 1 }, 5, 1, 'rear sweep release');
+        pose({ st: 'sweep', t: Sim.SWEEP_WARN + 22 }, 5, 2, 'rear sweep recovery');
+
+        // The authoritative sim writes row 3 for tracking shots and row 0 for
+        // lobs. Exercise production snapshots on either side of the release.
+        const s = Sim.create([{ fid: 0, weapon: 0, ctrl: 'local' }], 7, bi);
+        for (const w of s.stage.waves) w.done = true;
+        s.camX = s.stage.len - Sim.W + 150;
+        s.players[0].x = s.camX + 100;
+        Sim.step(s);
+        for (const [row, shotRow, visualRow] of [[1, 0, 0], [2, 1, 1], [3, 3, 2]]) {
+          Object.assign(s.boss, {
+            phase: ph, st: 'fire', t: 28, x: s.camX + 420, face: -1, row,
+            missile: row === 3, lob: row === 1 && ar === 3, marks: [[s.players[0].x, s.players[0].y]],
+            warn: [s.players[0].y], both: true,
+          });
+          s.projs = [];
+          s.fx = [];
+          Sim.step(s);
+          const windup = renderSnapshot(s);
+          check(windup.projs.length === 0, label + ' launched before the release tick');
+          checkDraw(windup, [expected(sheet, ACTOR, row, 0, 1)], label + ' last wind-up tick');
+          Sim.step(s);
+          const release = renderSnapshot(s);
+          check(release.projs.length > 0, label + ' missing projectile at release');
+          check(release.projs.every(p => p.k === 'boss' && p.bi === bi && p.ph === ph && p.r === shotRow),
+            label + ' snapshot has incorrect projectile provenance');
+          const shots = release.projs.map(p => expected(proj, FX, visualRow, 0, p.vx > 0 ? -1 : 1));
+          checkDraw(release, [expected(sheet, ACTOR, row, 1, 1), ...shots], label + ' live projectile row ' + row);
+          launched += shots.length;
+
+          // Put the released projectile within one tick of a player hit or
+          // let a lob's flight complete. The sim still produces the event.
+          const player = s.players[0], shot = s.projs.find(p => p.vx < 0);
+          Object.assign(player, { st: 'idle', inv: 0, z: 0, vx: 0, vy: 0, vz: 0, hp: Sim.MAX_HP });
+          if (shot.lob) {
+            Object.assign(shot, { t: shot.lob - 1, tx: player.x, ty: player.y });
+          } else {
+            Object.assign(shot, { x: player.x + Math.abs(shot.vx) + 12, y: player.y, z: 24, vy: 0 });
+          }
+          s.projs = [shot];
+          s.fx = [];
+          Sim.step(s);
+          const impact = renderSnapshot(s);
+          check(impact.projs.length === 0 &&
+            impact.fx.some(f => f.k === 'bossImpact' && f.bi === bi && f.ph === ph && f.t === 1),
+          label + ' shot did not report an impact with its boss and phase');
+          checkDraw(impact, [expected(sheet, ACTOR, row, 1, 1), expected(proj, FX, 3, 0, 1)],
+            label + ' themed impact for attack row ' + row);
+          impacts++;
+        }
+
+        if (summoners.has(boss.pilot)) {
+          // Jump the summoner clock to just before its normal Shadow pair.
+          Object.assign(s.boss, { st: 'idle', t: 0, addT: (ph === 1 ? 132 : 220) - 1 });
+          s.fx = [];
+          Sim.step(s);
+          const arrival = renderSnapshot(s);
+          check(arrival.enemies.length === 2 && arrival.boss.su === 0, label + ' did not report the Shadow pair summon');
+          checkDraw(arrival, [expected(sheet, ACTOR, 7, 1, 1)], label + ' summon release');
+          for (let i = 0; i < 12; i++) Sim.step(s);
+          checkDraw(renderSnapshot(s), [expected(sheet, ACTOR, 7, 2, 1)], label + ' summon recovery');
+          summons++;
+        }
+        if (ph === 0) {
+          // Cross the health threshold through ordinary projectile damage.
+          // Sample exact boundaries on the five-second transformation.
+          s.enemies = [];
+          s.fx = [];
+          s.projs = [];
+          s.boss.hp = Math.floor(s.boss.maxHp / 2) + 1;
+          // Storm resolves in updatePlayer, before the boss clock, and laser
+          // resolves in updateProjs after it. Both must start at render tick 0.
+          const player = s.players[0];
+          if (bi === 0) {
+            Object.assign(player, { st: 'idle', x: s.boss.x - 215, z: 0, vx: 0, vy: 0, vz: 0, powers: [0] });
+            player.in.p = 1;
+          } else {
+            s.projs.push({
+              id: s.nextId++, kind: 'laser', owner: 0, t: 0, life: 10, hit: [],
+              x: s.boss.x, y: s.boss.y, z: 0, vx: 0, vy: 0, vz: 0, dmg: 2,
+            });
+          }
+          Sim.step(s);
+          player.in.p = 0;
+          const secondSheet = boss.phases[1].sheet;
+          const timeline = [
+            [0, sheet, 0, 0], [49, sheet, 0, 0],
+            [50, sheet, 6, 0], [99, sheet, 6, 0],
+            [100, sheet, 6, 1], [149, sheet, 6, 1],
+            [150, sheet, 6, 2], [199, sheet, 6, 2],
+            [200, sheet, 6, 3], [249, sheet, 6, 3],
+            [250, secondSheet, 0, 0], [299, secondSheet, 0, 0],
+            [300, secondSheet, 0, 0],
+          ];
+          let previous = 0;
+          for (const [tick, sprite, row, col] of timeline) {
+            for (let t = previous; t < tick; t++) Sim.step(s);
+            const snap = renderSnapshot(s), transforming = tick < 300;
+            check(snap.boss.ph === 1 && snap.boss.st === (transforming ? 'transform' : 'idle') &&
+              snap.boss.t === (transforming ? tick : 0), label + ' unexpected state at transformation tick ' + tick);
+            const transition = expected(sprite, ACTOR, row, col, 1);
+            checkDraw(snap, snap.boss.fl > 0 && Render.canFilter() ? [transition, transition] : [transition],
+              label + ' transformation at tick ' + tick);
+            previous = tick;
+          }
+          transitions++;
+          s.items = [];
+          const secondProj = boss.phases[1].proj;
+          verifyExtraAttack(s, 'signature', secondSheet, secondProj, 6, boss.pilot);
+          verifyExtraAttack(s, 'special', secondSheet, secondProj, summoners.has(boss.pilot) ? 8 : 7, boss.pilot);
+          extraAttacks += 2;
+        }
+        phases++;
+      }
+    }
+    return { phases, launched, impacts, summons, transitions, extraAttacks, projectileDesigns: projectileArt.size };
   });
 }
 
@@ -224,6 +524,7 @@ async function main() {
   }
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
   const runs = [];
+  let bossPlayback;
   try {
     for (let i = 0; i < 3; i++) {
       const opened = await coldPage(browser, url);
@@ -240,10 +541,16 @@ async function main() {
         if (roster.count !== 10) throw new Error('expected ten imported fighters');
         fs.writeFileSync(path.join(out, 'coop-imported-fighters.png'), Buffer.from(roster.png.replace(/^data:image\/png;base64,/, ''), 'base64'));
         const boss = await paintBoss(opened.page);
-        if (!boss.ready || boss.width !== 1024) throw new Error('boss sheet was not ready: ' + JSON.stringify(boss));
         if (boss.errors.length) throw new Error('boss load errors: ' + boss.errors.join(','));
-        if (boss.ink < 1000) throw new Error('boss frame did not paint: ' + boss.ink);
+        if (boss.actor < 1000 || boss.shot < 100) throw new Error('boss and shot pixels did not paint: ' + boss.actor + ', ' + boss.shot);
         fs.writeFileSync(path.join(out, 'c2-boss-phase.png'), Buffer.from(boss.png.replace(/^data:image\/png;base64,/, ''), 'base64'));
+        bossPlayback = await verifyBossPlayback(opened.page);
+        if (bossPlayback.phases !== 24 || bossPlayback.impacts !== 72 || bossPlayback.summons !== 6 ||
+            bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
+            bossPlayback.projectileDesigns !== 96) {
+          throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
+        }
+        if (opened.errors.length) throw new Error('page errors during atlas playback: ' + opened.errors.join(' | '));
       }
       await opened.page.close();
     }
@@ -281,6 +588,7 @@ async function main() {
       throttle: '10 Mbps, 100 ms RTT, cache disabled, no CPU throttle',
       poseRequests: 0,
       cells: 240,
+      bossPlayback,
     };
     fs.writeFileSync(path.join(out, 'c2-load-medians.json'), JSON.stringify(summary, null, 2) + '\n');
     if (process.env.C2_SAVE_FIXTURES === '1') {

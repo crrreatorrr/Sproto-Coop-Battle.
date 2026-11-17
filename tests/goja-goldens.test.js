@@ -68,7 +68,7 @@ function assertCoverage(result) {
   assert.ok(stage1.resume && stage1.resume.hash);
   const phase2 = result.cases.find(row => row.id === 'human-seed64-stage1');
   assert.ok(phase2.flags.bossPhase >= 1 && phase2.flags.ufo > 0 && phase2.flags.revive > 0);
-  const terminal = result.cases.find(row => row.id === 'cpu-seed42-terminal');
+  const terminal = result.cases.find(row => row.id === 'cpu-seed1-terminal');
   assert.strictEqual(terminal.mode, 'gameover');
   assert.ok(terminal.flags.bossPhase >= 1 && terminal.flags.dead > 0);
 }

@@ -4,10 +4,10 @@
     "seed": 42,
     "slots": "4 cpu",
     "mode": "gameover",
-    "stageReached": 2,
-    "t": 13243,
+    "stageReached": 3,
+    "t": 18047,
     "players": 4,
-    "snapSha256": "f975f49488c88ccac538990272ac974380a224d860c03e76221e499e536a65f2"
+    "snapSha256": "6ee4f98f93da2a561dada5bb745f8ead61c91cd3f9d36d7e4a09bab9b7aa3513"
   },
   "mixedSeed7Tick1800": {
     "seed": 7,

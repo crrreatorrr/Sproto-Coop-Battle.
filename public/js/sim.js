@@ -762,7 +762,7 @@ function meleeHit(state, p, reach, dmg, knockdown, knockF, around, opt) {
     const dx = (pr.x - p.x) * (around ? Math.sign(pr.x - p.x) || 1 : p.face);
     if (dx > -10 && dx < reach + 6 && Math.abs(pr.y - p.y) < 16 && Math.abs(pr.z - (p.z + 26)) < 40) {
       pr.remove = true; p.score += 100; fx(state, 'spark', pr.x, pr.y, pr.z); ev(state, 'shield');
-      if (pr.homing) { fx(state, 'boom', pr.x, pr.y, pr.z, { small: 1 }); ev(state, 'boom'); }
+      if (pr.homing) { bossImpact(state, pr); ev(state, 'boom'); }
     }
   }
   const b = state.boss;
@@ -1127,8 +1127,84 @@ function updateEnemy(state, e) {
   }
 }
 
-// ---------------- boss (Sproto Arcade machines) ----------------
+// ---------------- bosses ----------------
 const BOSS_SCALE = 0.95;
+const BOSS_TRANSFORM_TICKS = 5 * 60;
+
+// Phase-two attacks lock their danger areas and warning durations at the start.
+// Zone entries: [relative X, relative Y, half width, half depth, delay, rounded].
+const PHASE2_ATTACKS = [
+  [{ name: 'Magnet Crush', warning: 30, aim: false, zones: [[88,0,53,20,0,0]] },
+   { name: 'Abyssal Collapse', warning: 52, aim: true, color: '#9dff4f', zones: [[-71,-46,45,24,0,1],[0,0,63,28,8,1],[71,46,49,24,16,1]] }],
+  [{ name: 'Twin Axe Chops', warning: 31, aim: false, zones: [[69,-22,48,12,0,0],[114,20,53,13,8,0]] },
+   { name: 'Emerald Guillotine', warning: 49, aim: false, color: '#54ffd2', zones: [[145,-48,97,12,0,0],[145,48,97,12,0,0],[160,0,109,14,16,0]] }],
+  [{ name: 'Sludge Canister Drop', warning: 33, aim: true, zones: [[-38,0,32,16,0,1],[38,10,35,16,10,1]] },
+   { name: 'Sludge Blackout', warning: 54, aim: true, color: '#f44dfd', zones: [[-90,30,36,18,0,1],[-42,-30,42,22,8,1],[16,15,43,21,16,1],[76,-26,44,19,24,1]] }],
+  [{ name: 'Pumpkin Rack Drop', warning: 34, aim: true, zones: [[-42,-12,36,18,0,1],[42,12,36,18,0,1]] },
+   { name: 'Pumpkin Cataclysm', warning: 56, aim: true, color: '#ff9e3c', zones: [[-84,-36,45,22,0,1],[84,36,45,22,0,1],[0,0,54,25,12,1],[-84,36,42,19,24,1],[84,-36,42,19,24,1]] }],
+  [{ name: 'Alternating Cannons', warning: 30, aim: false, zones: [[121,-23,83,10,0,0],[121,23,83,10,10,0]] },
+   { name: 'Railstorm', warning: 49, aim: false, color: '#ff6849', zones: [[174,-52,131,10,0,0],[174,52,131,10,0,0],[182,-18,138,11,12,0],[182,18,138,11,20,0]] }],
+  [{ name: 'Twinblade Cut', warning: 28, aim: false, zones: [[100,-15,68,13,0,0],[75,20,54,14,8,0]] },
+   { name: 'Twinblade Quake', warning: 48, aim: false, color: '#ff5d72', zones: [[103,-24,66,14,0,0],[103,24,66,14,0,0],[230,0,56,25,13,1]] }],
+  [{ name: 'Twin Maul Slam', warning: 34, aim: false, zones: [[88,-20,46,17,0,1],[83,22,50,19,8,1]] },
+   { name: 'Citadel Breaker', warning: 55, aim: false, color: '#c49aff', zones: [[71,0,49,27,0,1],[147,0,53,34,11,1],[229,0,57,40,22,1]] }],
+  [{ name: 'Jousting Thrust', warning: 28, aim: false, zones: [[116,0,92,14,0,0]] },
+   { name: 'Crownfall Barrage', warning: 55, aim: true, color: '#d5ff56', zones: [[-113,18,38,22,0,1],[113,-18,38,22,0,1],[-51,-31,36,21,11,1],[51,31,36,21,11,1],[0,0,43,24,23,1]] }],
+  [{ name: 'Twin Capture', warning: 31, aim: false, zones: [[86,-12,38,18,0,1],[132,15,37,17,8,1]] },
+   { name: 'Brood Clamp', warning: 52, aim: true, color: '#67f6e3', zones: [[-69,0,33,32,0,0],[69,0,33,32,0,0],[0,0,47,25,17,1]] }],
+  [{ name: 'Twin Scythe Crosscut', warning: 30, aim: false, zones: [[96,-22,62,13,0,0],[96,22,62,13,0,0]] },
+   { name: 'Crescent Tempest', warning: 50, aim: false, color: '#ffb354', zones: [[137,-41,94,12,0,0],[137,41,94,12,0,0],[195,0,72,20,15,1]] }],
+  [{ name: 'Heavy Grapple Lunge', warning: 29, aim: false, zones: [[108,0,78,15,0,0],[190,0,35,16,8,1]] },
+   { name: 'Chainfall', warning: 53, aim: false, color: '#f28dff', zones: [[207,0,61,23,0,1],[145,26,43,20,12,1],[81,-24,52,22,24,1]] }],
+  [{ name: 'Hammer-Fist Strike', warning: 32, aim: false, zones: [[83,0,55,19,0,0]] },
+   { name: 'Lockdown Shockwave', warning: 55, aim: false, color: '#74d8ff', zones: [[65,0,57,28,0,1],[141,-37,72,12,12,0],[141,37,72,12,12,0],[238,0,60,23,24,1]] }],
+];
+function bossExtraAttack(index, mode) {
+  return PHASE2_ATTACKS[index][mode === 'special' ? 1 : 0];
+}
+
+function startBossExtra(state, b, target) {
+  b.st = (b.extraCount || 0) % 2 === 0 ? 'signature' : 'special';
+  b.extraCount = (b.extraCount || 0) + 1;
+  b.nextExtra = b.cycle + 2;
+  b.t = 0;
+  const attack = bossExtraAttack(b.bi, b.st);
+  const origin = attack.aim ? target : b;
+  b.extraZones = attack.zones.map(([x, y, width, depth, delay, rounded]) => [
+    Math.round(clamp(origin.x + x * b.face, state.camX + 42, state.camX + W - 42)),
+    Math.round(clamp(origin.y + y, 0, DEPTH)), width, depth, delay, rounded,
+  ]);
+  ev(state, 'charge');
+}
+
+function updateBossExtra(state, b, players) {
+  const attack = bossExtraAttack(b.bi, b.st);
+  const age = b.t - attack.warning;
+  const zones = b.extraZones.filter(zone => zone[4] === age);
+  if (zones.length) {
+    const powerful = b.st === 'special';
+    for (const [x, y, width] of zones) {
+      fx(state, powerful ? 'bossSpecialImpact' : 'bossImpact', x, y, 10,
+        { bi: b.bi, ph: b.phase, small: powerful ? Math.min(132, width * 1.6 + 35) : 70 });
+    }
+    for (const p of players) {
+      if (p.st === 'ufo' || p.z >= 24) continue;
+      const inside = zones.some(([x, y, width, depth, , rounded]) => {
+        const dx = (p.x - x) / width, dy = (p.y - y) / depth;
+        return rounded ? dx * dx + dy * dy < 1 : Math.abs(dx) < 1 && Math.abs(dy) < 1;
+      });
+      if (inside) hurtPlayer(state, p, powerful ? 15 + Math.floor(state.stageIdx * .65) : 11 + Math.floor(state.stageIdx * .5),
+        Math.sign(p.x - b.x) || b.face, powerful);
+    }
+    ev(state, 'boom');
+    shake(state, powerful ? 8 : 3);
+  }
+  if (age >= b.extraZones[b.extraZones.length - 1][4] + 25) {
+    b.st = 'idle';
+    b.t = 0;
+    delete b.extraZones;
+  }
+}
 // Rear sweep: after this many ticks with two Sprotos behind the boss (or longer with one), it marks
 // the ground behind it for SWEEP_WARN ticks and then hits everything standing there.
 const SWEEP_AFTER = 180, SWEEP_AFTER_ONE = 300, SWEEP_WARN = 36, SWEEP_REACH = 170;
@@ -1160,7 +1236,10 @@ function hurtBoss(state, b, dmg, p) {
   fx(state, 'spark', b.x + (p ? Math.sign(p.x - b.x) * b.w * 0.3 : 0), b.y, 50 + rng(state) * 40);
   ev(state, 'bosshit');
   if (b.phase === 0 && b.hp <= b.maxHp / 2) {
+    b.hp = Math.max(1, b.hp);
     b.phase = 1; b.st = 'transform'; b.t = 0;
+    b.transformAt = state.t;
+    b.nextExtra = b.cycle + 1;
     const info = bossInfo(b.bi); if (info) b.w = (info.phases[1].body[2] - info.phases[1].body[0]) * BOSS_SCALE * 0.85;
     state.banner = { text: info ? info.machines[1].toUpperCase() : 'PHASE 2', sub: 'phase 2', t: 120, boss: true };
     state.items.push({ id: state.nextId++, kind: 'ufo', x: state.camX + 120, y: DEPTH / 2, z: 0 });
@@ -1188,7 +1267,14 @@ function updateBoss(state) {
     if (b.t > 120) { b.st = 'idle'; b.t = 0; }
     return;
   }
-  if (b.st === 'transform') { if (b.t % 10 === 0) fx(state, 'boom', b.x + (rng(state) - 0.5) * b.w, b.y, 40 + rng(state) * 80); if (b.t > 90) { b.st = 'idle'; b.t = 0; } return; }
+  if (b.st === 'transform') {
+    if (b.transformAt !== undefined) b.t = state.t - b.transformAt;
+    if (b.t >= BOSS_TRANSFORM_TICKS) { b.st = 'idle'; b.t = 0; delete b.transformAt; }
+    else if (b.t > 0 && b.t % (BOSS_TRANSFORM_TICKS / 6) === 0) {
+      fx(state, 'boom', b.x + (rng(state) - 0.5) * b.w, b.y, 40 + rng(state) * 80);
+    }
+    return;
+  }
   if (b.st === 'dead') {
     if (b.t % 7 === 0) { fx(state, 'boom', b.x + (rng(state) - 0.5) * b.w, b.y + (rng(state) - 0.5) * 20, 20 + rng(state) * 100); ev(state, 'boom'); }
     if (b.t > 150) { state.boss = null; stageClear(state); }
@@ -1209,7 +1295,10 @@ function updateBoss(state) {
   const arch = BOSS_ARCHETYPES[b.arch || 0];
   if (arch === 'summoner' && ++b.addT % Math.floor(SUMMON_EVERY * fast) === 0) {
     let alive = 0; for (const e of state.enemies) if (!e.dead) alive++;
-    if (alive < 1 + humansOf(state)) { spawnEnemy(state, 1, true); spawnEnemy(state, -1, true); } // plain Shadow Sprotos, never elites
+    if (alive < 1 + humansOf(state)) {
+      spawnEnemy(state, 1, true); spawnEnemy(state, -1, true); // plain Shadow Sprotos, never elites
+      b.summonT = state.t;
+    }
   }
   // Contact damage, only once the rush has started: the wind-up is the warning, not a hit.
   const windup = arch === 'charger' ? CHARGER_WINDUP : 24;
@@ -1232,6 +1321,8 @@ function updateBoss(state) {
     const wait = (arch === 'summoner' ? 50 : 34) * fast;
     if (b.t > wait && ((behind >= 2 && b.rear > SWEEP_AFTER) || b.rear > SWEEP_AFTER_ONE)) {
       b.st = 'sweep'; b.t = 0; b.rear = 0; b.tx = -b.face; ev(state, 'charge');
+    } else if (b.t > wait && b.phase && b.cycle >= (b.nextExtra ?? 2)) {
+      startBossExtra(state, b, target);
     } else if (b.t > wait) {
       b.cycle++;
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1); the
@@ -1263,6 +1354,8 @@ function updateBoss(state) {
         }
       }
     }
+  } else if (b.st === 'signature' || b.st === 'special') {
+    updateBossExtra(state, b, ps);
   } else if (b.st === 'fire') {
     // 4-frame weapon animation: anticipation, locked, muzzle (fire), recoil.
     // Weapons A and C fire bursts (3 shots, 5 in phase 2); weapon B fires one wide volley.
@@ -1298,10 +1391,13 @@ function bossLob(state, b) {
   }
 }
 function bombBoom(state, pr) {
-  fx(state, 'boom', pr.tx, pr.ty, 8); ev(state, 'boom'); shake(state, 3);
+  bossImpact(state, pr, pr.tx, pr.ty, 8); ev(state, 'boom'); shake(state, 3);
   for (const p of activePlayers(state)) {
     if (p.st !== 'ufo' && Math.abs(p.x - pr.tx) < 30 && Math.abs(p.y - pr.ty) < 14 && p.z < 30) hurtPlayer(state, p, pr.dmg, Math.sign(p.x - pr.tx) || 1, true);
   }
+}
+function bossImpact(state, pr, x = pr.x, y = pr.y, z = pr.z) {
+  fx(state, 'bossImpact', x, y, z, { bi: pr.bi, ph: pr.phase });
 }
 // Burning lanes left by a charger: standing in one costs a little health every 0.6 s.
 function updateHazards(state) {
@@ -1373,12 +1469,13 @@ function updateProjs(state) {
           if (hurtPlayer(state, p, pr.dmg, Math.sign(pr.vx) || 1, !!pr.boom || pr.row === 2)) {
             pr.remove = true;
             if (shadowShot) fx(state, 'enemyShotHit', pr.x, pr.y, pr.z);
-            if (pr.boom) { fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
+            if (pr.kind === 'boss') bossImpact(state, pr);
+            if (pr.boom) ev(state, 'boom');
             break;
           }
         }
       }
-      if (pr.homing && pr.t > 280) { pr.remove = true; fx(state, 'boom', pr.x, pr.y, pr.z); ev(state, 'boom'); }
+      if (!pr.remove && pr.homing && pr.t > 280) { pr.remove = true; bossImpact(state, pr); ev(state, 'boom'); }
     } else if (pr.classShot) {
       if (pr.y < -8 || pr.y > DEPTH + 8) pr.remove = true;
       else updateClassProjectile(state, pr, x0, y0, z0);
@@ -1463,7 +1560,7 @@ function step(state) {
   updateStrikes(state);
   if (state.shake > 0) { state.shake *= 0.85; if (state.shake < 0.3) state.shake = 0; }
   for (const f of state.fx) f.t++;
-  state.fx = state.fx.filter(f => f.t < (f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : f.kind === 'nova' ? 40 : f.kind === 'bolt' ? 18 : f.kind === 'meteor' || f.kind === 'mark' ? f.small : f.kind === 'wave' || f.kind === 'thrust' ? 18 : f.kind === 'parry' ? 16 : 14));
+  state.fx = state.fx.filter(f => f.t < (f.kind === 'bossSpecialImpact' ? 36 : f.kind === 'bossImpact' ? 24 : f.kind === 'text' ? 60 : f.kind === 'boom' ? 32 : f.kind === 'ring' ? 20 : f.kind === 'nova' ? 40 : f.kind === 'bolt' ? 18 : f.kind === 'meteor' || f.kind === 'mark' ? f.small : f.kind === 'wave' || f.kind === 'thrust' ? 18 : f.kind === 'parry' ? 16 : 14));
   state.items = state.items.filter(i => !i.taken);
   if (state.mode === 'play') { updateCamera(state); updateWaves(state); }
   if (state.mode === 'clear' && ++state.clearT > 220) {
@@ -1533,6 +1630,8 @@ function seatOut(state, slot) {
 // Compact, render-only view of the state (used for rendering and network snapshots).
 const r1 = v => Math.round(v * 10) / 10;
 function snapshot(state) {
+  const b = state.boss;
+  const summonAge = b?.summonT === undefined ? undefined : state.t - b.summonT;
   return {
     t: state.t, sk: r1(state.shake || 0), god: state.god ? 1 : 0, mode: state.mode, si: state.stageIdx, len: state.stage.len, camX: r1(state.camX), lock: state.lockX !== null ? 1 : 0,
     banner: state.banner,
@@ -1540,8 +1639,8 @@ function snapshot(state) {
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0, el: e.elite ? (e.guard > 0 ? 2 : 1) : 0, ax: e.st === 'ranged' ? r1(e.aimX) : undefined, ay: e.st === 'ranged' ? r1(e.aimY) : undefined, sh: e.sh })),
     projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
-    fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small })),
-    boss: state.boss && { bi: state.boss.bi, ph: state.boss.phase, hp: state.boss.hp, mh: state.boss.maxHp, x: r1(state.boss.x), y: r1(state.boss.y), fc: state.boss.face, st: state.boss.st, t: state.boss.t, row: state.boss.row, wl: state.boss.st === 'fire' ? state.boss.warn : null, fl: state.boss.flash, mi: state.boss.missile ? 1 : 0, bo: state.boss.st === 'fire' && state.boss.both ? 1 : 0, w: Math.round(state.boss.w), ar: state.boss.arch || 0 },
+    fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small, bi: f.bi, ph: f.ph })),
+    boss: b && { bi: b.bi, ph: b.phase, hp: b.hp, mh: b.maxHp, x: r1(b.x), y: r1(b.y), fc: b.face, st: b.st, t: b.t, row: b.row, wl: b.st === 'fire' ? b.warn : null, fl: b.flash, mi: b.missile ? 1 : 0, bo: b.st === 'fire' && b.both ? 1 : 0, w: Math.round(b.w), ar: b.arch || 0, su: summonAge < 27 ? summonAge : undefined, az: b.st === 'signature' || b.st === 'special' ? b.extraZones : undefined },
     hz: (state.hazards || []).map(h => ({ id: h.id, y: h.y, x0: Math.round(h.x0), x1: Math.round(h.x1), t: h.t, l: h.life, hf: h.half })),
   };
 }
@@ -1670,7 +1769,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, classShotRange, healTarget, canPickUp, partySlots, Combat, MAX_HP, BOSS_SCALE, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, classShotRange, healTarget, canPickUp, partySlots, Combat, MAX_HP, BOSS_SCALE, BOSS_TRANSFORM_TICKS, bossExtraAttack, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);

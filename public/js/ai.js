@@ -101,6 +101,17 @@ function think(state, p) {
   const laneOff = isBoss && !hasShot ? [-26, 26, -12, 12, 0, -20][p.slot] : [-6, 6, -3, 3, 0, -5][p.slot];
   // Step out of a warned boss lane (CPUs react late, so they still get caught sometimes).
   const bs = state.boss;
+  if (bs?.extraZones && (bs.st === 'signature' || bs.st === 'special') && bs.t > 15) {
+    const attack = S.bossExtraAttack(bs.bi, bs.st);
+    const danger = bs.extraZones.find(([x, y, width, depth, delay]) =>
+      bs.t < attack.warning + delay && Math.abs(p.x - x) < width + 5 && Math.abs(p.y - y) < depth + 3);
+    if (danger && S.rng(state) < 0.75) {
+      const [, y, , depth] = danger;
+      if (y - depth < 4 || (p.y >= y && y + depth < S.DEPTH - 4)) inp.d = 1;
+      else inp.u = 1;
+      return;
+    }
+  }
   if (bs && bs.st === 'fire' && bs.warn && bs.t > 12 && S.rng(state) < 0.7) {
     const inLane = bs.warn.find(ly => Math.abs(ly - p.y) < 12);
     if (inLane !== undefined) { if (p.y > inLane || inLane < 18) inp.d = 1; else inp.u = 1; return; }
