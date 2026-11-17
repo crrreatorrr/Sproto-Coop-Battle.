@@ -12,7 +12,8 @@ const fxImg = k => img('assets/fx/' + k + '.png');
 // Projectile rows: lane/lob, spread, homing, impact. The art faces screen-left.
 const BOSS_CELL = 220, BOSS_FX_CELL = 96, BOSS_FOOT = 206;
 const BOSS_WALK = [0, 1, 2, 1];
-const BOSS_DRAW_SCALE = BS * 256 / BOSS_CELL;
+const BOSS_SPRITE_SIZE = Math.round(BS * 256);
+const BOSS_SPRITE_FOOT = Math.round(BOSS_FOOT * BOSS_SPRITE_SIZE / BOSS_CELL);
 
 // Grip-centered equipment, right-facing shots and centered effects share this grid.
 // See tools/build-combat-sprites.py for the source art.
@@ -289,7 +290,7 @@ function projectile(g, p, sx, sy, shadowSheet) {
 function warnLight(g, x, y, t, k) {
   const im = fxImg('lights'); if (!ready(im)) return;
   const f = (t >> 2) % 4, h = 30 * (k || 1), w = h * 19 / 56;
-  g.save(); g.globalCompositeOperation = 'screen'; g.globalAlpha = Math.floor(t / 4) % 2 ? 1 : 0.55;
+  g.save(); g.globalAlpha = Math.floor(t / 4) % 2 ? 1 : 0.62;
   g.drawImage(im, f * 19, 0, 19, 56, Math.round(x - w / 2), Math.round(y - h), w, h);
   g.restore();
 }
@@ -400,7 +401,7 @@ function drawFx(g, f, camX) {
     g.globalAlpha = Math.max(0, 1 - f.t / 32);
     g.fillStyle = '#ff6a1a'; g.beginPath(); g.arc(sx, sy, r, 0, 7); g.fill();
     g.fillStyle = '#ffd23d'; g.beginPath(); g.arc(sx, sy, r * 0.65, 0, 7); g.fill();
-    g.fillStyle = '#fff'; g.beginPath(); g.arc(sx, sy, r * 0.3 * Math.max(0, 1 - f.t / 12), 0, 7); g.fill();
+    g.fillStyle = '#ffad3d'; g.beginPath(); g.arc(sx, sy, r * 0.3 * Math.max(0, 1 - f.t / 12), 0, 7); g.fill();
     g.globalAlpha = 1;
   } else if (f.k === 'ring') {
     g.strokeStyle = `rgba(255,255,255,${1 - f.t / 20})`; g.lineWidth = 3; g.beginPath(); g.ellipse(sx, sy, 10 + f.t * 4, 4 + f.t * 1.3, 0, 0, 7); g.stroke();
@@ -447,7 +448,7 @@ function drawFx(g, f, camX) {
     warnLight(g, sx + 34, gy + 2, f.t, 0.7);
     g.fillStyle = `rgba(255,40,40,${0.25 + 0.3 * k})`; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.fill();
     g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.stroke();
-    g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
+    g.strokeStyle = '#ffb24f'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
@@ -545,7 +546,7 @@ function floor(g, snap, camX, list) {
     const spikes = sweepSpikes(g, bw, camX, list, lx, lw);
     if (warn || bw.t < S.SWEEP_WARN + 8) {
       const k = bw.t / S.SWEEP_WARN;
-      g.fillStyle = warn ? `rgba(${spikes ? '220,60,255' : '255,150,30'},${(spikes ? 0.16 : 0.3) + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(255,240,200,.7)';
+      g.fillStyle = warn ? `rgba(${spikes ? '220,60,255' : '255,150,30'},${(spikes ? 0.16 : 0.3) + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(239,157,72,.7)';
       g.fillRect(lx, FLOOR_TOP, lw, S.DEPTH);
       g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.strokeRect(lx + 0.5, FLOOR_TOP + 0.5, lw - 1, S.DEPTH - 1);
       if (warn && Math.floor(bw.t / 6) % 2) text(g, 'BEHIND! JUMP!', lx + lw / 2, FLOOR_TOP - 10, 8, '#ffb23d', 'center');
@@ -830,64 +831,72 @@ function transformPulse(t, at, duration) {
   return Math.sin(Math.PI * (t - at) / duration);
 }
 
-function drawTransformDischarge(g, b, sx, sy, width, color) {
-  const release = b.t - 429;
-  const impact = transformPulse(b.t, 67, 48);
-  const joint = b.t < 300 ? 111 : 370;
-  const lock = transformPulse(b.t, joint, 29);
-  g.save();
-  g.strokeStyle = g.fillStyle = color;
-  if (impact || (release >= 0 && release < 42)) {
-    const settle = release >= 0;
-    const age = settle ? release / 42 : (b.t - 67) / 48;
-    const radius = width * (0.2 + 0.54 * ease(age));
-    g.globalAlpha = 0.58 * (settle ? transformPulse(b.t, 429, 42) : impact);
-    g.lineWidth = 3 - 2 * age;
+function drawTransformDischarge(g, b, sx, sy, width, color, keys) {
+  const finish = keys?.at(-1) ?? 442;
+  const release = b.t >= finish;
+  const groundPulse = release ? finish : (keys?.[1] ?? 96) - 20;
+  const glow = transformPulse(b.t, groundPulse, 26);
+  if (glow > 0) {
+    const age = (b.t - groundPulse) / 26;
+    const radius = Math.round(width * (0.2 + 0.55 * ease(age)));
+    g.save();
+    g.strokeStyle = color;
+    g.globalAlpha = glow * 0.48;
+    g.lineWidth = release ? 3 : 2;
     g.beginPath();
-    g.ellipse(sx, sy, radius, radius * 0.22, 0, 0, 2 * Math.PI);
+    g.ellipse(sx, sy, radius, Math.max(1, Math.round(radius * 0.22)), 0, 0, 2 * Math.PI);
     g.stroke();
+    g.restore();
   }
-  if (lock > 0) {
-    const age = (b.t - joint) / 29;
-    const front = b.fc * width * 0.3;
-    g.globalAlpha = lock * 0.83;
-    for (let i = 0; i < 7; i++) {
-      const side = i % 2 ? -1 : 1;
-      const x = sx + front + side * age * (10 + i * 5);
-      const y = sy - (joint < 300 ? 65 : 45) + (i % 3 - 1) * age * (22 + i * 6);
-      g.fillRect(Math.round(x), Math.round(y), i % 3 ? 4 : 6, 2);
-    }
+
+  // Short jets from the changing joint, in the machine's accent color.
+  // The planted actor stays drawn at the same ground origin throughout.
+  if (!keys) return;
+  const joint = keys.findIndex((tick, key) => key >= 2 && key <= 4 && b.t >= tick - 10 && b.t < tick + 14);
+  if (joint < 0) return;
+  const age = (b.t - keys[joint] + 10) / 24;
+  const hinge = root.CoopBossMorphGuides?.[b.bi]?.[joint]?.[1] || [60, 134];
+  const scale = BOSS_SPRITE_SIZE / BOSS_CELL;
+  const x = sx + (hinge[0] - BOSS_CELL / 2) * -b.fc * scale;
+  const y = sy + (hinge[1] - BOSS_FOOT) * scale;
+  g.save();
+  g.fillStyle = color;
+  g.globalAlpha = Math.sin(Math.PI * age) * 0.7;
+  for (let i = 0; i < 4; i++) {
+    g.fillRect(Math.round(x + b.fc * age * (12 + 9 * i)),
+      Math.round(y + (i - 1.5) * age * 18), 5, 2);
   }
   g.restore();
 }
 
+function drawBossCel(g, b, sx, sy, sprite, row, col) {
+  const C = BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  g.save();
+  g.imageSmoothingEnabled = false;
+  if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
+  g.translate(Math.round(sx), Math.round(sy));
+  if (b.fc > 0) g.scale(-1, 1);
+  if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
+  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -BOSS_SPRITE_FOOT, size, size);
+  g.restore();
+}
+
 function drawBossTransform(g, b, sx, sy) {
-  const C = BOSS_CELL, phases = M.bosses[b.bi].phases;
+  const phases = M.bosses[b.bi].phases;
   const morph = root.CoopBossMorph;
   const frame = morph?.pose(b.t);
-  const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 243 ? 0 : 1, 0, 0];
+  const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 258 ? 0 : 1, 0, 0];
   const sheet = img(phases[phase].sheet);
   if (!ready(sheet)) return;
   const folded = morph?.generate(b.bi, frame, phases.map(p => img(p.sheet)));
-  const p = ease(S.clamp(b.t / 429, 0, 1));
+  const first = morph?.keyTicks[0] ?? 28, last = morph?.keyTicks.at(-1) ?? 442;
+  const p = ease(S.clamp((b.t - first) / (last - first), 0, 1));
   const width = (phases[0].body[2] - phases[0].body[0]) * (1 - p) +
     (phases[1].body[2] - phases[1].body[0]) * p;
   const color = S.bossExtraAttack(b.bi, 'special').color;
-  const brace = transformPulse(b.t, 7, 123);
-  const deploy = transformPulse(b.t, 235, 186);
-  const settle = transformPulse(b.t, 429, 39);
   shadow(g, sx, sy, width * BS * 0.45);
-  drawTransformDischarge(g, b, sx, sy, width, color);
-
-  g.save();
-  g.translate(Math.round(sx + b.fc * (deploy * 4 - brace * 3)), Math.round(sy));
-  const scale = BOSS_DRAW_SCALE;
-  g.scale(scale * (b.fc > 0 ? -1 : 1) * (1 + brace * 0.026),
-    scale * (1 - brace * 0.05 + deploy * 0.022 - settle * 0.026));
-  if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  g.drawImage(folded || sheet, folded ? 0 : col * C, folded ? 0 : row * C,
-    C, C, -C / 2, -BOSS_FOOT, C, C);
-  g.restore();
+  drawTransformDischarge(g, b, sx, sy, width, color, morph?.keyTicks);
+  drawBossCel(g, b, sx, sy, folded || sheet, folded ? 0 : row, folded ? 0 : col);
 }
 
 function drawBoss(g, b, camX) {
@@ -895,17 +904,10 @@ function drawBoss(g, b, camX) {
   if (b.st === 'transform') return drawBossTransform(g, b, sx, sy);
   const [phase, row, col] = bossPose(b, sx);
   const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
-  const C = BOSS_CELL, scale = BOSS_DRAW_SCALE;
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
   if (!ready(sheet)) return;
-  g.save();
-  if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
-  g.translate(Math.round(sx + shake), Math.round(sy + (b.st === 'dead' ? b.t * 0.15 : 0)));
-  g.scale(b.fc > 0 ? -scale : scale, scale);
-  if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  g.drawImage(sheet, col * C, row * C, C, C, -C / 2, -BOSS_FOOT, C, C);
-  g.restore();
+  drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
   windup(g, b, sx, sy, ph);
   if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
@@ -920,6 +922,7 @@ function drawBossFx(g, ph, row, col, x, y, size, flip) {
   if (!ready(sheet)) return false;
   g.save();
   g.translate(Math.round(x), Math.round(y));
+  g.imageSmoothingEnabled = false;
   if (flip) g.scale(-1, 1);
   g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
   g.restore();
@@ -989,7 +992,7 @@ function drawWorld(g, snap, opts) {
   drawBackground(g, snap.si, camX);
   if (snap.boss?.st === 'transform') {
     const t = snap.boss.t;
-    const focus = ease(S.clamp(t / 78, 0, 1)) * ease(S.clamp((470 - t) / 52, 0, 1));
+    const focus = ease(S.clamp((t - 14) / 64, 0, 1)) * ease(S.clamp((470 - t) / 62, 0, 1));
     g.fillStyle = `rgba(10,7,25,${0.38 * focus})`;
     g.fillRect(0, 0, W, H);
   }

@@ -1,11 +1,13 @@
 // Render a complete, nearest-neighbor cel from one pose and its displacement field.
 (function (root) {
 'use strict';
-const CELL = 220, GRID = 12, FRAME_TICKS = 3;
-const KEYS = [0, 78, 159, 243, 336, 429];
+const CELL = 220, GRID = 12, FRAME_TICKS = 2;
+const KEYS = [28, 96, 174, 258, 342, 442];
 const POSES = [[0, 0, 0], [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [1, 0, 0]];
 const FIELD_SIZE = GRID * GRID * 2;
-const EASE = x => x * x * (3 - 2 * x);
+const clamp = x => Math.max(0, Math.min(1, x));
+const TOOL_TIMING = [0.42, 0.46, 0.32, 0.50, -0.24];
+const STANCE_TIMING = [-0.30, -0.34, 0.17, 0.38, -0.20];
 const indices = new Uint8Array(CELL), ratios = new Float32Array(CELL);
 for (let x = 0; x < CELL; x++) {
   const point = x * (GRID - 1) / (CELL - 1);
@@ -15,12 +17,16 @@ for (let x = 0; x < CELL; x++) {
 
 function pose(t) {
   const tick = Math.max(0, Math.floor(t / FRAME_TICKS) * FRAME_TICKS);
+  if (tick <= KEYS[0]) return { key: 0, progress: 0 };
   const end = KEYS.findIndex(key => tick < key);
   if (end < 0) return { key: KEYS.length - 1, progress: 0 };
   const gap = end - 1;
-  const p = EASE((tick - KEYS[gap]) / (KEYS[end] - KEYS[gap]));
-  const direction = p < 0.5 ? 0 : 1;
-  return { tick, gap, key: gap + direction, progress: p };
+  let p = (tick - KEYS[gap]) / (KEYS[end] - KEYS[gap]);
+  // Interior keys carry momentum into the next beat. Ease only from and to
+  // the resting poses so the transformation plays as a single movement.
+  if (gap === 0) p *= p * (2 - p);
+  if (end === KEYS.length - 1) p += p * p * (1 - p);
+  return { tick, gap, key: gap + Number(p >= 0.5), progress: p };
 }
 
 function context(read) {
@@ -75,10 +81,10 @@ function readCell(key, sheet) {
   return cells.get(key);
 }
 
-function sampleIndex(x, y, direction) {
+function sampleIndex(x, y, direction, strength) {
   const k = indices[x], u = ratios[x], dx = rowX[direction], dy = rowY[direction];
-  const sx = Math.round(x - (dx[k] + (dx[k + 1] - dx[k]) * u));
-  const sy = Math.round(y - (dy[k] + (dy[k + 1] - dy[k]) * u));
+  const sx = Math.round(x - strength * (dx[k] + (dx[k + 1] - dx[k]) * u));
+  const sy = Math.round(y - strength * (dy[k] + (dy[k + 1] - dy[k]) * u));
   return sx >= 0 && sx < CELL && sy >= 0 && sy < CELL ? sy * CELL + sx : -1;
 }
 
@@ -104,28 +110,47 @@ function generate(index, frame, sheets) {
   if (lastTick === frame.tick) return output.canvas;
 
   const a = readCell(at, fromSheet), b = readCell(at + 1, toSheet);
+  const fieldAnchors = root.CoopBossMorphGuides?.[index];
+  const [[ax, ay], [hx, hy]] = fieldAnchors?.[at] || [[112, 118], [60, 134]];
+  const [[bx, by], [jx, jy]] = fieldAnchors?.[at + 1] || [[ax, ay], [hx, hy]];
   const p = frame.progress, q = 1 - p;
+  const hingeX = hx * q + jx * p, hingeY = hy * q + jy * p;
+  const pilotX = ax * q + bx * p, pilotY = ay * q + by * p;
+  const stance = p * q * STANCE_TIMING[at], tool = p * q * TOOL_TIMING[at];
   const stride = GRID * 2;
+  const toolDirection = 2 * clamp((hingeX - pilotX) / 48 + 0.5) - 1;
+  const toolReach = Math.max(26, Math.abs(hingeX - pilotX) + 16);
   for (let y = 0; y < CELL; y++) {
+    const footProgress = stance * clamp((y - pilotY - 18) / 54);
+    const toolProgress = tool * (1 - clamp(Math.abs(y - hingeY) / 65));
+    const plateHeight = 0.26 * (clamp((y - pilotY + 48) / 114) - 0.5);
     for (let direction = 0; direction < 2; direction++) {
       const row = offset + direction * FIELD_SIZE + indices[y] * stride;
-      const v = ratios[y], shift = direction ? q : p;
+      const v = ratios[y];
       for (let k = 0; k < GRID; k++) {
         const i = row + k * 2;
-        rowX[direction][k] = shift * (field[i] + (field[i + stride] - field[i]) * v);
-        rowY[direction][k] = shift * (field[i + 1] + (field[i + stride + 1] - field[i + 1]) * v);
+        rowX[direction][k] = field[i] + (field[i + stride] - field[i]) * v;
+        rowY[direction][k] = field[i + 1] + (field[i + stride + 1] - field[i + 1]) * v;
       }
     }
     for (let x = 0; x < CELL; x++) {
-      const ai = sampleIndex(x, y, 0), bi = sampleIndex(x, y, 1);
+      // The forward mechanism and planted base move on separate beats.
+      // Their timing tapers into the cockpit instead of moving every part
+      // at the same rate or switching the entire painted image together.
+      const forward = clamp(((x - pilotX) * toolDirection + 12) / toolReach);
+      const time = clamp(p + footProgress + toolProgress * forward);
+      const inverse = 1 - time;
+      const ai = sampleIndex(x, y, 0, time), bi = sampleIndex(x, y, 1, inverse);
       const da = a.contour[ai] ?? outside, db = b.contour[bi] ?? outside;
       // A single opaque contour opens and retracts along its edges. Blending
       // two translucent silhouettes here would leave both weapon racks visible.
       let color = 0;
-      if (da * q + db * p > 0) {
-        // Keep the dominant cel's painted detail sharp. The other cel colors
-        // only the patches exposed by the moving silhouette.
-        color = da > 0 && (p < 0.5 || db < 0) ? a.rgba[ai] : b.rgba[bi];
+      if (da * inverse + db * time > 0) {
+        // Refinish each region as it seats. Use actual cel colors so the
+        // change of armor never averages two misaligned textures together.
+        const plateDepth = 0.72 * (0.5 - clamp(Math.abs(x - pilotX) / 76));
+        const finish = time + p * q * (plateHeight + plateDepth);
+        color = da > 0 && (finish < 0.5 || db < 0) ? a.rgba[ai] : b.rgba[bi];
       }
       pixels[y * CELL + x] = color;
     }
@@ -135,5 +160,5 @@ function generate(index, frame, sheets) {
   return output.canvas;
 }
 
-root.CoopBossMorph = { pose, generate, poses: POSES };
+root.CoopBossMorph = { pose, generate, poses: POSES, keyTicks: KEYS };
 })(globalThis);

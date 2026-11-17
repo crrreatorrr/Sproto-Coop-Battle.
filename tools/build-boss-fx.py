@@ -51,10 +51,31 @@ def fit(im, w, h):
     return cell
 
 
+def color_highlights(im, name):
+    amber = (255, 163, 68)
+    violet = (178, 85, 242)
+    colors = {
+        'lights.png': (amber,),
+        'flame.png': (amber,),
+        'spikes.png': ((167, 92, 223),),
+        'burst.png': (amber, violet),
+    }[name]
+    pixels = []
+    for i, (r, g, b, a) in enumerate(im.getdata()):
+        low, high = min(r, g, b), max(r, g, b)
+        if a and low >= 164 and high - low <= 49:
+            row = i // im.width * len(colors) // im.height
+            light = 0.52 + high / 536
+            r, g, b = (int(channel * light) for channel in colors[row])
+        pixels.append((r, g, b, a))
+    im.putdata(pixels)
+
+
 def save(im, name, colors=96):
     # Hard alpha edges suit pixel art and keep the palette small.
     a = im.getchannel('A').point(lambda v: 0 if v < 40 else 255)
     im.putalpha(a)
+    color_highlights(im, name)
     q = im.quantize(colors=colors, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, name)
