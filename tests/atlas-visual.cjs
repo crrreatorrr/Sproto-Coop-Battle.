@@ -228,7 +228,7 @@ async function paintBoss(page) {
 
 async function verifyBossPlayback(page) {
   return page.evaluate(async () => {
-    const ACTOR = 176, FX = 96;
+    const ACTOR = 220, FX = 96;
     const summoners = new Set(['crapto', 'bigswole', 'sproto1668']);
     const plan = AssetLoader.groups(MANIFEST), loader = AssetLoader.shared();
     const canvas = document.createElement('canvas');
@@ -256,7 +256,7 @@ async function verifyBossPlayback(page) {
     };
     const checkDraw = (snap, wanted, label) => {
       const actual = draw(snap);
-      const keys = records => records.map(call => JSON.stringify(call)).sort().join('\n');
+      const keys = records => records.map(({ asset, source, facing }) => JSON.stringify([asset, source, facing])).sort().join('\n');
       check(keys(actual) === keys(wanted), label + ' drew ' + JSON.stringify(actual) +
         ' expected ' + JSON.stringify(wanted));
     };
@@ -273,19 +273,23 @@ async function verifyBossPlayback(page) {
         const frames = new Set();
         for (let col = 0; col < 4; col++) {
           const rgba = pixels.getImageData(col * cell, row * cell, cell, cell).data;
-          let ink = 0, hash = 2166136261;
+          let ink = 0, white = 0, hash = 2166136261;
           for (let i = 0; i < rgba.length; i++) {
-            if (i % 4 === 3 && rgba[i] > 0) ink++;
+            if (i % 4 === 3 && rgba[i] > 0) {
+              ink++;
+              if (Math.min(rgba[i - 3], rgba[i - 2], rgba[i - 1]) >= 215) white++;
+            }
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
           check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
+          check(white === 0, asset + ' has near-white pixels in cell ' + row + '/' + col);
           if (cell === FX && col === 0) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row);
             projectileArt.add(hash);
           }
           frames.add(hash);
         }
-        const distinct = cell === ACTOR && asset.endsWith('-p2.png') && row === rows - 1 ? 4 : 3;
+        const distinct = cell === ACTOR && asset.endsWith('-p2.webp') && row === rows - 1 ? 4 : 3;
         check(frames.size >= distinct, asset + ' has too few distinct frames in row ' + row);
       }
     };
@@ -460,7 +464,7 @@ async function verifyBossPlayback(page) {
         }
         if (ph === 0) {
           // Cross the health threshold through ordinary projectile damage.
-          // Sample exact boundaries on the five-second transformation.
+          // Sample the key poses, intermediate strips and the eight-second handoff.
           s.enemies = [];
           s.fx = [];
           s.projs = [];
@@ -480,25 +484,39 @@ async function verifyBossPlayback(page) {
           Sim.step(s);
           player.in.p = 0;
           const secondSheet = boss.phases[1].sheet;
-          const timeline = [
-            [0, sheet, 0, 0], [49, sheet, 0, 0],
-            [50, sheet, 6, 0], [99, sheet, 6, 0],
-            [100, sheet, 6, 1], [149, sheet, 6, 1],
-            [150, sheet, 6, 2], [199, sheet, 6, 2],
-            [200, sheet, 6, 3], [249, sheet, 6, 3],
-            [250, secondSheet, 0, 0], [299, secondSheet, 0, 0],
-            [300, secondSheet, 0, 0],
+          check(Sim.BOSS_TRANSFORM_TICKS === 480, 'transformation must run for eight seconds at 60 Hz');
+          const stops = [
+            [0, sheet, 0, 0], [86, sheet, 6, 0], [173, sheet, 6, 1],
+            [259, sheet, 6, 2], [346, sheet, 6, 3], [432, secondSheet, 0, 0],
+            [479, secondSheet, 0, 0], [480, secondSheet, 0, 0],
           ];
           let previous = 0;
-          for (const [tick, sprite, row, col] of timeline) {
+          for (const [tick, sprite, row, col] of stops) {
             for (let t = previous; t < tick; t++) Sim.step(s);
-            const snap = renderSnapshot(s), transforming = tick < 300;
+            const snap = renderSnapshot(s), transforming = tick < Sim.BOSS_TRANSFORM_TICKS;
             check(snap.boss.ph === 1 && snap.boss.st === (transforming ? 'transform' : 'idle') &&
               snap.boss.t === (transforming ? tick : 0), label + ' unexpected state at transformation tick ' + tick);
-            const transition = expected(sprite, ACTOR, row, col, 1);
-            checkDraw(snap, snap.boss.fl > 0 && Render.canFilter() ? [transition, transition] : [transition],
-              label + ' transformation at tick ' + tick);
+            checkDraw(snap, [expected(sprite, ACTOR, row, col, 1)], label + ' transformation at tick ' + tick);
             previous = tick;
+          }
+          const final = renderSnapshot(s);
+          for (let i = 0; i < 5; i++) {
+            const [start, from, fromRow, fromCol] = stops[i];
+            const [end, to, toRow, toCol] = stops[i + 1];
+            const at = Math.round((start + end) / 2);
+            const morph = { ...final, boss: { ...final.boss, st: 'transform', t: at, fc: 1 } };
+            const slices = draw(morph);
+            check(slices.length === 2, label + ' must blend both transformation keys at tick ' + at);
+            const cut = slices[0].source[3];
+            check(cut > ACTOR * 0.45 && cut < ACTOR * 0.55, label + ' expected moving strips near their midpoint');
+            checkDraw(morph, [
+              { asset: from, facing: -1, source: [fromCol * ACTOR, fromRow * ACTOR, ACTOR, cut] },
+              { asset: to, facing: -1, source: [toCol * ACTOR, toRow * ACTOR + cut, ACTOR, ACTOR - cut] },
+            ], label + ' intermediate transformation at tick ' + at);
+            const newer = { ...morph, boss: { ...morph.boss, t: at + 6 } };
+            const blend = Render.interpolateSnapshot(morph, newer, 0.25);
+            check(blend.boss.t === at + 1.5 && !('z' in blend.boss) && newer.boss.t === at + 6,
+              label + ' lost sub-tick progress between online snapshots');
           }
           transitions++;
           s.items = [];

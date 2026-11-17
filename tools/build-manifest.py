@@ -29,7 +29,7 @@ for key, stage, m1, m2, color in BOSSES:
         raise ValueError(f'{key} must have geometry for two phases')
     for p, geometry in zip(('p1', 'p2'), boss_geometry[key]):
         phases.append({
-            'sheet': f'assets/bosses/{key}-{p}.png',
+            'sheet': f'assets/bosses/{key}-{p}.webp',
             'proj': f'assets/bosses/{key}-{p}-projectiles.png',
             **geometry,
         })
