@@ -51,6 +51,11 @@ function bossPaths(manifest, i) {
   return out;
 }
 
+function transformPaths(manifest, i) {
+  const clip = root.CoopBossTransformations?.clips?.[manifest.bosses[i].key];
+  return clip ? clip.pages.map(page => page.src) : [];
+}
+
 function stagePaths(manifest, i) {
   const paths = scenery(i).concat(bossPaths(manifest, i));
   const shadow = manifest.shadows?.sheets[i];
@@ -80,10 +85,11 @@ function groups(manifest) {
   const motion = manifest.fighters.map(motionPath).filter(Boolean);
   const shadows = manifest.shadows?.sheets || [];
   const stages = [];
-  const bosses = [];
+  const bosses = [], transformations = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
     stages.push.apply(stages, scenery(i));
     bosses.push.apply(bosses, bossPaths(manifest, i));
+    transformations.push.apply(transformations, transformPaths(manifest, i));
   }
   // The title shows the original first four. All other bodies load when selected.
   const startup = atlas.slice(0, 4).concat(scenery(0), scenery(4));
@@ -98,7 +104,8 @@ function groups(manifest) {
     fx: FX.slice(),
     stages: stages,
     bosses: bosses,
-    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, shadows, UFO, FX)),
+    transformations: transformations,
+    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, shadows, UFO, FX)),
     scenery: scenery,
     boss: function (i) { return bossPaths(manifest, i); },
   };
@@ -133,12 +140,13 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
-  const firstStageBytes = titleBytes + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
+  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const firstTransform = transformPaths(manifest, 0).slice(0, 1);
+  const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
     titleBytes: titleBytes,
     firstStageBytes: firstStageBytes,
-    criticalRequests: 1 + scriptPaths.length + g.startup.length + g.firstBoss.length,
+    criticalRequests: 1 + scriptPaths.length + g.startup.length + g.firstBoss.length + firstTransform.length,
     startupImages: g.startup.length,
     firstBossImages: g.firstBoss.length,
     ufoImages: g.ufo.length,
@@ -170,6 +178,7 @@ function lru(cap) {
 }
 
 function groupOf(src) {
+  if (src.indexOf('/bosses/transformations/') >= 0) return 'transform';
   if (src.indexOf('/fighters/') >= 0) return 'fighter';
   if (src.indexOf('/bosses/') >= 0) return 'boss';
   if (src.indexOf('/stages/') >= 0) return 'stage';
@@ -195,7 +204,8 @@ function create(opts) {
   let peakLoad = 0;
   let peakDecode = 0;
   let clock = 0;
-  let stagePins = new Set();
+  let stagePins = new Set(), transformPins = new Set();
+  let stageIndex = -1, stageManifest;
   const timings = [];
 
   function newImage() {
@@ -255,11 +265,7 @@ function create(opts) {
     if (decodeSlots > peakDecode) peakDecode = decodeSlots;
     const token = rec.token;
     const finish = function () {
-      if (rec.token !== token || rec.state !== 'decoding') {
-        decodeSlots = Math.max(0, decodeSlots - 1);
-        pump();
-        return;
-      }
+      if (rec.token !== token || rec.state !== 'decoding') return;
       rec.state = 'ready';
       rec.decoded = rec.img.naturalWidth * rec.img.naturalHeight * 4;
       rec.ms = now() - rec.t0;
@@ -270,11 +276,7 @@ function create(opts) {
       pump();
     };
     const bad = function () {
-      if (rec.token !== token || rec.state !== 'decoding') {
-        decodeSlots = Math.max(0, decodeSlots - 1);
-        pump();
-        return;
-      }
+      if (rec.token !== token || rec.state !== 'decoding') return;
       decodeSlots = Math.max(0, decodeSlots - 1);
       retry(rec);
       pump();
@@ -389,6 +391,10 @@ function create(opts) {
   }
 
   function evict() {
+    records.forEach(function (rec) {
+      if ((rec.group === 'transform' && !transformPins.has(rec.src)) ||
+          (transformPins.size && rec.group === 'boss' && rec.pin === 'stage' && !stagePins.has(rec.src))) drop(rec);
+    });
     const extra = { boss: 0, shadow: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
     Object.keys(extra).forEach(function (group) {
       const loose = [];
@@ -407,17 +413,36 @@ function create(opts) {
 
   function enterStage(index, manifest) {
     if (index < 0 || index >= manifest.bosses.length) return;
+    if (stageIndex !== index) transformPins = new Set();
+    stageIndex = index;
+    stageManifest = manifest;
     const current = stagePaths(manifest, index);
-    const next = index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
+    const next = !transformPins.size && index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});
     evict();
   }
 
+  function setTransformPages(paths) {
+    if (paths.length > 2 || paths.some(src => groupOf(src) !== 'transform')) {
+      throw new Error('Expected at most two authored transformation pages');
+    }
+    if (paths.length === transformPins.size && paths.every(src => transformPins.has(src))) return;
+    transformPins = new Set(paths);
+    if (stageIndex >= 0) enterStage(stageIndex, stageManifest);
+    for (let i = 0; i < paths.length; i++) request(paths[i], { prefetch: i > 0 }).promise.catch(function () {});
+    evict();
+  }
+
+  function loaded(src) {
+    const rec = records.get(src);
+    return rec?.state === 'ready' ? rec.img : null;
+  }
+
   function status() {
-    const resident = { boss: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
-    const decoded = { boss: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const resident = { boss: 0, transform: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const decoded = { boss: 0, transform: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
     const errors = [];
     let pending = 0;
     let ready = 0;
@@ -436,7 +461,8 @@ function create(opts) {
     return { loadSlots: loadSlots, decodeSlots: decodeSlots, peakLoad: peakLoad, peakDecode: peakDecode, queued: queue.length, records: records.size };
   }
 
-  return { request: request, image: image, preload: preload, prefetch: prefetch, enterStage: enterStage, status: status, debug: debug };
+  return { request: request, image: image, loaded: loaded, preload: preload, prefetch: prefetch,
+    enterStage: enterStage, setTransformPages: setTransformPages, status: status, debug: debug };
 }
 
 let singleton = null;

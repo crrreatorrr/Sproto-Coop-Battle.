@@ -33,6 +33,7 @@ function loadFx() {
   if (fxRequested || !root.document) return;
   fxRequested = true;
   const scripts = [
+    ['CoopBossTransformPlayer', 'boss-transform-player.js'],
     ['CoopBossMorphField', 'boss-morph-field.js'],
     ['CoopBossMorph', 'boss-morph.js'],
     ['RenderFx', 'render-fx.js'],

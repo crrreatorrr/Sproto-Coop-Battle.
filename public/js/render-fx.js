@@ -882,7 +882,16 @@ function drawBossCel(g, b, sx, sy, sprite, row, col) {
 }
 
 function drawBossTransform(g, b, sx, sy) {
-  const phases = M.bosses[b.bi].phases;
+  const boss = M.bosses[b.bi], phases = boss.phases;
+  const authored = root.CoopBossTransformPlayer?.shared();
+  if (authored?.clipFor(boss.key)) {
+    shadow(g, sx, sy, (phases[1].body[2] - phases[1].body[0]) * BS * 0.45);
+    if (!authored.draw(g, boss.key, b.t, sx, sy, b.fc, BOSS_SPRITE_SIZE)) {
+      const sheet = img(phases[0].sheet);
+      if (ready(sheet)) drawBossCel(g, b, sx, sy, sheet, 0, 0);
+    }
+    return;
+  }
   const morph = root.CoopBossMorph;
   const frame = morph?.pose(b.t);
   const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 258 ? 0 : 1, 0, 0];
@@ -982,6 +991,7 @@ function drawBanner(g, snap) {
 // opts.local: slots played on this device (they get a marker). opts.noBanner: the caller draws
 // its own end-of-run panel instead of the banner.
 function drawWorld(g, snap, opts) {
+  root.CoopBossTransformPlayer?.shared().sync(snap);
   const mine = (opts && opts.local) || [];
   const camX = snap.camX;
   const sk = snap.sk || 0;

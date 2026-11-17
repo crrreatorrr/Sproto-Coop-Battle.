@@ -88,6 +88,8 @@ export function loadManifest() {
 
 export function loadAssetLoader() {
   const sandbox = { window: {}, URL, performance };
+  sandbox.globalThis = sandbox.window;
+  vm.runInNewContext(fs.readFileSync(path.join(pub, 'js', 'boss-transformations.js'), 'utf8'), sandbox, { filename: 'boss-transformations.js' });
   vm.runInNewContext(fs.readFileSync(path.join(pub, 'js', 'asset-loader.js'), 'utf8'), sandbox, { filename: 'asset-loader.js' });
   if (!sandbox.window.AssetLoader) throw new Error('asset-loader.js did not set AssetLoader');
   return sandbox.window.AssetLoader;
