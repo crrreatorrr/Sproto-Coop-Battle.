@@ -67,6 +67,31 @@ class Packing(unittest.TestCase):
         with Image.open(new_page) as image:
             self.assertEqual(image.size, (880, 2200))
 
+    def test_portable_source_atlas_rects_preserve_pages_and_combat_registry(self):
+        first = self.run_pack()
+        atlas = Image.new('RGBA', (440, 220))
+        for column, name in enumerate(('first', 'last')):
+            with Image.open(self.root / (name + '.png')) as image:
+                atlas.paste(image.convert('RGBA'), (column * 220, 0))
+        atlas.save(self.root / 'source.webp', lossless=True, exact=True)
+        a = {'file': 'source.webp', 'rect': [0, 0, 220, 220], 'ticks': 3}
+        b = {'file': 'source.webp', 'rect': [220, 0, 220, 220], 'ticks': 3}
+        self.spec['frames'] = [a] * 159 + [b]
+        self.spec['endpoints'] = [a, b]
+        animations = {'version': 1, 'bosses': {'other': {'unchanged': True}}}
+        self.registry.write_text('globalThis.CoopBossTransformations = ' + json.dumps(
+            {'version': 1, 'clips': {}, 'animations': animations}) + ';\n')
+        second = self.run_pack()
+        self.assertEqual(first['pages'], second['pages'], 'identical RGBA yields identical public pages')
+        self.assertIn('"animations":', self.registry.read_text())
+        stored = json.loads(self.registry.read_text().split(' = ', 1)[1].strip().removesuffix(';'))
+        self.assertEqual(stored['animations'], animations)
+        proof = json.loads((self.root / '01-marina-bront-packed.json').read_text())
+        self.assertEqual(proof['sources'][-1]['rect'], b['rect'])
+        self.spec['frames'][3] = {'file': 'source.webp', 'rect': [430, 0, 220, 220], 'ticks': 3}
+        with self.assertRaisesRegex(ValueError, 'outside'):
+            self.run_pack()
+
     def test_rejection_has_no_output_or_registration(self):
         original = self.registry.read_bytes()
         cases = [('duration', lambda: self.spec.update(frames=[{'file': 'first.png', 'ticks': 479}])),

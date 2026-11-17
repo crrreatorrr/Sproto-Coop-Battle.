@@ -7,6 +7,53 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '../public');
 
+async function checkPartialActionDependencies(browser, base) {
+  for (const missing of ['sprite-timeline','sprite-clip-player','boss-action-selection']) {
+    const page = await browser.newPage();
+    const errors = [];
+    let attempts = 0;
+    page.on('pageerror', error => errors.push(error.message));
+    await page.route(`**/js/${missing}.js`, route => ++attempts === 1 ? route.abort() : route.continue());
+    await page.goto(base);
+    await page.waitForFunction(() => window.SprotoApp?.screen === 'title');
+    await page.evaluate(() => {
+      const canvas=document.createElement('canvas');canvas.width=640;canvas.height=360;
+      const g=canvas.getContext('2d'), raw=g.drawImage.bind(g);
+      window.actionDependencyCheck={framesBeforeReady:0,fallbackDraws:0,running:true};
+      g.drawImage=(image,...args)=>{
+        if (image.src?.includes('01-marina-bront-p1.webp') && !window.CoopBossActionPlayer?.shared()) {
+          actionDependencyCheck.fallbackDraws++;
+        }
+        return raw(image,...args);
+      };
+      const snap={camX:0,sk:0,si:0,t:0,items:[],players:[],enemies:[],fx:[],banner:null,projs:[],
+        boss:{bi:0,ph:0,x:420,y:36,t:0,st:'idle',fc:-1,fl:0,mi:0,row:0,hp:1800,mh:2600}};
+      function frame() {
+        if (!actionDependencyCheck.running) return;
+        if (!window.CoopBossActionPlayer?.shared()) actionDependencyCheck.framesBeforeReady++;
+        try { Render.drawWorld(g,snap,{noBanner:true}); }
+        catch(error) { CrashGuard.guard.report(error,'frame'); }
+        snap.t++;snap.boss.t++;
+        requestAnimationFrame(frame);
+      }
+      Render.enterStage(0);
+      requestAnimationFrame(frame);
+    });
+    await page.waitForFunction(()=>window.CoopBossActionPlayer?.shared(),null,{timeout:10000});
+    const result=await page.evaluate(()=>{
+      actionDependencyCheck.running=false;
+      return {...actionDependencyCheck,paused:CrashGuard.guard.paused,guardErrors:CrashGuard.guard.errors};
+    });
+    assert.ok(attempts>=2,missing+' was retried');
+    assert.ok(result.framesBeforeReady>=3,missing+' exercised incomplete dependencies over multiple frames');
+    assert.ok(result.fallbackDraws>0,missing+' rendered its actor fallback while dependency was unavailable');
+    assert.equal(result.paused,false,missing+' did not pause gameplay');
+    assert.equal(result.guardErrors,0,missing+' raised no guarded render error');
+    assert.deepEqual(errors,[]);
+    await page.close();
+  }
+}
+
 async function main() {
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -21,6 +68,7 @@ async function main() {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true });
   try {
+    await checkPartialActionDependencies(browser,`http://127.0.0.1:${server.address().port}/`);
     const page = await browser.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -56,6 +104,28 @@ async function main() {
       CoopBossTransformPlayer.shared().sync(testBossSnapshot);
     });
     await page.waitForFunction(() => AssetLoader.shared().loaded('assets/bosses/transformations/browser-1.png'));
+    await page.waitForFunction(() => AssetLoader.shared().loaded(MANIFEST.bosses[0].phases[0].sheet));
+    const missingPlayer = await page.evaluate(() => {
+      const player=window.CoopBossTransformPlayer;
+      const oldPose=CoopBossMorph.pose, oldGenerate=CoopBossMorph.generate;
+      delete window.CoopBossTransformPlayer;
+      CoopBossMorph.pose=CoopBossMorph.generate=()=>{throw Error('registered transformation used legacy motion while its module was unavailable');};
+      const canvas=document.createElement('canvas');canvas.width=640;canvas.height=360;
+      const g=canvas.getContext('2d'),raw=g.drawImage.bind(g),draws=[];
+      g.drawImage=(image,...args)=>{if(image.src?.includes('/bosses/'))draws.push(image.src);return raw(image,...args);};
+      try {
+        for(const tick of [0,300,479]) {
+          Render.drawWorld(g,{...testBossSnapshot,boss:{...testBossSnapshot.boss,t:tick}},{noBanner:true});
+        }
+      } finally {
+        window.CoopBossTransformPlayer=player;
+        CoopBossMorph.pose=oldPose;CoopBossMorph.generate=oldGenerate;
+      }
+      return draws;
+    });
+    assert.equal(missingPlayer.length,3);
+    assert.ok(missingPlayer.every(src=>src.includes('01-marina-bront-p1.webp')),
+      'registered clips retain P1 standing art until their player module is available');
     const result = await page.evaluate(() => {
       const canvas = document.createElement('canvas'); canvas.width = 640; canvas.height = 360;
       const g = canvas.getContext('2d'), raw = g.drawImage.bind(g), draws = [];

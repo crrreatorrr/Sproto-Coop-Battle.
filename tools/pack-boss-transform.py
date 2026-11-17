@@ -22,9 +22,13 @@ from PIL import Image, ImageChops
 DURATION = 480
 
 
-def rgba(path, cell, rect=None):
-    with Image.open(path) as original:
-        frame = original.convert('RGBA')
+def rgba(path, cell, rect=None, cache=None):
+    frame = cache.get(path) if cache is not None else None
+    if frame is None:
+        with Image.open(path) as original:
+            frame = original.convert('RGBA')
+        if cache is not None:
+            cache[path] = frame
     if rect is not None:
         if len(rect) != 4 or any(not isinstance(v, int) for v in rect):
             raise ValueError('Endpoint rect must contain four integers')
@@ -64,21 +68,25 @@ def install(spec_path, output, registry=None, provenance_path=None):
         raise ValueError('Transformation durations must total exactly 480 ticks')
     frames = []
     sources = []
+    source_images, source_hashes = {}, {}
     for entry in entries:
         path = (source_root / entry['file']).resolve()
-        image = rgba(path, cell)
+        image = rgba(path, cell, entry.get('rect'), source_images)
         bounds = image.getchannel('A').getbbox()
         if bounds is None or bounds == (0, 0, *cell):
             raise ValueError(f'{path}: empty or edge-to-edge frame')
         if bounds[0] <= 0 or bounds[1] <= 0 or bounds[2] >= cell[0] or bounds[3] >= cell[1]:
             raise ValueError(f'{path}: frame touches the cell boundary')
         frames.append(image)
-        sources.append({'file': str(path), 'sha256': digest(path), 'ticks': entry['ticks']})
+        if path not in source_hashes:
+            source_hashes[path] = digest(path)
+        sources.append({'file': entry['file'], 'sha256': source_hashes[path],
+                        'rect': entry.get('rect'), 'ticks': entry['ticks']})
     endpoints = spec['endpoints']
     if len(endpoints) != 2:
         raise ValueError('Both accepted standing endpoint sources are required')
     for entry, frame in zip(endpoints, (frames[0], frames[-1])):
-        expected = rgba(source_root / entry['file'], cell, entry.get('rect'))
+        expected = rgba((source_root / entry['file']).resolve(), cell, entry.get('rect'), source_images)
         if ImageChops.difference(frame, expected).getbbox(alpha_only=False) is not None:
             raise ValueError('Transformation endpoint differs from its accepted standing sprite')
 

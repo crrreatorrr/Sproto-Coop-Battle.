@@ -56,6 +56,12 @@ function transformPaths(manifest, i) {
   return clip ? clip.pages.map(page => page.src) : [];
 }
 
+function actionPaths(manifest, i) {
+  const phases = root.CoopBossTransformations?.animations?.bosses?.[manifest.bosses[i].key]?.phases || [];
+  return unique(phases.flatMap(phase => Object.values(phase.actions || {})
+    .flatMap(clip => clip.pages.map(page => page.src))));
+}
+
 function stagePaths(manifest, i) {
   const paths = scenery(i).concat(bossPaths(manifest, i));
   const shadow = manifest.shadows?.sheets[i];
@@ -85,11 +91,12 @@ function groups(manifest) {
   const motion = manifest.fighters.map(motionPath).filter(Boolean);
   const shadows = manifest.shadows?.sheets || [];
   const stages = [];
-  const bosses = [], transformations = [];
+  const bosses = [], transformations = [], actions = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
     stages.push.apply(stages, scenery(i));
     bosses.push.apply(bosses, bossPaths(manifest, i));
     transformations.push.apply(transformations, transformPaths(manifest, i));
+    actions.push.apply(actions, actionPaths(manifest, i));
   }
   // The title shows the original first four. All other bodies load when selected.
   const startup = atlas.slice(0, 4).concat(scenery(0), scenery(4));
@@ -105,15 +112,21 @@ function groups(manifest) {
     stages: stages,
     bosses: bosses,
     transformations: transformations,
-    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, shadows, UFO, FX)),
+    actions: actions,
+    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, actions, shadows, UFO, FX)),
     scenery: scenery,
     boss: function (i) { return bossPaths(manifest, i); },
   };
 }
 
-function resolve(rel, base) {
-  if (!base) return rel;
-  try { return new URL(rel, base).href; }
+function resolve(rel, base, version = root.CoopAssetVersion) {
+  try {
+    if (!base && !version) return rel;
+    const url = new URL(rel, base || 'https://sproto.invalid/');
+    if (version && /^(?:assets|js|vendor)\//.test(rel)) url.searchParams.set('v', version);
+    if (base || /^[a-z][a-z0-9+.-]*:|^\/\//i.test(rel)) return url.href;
+    return (rel.startsWith('/') ? url.pathname : url.pathname.slice(1)) + url.search + url.hash;
+  }
   catch (err) { return rel; }
 }
 
@@ -121,7 +134,7 @@ function pageScripts(html) {
   const out = [];
   const re = /<script\s+src="([^"]+)"/g;
   let match;
-  while ((match = re.exec(html))) out.push(match[1]);
+  while ((match = re.exec(html))) out.push(match[1].replace(/[?#].*$/, ''));
   return out;
 }
 
@@ -140,7 +153,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
   const firstTransform = transformPaths(manifest, 0).slice(0, 1);
   const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
@@ -179,6 +192,7 @@ function lru(cap) {
 
 function groupOf(src) {
   if (src.indexOf('/bosses/transformations/') >= 0) return 'transform';
+  if (src.indexOf('/bosses/actions/') >= 0) return 'action';
   if (src.indexOf('/fighters/') >= 0) return 'fighter';
   if (src.indexOf('/bosses/') >= 0) return 'boss';
   if (src.indexOf('/stages/') >= 0) return 'stage';
@@ -204,7 +218,7 @@ function create(opts) {
   let peakLoad = 0;
   let peakDecode = 0;
   let clock = 0;
-  let stagePins = new Set(), transformPins = new Set();
+  let stagePins = new Set(), transformPins = new Set(), actionPins = new Set();
   let stageIndex = -1, stageManifest;
   const timings = [];
 
@@ -393,7 +407,8 @@ function create(opts) {
   function evict() {
     records.forEach(function (rec) {
       if ((rec.group === 'transform' && !transformPins.has(rec.src)) ||
-          (transformPins.size && rec.group === 'boss' && rec.pin === 'stage' && !stagePins.has(rec.src))) drop(rec);
+          (rec.group === 'action' && !actionPins.has(rec.src)) ||
+          ((transformPins.size || actionPins.size) && rec.group === 'boss' && rec.pin === 'stage' && !stagePins.has(rec.src))) drop(rec);
     });
     const extra = { boss: 0, shadow: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
     Object.keys(extra).forEach(function (group) {
@@ -413,11 +428,11 @@ function create(opts) {
 
   function enterStage(index, manifest) {
     if (index < 0 || index >= manifest.bosses.length) return;
-    if (stageIndex !== index) transformPins = new Set();
+    if (stageIndex !== index) { transformPins = new Set(); actionPins = new Set(); }
     stageIndex = index;
     stageManifest = manifest;
     const current = stagePaths(manifest, index);
-    const next = !transformPins.size && index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
+    const next = !transformPins.size && !actionPins.size && index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});
@@ -435,14 +450,25 @@ function create(opts) {
     evict();
   }
 
+  function setActionPages(paths) {
+    if (paths.length > 2 || paths.some(src => groupOf(src) !== 'action')) {
+      throw new Error('Expected at most two authored action pages');
+    }
+    if (paths.length === actionPins.size && paths.every(src => actionPins.has(src))) return;
+    actionPins = new Set(paths);
+    if (stageIndex >= 0) enterStage(stageIndex, stageManifest);
+    for (let i = 0; i < paths.length; i++) request(paths[i], { prefetch: i > 0 }).promise.catch(function () {});
+    evict();
+  }
+
   function loaded(src) {
     const rec = records.get(src);
     return rec?.state === 'ready' ? rec.img : null;
   }
 
   function status() {
-    const resident = { boss: 0, transform: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
-    const decoded = { boss: 0, transform: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const resident = { boss: 0, transform: 0, action: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const decoded = { boss: 0, transform: 0, action: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
     const errors = [];
     let pending = 0;
     let ready = 0;
@@ -462,7 +488,7 @@ function create(opts) {
   }
 
   return { request: request, image: image, loaded: loaded, preload: preload, prefetch: prefetch,
-    enterStage: enterStage, setTransformPages: setTransformPages, status: status, debug: debug };
+    enterStage: enterStage, setTransformPages: setTransformPages, setActionPages: setActionPages, status: status, debug: debug };
 }
 
 let singleton = null;

@@ -18,8 +18,8 @@ async function main() {
     succeed() {
       if (!this.src) return;
       this.complete = true;
-      this.naturalWidth = this.src.includes('/transformations/') ? 1760 : 880;
-      this.naturalHeight = this.src.includes('/transformations/') ? 1100 : 1540;
+      this.naturalWidth = this.src.includes('/transformations/') || this.src.includes('/actions/') ? 1760 : 880;
+      this.naturalHeight = this.src.includes('/transformations/') ? 1100 : this.src.includes('/actions/') ? 660 : 1540;
       this.onload?.();
     }
   }
@@ -84,6 +84,38 @@ async function main() {
   assert.equal(loader.status().resident.transform, 0, 'stage changes discard old clip pages');
   assert.equal(loader.status().error, 0);
   assert.throws(() => loader.setTransformPages(pages), /at most two/);
+  const actions = Array.from({length:4},(_,i)=>`assets/bosses/actions/test-${i}.webp`);
+  scope.window.CoopBossTransformations.animations = {bosses:{'boss-0':{phases:[{actions:{lane:{pages:actions.map(src=>({src}))}}}]}}};
+  assert.ok(actions.every(src=>scope.window.AssetLoader.groups(manifest).all.includes(src)),
+    'all shared action pages participate in inventory without preloading every action');
+  loader.enterStage(0,manifest);
+  await drain();
+  loader.setActionPages(actions.slice(0,2));
+  await drain();
+  assert.equal(loader.status().resident.boss,4,'combat playback suppresses next-stage boss warming');
+  assert.equal(loader.status().resident.action,2);
+  assert.equal(loader.status().decoded.action,2*1760*660*4);
+  loader.setTransformPages([pages[0]]);
+  await drain();
+  assert.equal(loader.status().resident.action,2,'phase-one transformation standby can coexist with current action pages');
+  loader.setActionPages(actions.slice(2));
+  await drain();
+  assert.equal(loader.loaded(actions[0]),null,'distant snapshots release obsolete action pages');
+  assert.equal(loader.status().resident.action,2);
+  loader.setActionPages([]);
+  await drain();
+  assert.equal(loader.status().resident.action,0);
+  assert.equal(loader.status().resident.boss,4,'transformation still owns standby, so next boss remains unloaded');
+  loader.setTransformPages([]);
+  await drain();
+  assert.equal(loader.status().resident.boss,8,'prefetch resumes only after both page owners release');
+  loader.setActionPages(actions.slice(0,2));
+  await drain();
+  loader.enterStage(1,manifest);
+  await drain();
+  assert.equal(loader.status().resident.action,0,'stage change releases every old action page');
+  assert.throws(()=>loader.setActionPages(actions),/at most two/);
+  assert.throws(()=>loader.setActionPages([pages[0]]),/action pages/);
   console.log('authored clip current/next page residency, cancellation, and stage release ok');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

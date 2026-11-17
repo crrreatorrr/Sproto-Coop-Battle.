@@ -884,9 +884,9 @@ function drawBossCel(g, b, sx, sy, sprite, row, col) {
 function drawBossTransform(g, b, sx, sy) {
   const boss = M.bosses[b.bi], phases = boss.phases;
   const authored = root.CoopBossTransformPlayer?.shared();
-  if (authored?.clipFor(boss.key)) {
+  if (root.CoopBossTransformations?.clips?.[boss.key]) {
     shadow(g, sx, sy, (phases[1].body[2] - phases[1].body[0]) * BS * 0.45);
-    if (!authored.draw(g, boss.key, b.t, sx, sy, b.fc, BOSS_SPRITE_SIZE)) {
+    if (!authored?.draw(g, boss.key, b.t, sx, sy, b.fc, BOSS_SPRITE_SIZE)) {
       const sheet = img(phases[0].sheet);
       if (ready(sheet)) drawBossCel(g, b, sx, sy, sheet, 0, 0);
     }
@@ -914,9 +914,15 @@ function drawBoss(g, b, camX) {
   const [phase, row, col] = bossPose(b, sx);
   const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
-  if (!ready(sheet)) return;
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
-  drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
+  const played = root.CoopBossActionPlayer?.shared()?.draw(g, M.bosses[b.bi].key, phase, {
+    x: sx, y: sy, facing: b.fc, extent: BOSS_SPRITE_SIZE,
+    filter: b.fl > 0 && canFilter() ? 'brightness(0.92) sepia(0.4) saturate(1.3)' : undefined,
+  });
+  if (!played) {
+    if (!ready(sheet)) return;
+    drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
+  }
   windup(g, b, sx, sy, ph);
   if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
@@ -991,6 +997,7 @@ function drawBanner(g, snap) {
 // opts.local: slots played on this device (they get a marker). opts.noBanner: the caller draws
 // its own end-of-run panel instead of the banner.
 function drawWorld(g, snap, opts) {
+  root.CoopBossActionPlayer?.shared()?.sync(snap);
   root.CoopBossTransformPlayer?.shared().sync(snap);
   const mine = (opts && opts.local) || [];
   const camX = snap.camX;
