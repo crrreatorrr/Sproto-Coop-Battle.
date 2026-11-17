@@ -12,8 +12,6 @@ const fxImg = k => img('assets/fx/' + k + '.png');
 // Projectile rows: lane/lob, spread, homing, impact. The art faces screen-left.
 const BOSS_CELL = 220, BOSS_FX_CELL = 96, BOSS_FOOT = 206;
 const BOSS_WALK = [0, 1, 2, 1];
-const BOSS_TRANSFORM_POSES = [[0, 0, 0], [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [1, 0, 0]];
-const BOSS_TRANSFORM_SETTLE = 0.9;
 const BOSS_DRAW_SCALE = BS * 256 / BOSS_CELL;
 
 // Grip-centered equipment, right-facing shots and centered effects share this grid.
@@ -827,56 +825,68 @@ function bossPose(b, sx) {
 
 const ease = x => x * x * (3 - 2 * x);
 
-function drawTransformSlice(g, phases, [phase, row, col], top, bottom) {
-  const C = BOSS_CELL, h = bottom - top;
-  if (h <= 0) return;
-  const sheet = img(phases[phase].sheet);
-  if (ready(sheet)) {
-    g.drawImage(sheet, col * C, row * C + top, C, h, -C / 2, top - BOSS_FOOT, C, h);
-  }
+function transformPulse(t, at, duration) {
+  if (t < at || t >= at + duration) return 0;
+  return Math.sin(Math.PI * (t - at) / duration);
 }
 
-function drawTransformEnergy(g, sx, sy, width, progress, color) {
-  const envelope = Math.sin(Math.PI * progress);
-  // Three staggered waves travel outwards as the power plant comes online.
+function drawTransformDischarge(g, b, sx, sy, width, color) {
+  const release = b.t - 429;
+  const impact = transformPulse(b.t, 67, 48);
+  const joint = b.t < 300 ? 111 : 370;
+  const lock = transformPulse(b.t, joint, 29);
   g.save();
-  g.strokeStyle = color;
-  for (let i = 0; i < 3; i++) {
-    const travel = (progress * 4 + i / 3) % 1;
-    const radius = width * (0.23 + ease(travel) * 0.59);
-    g.globalAlpha = 0.62 * envelope * Math.sin(Math.PI * travel);
-    g.lineWidth = 3 - travel * 2;
+  g.strokeStyle = g.fillStyle = color;
+  if (impact || (release >= 0 && release < 42)) {
+    const settle = release >= 0;
+    const age = settle ? release / 42 : (b.t - 67) / 48;
+    const radius = width * (0.2 + 0.54 * ease(age));
+    g.globalAlpha = 0.58 * (settle ? transformPulse(b.t, 429, 42) : impact);
+    g.lineWidth = 3 - 2 * age;
     g.beginPath();
-    g.ellipse(sx, sy, radius, radius * 0.28, 0, 0, Math.PI * 2);
+    g.ellipse(sx, sy, radius, radius * 0.22, 0, 0, 2 * Math.PI);
     g.stroke();
+  }
+  if (lock > 0) {
+    const age = (b.t - joint) / 29;
+    const front = b.fc * width * 0.3;
+    g.globalAlpha = lock * 0.83;
+    for (let i = 0; i < 7; i++) {
+      const side = i % 2 ? -1 : 1;
+      const x = sx + front + side * age * (10 + i * 5);
+      const y = sy - (joint < 300 ? 65 : 45) + (i % 3 - 1) * age * (22 + i * 6);
+      g.fillRect(Math.round(x), Math.round(y), i % 3 ? 4 : 6, 2);
+    }
   }
   g.restore();
 }
 
 function drawBossTransform(g, b, sx, sy) {
   const C = BOSS_CELL, phases = M.bosses[b.bi].phases;
-  const p = S.clamp(b.t / S.BOSS_TRANSFORM_TICKS, 0, 1);
-  const keyCount = BOSS_TRANSFORM_POSES.length - 1;
-  const position = keyCount * Math.min(1, p / BOSS_TRANSFORM_SETTLE);
-  const key = Math.min(keyCount - 1, Math.floor(position));
-  const motion = position - key;
-  const reveal = ease(S.clamp((motion - 0.08) / 0.84, 0, 1));
-  // Replace each strip from the feet up. A single solid silhouette keeps the
-  // cockpit legible even when neighboring poses have different outlines.
-  const cut = Math.round(C * (1 - reveal));
-  const shift = Math.sin(Math.PI * motion) * Math.sin(Math.PI * p);
+  const morph = root.CoopBossMorph;
+  const frame = morph?.pose(b.t);
+  const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 243 ? 0 : 1, 0, 0];
+  const sheet = img(phases[phase].sheet);
+  if (!ready(sheet)) return;
+  const folded = morph?.generate(b.bi, frame, phases.map(p => img(p.sheet)));
+  const p = ease(S.clamp(b.t / 429, 0, 1));
   const width = (phases[0].body[2] - phases[0].body[0]) * (1 - p) +
     (phases[1].body[2] - phases[1].body[0]) * p;
   const color = S.bossExtraAttack(b.bi, 'special').color;
+  const brace = transformPulse(b.t, 7, 123);
+  const deploy = transformPulse(b.t, 235, 186);
+  const settle = transformPulse(b.t, 429, 39);
   shadow(g, sx, sy, width * BS * 0.45);
-  if (p > 0 && p < 1) drawTransformEnergy(g, sx, sy, width, p, color);
+  drawTransformDischarge(g, b, sx, sy, width, color);
 
   g.save();
-  g.translate(Math.round(sx - b.fc * shift * 4), Math.round(sy));
-  g.scale(BOSS_DRAW_SCALE * (b.fc > 0 ? -1 : 1), BOSS_DRAW_SCALE * (1 - shift * 0.045));
+  g.translate(Math.round(sx + b.fc * (deploy * 4 - brace * 3)), Math.round(sy));
+  const scale = BOSS_DRAW_SCALE;
+  g.scale(scale * (b.fc > 0 ? -1 : 1) * (1 + brace * 0.026),
+    scale * (1 - brace * 0.05 + deploy * 0.022 - settle * 0.026));
   if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  drawTransformSlice(g, phases, BOSS_TRANSFORM_POSES[key], 0, cut);
-  drawTransformSlice(g, phases, BOSS_TRANSFORM_POSES[key + 1], cut, C);
+  g.drawImage(folded || sheet, folded ? 0 : col * C, folded ? 0 : row * C,
+    C, C, -C / 2, -BOSS_FOOT, C, C);
   g.restore();
 }
 
@@ -977,6 +987,12 @@ function drawWorld(g, snap, opts) {
   g.save();
   if (sk) g.translate(Math.round(Math.sin(snap.t * 1.7) * sk), Math.round(Math.cos(snap.t * 2.3) * sk * 0.6));
   drawBackground(g, snap.si, camX);
+  if (snap.boss?.st === 'transform') {
+    const t = snap.boss.t;
+    const focus = ease(S.clamp(t / 78, 0, 1)) * ease(S.clamp((470 - t) / 52, 0, 1));
+    g.fillStyle = `rgba(10,7,25,${0.38 * focus})`;
+    g.fillRect(0, 0, W, H);
+  }
   const list = [];
   for (const it of snap.items) list.push({ y: it.y - (it.k === 'ufo' ? 0.5 : 0), d: () => drawItem(g, it, camX, snap.t) });
   // Downed players are drawn first so standing teammates appear over them while reviving.

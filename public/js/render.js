@@ -32,9 +32,19 @@ function enterStage(i) {
 function loadFx() {
   if (fxRequested || !root.document) return;
   fxRequested = true;
-  const el = root.document.createElement('script'); el.src = 'js/render-fx.js';
-  el.onerror = () => { root.setTimeout(() => { fxRequested = false; }, 1000); };
-  root.document.head.appendChild(el);
+  const scripts = [
+    ['CoopBossMorphField', 'boss-morph-field.js'],
+    ['CoopBossMorph', 'boss-morph.js'],
+    ['RenderFx', 'render-fx.js'],
+  ];
+  for (const [global, file] of scripts) {
+    if (root[global]) continue;
+    const el = root.document.createElement('script');
+    el.async = false;
+    el.src = 'js/' + file;
+    el.onerror = () => { root.setTimeout(() => { fxRequested = false; }, 1000); };
+    root.document.head.appendChild(el);
+  }
 }
 function bossImages(bi) { const b = M.bosses[bi]; return b.phases.map(p => [img(p.sheet), img(p.proj)]); }
 function loadStatus() {
