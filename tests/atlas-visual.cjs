@@ -229,8 +229,8 @@ async function paintBoss(page) {
 async function verifyBossPlayback(page) {
   return page.evaluate(async () => {
     const ACTOR = 220, FX = 96;
-    const transformKeys = [0, 78, 159, 243, 336, 429];
-    const reviewTicks = [0, 39, 78, 120, 159, 201, 243, 291, 336, 381, 429, 480];
+    const transformKeys = [28, 96, 174, 258, 342, 442];
+    const reviewTicks = [0, 62, 96, 134, 174, 216, 258, 300, 342, 392, 442, 480];
     const summoners = new Set(['crapto', 'bigswole', 'sproto1668']);
     const plan = AssetLoader.groups(MANIFEST), loader = AssetLoader.shared();
     const canvas = document.createElement('canvas');
@@ -295,8 +295,8 @@ async function verifyBossPlayback(page) {
     const actorPixels = snapshot => {
       const center = Math.round(snapshot.boss.x - snapshot.camX);
       const floor = Math.round(Sim.FLOOR_TOP + snapshot.boss.y);
-      // The HUD and the ground shadow do not belong to the actor.
-      return ctx.getImageData(center - 122, 40, 244, floor - 84).data;
+      // Include the complete foot plane and shadow but stay above the HUD.
+      return ctx.getImageData(center - 122, 40, 244, floor - 32).data;
     };
     const paletteCanvas = document.createElement('canvas');
     paletteCanvas.width = paletteCanvas.height = ACTOR;
@@ -314,10 +314,11 @@ async function verifyBossPlayback(page) {
     };
     const morphPixels = (cel, firstColors, nextColors, label) => {
       const rgba = cel.getContext('2d').getImageData(0, 0, ACTOR, ACTOR).data;
-      let ink = 0, blended = 0, hash = 2166136261;
+      let ink = 0, grounded = 0, blended = 0, hash = 2166136261;
       for (let i = 0; i < rgba.length; i += 4) {
         if (rgba[i + 3] === 0) continue;
         ink++;
+        if (i >= 198 * ACTOR * 4) grounded++;
         if (rgba[i + 3] === 255) {
           const color = rgbAt(rgba, i);
           if (!firstColors.has(color) && !nextColors.has(color)) blended++;
@@ -327,6 +328,7 @@ async function verifyBossPlayback(page) {
         }
       }
       check(ink > 500 && ink < ACTOR * ACTOR, label + ' has missing artwork or an opaque background');
+      check(grounded > 2, label + ' does not reach the standing foot plane');
       check(blended === 0, label + ' mixes the texture colors of adjacent poses in ' + blended + ' pixels');
       return hash;
     };
@@ -345,11 +347,12 @@ async function verifyBossPlayback(page) {
         const transforming = tick < duration;
         check(state.boss.phase === 1 && state.boss.st === (transforming ? 'transform' : 'idle') &&
           state.boss.t === (transforming ? tick : 0), pilot + ' unexpected transform state at tick ' + tick);
-        if (tick % 3 !== 0 && tick !== duration - 1) continue;
+        if (tick % 2 !== 0 && tick !== duration - 1) continue;
 
         const snapshot = renderSnapshot(state);
         const art = { ...snapshot, players: [], enemies: [], items: [], projs: [], fx: [], hz: [] };
-        const key = tick >= transformKeys[finalKey] ? finalKey : transformKeys.indexOf(tick);
+        const key = tick <= transformKeys[0] ? 0
+          : tick >= transformKeys[finalKey] ? finalKey : transformKeys.indexOf(tick);
         for (const facing of [-1, 1]) {
           const frame = { ...art, boss: { ...art.boss, fc: facing, fl: 0, su: undefined } };
           const caption = pilot + ' transform tick ' + tick + (facing < 0 ? ' left' : ' right');
@@ -361,9 +364,10 @@ async function verifyBossPlayback(page) {
           } else {
             checkDrawCalls(actual, [expected(null, ACTOR, 0, 0, -facing)], caption);
             morphs++;
-            if (facing === -1 && reviewTicks.includes(tick)) {
+            if (facing === -1) {
               const nextKey = transformKeys.findIndex(at => at > tick);
-              sampledMorphs.add(morphPixels(actual[0].image, palettes[nextKey - 1], palettes[nextKey], caption));
+              const hash = morphPixels(actual[0].image, palettes[nextKey - 1], palettes[nextKey], caption);
+              if (reviewTicks.includes(tick)) sampledMorphs.add(hash);
             }
           }
           if (facing === -1) drawReviewFrame(frame, tick, pilot);
@@ -392,6 +396,12 @@ async function verifyBossPlayback(page) {
       return { renders, morphs };
     };
     const projectileArt = new Set();
+    // Lightly tinted steel can read as white at game scale. Saturated
+    // colored glows and emissive paint remain available to each boss.
+    const isPale = (r, g, b) => {
+      const low = Math.min(r, g, b);
+      return low >= 164 && Math.max(r, g, b) - low <= 49;
+    };
     const assertAtlas = (asset, cell, rows) => {
       const image = Render.img(asset);
       check(Render.ready(image) && image.naturalWidth === 4 * cell && image.naturalHeight === rows * cell,
@@ -408,12 +418,12 @@ async function verifyBossPlayback(page) {
           for (let i = 0; i < rgba.length; i++) {
             if (i % 4 === 3 && rgba[i] > 0) {
               ink++;
-              if (Math.min(rgba[i - 3], rgba[i - 2], rgba[i - 1]) >= 215) white++;
+              if (isPale(rgba[i - 3], rgba[i - 2], rgba[i - 1])) white++;
             }
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
           check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
-          check(white === 0, asset + ' has near-white pixels in cell ' + row + '/' + col);
+          check(white === 0, asset + ' has pale-neutral highlights in cell ' + row + '/' + col);
           if (cell === FX && col === 0) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row);
             projectileArt.add(hash);
@@ -514,6 +524,25 @@ async function verifyBossPlayback(page) {
       const recovery = renderSnapshot(state);
       checkDraw({ ...recovery, fx: [] }, [actor(3)], name + ' recovery');
     };
+
+    check(Array.isArray(window.CoopBossMorphGuides) &&
+      CoopBossMorphGuides.length === 12 && CoopBossMorphGuides.every(stage => stage && stage.length === 6),
+    'every boss needs six registered cockpit and weapon poses');
+    const fxSheets = ['lights', 'burst', 'spikes', 'flame'].map(name => 'assets/fx/' + name + '.png');
+    await loader.preload(fxSheets);
+    const effect = document.createElement('canvas');
+    const effectContext = effect.getContext('2d', { willReadFrequently: true });
+    for (const asset of fxSheets) {
+      const sheet = Render.img(asset);
+      check(Render.ready(sheet), asset + ' did not load');
+      effect.width = sheet.naturalWidth;
+      effect.height = sheet.naturalHeight;
+      effectContext.drawImage(sheet, 0, 0);
+      const rgba = effectContext.getImageData(0, 0, effect.width, effect.height).data;
+      for (let i = 0; i < rgba.length; i += 4) {
+        check(!rgba[i + 3] || !isPale(rgba[i], rgba[i + 1], rgba[i + 2]), asset + ' has pale-neutral highlights');
+      }
+    }
 
     let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
     let transformRenders = 0, transformMorphs = 0;
@@ -691,7 +720,7 @@ async function main() {
         bossPlayback = coverage;
         if (bossPlayback.phases !== 24 || bossPlayback.impacts !== 72 || bossPlayback.summons !== 6 ||
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
-            bossPlayback.transformRenders !== 3888 || bossPlayback.transformMorphs !== 3312 ||
+            bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
