@@ -1,0 +1,14 @@
+{
+  "provider": "Built-in ImageGen",
+  "toolDefaultPath": "/Users/kenhiraoka/.codex/generated_images/01a1eadb-b802-7052-ab81-71c8a3e24d2d/exec-5bed876b-1e64-4717-91d3-9e533f003203.png",
+  "sourceSHA256": "5b62dfc52779b60694ae7ab8ce457b70de09d8c7a81e74bafdcc7d2e9647ab06",
+  "workspaceSourceExactBytes": true,
+  "size": [
+    1295,
+    1214
+  ],
+  "mode": "RGBA",
+  "alphaOrColorEdits": false,
+  "layout": "2x2",
+  "status": "SELF_QA_PASS_PRIVATE_STAGING_INDEPENDENT_REVIEW_PENDING"
+}

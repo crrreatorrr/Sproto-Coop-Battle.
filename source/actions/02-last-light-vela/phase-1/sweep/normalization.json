@@ -1,0 +1,193 @@
+{
+  "status": "PRIVATE_SOURCE_RGBA_PRESERVED_CANDIDATE",
+  "sourceSHA256": "5b62dfc52779b60694ae7ab8ce457b70de09d8c7a81e74bafdcc7d2e9647ab06",
+  "sourceSize": [
+    1295,
+    1214
+  ],
+  "referenceSHA256": "ba343b9b39e522cb8f2a7aca476e6d767e5295060837dc32ae25e41bd3e29acf",
+  "referenceSoleIntervals": [
+    [
+      138,
+      313
+    ],
+    [
+      406,
+      502
+    ]
+  ],
+  "referenceSoleMidpoint": 339.75,
+  "referenceNativeAnchor": [
+    320,
+    600
+  ],
+  "deliveryAnchor": [
+    165,
+    261
+  ],
+  "nativeUniformScale": 0.8831683168316832,
+  "deliveryUniformScale": 0.3035891089108911,
+  "registrationMethod": "Whole-cell source origin only, calibrated matching two source boot soles to accepted root; no per-part edits or width scaling.",
+  "alphaOrRGBEdits": false,
+  "alpha128UsedOnlyForMeasuredSupport": true,
+  "rawAlphaTailsRetained": true,
+  "newLocalPoses": false,
+  "records": [
+    {
+      "cel": 0,
+      "rawSourceBox": [
+        0,
+        0,
+        647,
+        607
+      ],
+      "rawSize": [
+        647,
+        607
+      ],
+      "rawRGBASHA256": "4206ae3885d13c532a5dc5b248f1a801834980a8eecfee2b049d8ff9350a4547",
+      "sourceSoleIntervals": [
+        [
+          82,
+          267
+        ],
+        [
+          389,
+          507
+        ]
+      ],
+      "sourceSoleMidpoint": 311.25,
+      "registeredSourceAnchor": [
+        288.88733183856505,
+        536
+      ],
+      "deliveryMainBounds": [
+        88,
+        108,
+        231,
+        261
+      ],
+      "deliveryMainSoleEdge": 261,
+      "deliveryRGBASHA256": "b982fd6dda243776824fd5483e05ced6f9841f6df32b50f38fe2b1b77df13e29",
+      "entirePositiveAlphaSourceFieldInsideDelivery": true,
+      "rawSourceFieldInverseRGBAExact": true
+    },
+    {
+      "cel": 1,
+      "rawSourceBox": [
+        647,
+        0,
+        1295,
+        607
+      ],
+      "rawSize": [
+        648,
+        607
+      ],
+      "rawRGBASHA256": "6d5b6dd0cb4f6cb261642be934329cfcd2336052e53aa57f9e82795170fdbc0e",
+      "sourceSoleIntervals": [
+        [
+          51,
+          238
+        ],
+        [
+          347,
+          461
+        ]
+      ],
+      "sourceSoleMidpoint": 274.25,
+      "registeredSourceAnchor": [
+        251.88733183856502,
+        536
+      ],
+      "deliveryMainBounds": [
+        89,
+        108,
+        274,
+        261
+      ],
+      "deliveryMainSoleEdge": 261,
+      "deliveryRGBASHA256": "ceb17c36fef95e446ed357e877a2c5e41e5f56d86ffb69f5aa087689af9e227e",
+      "entirePositiveAlphaSourceFieldInsideDelivery": true,
+      "rawSourceFieldInverseRGBAExact": true
+    },
+    {
+      "cel": 2,
+      "rawSourceBox": [
+        0,
+        607,
+        647,
+        1214
+      ],
+      "rawSize": [
+        647,
+        607
+      ],
+      "rawRGBASHA256": "bd21766b0f345ea2b74b4d18758cb0f9745a5cf6dcc0e45217ac3d21657f3f22",
+      "sourceSoleIntervals": [
+        [
+          80,
+          267
+        ],
+        [
+          387,
+          502
+        ]
+      ],
+      "sourceSoleMidpoint": 309.0,
+      "registeredSourceAnchor": [
+        286.63733183856505,
+        533
+      ],
+      "deliveryMainBounds": [
+        88,
+        108,
+        263,
+        261
+      ],
+      "deliveryMainSoleEdge": 261,
+      "deliveryRGBASHA256": "88722ceba51ac3a64f589129fe1e461ffcb7234733d90b65ba9751c33cc2deda",
+      "entirePositiveAlphaSourceFieldInsideDelivery": true,
+      "rawSourceFieldInverseRGBAExact": true
+    },
+    {
+      "cel": 3,
+      "rawSourceBox": [
+        647,
+        607,
+        1295,
+        1214
+      ],
+      "rawSize": [
+        648,
+        607
+      ],
+      "rawRGBASHA256": "1aecce3272978a754012737182963c6a6bbd4a449635eeb55caa9ff72c796ace",
+      "sourceSoleIntervals": [
+        [
+          50,
+          244
+        ],
+        [
+          367,
+          482
+        ]
+      ],
+      "sourceSoleMidpoint": 285.75,
+      "registeredSourceAnchor": [
+        263.38733183856505,
+        533
+      ],
+      "deliveryMainBounds": [
+        86,
+        108,
+        231,
+        261
+      ],
+      "deliveryMainSoleEdge": 261,
+      "deliveryRGBASHA256": "b2f31cfb6b38fa618aafc59259bffd70091a6b26d1c6df83469b5d6e241cf243",
+      "entirePositiveAlphaSourceFieldInsideDelivery": true,
+      "rawSourceFieldInverseRGBAExact": true
+    }
+  ]
+}
