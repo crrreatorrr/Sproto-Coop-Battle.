@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "atlasSha256": "70196db352168de2a72177cb8b3a34f5c56a114d9c8e11d9a8f327c78df22097",
+  "providerSha256": "7f3aeae89870539435653c0a534e62f23fbf8372c0f8e753ea2dc2dc3ec9ee53",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "replacesRuntimeSha256": "966924c4febfa7452150fcd2d8f2995a4b6e012437a98c69fa8516dc9e12050c",
+  "notes": "All 16 source-derived cels preserve Vela’s emerald twin-crescent vocabulary and replace the older heavy fill with luminous mint edge clusters, colored fragments and a smooth diminishing curl. The spark and core highlights stay adjacent to colored art. Across the packed sheet there are zero near-white samples farther than two pixels from chromatic artwork. All cels remain detached from seams on light and dark backgrounds. Direct gameplay captures show the crescents at the selected attack zones and original contact tick. The lowest authored zone can extend into the bottom HUD margin at the existing placement."
+}
