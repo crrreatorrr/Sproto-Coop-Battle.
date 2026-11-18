@@ -480,7 +480,7 @@ async function verifyBossPlayback(page) {
       const warning = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
       draw({ ...ready, boss: { ...ready.boss, az: [] } });
       const clean = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
-      check(warning.some((byte, i) => byte !== clean[i]), name + ' floor warning did not paint');
+      check(warning.every((byte, i) => byte === clean[i]), name + ' painted an explicit boss warning');
 
       const lock = JSON.stringify(start.boss.az);
       const preImpactHp = player.hp;
