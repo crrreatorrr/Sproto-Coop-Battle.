@@ -50,7 +50,7 @@ async function main() {
       for (let phase = 0; phase < 2; phase++) {
         const ph = MANIFEST.bosses[12].phases[phase];
         const actor = Render.img(ph.sheet), fx = Render.img(ph.proj), C = ph.actorCell;
-        if (actor.naturalWidth !== C * 8 || actor.naturalHeight !== C * (phase ? 9 : 10) ||
+        if (actor.naturalWidth !== C * 8 || actor.naturalHeight !== C * (phase ? 9 : 11) ||
             fx.naturalWidth !== 1024 || fx.naturalHeight !== 64 * (phase ? 4 : 6)) throw new Error('atlas dimensions');
         const boss = { bi: 12, ph: phase, x: 485, y: 60, fc: -1, st: 'idle', t: 0, hp: phase ? 2000 : 4000, mh: 4000, fl: 0, w: phase ? 140 : 90, ar: 0 };
         const pose = (extra, row, col) => {
@@ -72,7 +72,7 @@ async function main() {
         [6,4,2,1].forEach((fl,col) => pose({fl},8,col));
         [0,14,28,42].forEach((t,col) => pose({st:'dead',t},8,4+col));
         if (!phase) {
-          for (let col=0;col<8;col++) pose({st:'transform',ph:1,t:col*60},9,col);
+          for (let i=0;i<16;i++) pose({st:'transform',ph:1,t:CoopBossMorph.sprotel.keyTicks[i+1]},9+Math.floor(i/8),i%8);
         }
         for (let a=0;a<(phase?3:5);a++) {
           for (let col=0;col<16;col++) {
@@ -93,9 +93,28 @@ async function main() {
           seenFx.add(phase+':impact:'+col);
         }
       }
-      return {actorFrames:seenActor.size,fxFrames:seenFx.size,images};
+      // The new transition must render moving in-between cels at the full 60 Hz clock.
+      const morph = CoopBossMorph.sprotel, sheets = MANIFEST.bosses[12].phases.map(p => Render.img(p.sheet));
+      const transition = new Set(), gaps = new Set();
+      let previous = '', hold = 0, longestHold = 0, interpolated = 0;
+      for (let tick = 29; tick < 442; tick++) {
+        const frame = morph.pose(tick), cel = morph.generate(0, frame, sheets);
+        if (!cel) continue; // Exact authored keys use the original source rectangle.
+        gaps.add(frame.gap); interpolated++;
+        const data = cel.getContext('2d').getImageData(0,0,176,176).data;
+        let hash = 2166136261;
+        for (const byte of data) hash = Math.imul(hash ^ byte, 16777619);
+        const key = String(hash >>> 0);
+        hold = key === previous ? hold + 1 : 0;
+        longestHold = Math.max(longestHold,hold); previous = key; transition.add(key);
+      }
+      if (gaps.size !== 17 || interpolated < 390 || transition.size < 250 || longestHold >= 12) {
+        throw new Error('standing transformation is not continuous: '+JSON.stringify({gaps:gaps.size,interpolated,unique:transition.size,longestHold}));
+      }
+      if (morph.poses[morph.pose(0).key].join() !== '0,0,0' || morph.poses[morph.pose(480).key].join() !== '1,0,0') throw new Error('standing endpoints');
+      return {actorFrames:seenActor.size,fxFrames:seenFx.size,images,smooth:{gaps:gaps.size,interpolated,unique:transition.size,longestHold}};
     });
-    assert.strictEqual(result.actorFrames,136);assert.strictEqual(result.fxFrames,160);
+    assert.strictEqual(result.actorFrames,144);assert.strictEqual(result.fxFrames,160);
     result.images.forEach(({name,data})=>fs.writeFileSync(path.join(out,name+'-in-game.png'),Buffer.from(data.split(',')[1],'base64')));
     const warningChecks = await page.evaluate(async () => {
       const plan = AssetLoader.groups(MANIFEST), cv = document.createElement('canvas');
@@ -137,7 +156,8 @@ async function main() {
     });
     assert.strictEqual(warningChecks, 102);
     assert.deepStrictEqual(errors, []); assert.deepStrictEqual(missing, []);
-    console.log('browser Sprotel: stage 13 start, all 136 actor / 160 projectile frames, no errors or missing assets; 102 boss warning states hidden');
+    console.log('standing transformation smoothness',result.smooth);
+    console.log('browser Sprotel: stage 13 start, all 144 actor / 160 projectile frames, no errors or missing assets; 102 boss warning states hidden');
   } finally { if (browser) await browser.close(); server.kill(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -1,13 +1,14 @@
 // Render a complete, nearest-neighbor cel from one pose and its displacement field.
 (function (root) {
 'use strict';
-const CELL = 220, GRID = 12, FRAME_TICKS = 2;
-const KEYS = [28, 96, 174, 258, 342, 442];
-const POSES = [[0, 0, 0], [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [1, 0, 0]];
+function create(options = {}) {
+const CELL = options.cell || 220, GRID = 12, FRAME_TICKS = options.frameTicks || 2;
+const KEYS = options.keys || [28, 96, 174, 258, 342, 442];
+const POSES = options.poses || [[0, 0, 0], [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [1, 0, 0]];
 const FIELD_SIZE = GRID * GRID * 2;
 const clamp = x => Math.max(0, Math.min(1, x));
-const TOOL_TIMING = [0.42, 0.46, 0.32, 0.50, -0.24];
-const STANCE_TIMING = [-0.30, -0.34, 0.17, 0.38, -0.20];
+const TOOL_TIMING = options.toolTiming || [0.42, 0.46, 0.32, 0.50, -0.24];
+const STANCE_TIMING = options.stanceTiming || [-0.30, -0.34, 0.17, 0.38, -0.20];
 const indices = new Uint8Array(CELL), ratios = new Float32Array(CELL);
 for (let x = 0; x < CELL; x++) {
   const point = x * (GRID - 1) / (CELL - 1);
@@ -89,8 +90,9 @@ function sampleIndex(x, y, direction, strength) {
 }
 
 function generate(index, frame, sheets) {
-  if (!frame.progress || !root.CoopBossMorphField) return null;
-  if (!field) field = Int8Array.from(root.atob(root.CoopBossMorphField), c => c.charCodeAt(0));
+  const encoded = options.fieldSource ? options.fieldSource() : root.CoopBossMorphField;
+  if (!frame.progress || !encoded) return null;
+  if (!field) field = Int8Array.from(root.atob(encoded), c => c.charCodeAt(0));
   const offset = (index * (KEYS.length - 1) + frame.gap) * FIELD_SIZE * 2;
   if (offset + FIELD_SIZE * 2 > field.length) return null;
   const at = frame.gap;
@@ -110,7 +112,7 @@ function generate(index, frame, sheets) {
   if (lastTick === frame.tick) return output.canvas;
 
   const a = readCell(at, fromSheet), b = readCell(at + 1, toSheet);
-  const fieldAnchors = root.CoopBossMorphGuides?.[index];
+  const fieldAnchors = (options.guidesSource ? options.guidesSource() : root.CoopBossMorphGuides)?.[index];
   const [[ax, ay], [hx, hy]] = fieldAnchors?.[at] || [[112, 118], [60, 134]];
   const [[bx, by], [jx, jy]] = fieldAnchors?.[at + 1] || [[ax, ay], [hx, hy]];
   const p = frame.progress, q = 1 - p;
@@ -160,5 +162,16 @@ function generate(index, frame, sheets) {
   return output.canvas;
 }
 
-root.CoopBossMorph = { pose, generate, poses: POSES, keyTicks: KEYS };
+return { pose, generate, poses: POSES, keyTicks: KEYS };
+}
+const sprotel = create({
+  cell: 176, frameTicks: 1,
+  keys: Array.from({ length: 18 }, (_, i) => Math.round(28 + i * 414 / 17)),
+  poses: [[0, 0, 0], ...Array.from({ length: 16 }, (_, i) => [0, 9 + Math.floor(i / 8), i % 8]), [1, 0, 0]],
+  fieldSource: () => root.CoopSprotelMorphField,
+  guidesSource: () => root.CoopSprotelMorphGuides,
+  toolTiming: Array.from({ length: 17 }, (_, i) => [0.20, 0.26, 0.14, -0.16][i % 4]),
+  stanceTiming: Array.from({ length: 17 }, (_, i) => [-0.14, 0.12, 0.18, -0.10][i % 4]),
+});
+root.CoopBossMorph = { ...create(), sprotel };
 })(globalThis);

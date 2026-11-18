@@ -6,8 +6,9 @@ Actors face left at runtime; source sheets face right. The pilot's red cockpit
 anchors the poses independently of an extended arm, bill, or tail.
 """
 from pathlib import Path
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageChops
 from statistics import median
+from functools import lru_cache
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,20 +18,49 @@ CELL, FOOT = 176, 165
 ACTORS = {
     'p1': [('idle', 'walk')] + [(a+'-a', a+'-b') for a in
         ['snacks', 'beer', 'cocktails', 'drinks', 'marlin', 'charge', 'sweep']]
-        + [('hit', 'death'), ('transform-a', 'transform-b')],
+        + [('hit', 'death'), ('hf-standing-keys-0', 'hf-standing-keys-1'),
+           ('hf-standing-keys-2', 'hf-standing-keys-3')],
     'p2': [('idle', 'swim'), ('laser-a', 'laser-b'), ('missile-a', 'missile-b'),
         ('bubbles-a', 'bubbles-b'), None, None, ('charge-a', 'charge-b'),
         ('sweep-a', 'sweep-b'), ('hit', 'death')],
 }
 EFFECTS = {'p1': ['snack-fx', 'beer-fx', 'cocktail-fx', 'drinks-fx', 'marlin-fx', 'impact-fx'],
            'p2': ['laser-fx', 'missile-fx', 'bubble-fx', 'impact-fx']}
+STANDING_KEYS = [('hf-standing-master', 0)] + [('hf-standing-a', i) for i in range(4)] + \
+                [('hf-standing-master', 1)] + [('hf-standing-b', i) for i in range(4)] + \
+                [('hf-standing-master', 2)] + [('hf-standing-c', i) for i in range(4)] + \
+                [('hf-standing-master', 3)]
 
 
+@lru_cache(maxsize=8)
 def frames(phase, name, grid):
     sheet = Image.open(RAW / phase / (name+'.png')).convert('RGBA')
-    return [sheet.crop((round(c*sheet.width/grid), round(r*sheet.height/grid),
+    if name.startswith('hf-standing-'):
+        # Higgsfield's flat magenta export is a sprite matte, not character paint.
+        red, green, blue, alpha = sheet.split()
+        matte = ImageChops.multiply(red.point(lambda v: 255 if v > 160 else 0),
+                                   blue.point(lambda v: 255 if v > 140 else 0))
+        matte = ImageChops.multiply(matte, green.point(lambda v: 255 if v < 110 else 0))
+        # Dark magenta separators use the same matte hue at lower luminance.
+        dark_matte = ImageChops.multiply(red.point(lambda v: 255 if v > 80 else 0),
+                                        blue.point(lambda v: 255 if v > 80 else 0))
+        dark_matte = ImageChops.multiply(dark_matte, green.point(lambda v: 255 if v < 70 else 0))
+        matte = ImageChops.lighter(matte, dark_matte)
+        sheet.putalpha(ImageChops.subtract(alpha, matte))
+    cells = [sheet.crop((round(c*sheet.width/grid), round(r*sheet.height/grid),
                         round((c+1)*sheet.width/grid), round((r+1)*sheet.height/grid)))
             for r in range(grid) for c in range(grid)]
+    if name.startswith('hf-standing-'):
+        # Generated separators occupy the otherwise empty outer cell gutters.
+        # Remove those gutters before downsampling; never trim the actor itself.
+        for cel in cells:
+            edge = 12
+            cel.paste((0, 0, 0, 0), (0, 0, cel.width, edge))
+            cel.paste((0, 0, 0, 0), (0, cel.height-edge, cel.width, cel.height))
+            cel.paste((0, 0, 0, 0), (0, 0, edge, cel.height))
+            cel.paste((0, 0, 0, 0), (cel.width-edge, 0, cel.width, cel.height))
+        return [cel.resize((627, 627), Image.Resampling.LANCZOS) for cel in cells]
+    return cells
 
 
 def actor_frame(im):
@@ -60,9 +90,10 @@ for phase, rows in ACTORS.items():
     for row,names in enumerate(rows):
         if names is None:
             continue
-        cells = sum([frames(phase,name,2) for name in names],[])
-        if phase == 'p1' and row == 9:
-            cells = [cells[i] for i in [0,1,4,2,5,6,3,7]]
+        if phase == 'p1' and row >= 9:
+            cells = [frames(phase,name,2)[index] for name,index in STANDING_KEYS[(row-9)*8:(row-8)*8]]
+        else:
+            cells = sum([frames(phase,name,2) for name in names],[])
         for col,im in enumerate(cells):
             actor.alpha_composite(actor_frame(im),(col*CELL,row*CELL)); count += 1
     # Preserve generated alpha while sharing a palette across all frames.
@@ -89,4 +120,7 @@ for phase, rows in ACTORS.items():
     for path in [OUT/(key+'.webp'),OUT/(key+'-projectiles.png')]:
         print(path.name,path.stat().st_size,'bytes')
 meta={'phases':layouts,'generation':{'actors':'2x2','projectiles':'4x4','tool':'image_gen','phaseCount':2}}
+meta['standingTransformation'] = {'tool':'Higgsfield in Chrome','model':'Seedream 5.0 Lite',
+                                'mode':'Unlimited','sourceGrid':'2x2','authoredKeys':16,
+                                'runtimeKeys':18,'frameRate':60,'sequence':STANDING_KEYS}
 (RAW/'layout.json').write_text(json.dumps(meta,indent=2)+'\n')

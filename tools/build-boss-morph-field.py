@@ -60,7 +60,7 @@ def dense_flow(source, target):
     return model.calc(source, target, None)
 
 
-def mesh(flow, inverse, alpha, controls):
+def mesh(flow, inverse, alpha, controls, foot=206, foot_taper=28):
     x, y = cv2.remap(flow, GRID_X + PADDING, GRID_Y + PADDING,
                      cv2.INTER_LINEAR).transpose(2, 0, 1)
     reverse = cv2.remap(inverse, GRID_X + PADDING + x, GRID_Y + PADDING + y,
@@ -83,7 +83,7 @@ def mesh(flow, inverse, alpha, controls):
         influence = (0.84 * np.exp(-distance / (2 * radius ** 2)) * support)[..., None]
         vectors += (axis - vectors) * influence
     # Don't raise a planted foot by dragging its texture toward the cockpit.
-    vectors[..., 1] *= np.clip((206 - GRID_Y) / 28, 0, 1)
+    vectors[..., 1] *= np.clip((foot - GRID_Y) / foot_taper, 0, 1)
     vectors[[0, -1], :] = 0
     vectors[:, [0, -1]] = 0
 

@@ -818,12 +818,18 @@ function drawBossCel(g, b, sx, sy, sprite, row, col) {
 function drawBossTransform(g, b, sx, sy) {
   const phases = M.bosses[b.bi].phases;
   if (M.bosses[b.bi].attacks === 'bar') {
-    const sheet = img(phases[0].sheet);
-    if (ready(sheet)) {
-      shadow(g, sx, sy, b.w * .45);
-      const col = Math.min(7, Math.floor(b.t * 8 / S.BOSS_TRANSFORM_TICKS));
-      drawBossCel(g, { ...b, ph: 0 }, sx, sy, sheet, 9, col);
-    }
+    const morph = root.CoopBossMorph?.sprotel;
+    const frame = morph?.pose(b.t);
+    const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 240 ? 0 : 1, 0, 0];
+    const sheets = phases.map(p => img(p.sheet));
+    if (!ready(sheets[phase])) return;
+    const folded = morph?.generate(0, frame, sheets);
+    const progress = ease(S.clamp((b.t - 28) / 414, 0, 1));
+    const width = (phases[0].body[2] - phases[0].body[0]) * (1 - progress) +
+      (phases[1].body[2] - phases[1].body[0]) * progress;
+    shadow(g, sx, sy, width * BS * .45);
+    drawTransformDischarge(g, b, sx, sy, width, '#24d8df');
+    drawBossCel(g, { ...b, ph: phase }, sx, sy, folded || sheets[phase], folded ? 0 : row, folded ? 0 : col);
     return;
   }
   const morph = root.CoopBossMorph;
