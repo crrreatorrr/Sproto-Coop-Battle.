@@ -160,7 +160,7 @@ for(const boss of M.bosses) animations.bosses[boss.key]={phases:boss.phases.map(
 // Render through the public world renderer, using actual simulation snapshots.
 // The mock records source rectangles and transforms, not reimplemented drawing.
 function renderer(registry=animations) {
-  const images=new Map(), requested=[], calls=[], copies=[], canvases=[], stack=[];
+  const images=new Map(), requested=[], calls=[], copies=[], canvases=[], stack=[], lines=[];
   let transform={x:0,y:0,sx:1,sy:1};
   const context=new Proxy({globalAlpha:1,
     save(){stack.push({...transform});},restore(){transform=stack.pop();},
@@ -176,13 +176,14 @@ function renderer(registry=animations) {
       }
       calls.push({args,worldArgs,copiedSource:copied?copied.slice(1,5):null,transform:{...transform}});
     },
+    lineTo(x,y){lines.push([x,y]);},
     createLinearGradient(){return {addColorStop(){}};},
   },{get:(object,key)=>key in object?object[key]:()=>{}});
   for(const boss of M.bosses) for(const ph of boss.phases) {
     images.set(ph.sheet,{tag:'actor',naturalWidth:880,naturalHeight:1760});
     images.set(ph.proj,{tag:ph.proj,naturalWidth:384,naturalHeight:768});
   }
-  const scope={Sim,MANIFEST:M,AssetLoader:{lru:()=>new Map()},
+  const scope={Sim,MANIFEST:M,AssetLoader:{lru:()=>new Map(),bossActorFrame:()=>null},
     CoopBossTransformations:{animations:registry},
     document:{createElement:()=>{
       const canvas={width:0,height:0};
@@ -204,8 +205,8 @@ function renderer(registry=animations) {
   for(const name of ['sprite-timeline','boss-fx-selection','render-fx']) {
     vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/'+name+'.js'),'utf8'),scope);
   }
-  return {scope,images,requested,copies,canvases,draw(snapshot){
-    calls.length=0;copies.length=0;
+  return {scope,images,requested,copies,canvases,lines,draw(snapshot){
+    calls.length=0;copies.length=0;lines.length=0;
     const original=JSON.stringify(snapshot);
     scope.RenderFx.drawWorld(context,snapshot,{noBanner:true});
     assert.equal(JSON.stringify(snapshot),original,'render never mutates the authoritative snapshot');
@@ -390,40 +391,80 @@ assert.equal(select.projectile({k:'boss',bi:0,ph:9,t:1}),null);
 assert.equal(select.effect({k:'boom',bi:0,ph:1,t:0}),null);
 assert.equal(select.effect({...oldImpact,sm:70}).purpose,'signature');
 assert.equal(select.effect({...oldImpact,sm:69}).purpose,'impact');
-// Launch streaks are visual only. Release age and world positions come from
-// the same snapshot in local play and after an online reconnect.
-function muzzle(boss, shot, authored = false) {
-  const a = select.launch(boss, shot, M, authored);
-  return a && [a.x, a.y, a.z, a.strength];
-}
-for (const face of [-1, 1]) {
-  const source = arena(0, { face });
-  const snap = step(source);
-  const b = snap.boss;
-  const front = snap.projs.find(p => (p.x - b.x) * face > 0);
-  const rear = snap.projs.find(p => (p.x - b.x) * face < 0);
-  assert.deepEqual(muzzle(b, front, true), [b.x + face * 108, b.y, 38, .875]);
-  assert.deepEqual(muzzle(b, front), [b.x + face * 106, b.y, 67, .875]);
-  assert.deepEqual(muzzle(b, rear, true), [b.x - face * 75, b.y, 95, .875]);
-  assert.deepEqual(muzzle(b, rear), [b.x - face * 87, b.y, 98, .875]);
-  assert.deepEqual(Sim.snapshot(reconnect(source)).projs, snap.projs);
-  assert.equal(muzzle(b, { ...front, t: 8 }), null);
-  assert.equal(muzzle({ ...b, ph: 1 }, front), null);
-  assert.equal(muzzle({ ...b, st: 'dead' }, front), null);
-  assert.equal(muzzle(b, { ...front, k: 'enemyBolt' }), null);
+// Every generic boss keeps simulation-based placement, with no line from the actor.
+const extent = Math.round(Sim.BOSS_SCALE * 256);
+for (const [bi, info] of M.bosses.entries()) for (const phase of [0, 1]) {
+  if (info.attacks === 'bar') continue;
+  const snap = step(arena(phase, { bi }));
+  rendered.draw(snap);
+  assert.deepEqual(rendered.lines, []);
+  for (const shot of snap.projs) assert.equal(select.projectileOrigin(snap.boss, shot, M, extent), null);
 }
 
-const emitter = { bi: 3, ph: 0, ar: 3, st: 'fire', fc: -1, x: 330, y: 52 };
-const rearBoundBomb = { k: 'boss', bi: 3, ph: 0, r: 0, t: 1, x: 270, y: 54, vx: 5 };
-assert.deepEqual(muzzle(emitter, rearBoundBomb, true), [267, 52, 68, .875]);
-assert.deepEqual(muzzle(emitter, rearBoundBomb), [246, 52, 121, .875]);
-
-const foundry = { ...emitter, bi: 4, ph: 1, ar: 0 };
-const tracker = { ...rearBoundBomb, bi: 4, ph: 1, r: 3 };
-assert.deepEqual(muzzle(foundry, { ...tracker, y: 41 }), [237, 52, 116, .875]);
-assert.deepEqual(muzzle(foundry, { ...tracker, y: 63 }), [250, 52, 69, .875]);
-
-const marlin = { ...foundry, bi: 12 };
-assert.equal(muzzle(marlin, { ...tracker, bi: 12, ma: 0 }), null, 'native bill laser is already aligned');
-assert.deepEqual(muzzle(marlin, { ...tracker, bi: 12, ma: 1 }), [287, 52, 175, .875]);
+// Use real releases in each direction. The first visible cel is centered at
+// the hand/outlet in the boss cel, then rejoins its serialized flight.
+const phasePorts = [
+  [[34, 63], [117, 27], [51, 70], [44, 90], [38, 51]],
+  [[16, 27], [59, 30], [64, 61]],
+];
+for (const face of [-1, 1]) for (const [phase, attacks] of phasePorts.entries()) {
+  for (const [barAttack, [cx, cy]] of attacks.entries()) {
+    const bi = M.bosses.findIndex(info => info.attacks === 'bar');
+    const state = arena(phase, { bi, face, barAttack, row: barAttack + 1, tx: 160 });
+    const snap = step(state);
+    const { boss } = snap;
+    assert(snap.projs.length > 0);
+    const { actorCell, actorFoot, proj } = M.bosses[bi].phases[phase];
+    const scale = extent / actorCell;
+    const x = boss.x - face * (cx * scale - Math.round(extent / 2));
+    const z = Math.round(actorFoot * scale) - cy * scale;
+    const draws = fxDraws(rendered, snap, proj);
+    assert.equal(draws.length, snap.projs.length);
+    assert.deepEqual(rendered.lines, []);
+    for (const shot of snap.projs) {
+      assert.deepEqual(select.projectileOrigin(boss, shot, M, extent), { x, y: boss.y, z });
+      assert.equal(select.projectileOrigin(boss, { ...shot, t: 17 }, M, extent), null);
+      assert.equal(select.projectileOrigin({ ...boss, ph: 1 - phase }, shot, M, extent), null);
+    }
+    for (const draw of draws) {
+      assert.equal(draw.transform.x, Math.round(x - snap.camX));
+      assert.equal(draw.transform.y, Math.round(Sim.FLOOR_TOP + boss.y - z));
+    }
+    assert.deepEqual(Sim.snapshot(reconnect(state)).projs, snap.projs);
+    if ((phase === 0 && barAttack === 0) || (phase === 1 && barAttack === 1)) {
+      const next = step(state, phase ? 5 : 8);
+      const laterShot = next.projs.find(shot => shot.t === 1);
+      assert(laterShot, 'the next shot of the burst was emitted');
+      const later = select.projectileOrigin(next.boss, laterShot, M, extent);
+      assert.notEqual(later.z, z, 'the later burst tracks the new firing cel');
+    }
+  }
+}
+// A delayed packet spanning a burst release must not show the next shot
+// before the animation reaches the correct hand cel.
+const barIndex = M.bosses.findIndex(info => info.attacks === 'bar');
+const burst = arena(0, { bi: barIndex, barAttack: 0 });
+const older = step(burst, 6); // Boss tick 35.
+const newer = step(burst, 4); // Boss tick 39, second shot is age two.
+const newId = newer.projs.at(-1).id;
+const interpolate = rendered.scope.RenderFx.interpolateSnapshot;
+assert(!interpolate(older, newer, 0.5).projs.some(shot => shot.id === newId));
+const atRelease = interpolate(older, newer, 0.75);
+const released = atRelease.projs.find(shot => shot.id === newId);
+assert.equal(released.t, 1);
+const releasePort = select.projectileOrigin(atRelease.boss, released, M, extent);
+assert.equal(releasePort.z, Math.round(165 * extent / 176) - 54 * (extent / 176));
+const afterRelease = interpolate(older, newer, 0.875);
+const traveling = afterRelease.projs.find(shot => shot.id === newId);
+assert.equal(traveling.t, 1.5);
+assert.notEqual(select.projectileOrigin(afterRelease.boss, traveling, M, extent).x, releasePort.x);
+const near = arena(0, { bi: barIndex, barAttack: 0, both: false });
+const { boss: closeBoss } = near;
+Object.assign(near.players[0], { x: closeBoss.x - closeBoss.w * 0.55 - 26, y: closeBoss.y, inv: 0 });
+const closeFlight = step(near, 2);
+const closeShot = closeFlight.projs[0];
+assert(closeShot && closeShot.t === 2);
+assert.equal(select.projectileOrigin(closeFlight.boss, closeShot, M, extent, closeFlight.players), null,
+  'the visible shot rejoins the collision path when closing in on a nearby Sproto');
+assert(!step(near).projs.some(shot => shot.id === closeShot.id), 'the next tick hits that Sproto');
 console.log('boss FX: actual Sim emissions, phase ownership, reconnect, finite ends, optional ground contacts, eight-row playback and legacy fallback ok');
