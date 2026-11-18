@@ -10,7 +10,7 @@ const path = require('path');
 const { WebSocketServer } = require('ws');
 
 const root = path.join(__dirname, '..');
-const FINGERPRINT = '9c1841f69463c17a4fd737787b0be20578020f39d29b7310826f992841d3cb67';
+const FINGERPRINT = '3fddedd1b65c0e2d71600e54822e0db5c66b45ac765535b7d0e88c2cf262e97b';
 const PROTOCOL = 1;
 const OP = { HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12, REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19 };
 const DEVICES = ['k1', 'k2', 'gp0', 'gp1', 'gp2', 'gp3'];

@@ -227,7 +227,7 @@ function mirrorTile(g, im, x0, y, h) {
   }
 }
 function drawBackground(g, si, camX) {
-  const n = String(si % 12 + 1).padStart(2, '0');
+  const n = String(M.bosses[si % M.bosses.length].scenery || si % M.bosses.length + 1).padStart(2, '0');
   const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.png`);
   if (ready(back) && ready(floor)) {
     mirrorTile(g, back, -camX * 0.5, 0, 226);

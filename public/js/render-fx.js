@@ -287,21 +287,13 @@ function projectile(g, p, sx, sy, shadowSheet) {
   return drawn;
 }
 
-// Flickering amber warning light standing at (x, y).
-function warnLight(g, x, y, t, k) {
-  const im = fxImg('lights'); if (!ready(im)) return;
-  const f = (t >> 2) % 4, h = 30 * (k || 1), w = h * 19 / 56;
-  g.save(); g.globalAlpha = Math.floor(t / 4) % 2 ? 1 : 0.62;
-  g.drawImage(im, f * 19, 0, 19, 56, Math.round(x - w / 2), Math.round(y - h), w, h);
-  g.restore();
-}
 // Impact burst frame f (0..3), row 0 orange, 1 violet.
 function burstFrame(g, row, f, x, y, size, alpha) {
   const im = fxImg('burst'); if (!ready(im)) return false;
   g.save(); g.globalAlpha = alpha; g.drawImage(im, f * 48, row * 48, 48, 48, Math.round(x - size / 2), Math.round(y - size / 2), size, size); g.restore();
   return true;
 }
-// Rear sweep: cracks glow, then crystal spikes ripple up and collapse (depth-sorted).
+// Rear sweep: crystal spikes ripple up and collapse only when the strike lands.
 function sweepSpikes(g, bw, camX, list, lx, lw) {
   const im = fxImg('spikes'); if (!ready(im)) return false;
   const warn = S.SWEEP_WARN, rear = -bw.fc, x0 = bw.x - camX;
@@ -310,11 +302,7 @@ function sweepSpikes(g, bw, camX, list, lx, lw) {
     for (let col = 0; ; col++) {
       const x = x0 + rear * ((bw.w || 150) * 0.3 + 14 + col * 30 + (row % 2) * 15);
       if (x < lx - 10 || x > lx + lw + 10) { if (col > 12) break; if ((x - x0) * rear > lw + 40) break; continue; }
-      if (bw.t < warn) {
-        const f = Math.min(2, Math.floor(bw.t / warn * 3));
-        g.drawImage(im, f * 42, 63, 42, 8, Math.round(x - 21), gy - 6, 42, 8);
-        continue;
-      }
+      if (bw.t < warn) continue;
       const e = bw.t - warn - Math.floor(col * 0.7) - (row % 2); // spikes ripple outward
       if (e < 0) continue;
       list.push({ y: ly - 0.2, d: () => {
@@ -329,13 +317,6 @@ function sweepSpikes(g, bw, camX, list, lx, lw) {
     }
   }
   return true;
-}
-
-// Warning lights on the machine during charge/sweep wind-ups and missile volleys.
-function windup(g, b, sx, sy, ph) {
-  if (!((b.st === 'charge' && b.t < (b.ar === 1 ? 36 : 24)) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) || (b.st === 'fire' && b.mi && b.t < 30))) return;
-  const top = sy - (ph.body[3] - ph.body[1]) * BS * 0.55, half = (b.w || 150) * 0.32;
-  warnLight(g, sx - half, top, b.t, 0.8); warnLight(g, sx + half, top, b.t + 4, 0.8);
 }
 
 function drawFx(g, f, camX) {
@@ -381,7 +362,8 @@ function drawFx(g, f, camX) {
   }
   if (f.k === 'bossImpact') {
     const ph = M.bosses[f.bi]?.phases[f.ph];
-    if (ph && drawBossFx(g, ph, 3, Math.min(3, Math.floor(f.t / 6)), sx, sy, f.sm || 82, false)) return;
+    const frame = ph?.fxColumns ? Math.min(15, Math.floor(f.t * 16 / 24)) : Math.min(3, Math.floor(f.t / 6));
+    if (ph && drawBossFx(g, ph, 3, frame, sx, sy, f.sm || 82, false)) return;
     f = { ...f, k: 'boom' };
   }
   if (HIT_ROWS[f.k] !== undefined) {
@@ -443,48 +425,9 @@ function drawFx(g, f, camX) {
       g.strokeStyle = 'rgba(255,170,60,.7)'; g.lineWidth = 4; g.beginPath(); g.moveTo(mx + 20, my - 40); g.lineTo(mx, my); g.stroke();
       g.fillStyle = '#5a3a2a'; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.fill(); g.fillStyle = '#ff8a3d'; g.beginPath(); g.arc(mx - 2, my - 2, 3, 0, 7); g.fill();
     }
-  } else if (f.k === 'mark') {
-    // Where a bomber's bomb will land: a red ring that closes in until impact.
-    const k = Math.min(1, f.t / (f.sm || 1)), gy = FLOOR_TOP + f.y;
-    // Searchlight narrowing as the bomb falls.
-    const beam = g.createLinearGradient(0, 0, 0, gy);
-    beam.addColorStop(0, 'rgba(255,90,60,0)'); beam.addColorStop(0.35, 'rgba(255,170,110,.08)'); beam.addColorStop(1, `rgba(255,130,90,${0.3 + 0.3 * k})`);
-    g.fillStyle = beam; g.beginPath(); g.moveTo(sx - 6, 0); g.lineTo(sx + 6, 0); g.lineTo(sx + 30 - 12 * k, gy); g.lineTo(sx - 30 + 12 * k, gy); g.fill();
-    warnLight(g, sx + 34, gy + 2, f.t, 0.7);
-    g.fillStyle = `rgba(255,40,40,${0.25 + 0.3 * k})`; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.fill();
-    g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.stroke();
-    g.strokeStyle = '#ffb24f'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
-}
-
-function bossExtraWarnings(g, boss, camX) {
-  const attack = S.bossExtraAttack(boss.bi, boss.st);
-  const color = attack.color || '#ffad68';
-  g.save();
-  for (const [x, depth, wide, deep, delay, rounded] of boss.az) {
-    const until = attack.warning + delay - boss.t;
-    if (until <= 0) continue;
-    const cx = x - camX, y = FLOOR_TOP + depth;
-    g.globalAlpha = 0.32 + 0.26 * (1 - Math.min(1, until / attack.warning));
-    g.fillStyle = '#b42346'; g.strokeStyle = color; g.lineWidth = 2;
-    g.beginPath();
-    if (rounded) g.ellipse(cx, y, wide, deep, 0, 0, 7);
-    else g.rect(cx - wide, y - deep, wide * 2, deep * 2);
-    g.fill(); g.globalAlpha = 0.95; g.stroke();
-    const scale = Math.min(1, until / attack.warning);
-    g.globalAlpha = 0.8; g.lineWidth = 1; g.beginPath();
-    if (rounded) g.ellipse(cx, y, wide * scale, deep * scale, 0, 0, 7);
-    else g.rect(cx - wide * scale, y - deep * scale, wide * scale * 2, deep * scale * 2);
-    g.stroke();
-  }
-  if (boss.t < attack.warning) {
-    g.globalAlpha = 1;
-    const special = boss.st === 'special';
-    text(g, attack.name.toUpperCase(), W / 2, FLOOR_TOP - 15, special ? 10 : 8, color, 'center');
-  }
-  g.restore();
 }
 
 function floor(g, snap, camX, list) {
@@ -522,40 +465,12 @@ function floor(g, snap, camX, list) {
       g.restore();
     }
   }
-  // Boss lane warnings: a red stripe along each lane about to be shot.
+  // The rear-sweep impact remains visible, without a preview of its danger area.
   const bw = snap.boss;
-  if (bw?.az) bossExtraWarnings(g, bw, camX);
-  if (bw && bw.wl && bw.st === 'fire' && bw.t < 30) {
-    const k = bw.t / 30, x0 = bw.x - camX;
-    // bo: a mid-arena boss fires both ways.
-    const dirs = bw.bo ? [bw.fc, -bw.fc] : [bw.fc];
-    for (const ly of bw.wl) {
-      const y = FLOOR_TOP + ly;
-      for (const d of dirs) {
-        // Starts at 40% and is edged in a light colour so it reads on dark and light floors alike.
-        const lx = d < 0 ? 0 : x0, lw = d < 0 ? x0 : W - x0;
-        g.fillStyle = `rgba(255,40,40,${0.4 + 0.2 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
-        g.fillRect(lx, y - 6, lw, 12);
-        g.fillStyle = `rgba(255,236,170,${0.75 + 0.25 * k})`;
-        g.fillRect(lx, y - 7, lw, 1); g.fillRect(lx, y + 6, lw, 1);
-        warnLight(g, x0 + d * ((bw.w || 150) * 0.55 + 8), y + 4, bw.t);
-        warnLight(g, d < 0 ? 10 : W - 10, y + 4, bw.t + 2);
-      }
-    }
-    if (Math.floor(bw.t / 6) % 2) for (const d of dirs) text(g, bw.bo ? 'BOTH SIDES!' : 'MOVE!', x0 + d * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
-  }
-  // Rear sweep: the ground behind the boss is marked before it is hit (jump it, or get in front).
-  if (bw && bw.st === 'sweep') {
+  if (bw && bw.st === 'sweep' && bw.t >= S.SWEEP_WARN) {
     const rear = -bw.fc, reach = (bw.w || 150) / 2 + S.SWEEP_REACH, x0 = bw.x - camX, x1 = x0 + rear * reach;
-    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx, warn = bw.t < S.SWEEP_WARN;
-    const spikes = sweepSpikes(g, bw, camX, list, lx, lw);
-    if (warn || bw.t < S.SWEEP_WARN + 8) {
-      const k = bw.t / S.SWEEP_WARN;
-      g.fillStyle = warn ? `rgba(${spikes ? '220,60,255' : '255,150,30'},${(spikes ? 0.16 : 0.3) + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(239,157,72,.7)';
-      g.fillRect(lx, FLOOR_TOP, lw, S.DEPTH);
-      g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.strokeRect(lx + 0.5, FLOOR_TOP + 0.5, lw - 1, S.DEPTH - 1);
-      if (warn && Math.floor(bw.t / 6) % 2) text(g, 'BEHIND! JUMP!', lx + lw / 2, FLOOR_TOP - 10, 8, '#ffb23d', 'center');
-    }
+    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx;
+    sweepSpikes(g, bw, camX, list, lx, lw);
   }
 }
 
@@ -622,7 +537,7 @@ function floorTile(a, b, pat) {
 }
 function background(si) {
   if (bgCache[si]) return bgCache[si];
-  const th = THEMES[si % THEMES.length];
+  const th = THEMES[((M.bosses[si]?.scenery || si + 1) - 1) % THEMES.length];
   return bgCache[si] = { th, far: layer(th.far[0], th.far[1], FLOOR_TOP, si * 3 + 1), mid: layer(th.mid[0], th.mid[1], FLOOR_TOP, si * 3 + 2), floor: floorTile(...th.floor) };
 }
 function drawFallbackBackground(g, si, camX) {
@@ -787,7 +702,7 @@ function drawSummary(g, sum, info) {
   g.fillStyle = sum.victory ? '#7aff8a' : '#ff5a5a'; g.fillRect(x, y, w, 3);
   text(g, sum.victory ? 'VICTORY!' : 'GAME OVER', W / 2, y + 24, 18, sum.victory ? '#7aff8a' : '#ff5a5a', 'center');
   if (info.why) text(g, info.why, W / 2, y + 44, 6, '#c8c6e0', 'center');
-  text(g, 'STAGE ' + sum.stage + ' OF 12    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
+  text(g, 'STAGE ' + sum.stage + ' OF ' + M.bosses.length + '    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
   const cols = [[x + 330, 'SCORE'], [x + 384, 'KOS'], [x + 438, 'REVIVES'], [x + 488, 'PARRIES']];
   for (const c of cols) text(g, c[1], c[0], y + 82, 6, '#c8c6e0', 'right');
   sum.rows.forEach((r, i) => {
@@ -806,6 +721,24 @@ function drawSummary(g, sum, info) {
 
 function bossPose(b, sx) {
   const t = b.t;
+  if (M.bosses[b.bi].attacks === 'bar') {
+    if (b.st === 'dead') return [b.ph, 8, 4 + Math.min(3, Math.floor(t / 14))];
+    if (b.fl > 0 && b.st !== 'fire') return [b.ph, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
+    if (b.st === 'fire') {
+      // Keep the launch pod extended through every missile in the five-shot burst.
+      const age = t - 30;
+      const col = t < 30 ? Math.min(3, Math.floor(t / 7.5)) : b.ph && b.ba === 1
+        ? (age <= 20 ? 4 + Math.floor(age / 5) % 2 : age < 32 ? 6 : 7)
+        : 4 + Math.min(3, Math.floor(age / 7));
+      return [b.ph, 1 + b.ba, col];
+    }
+    if (b.st === 'sweep') return [b.ph, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
+    if (b.st === 'charge') {
+      const remaining = b.fc < 0 ? sx - 60 : W - 60 - sx;
+      return [b.ph, 6, t < 24 ? Math.floor(t / 6) : remaining < 34 ? 6 + Math.floor(t / 5) % 2 : 4 + Math.floor(t / 6) % 2];
+    }
+    return [b.ph, 0, (b.st === 'enter' || t % 72 >= 36 ? 4 : 0) + Math.floor(t / 9) % 4];
+  }
   if (b.st === 'signature' || b.st === 'special') {
     const attack = S.bossExtraAttack(b.bi, b.st);
     const end = attack.warning + attack.zones[attack.zones.length - 1][4] + 6;
@@ -875,19 +808,30 @@ function drawTransformDischarge(g, b, sx, sy, width, color, keys) {
 }
 
 function drawBossCel(g, b, sx, sy, sprite, row, col) {
-  const C = BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const phase = M.bosses[b.bi].phases[b.ph], C = phase.actorCell || BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const foot = phase.actorFoot ? Math.round(phase.actorFoot * size / C) : BOSS_SPRITE_FOOT;
   g.save();
   g.imageSmoothingEnabled = false;
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   g.translate(Math.round(sx), Math.round(sy));
   if (b.fc > 0) g.scale(-1, 1);
   if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -BOSS_SPRITE_FOOT, size, size);
+  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -foot, size, size);
   g.restore();
 }
 
 function drawBossTransform(g, b, sx, sy) {
   const boss = M.bosses[b.bi], phases = boss.phases;
+  if (boss.attacks === 'bar') {
+    const frame = root.AssetLoader.bossActorFrame(M, b.bi, 0, 9);
+    const sheet = img(frame.src);
+    if (ready(sheet)) {
+      shadow(g, sx, sy, b.w * .45);
+      const col = Math.min(7, Math.floor(b.t * 8 / S.BOSS_TRANSFORM_TICKS));
+      drawBossCel(g, { ...b, ph: 0 }, sx, sy, sheet, frame.row, col);
+    }
+    return;
+  }
   const authored = root.CoopBossTransformPlayer?.shared();
   if (root.CoopBossTransformations?.clips?.[boss.key]) {
     shadow(g, sx, sy, (phases[1].body[2] - phases[1].body[0]) * BS * 0.45);
@@ -917,7 +861,9 @@ function drawBoss(g, b, camX) {
   const sx = b.x - camX, sy = FLOOR_TOP + b.y;
   if (b.st === 'transform') return drawBossTransform(g, b, sx, sy);
   const [phase, row, col] = bossPose(b, sx);
-  const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
+  const boss = M.bosses[b.bi], ph = boss.phases[phase];
+  const frame = boss.attacks === 'bar' ? root.AssetLoader.bossActorFrame(M, b.bi, phase, row) : null;
+  const sheet = img(frame ? frame.src : ph.sheet);
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   const played = root.CoopBossActionPlayer?.shared()?.draw(g, M.bosses[b.bi].key, phase, {
@@ -926,7 +872,7 @@ function drawBoss(g, b, camX) {
   });
   if (!played) {
     if (!ready(sheet)) return;
-    drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
+    drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, frame ? frame.row : row, col);
   }
   for (const choice of root.CoopBossFxSelection?.overlays(b) || []) {
     // bossHit has no phase, and generic death booms have no boss identity.
@@ -935,7 +881,6 @@ function drawBoss(g, b, camX) {
     const z = (ph.body[3] - ph.body[1]) * BS * 0.45;
     drawRegisteredBossFx(g, choice, sx, sy - z, choice.purpose === 'death' ? 120 : 82, false);
   }
-  windup(g, b, sx, sy, ph);
   if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
     g.globalAlpha = (27 - b.su) / 27;
@@ -999,12 +944,14 @@ function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
   return true;
 }
 
-function drawBossFx(g, ph, row, col, x, y, size, flip) {
-  const sheet = img(ph.proj), C = BOSS_FX_CELL;
+function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
+  const sheet = img(ph.proj), C = ph.fxCell || BOSS_FX_CELL;
+  if (ph.fxColumns && row === 3 && !rawRow) row = ph.impactRow;
   if (!ready(sheet)) return false;
   g.save();
   g.translate(Math.round(x), Math.round(y));
   g.imageSmoothingEnabled = false;
+  if (angle) g.rotate(angle);
   if (flip) g.scale(-1, 1);
   g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
   g.restore();
@@ -1017,6 +964,17 @@ function drawProj(g, p, camX, shadowSheet) {
   if (p.k === 'boss') {
     const ph = M.bosses[p.bi].phases[p.ph];
     shadow(g, sx, FLOOR_TOP + p.y, 7);
+    if (p.ma !== undefined) {
+      const size = [96, 58, 44][p.ma];
+      const angle = p.ma === 2 ? 0 : Math.sign(p.vx) * Math.atan2(-(p.vz || 0), Math.abs(p.vx));
+      drawBossFx(g, ph, p.ma, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0, true, angle);
+      return;
+    }
+    if (p.ba !== undefined) {
+      const size = [28, 38, 36, 34, 78][p.ba];
+      drawBossFx(g, ph, p.ba, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0 && p.ba === 4, true);
+      return;
+    }
     const row = p.r === 3 ? 2 : p.r === 1 ? 1 : 0;
     const choice = root.CoopBossFxSelection?.projectile(p);
     if (!drawRegisteredBossFx(g, choice, sx, sy, row === 2 ? 68 : 60, p.vx > 0) &&
@@ -1071,7 +1029,8 @@ function drawWorld(g, snap, opts) {
   const mine = (opts && opts.local) || [];
   const camX = snap.camX;
   const sk = snap.sk || 0;
-  const shadowPath = M.shadows?.sheets[snap.si];
+  const shadowStage = M.bosses[snap.si].shadowStage ?? snap.si;
+  const shadowPath = M.shadows?.sheets[shadowStage];
   const shadowSheet = shadowPath && img(shadowPath);
   g.save();
   if (sk) g.translate(Math.round(Math.sin(snap.t * 1.7) * sk), Math.round(Math.cos(snap.t * 2.3) * sk * 0.6));
@@ -1120,7 +1079,7 @@ function drawWorld(g, snap, opts) {
       }
       if (!e.d && (e.hp < e.mh || e.el)) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = e.el ? '#ffd23d' : '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
       // Elite: a gold bar, and a shield on the side it guards while the guard is up.
-      const twin = M.shadows?.stages[snap.si]?.[e.sh]?.role === 'twin';
+      const twin = M.shadows?.stages[shadowStage]?.[e.sh]?.role === 'twin';
       if (!e.d && (e.el || twin)) {
         text(g, twin ? 'SHADOW TWINS' : 'ELITE', sx, sy - 76 - e.z, 5, '#ffd23d', 'center');
         if (e.el === 2 && (e.st === 'walk' || e.st === 'idle' || e.st === 'attack')) {
@@ -1131,7 +1090,7 @@ function drawWorld(g, snap, opts) {
       }
     } });
   }
-  floor(g, snap, camX, list); // fire lanes, lane and sweep warnings
+  floor(g, snap, camX, list); // active fire lanes and sweep impacts
   if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX, shadowSheet) });
   list.sort((a, b) => a.y - b.y);

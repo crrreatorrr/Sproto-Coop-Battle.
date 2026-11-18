@@ -389,6 +389,23 @@ async function main() {
     for(const name of ['04-ranch-zephyr','06-circuit-rune'])assert(!r.streamedMedia.optionalPaths.includes(`assets/bosses/${name}-p2-projectiles.png`));
     assert.equal(r.fxScratchDecodedBytes,36864);
   });
+  test('stage-only actor pages meet the same caps and are retained only on arrival',()=>{
+    const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
+    const index=manifest.bosses.findIndex(boss=>boss.attacks==='bar'), plan=realLoader(registry).groups(manifest);
+    const banks=plan.boss(index).filter(src=>src.startsWith('assets/bosses/'+manifest.bosses[index].key+'-'));
+    const before=report.streamedMedia.scenes.find(row=>row.boss===manifest.bosses[index-1].key && row.state==='fallback-and-next-prefetch');
+    const here=report.streamedMedia.scenes.find(row=>row.boss===manifest.bosses[index].key && row.state==='fallback-and-next-prefetch');
+    const decoded=names=>names.reduce((sum,src)=>sum+report.files.find(file=>file.path===src).decodedBytes,0);
+    assert.equal(banks.length,6);
+    banks.forEach(src=>assert(report.streamedMedia.optionalPaths.includes(src)));
+    assert.equal(before.fallbackDecodedBytes,decoded(plan.boss(index-1)));
+    assert.equal(here.fallbackDecodedBytes,decoded(plan.boss(index)));
+    const files=copy(report.files), bank=files.find(file=>file.path===banks[0]);
+    bank.bytes=limits.encodedPageBytes+1;
+    const bad=analyze(manifest,registry,files);
+    assert(bad.validationErrors.some(error=>error.owner.endsWith('/stage-only-banks')));
+    assert(banks.every(src=>!bad.optionalPaths.includes(src)), 'a bad stage bank keeps the whole batch in base bytes');
+  });
   test('real first-boss loader budget still counts a dedicated FX bank request and first-stage bytes',()=>{
     const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
     const before=realLoader(registry),index=runtimeIndex(report),scriptPaths=before.pageScripts(index.html);

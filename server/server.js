@@ -9,6 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
+const STAGES = 13; // Twelve original stages plus Last Call Bar.
 
 const ROOT = path.resolve(__dirname, '..', 'public');
 const ROOT_WITH_SEP = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;
@@ -272,7 +273,7 @@ function sanitizeGuest(msg) {
 function sanitizeHost(msg) {
   if (msg.t === 'lobby') {
     if (!Array.isArray(msg.slots) || msg.slots.length !== 4) return null;
-    const sel = Number.isInteger(msg.sel) ? Math.max(0, Math.min(11, msg.sel)) : 0;
+    const sel = Number.isInteger(msg.sel) ? Math.max(0, Math.min(STAGES - 1, msg.sel)) : 0;
     return {
       t: 'lobby',
       slots: msg.slots,

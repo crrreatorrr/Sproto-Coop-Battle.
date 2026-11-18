@@ -90,7 +90,8 @@ reconnect(transition);
 // Exercise each boss's actual signature and special releases, including every
 // delayed zone. Lifetimes come from simulation removal, not a render clock.
 const impactSnapshots={};
-for (let bi=0;bi<M.bosses.length;bi++) for (const mode of ['signature','special']) {
+for (const [bi, info] of M.bosses.entries()) for (const mode of ['signature','special']) {
+  if (info.attacks === 'bar') continue; // Dedicated Last Call attacks have their own simulation and browser suites.
   const {state,attack}=extra(bi,mode), emitted=new Map(), life=mode==='special'?36:24;
   const end=attack.warning+Math.max(...attack.zones.map(z=>z[4]))+life+1;
   for(let tick=1;tick<=end;tick++) {

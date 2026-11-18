@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const scope = {};
 scope.window = scope;
-for (const name of ['sprite-timeline', 'boss-transform-player', 'boss-fx-selection']) {
+for (const name of ['sprite-timeline', 'boss-transform-player', 'boss-fx-selection', 'asset-loader']) {
   vm.runInNewContext(fs.readFileSync(path.join(root, 'public/js', name + '.js'), 'utf8'), scope);
 }
 
@@ -73,8 +73,9 @@ export function analyzeStreamedMedia(manifest, registry, files) {
 
   // The real loader retains both fallback phases and their registered FX.
   // Byte classification never changes this stage-lifetime decoded residency.
-  function fallbackPaths(boss) {
-    const paths = boss.phases.flatMap(phase => [phase.sheet, phase.proj]).filter(Boolean);
+  function fallbackPaths(boss, index) {
+    const paths = boss.phases.flatMap(phase => scope.AssetLoader.stageOnlyBoss(manifest, index)
+      ? [phase.sheet, scope.AssetLoader.lowerBossActorPath(phase), phase.proj] : [phase.sheet, phase.proj]).filter(Boolean);
     const rawPhases = animations?.[boss.key]?.phases;
     const phases = Array.isArray(rawPhases) ? rawPhases : [];
     for (const phase of phases) for (const fx of Object.values(phase?.fx || {})) {
@@ -190,6 +191,43 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     });
   }
 
+  // Bespoke banks loaded only after entering their own stage can join the
+  // optional download budget. Validate ownership and exact decoded geometry
+  // atomically. They still count in that stage's resident presentation.
+  manifest.bosses.forEach((boss, index) => {
+    if (!scope.AssetLoader.stageOnlyBoss(manifest, index)) return;
+    const owner = boss.key + '/stage-only-banks';
+    const banks = [];
+    for (const [phaseIndex, phase] of boss.phases.entries()) {
+      const stem = 'assets/bosses/' + boss.key + '-p' + (phaseIndex + 1);
+      const actorRows = scope.AssetLoader.barActorPageRows, width = phase.actorCell * phase.columns;
+      banks.push(
+        { src: phase.sheet, expectedSrc: stem + '.webp',
+          width, height: phase.actorCell * actorRows },
+        { src: scope.AssetLoader.lowerBossActorPath(phase), expectedSrc: stem + '-lower.webp',
+          width, height: phase.actorCell * ((phaseIndex ? 9 : 10) - actorRows) },
+        { src: phase.proj, expectedSrc: stem + '-projectiles.png',
+          width: phase.fxCell * phase.fxColumns, height: phase.fxCell * (phase.impactRow + 1) });
+    }
+    const retainedElsewhere = new Set(fallback.flatMap((paths, i) => i === index ? [] : paths));
+    const entries = banks.map(({ src, expectedSrc, width, height }) => {
+      const file = byPath.get(src), decodedBytes = width * height * 4;
+      if (!/^assets\/bosses\/[a-z0-9-]+\.(?:webp|png)$/.test(src) ||
+          src !== expectedSrc || retainedElsewhere.has(src) || optional.has(src))
+        fail(owner, 'noncanonical or shared stage bank: ' + src);
+      else if (!safe(width) || !safe(height) || !file ||
+          !width || !height || file.width !== width || file.height !== height ||
+          !safe(file.bytes) || !file.bytes || file.bytes > MEDIA_LIMITS.encodedPageBytes ||
+          file.decodedBytes !== decodedBytes || decodedBytes > MEDIA_LIMITS.decodedPageBytes ||
+          Math.max(width, height) > MEDIA_LIMITS.textureSide)
+        fail(owner, 'invalid stage bank dimensions or byte limit: ' + src);
+      else return file;
+      return null;
+    });
+    if (entries.length !== 6) fail(owner, 'expected two phases with three banks each');
+    else if (entries.every(Boolean)) entries.forEach(file => optional.set(file.path, file));
+  });
+
   const paths = [...optional.keys()].sort();
   for (const file of files) {
     if (/^assets\/bosses\/(actions|transformations|effects)\//.test(file.path) && !optional.has(file.path))
@@ -227,7 +265,7 @@ export function analyzeStreamedMedia(manifest, registry, files) {
   }
   for (let i = 0; i < manifest.bosses.length; i++) {
     // With neither stream pinned the existing loader warms the next boss too.
-    scene(i, 'fallback-and-next-prefetch', null, [], [], 0, fallback[i].concat(fallback[i + 1] || []));
+    scene(i, 'fallback-and-next-prefetch', null, [], [], 0, fallback[i].concat(scope.AssetLoader.canPrefetchNext(manifest, i) ? fallback[i + 1] : []));
     const transform = clips.find(c => c.bossIndex === i && c.kind === 'transformations');
     if (transform) {
       scene(i, 'phase-one-transform-standby', 0, [transform.pages[0].src], [], 0);

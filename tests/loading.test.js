@@ -162,10 +162,18 @@ async function main() {
   await memory.drain();
   await startup;
   assert.strictEqual(memory.loader.status().resident.fighter, 4);
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < memory.manifest.bosses.length; i++) {
     memory.loader.enterStage(i, memory.manifest);
     await memory.drain();
   }
+  const stageOnly = memory.manifest.bosses.findIndex(boss => boss.attacks === 'bar');
+  assert.ok(stageOnly > 0);
+  memory.loader.enterStage(stageOnly - 1, memory.manifest);
+  await memory.drain();
+  assert.ok(plan.boss(stageOnly).every(src => !memory.loader.loaded(src)), 'bespoke banks wait until arrival');
+  memory.loader.enterStage(stageOnly, memory.manifest);
+  await memory.drain();
+  assert.ok(plan.boss(stageOnly).every(src => memory.loader.loaded(src)), 'arrival and late join load every bespoke bank');
   const stat = memory.loader.status();
   assert.ok(stat.resident.boss <= 8, 'boss resident ' + stat.resident.boss);
   assert.ok(stat.decoded.boss <= 8 * 1024 * 1024 * 4, 'boss decoded ' + stat.decoded.boss);

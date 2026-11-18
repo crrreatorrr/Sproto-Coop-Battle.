@@ -135,7 +135,7 @@ async function main() {
     assert.deepStrictEqual(own(offline), { kind: 'device' });
     clear(offline, 11);
     best(offline, run(12, 99, 99, true));
-    assert.strictEqual(JSON.parse(browser.getItem(P.KEY)).unlocked, 12, 'device copy under the old key');
+    assert.strictEqual(JSON.parse(browser.getItem(P.KEY)).unlocked, 13, 'device copy under the old key');
 
     const visit = store(browser, true);
     assert.deepStrictEqual(visit.get(), P.blank(), 'a hub visit does not show device progress while pending');
@@ -144,10 +144,10 @@ async function main() {
     clear(visit, 1);
     await visit.flush();
     assert.deepStrictEqual(JSON.parse(cloud.saves.get('player-c')), { unlocked: 2, best: null });
-    assert.strictEqual(JSON.parse(browser.getItem(P.KEY)).unlocked, 12, 'the device copy is untouched');
+    assert.strictEqual(JSON.parse(browser.getItem(P.KEY)).unlocked, 13, 'the device copy is untouched');
     // Back to play outside the hub: the device progress is all there, the account's is not added.
     visit.release();
-    assert.strictEqual(visit.get().unlocked, 12);
+    assert.strictEqual(visit.get().unlocked, 13);
     assert.deepStrictEqual(visit.get().best, run(12, 99, 99, true));
   }
 
@@ -231,7 +231,7 @@ async function main() {
     assert.strictEqual(HubSDK.SAVE_MAX_BYTES, 16384);
     assert.ok(bytes * 20 < HubSDK.SAVE_MAX_BYTES, `largest save is ${bytes} bytes`);
     // Junk in a cloud save is normalized away, never grown into a bigger save.
-    assert.deepStrictEqual(P.normalize({ unlocked: 12, best: biggest.best, extra: 'x'.repeat(20000) }), biggest);
+    assert.deepStrictEqual(P.normalize({ unlocked: P.STAGES, best: biggest.best, extra: 'x'.repeat(20000) }), biggest);
   }
 
   // ---- tabs: the storage event brings in what another tab saved ----

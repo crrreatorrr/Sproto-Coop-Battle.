@@ -3,7 +3,7 @@
   "loopHz": 20,
   "substeps": 3,
   "snapshotHz": 10,
-  "content": "9c1841f69463c17a4fd737787b0be20578020f39d29b7310826f992841d3cb67",
+  "content": "3fddedd1b65c0e2d71600e54822e0db5c66b45ac765535b7d0e88c2cf262e97b",
   "cases": [
     {
       "id": "cpu-seed42-terminal",
@@ -162,6 +162,63 @@
         "items": 4,
         "steps": 120,
         "hash": "b6d0d4228b351d3d125834611dd4cf52974b3d218f474dfffcbe935f5da6013a"
+      }
+    },
+    {
+      "id": "sprotel-marlin-weapons",
+      "kind": "local",
+      "seed": 332,
+      "stage": 12,
+      "tick": 1000,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 1000,
+        "bossPhase": 1,
+        "barAttacks": 7,
+        "marlinAttacks": 7
+      },
+      "stateHash": "a232d703292b31343fa4aa8da667e3b5bfcf20116cee72b4d8f9669deb630233",
+      "snapHash": "d26ece59302666c482de17ab8f674e603d1fd18984a98722f85798a69c573827",
+      "stateBytes": 5592,
+      "resume": {
+        "lives": 8,
+        "powers": 0,
+        "items": 4,
+        "steps": 120,
+        "hash": "a0c70abdd31273019c6aef4f7ae26cb0ac85d23a5a468954380422d61e078a90"
+      }
+    },
+    {
+      "id": "sprotel-bar-throws",
+      "kind": "local",
+      "seed": 331,
+      "stage": 12,
+      "tick": 1200,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 1200,
+        "bossPhase": 0,
+        "barAttacks": 31
+      },
+      "stateHash": "96b49ec48805c8e1103af7afd08b84551e26218318535b81fb4de76cc022ae1a",
+      "snapHash": "02c1fb0a82184bc2867fbf69a8f40378fcbbbb04a506e7bba131102871fcd8ea",
+      "stateBytes": 4647,
+      "resume": {
+        "lives": 8,
+        "powers": 0,
+        "items": 4,
+        "steps": 120,
+        "hash": "1bc10a570bfae91586ee6ca38e87ae62506c07d344c2de96c7ec6a3e5f33f0b1"
       }
     },
     {
@@ -918,6 +975,69 @@
       "stateHash": "12ec2d5c70c83d2d41270c33a235c3e0f357463ee4c60a9dc34ae0f4cf05eec6",
       "snapHash": "2b0ffb5141b246bd135f6ac60b53d2f1198bd9c3ded5b78b82d772857b484b11",
       "stateBytes": 8129,
+      "resume": null
+    },
+    {
+      "id": "stage-12-human",
+      "kind": "local",
+      "seed": 4204,
+      "stage": 12,
+      "tick": 900,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 0,
+        "bossPhase": 0
+      },
+      "stateHash": "c54fe94886bbb1a110935ce4029db4d1fa7f98d674406179909b33483a4cca21",
+      "snapHash": "3539fe315f994afa309c587e3f691e7c1b6deaff2e24465ca91894f88677c28d",
+      "stateBytes": 9327,
+      "resume": null
+    },
+    {
+      "id": "stage-12-mixed",
+      "kind": "mixed",
+      "seed": 4204,
+      "stage": 12,
+      "tick": 700,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 0,
+        "bossPhase": 0
+      },
+      "stateHash": "95a642ac2d97ba079f9bda7ede234fcc995479cc29d90574f8cc444bb971995a",
+      "snapHash": "e3d5e355419a24dc77f503b36b4ccd47b6505ea2d2de662c32cfb245def16339",
+      "stateBytes": 8571,
+      "resume": null
+    },
+    {
+      "id": "stage-12-cpu",
+      "kind": "cpu",
+      "seed": 4204,
+      "stage": 12,
+      "tick": 500,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 0,
+        "bossPhase": 0
+      },
+      "stateHash": "f9cbcb5d0b6318fc145f2997181933df0f4997f2aa9f1c4fabf92d35c14e5b5c",
+      "snapHash": "11314ca311eb50cd4cf6956ae2e520825a0329834777507bd374b259b20c0120",
+      "stateBytes": 8031,
       "resume": null
     },
     {

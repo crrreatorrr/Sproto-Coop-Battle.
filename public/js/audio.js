@@ -37,8 +37,7 @@ const SFX = {
   respawn: () => tone(300, 0.3, 'triangle', 3, 0.3), crate: () => noise(0.15, 0.5, 1200), wave: () => tone(220, 0.3, 'square', 1.5, 0.2), go: () => { tone(660, 0.1); setTimeout(() => tone(880, 0.15), 120); },
   bossin: () => { tone(110, 0.8, 'sawtooth', 0.5, 0.4); [0, 220, 440].forEach(d => setTimeout(() => tone(740, 0.16, 'square', 0.8, 0.3), d)); }, transform: () => tone(90, 1.2, 'sawtooth', 3, 0.35), bossdown: () => noise(1.2, 0.8, 500),
   clear: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.18), i * 120)), stage: () => tone(440, 0.2, 'square', 1.5, 0.2),
-  charge: () => { tone(80, 0.6, 'sawtooth', 2, 0.4); tone(330, 0.5, 'square', 2.2, 0.28); },
-  // Boss telegraph: a two-tone klaxon, louder than anything else, when lanes light up or a missile locks.
+  // Ranged Shadow warning; bosses rely on their attack animations.
   warn: () => { tone(932, 0.13, 'square', 1, 0.5); setTimeout(() => tone(698, 0.2, 'square', 1, 0.5), 140); }, throw: () => noise(0.05, 0.15, 3000), victory: () => [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => tone(f, 0.25), i * 150)),
   menu: () => tone(700, 0.05, 'square', 1, 0.2), join: () => tone(500, 0.15, 'square', 2, 0.3),
 };
@@ -134,11 +133,11 @@ root.Audio2 = { play, ensure, music, toggle: () => (muted = !muted), isMuted: ()
 'use strict';
 const KEY = 'sproto-coop-progress-v1';
 const SETTINGS_KEY = 'sproto-coop-settings-v1';
-const STAGES = 12;
+const STAGES = root.MANIFEST ? root.MANIFEST.bosses.length : 13;
 const int = (v, lo, hi, d) => (Number.isInteger(v) && v >= lo && v <= hi ? v : d);
 const ALL_CLEARS = (1 << STAGES) - 1;
 // Old saves only tracked the deepest stage reached and the best run.
-const legacyClears = data => data.best && data.best.victory ? ALL_CLEARS : (1 << (data.unlocked - 1)) - 1;
+const legacyClears = data => data.best && data.best.victory ? (1 << Math.min(STAGES, data.best.stage)) - 1 : (1 << (data.unlocked - 1)) - 1;
 const weaponClears = data => int(data.weaponClears, 0, ALL_CLEARS, legacyClears(data));
 function withClears(data, cleared) {
   if (cleared === legacyClears(data)) delete data.weaponClears;
@@ -160,6 +159,7 @@ function normalize(raw) {
   if (b && typeof b === 'object' && Number.isInteger(b.stage)) {
     out.best = { stage: int(b.stage, 1, STAGES, 1), score: int(b.score, 0, 1e12, 0), ticks: int(b.ticks, 0, 1e9, 0), victory: b.victory === true };
   }
+  if (out.best && out.best.victory) out.unlocked = Math.max(out.unlocked, Math.min(STAGES, out.best.stage + 1));
   return withClears(out, int(raw.weaponClears, 0, ALL_CLEARS, legacyClears(out)));
 }
 // Orders two runs, positive when a is the better one: a win beats any loss, then the furthest
@@ -202,7 +202,7 @@ function clearStage(data, stageNumber) {
 // A Free Play clear is remembered, but it does not grant the earlier weapons.
 function weaponTier(data) {
   const combat = root.CombatKernel || require('./combat.js');
-  return combat.unlockedTier(weaponClears(data), STAGES + 1);
+  return combat.unlockedTier(weaponClears(data), 13);
 }
 const isOpen = (data, index, freePlay) => !!freePlay || index < data.unlocked;
 

@@ -680,7 +680,7 @@ async function verifyBossPlayback(page) {
       const warning = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
       draw({ ...ready, boss: { ...ready.boss, az: [] } });
       const clean = ctx.getImageData(0, Sim.FLOOR_TOP - 16, Sim.W, Sim.DEPTH + 20).data;
-      check(warning.some((byte, i) => byte !== clean[i]), name + ' floor warning did not paint');
+      check(warning.every((byte, i) => byte === clean[i]), name + ' painted an explicit boss warning');
 
       const lock = JSON.stringify(start.boss.az);
       const preImpactHp = player.hp;
@@ -747,6 +747,8 @@ async function verifyBossPlayback(page) {
     let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
     let transformRenders = 0, transformMorphs = 0, legacyTransformRenders = 0, registeredTransformCels = 0;
     for (const [bi, boss] of MANIFEST.bosses.entries()) {
+      // Single-phase Last Call has separate 8/16-column playback coverage.
+      if (boss.attacks === 'bar') continue;
       Render.enterStage(bi);
       await loader.preload([...plan.boss(bi), ...plan.scenery(bi)]);
       const snap = { si: bi, t: 12, sk: 0, camX: 0, items: [], players: [], enemies: [], fx: [], projs: [] };

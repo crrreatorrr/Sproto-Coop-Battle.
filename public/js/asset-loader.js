@@ -37,17 +37,20 @@ function motionPath(fighter) {
   return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.png' : null;
 }
 
-function stageNo(i) { return String((i % 12) + 1).padStart(2, '0'); }
+function stageNo(i, manifest) { return String(manifest?.bosses[i]?.scenery || i + 1).padStart(2, '0'); }
 
-function scenery(i) {
-  const n = stageNo(i);
+function scenery(i, manifest) {
+  const n = stageNo(i, manifest || root.MANIFEST);
   return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.png'];
 }
 
 function bossPaths(manifest, i) {
   const out = [];
   const phases = manifest.bosses[i].phases;
-  for (let p = 0; p < phases.length; p++) out.push(phases[p].sheet, phases[p].proj);
+  for (const phase of phases) {
+    out.push(phase.sheet, phase.proj);
+    if (stageOnlyBoss(manifest, i)) out.push(lowerBossActorPath(phase));
+  }
   // Authored effect clips normally reuse each phase's projectile bank. Optional
   // separate banks follow the same stage lifetime, including late-join loads.
   const art = root.CoopBossTransformations?.animations?.bosses?.[manifest.bosses[i].key]?.phases || [];
@@ -73,9 +76,32 @@ function actionPaths(manifest, i) {
     .flatMap(clip => clip.pages.map(page => page.src))));
 }
 
+// Last Call's larger bespoke banks load on arrival. Holding them alongside
+// Codebreak would cross the decoded presentation budget.
+function stageOnlyBoss(manifest, i) {
+  return i > 0 && manifest.bosses[i]?.attacks === 'bar';
+}
+
+const BAR_ACTOR_PAGE_ROWS = 5;
+
+function lowerBossActorPath(phase) {
+  return typeof phase.sheet === 'string' ? phase.sheet.replace(/\.webp$/, '-lower.webp') : null;
+}
+
+function bossActorFrame(manifest, i, phaseIndex, row) {
+  const phase = manifest.bosses[i].phases[phaseIndex];
+  return stageOnlyBoss(manifest, i) && row >= BAR_ACTOR_PAGE_ROWS
+    ? { src: lowerBossActorPath(phase), row: row - BAR_ACTOR_PAGE_ROWS }
+    : { src: phase.sheet, row };
+}
+
+function canPrefetchNext(manifest, i) {
+  return i + 1 < manifest.bosses.length && !stageOnlyBoss(manifest, i + 1);
+}
+
 function stagePaths(manifest, i) {
-  const paths = scenery(i).concat(bossPaths(manifest, i));
-  const shadow = manifest.shadows?.sheets[i];
+  const paths = scenery(i, manifest).concat(bossPaths(manifest, i));
+  const shadow = manifest.shadows?.sheets[manifest.bosses[i].shadowStage ?? i];
   if (shadow) paths.push(shadow);
   return paths;
 }
@@ -104,13 +130,13 @@ function groups(manifest) {
   const stages = [];
   const bosses = [], transformations = [], actions = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
-    stages.push.apply(stages, scenery(i));
+    stages.push.apply(stages, scenery(i, manifest));
     bosses.push.apply(bosses, bossPaths(manifest, i));
     transformations.push.apply(transformations, transformPaths(manifest, i));
     actions.push.apply(actions, actionPaths(manifest, i));
   }
   // The title shows the original first four. All other bodies load when selected.
-  const startup = atlas.slice(0, 4).concat(scenery(0), scenery(4));
+  const startup = atlas.slice(0, 4).concat(scenery(0, manifest), scenery(4, manifest));
   const firstBoss = bossPaths(manifest, 0);
   return {
     atlas: atlas,
@@ -125,7 +151,7 @@ function groups(manifest) {
     transformations: transformations,
     actions: actions,
     all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, actions, shadows, UFO, FX)),
-    scenery: scenery,
+    scenery: function (i) { return scenery(i, manifest); },
     boss: function (i) { return bossPaths(manifest, i); },
   };
 }
@@ -443,7 +469,7 @@ function create(opts) {
     stageIndex = index;
     stageManifest = manifest;
     const current = stagePaths(manifest, index);
-    const next = !transformPins.size && !actionPins.size && index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
+    const next = !transformPins.size && !actionPins.size && canPrefetchNext(manifest, index) ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});
@@ -524,6 +550,11 @@ root.AssetLoader = {
   motionPath: motionPath,
   portraits: PORTRAITS,
   groups: groups,
+  stageOnlyBoss: stageOnlyBoss,
+  lowerBossActorPath: lowerBossActorPath,
+  bossActorFrame: bossActorFrame,
+  barActorPageRows: BAR_ACTOR_PAGE_ROWS,
+  canPrefetchNext: canPrefetchNext,
   resolve: resolve,
   pageScripts: pageScripts,
   budgetOf: budgetOf,
