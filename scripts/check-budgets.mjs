@@ -56,6 +56,7 @@ const SYNTAX = [
   'tests/boss-transform.test.js',
   'tests/boss-actions.test.js',
   'tests/boss-fx.test.js',
+  'tests/browser-boss-fx-cell.cjs',
   'tests/boss-transform-loading.test.js',
   'tests/boss-transform-browser.cjs',
   'tests/budgets.test.js',
@@ -116,6 +117,7 @@ export function runtimeBudget(report) {
     optionalMediaBytes: report.optionalMediaBytes,
     optionalMediaCount: report.optionalMediaCount,
     maxPresentationDecodedBytes: report.streamedMedia.maxPresentationDecodedBytes,
+    fxScratchDecodedBytes: report.fxScratchDecodedBytes,
     atlasCount: atlasFiles.length,
     atlasEdge: atlasFiles.reduce((max, file) => Math.max(max, file.width || 0, file.height || 0), 0),
     poseCount,
@@ -136,6 +138,7 @@ export function assertBudgets(report, built) {
   eq('optionalMediaBytes', report.optionalMediaBytes, expected.optionalMediaBytes);
   eq('optionalMediaTreeSha256', report.optionalMediaTreeSha256, expected.optionalMediaTreeSha256);
   eq('presentationDecodedBytesMax', report.streamedMedia.maxPresentationDecodedBytes, expected.presentationDecodedBytesMax);
+  eq('fxScratchDecodedBytes', report.fxScratchDecodedBytes, expected.fxScratchDecodedBytes);
   eq('optionalMediaBudgetBytes', expected.optionalMediaBudgetBytes, MEDIA_LIMITS.optionalBytes);
   eq('optionalMediaPageBudgetBytes', expected.optionalMediaPageBudgetBytes, MEDIA_LIMITS.encodedPageBytes);
   eq('presentationBudgetBytes', expected.presentationBudgetBytes, MEDIA_LIMITS.presentationBytes);
@@ -208,5 +211,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     process.exit(1);
   }
   const live = runtimeBudget(report);
-  console.log(`budgets ok: assets ${report.assetCount} (${report.assetBytes} bytes), startup images ${report.preloadCount}, title ${live.titleBytes}, first stage ${live.firstStageBytes}, critical requests ${live.criticalRequests}, total public ${live.staticBytes}, base ${live.baseStaticBytes} <= ${STATIC_BUDGET_BYTES}, optional ${live.optionalMediaBytes} <= ${MEDIA_LIMITS.optionalBytes}, presentation decoded ${live.maxPresentationDecodedBytes} <= ${MEDIA_LIMITS.presentationBytes}`);
+  console.log(`budgets ok: assets ${report.assetCount} (${report.assetBytes} bytes), startup images ${report.preloadCount}, title ${live.titleBytes}, first stage ${live.firstStageBytes}, critical requests ${live.criticalRequests}, total public ${live.staticBytes}, base ${live.baseStaticBytes} <= ${STATIC_BUDGET_BYTES}, optional ${live.optionalMediaBytes} <= ${MEDIA_LIMITS.optionalBytes}, presentation decoded ${live.maxPresentationDecodedBytes} <= ${MEDIA_LIMITS.presentationBytes}, FX scratch ${live.fxScratchDecodedBytes}`);
 }

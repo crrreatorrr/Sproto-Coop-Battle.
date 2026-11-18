@@ -159,13 +159,22 @@ for(const boss of M.bosses) animations.bosses[boss.key]={phases:boss.phases.map(
 // Render through the public world renderer, using actual simulation snapshots.
 // The mock records source rectangles and transforms, not reimplemented drawing.
 function renderer(registry=animations) {
-  const images=new Map(), requested=[], calls=[], stack=[];
+  const images=new Map(), requested=[], calls=[], copies=[], canvases=[], stack=[];
   let transform={x:0,y:0,sx:1,sy:1};
   const context=new Proxy({globalAlpha:1,
     save(){stack.push({...transform});},restore(){transform=stack.pop();},
     translate(x,y){transform.x+=x*transform.sx;transform.y+=y*transform.sy;},
     scale(x,y){transform.sx*=x;transform.sy*=y;},
-    drawImage(...args){calls.push({args,transform:{...transform}});},
+    drawImage(...args){
+      const worldArgs=args.slice(1), copied=args[0].fxCopy;
+      if (copied) {
+        assert.deepEqual(worldArgs.slice(0,4),[0,0,96,96],'world sampling uses the normalized cel origin');
+        // Trace the real source-copy/world-draw chain for existing selection
+        // assertions while retaining the actual world rectangle separately.
+        args=[copied[0],...copied.slice(1,5),...args.slice(5)];
+      }
+      calls.push({args,worldArgs,copiedSource:copied?copied.slice(1,5):null,transform:{...transform}});
+    },
     createLinearGradient(){return {addColorStop(){}};},
   },{get:(object,key)=>key in object?object[key]:()=>{}});
   for(const boss of M.bosses) for(const ph of boss.phases) {
@@ -174,7 +183,19 @@ function renderer(registry=animations) {
   }
   const scope={Sim,MANIFEST:M,AssetLoader:{lru:()=>new Map()},
     CoopBossTransformations:{animations:registry},
-    document:{createElement:()=>({getContext:()=>context})},
+    document:{createElement:()=>{
+      const canvas={width:0,height:0};
+      const cell={
+        clearRect(...args){assert.deepEqual(args,[0,0,96,96]);canvas.fxCopy=null;},
+        drawImage(...args){
+          assert.equal(canvas.fxCopy,null,'transparent cel regions are cleared before every copy');
+          assert.deepEqual(args.slice(3),[96,96,0,0,96,96]);
+          assert.equal(cell.imageSmoothingEnabled,false,'source copy remains one-to-one');
+          canvas.fxCopy=args.slice();copies.push(args.slice());
+        },
+      };
+      canvas.getContext=()=>cell;canvases.push(canvas);return canvas;
+    }},
     Render:{img:src=>{requested.push(src);return images.get(src);},ready:im=>!!im,
       text(){},frameCanvas:()=>null,canFilter:()=>false,drawFighter(){},drawBackground(){},
       weapon:()=>({c:{width:32,height:32},gx:0,gy:0})}};
@@ -182,8 +203,8 @@ function renderer(registry=animations) {
   for(const name of ['sprite-timeline','boss-fx-selection','render-fx']) {
     vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/'+name+'.js'),'utf8'),scope);
   }
-  return {scope,images,requested,draw(snapshot){
-    calls.length=0;
+  return {scope,images,requested,copies,canvases,draw(snapshot){
+    calls.length=0;copies.length=0;
     const original=JSON.stringify(snapshot);
     scope.RenderFx.drawWorld(context,snapshot,{noBanner:true});
     assert.equal(JSON.stringify(snapshot),original,'render never mutates the authoritative snapshot');
@@ -208,6 +229,12 @@ for(const snapshot of shotSnapshots) {
     assert.equal(draw.transform.sx,p.vx>0?-1:1,'existing facing is retained');
   }
 }
+assert.equal(rendered.canvases.length,1,'all registered FX share one reusable source-cell scratch');
+assert.equal(rendered.canvases[0].width*rendered.canvases[0].height*4,36864,'scratch decoded bytes stay bounded');
+rendered.canvases[0].width=1;rendered.canvases[0].height=1;
+rendered.draw(shotSnapshots[0]);
+assert.equal(rendered.canvases.length,1,'a resized scratch is reused');
+assert.equal(rendered.canvases[0].width*rendered.canvases[0].height*4,36864,'scratch dimensions are restored before copying');
 for(const mode of ['signature','special']) {
   const snapshot=impactSnapshots[mode],event=snapshot.fx.find(f=>select.effect(f)?.purpose===mode);
   const src=M.bosses[event.bi].phases[event.ph].proj;
@@ -328,11 +355,15 @@ const delayed=renderer(),additional='assets/bosses/fx/test.webp',reg=copy(animat
 reg.bosses[M.bosses[0].key].phases[0].fx.impact=clip(additional,3);
 delayed.scope.CoopBossTransformations.animations=reg;
 assert.equal(fxDraws(delayed,ordinary,src).length,1,'undecoded optional page uses legacy atlas');
+assert.equal(delayed.canvases.length,0,'fallback does not allocate or expose stale normalized art');
+assert.equal(delayed.copies.length,0);
 delayed.images.set(additional,{tag:additional,naturalWidth:384,naturalHeight:768});
 const later=copy(ordinary);later.fx[0].t=8;
 const decoded=fxDraws(delayed,later,additional);
 assert.equal(decoded.length,1);
 assert.equal(decoded[0].args[1],2*96,'a late page resumes at authoritative age, without replaying its start');
+assert.equal(delayed.canvases.length,1);
+assert.deepEqual(decoded[0].worldArgs.slice(0,4),[0,0,96,96]);
 
 // Eight-by-eight provider sheets can supply eight cels per purpose. Explicit
 // cells and repeated page sources reuse the generic timeline's atlas mapping.

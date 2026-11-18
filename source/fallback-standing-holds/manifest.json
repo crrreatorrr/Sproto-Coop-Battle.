@@ -1,0 +1,1171 @@
+{
+  "version": 2,
+  "qualification": "Exact accepted standing endpoint in row0 col0 only; original walking cols1..3 and every attack cel preserved. No new motion.",
+  "baseCommit": "5c15f30462dd485e3a304449b73073e0d7e8184a",
+  "encoder": {
+    "library": "Pillow",
+    "version": "11.3.0",
+    "format": "WEBP",
+    "lossless": true,
+    "exact": true,
+    "method": 6
+  },
+  "banks": [
+    {
+      "boss": "bront",
+      "key": "01-marina-bront",
+      "phase": 1,
+      "public": "assets/bosses/01-marina-bront-p1.webp",
+      "originalFile": "original-banks/01-marina-bront-p1.webp",
+      "originalEncodedSha256": "67d3d16d4e32a291a211bfa76cb6694b3652c4754583880211a5bd378bed0c54",
+      "newEncodedSha256": "3198f80a9ac8f1c1c47a3e682a742230ae3c8779062a496d35e553bf85806ed2",
+      "originalBytes": 129506,
+      "newBytes": 138246,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/01-marina-bront/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "f8e109378801d03731708aff12619c3a1dbf74ed70b500133a45c6ebcf2fb571"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "bee041ed33434e808d9509503613700649a6da9cdfa15f77223496c166c2057d",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "3b3357127dc8f9af723f2b64fa733302e1c669bbca7aa95c9fb600fbc6d4ef93",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "752ed9a1e7b493abe08a68e6f9cc768df75d37d0ca9b7a2945d99b6ffa7368a9",
+      "changedSamplesWithinStandingCel": 16140
+    },
+    {
+      "boss": "bront",
+      "key": "01-marina-bront",
+      "phase": 2,
+      "public": "assets/bosses/01-marina-bront-p2.webp",
+      "originalFile": "original-banks/01-marina-bront-p2.webp",
+      "originalEncodedSha256": "4a3e22045818813674e847c2c8ba27040d67657632e6a035b3745da89fad00df",
+      "newEncodedSha256": "7b78c52c14160a1387419c6fb6493d2c65a623a590bc3adb8793290d3eb0539b",
+      "originalBytes": 187656,
+      "newBytes": 197932,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/01-marina-bront/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "b95b17745ea7c49fa4b585411d9799f1386e58e250334e8e861d9f461d5c50a1"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "0cd5d225bc7c968265e522042af0810992e95586b0799bfdd0fea4988fcb4eec",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "87b3f17ffa8778ef4e827ee05bdce1d155a60f13f7e23ac9399d8bd526be7426",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "b059a0fd996bd6a100053c84f5f137807ed79c896ce8b807403726c8d45169a6",
+      "changedSamplesWithinStandingCel": 21179
+    },
+    {
+      "boss": "vela",
+      "key": "02-last-light-vela",
+      "phase": 1,
+      "public": "assets/bosses/02-last-light-vela-p1.webp",
+      "originalFile": "original-banks/02-last-light-vela-p1.webp",
+      "originalEncodedSha256": "c66ec006ab4b8b9b7c73379fed2d2849195000a68eb61ed44d881068c32f31f1",
+      "newEncodedSha256": "f84f5903983ae59d974f75aeb13d1365170bded40f9cc82e4588091466a095ed",
+      "originalBytes": 177686,
+      "newBytes": 190632,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/02-last-light-vela/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "b9e220dd2dc20f0a7a579fa7385e0b4ebad02cb38e3682e89d029112f6e9dd37"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "2a6cda895bdf5e81150bb683903216d7e1324c43e928176bb79694fc60446a63",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "eed1c773737d95cc45a49bd290f91c1f423d63df51046b0b2a4f32b43b0e8517",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "3b540013b48911a9d12f73ec613f5abddbdd697910cf0af4c3d76621588f782f",
+      "changedSamplesWithinStandingCel": 16294
+    },
+    {
+      "boss": "vela",
+      "key": "02-last-light-vela",
+      "phase": 2,
+      "public": "assets/bosses/02-last-light-vela-p2.webp",
+      "originalFile": "original-banks/02-last-light-vela-p2.webp",
+      "originalEncodedSha256": "8f42ee6b8ec48e33c9f1ebe9accaeabaa1957f0ca46d5ef179d98dd14ec6c558",
+      "newEncodedSha256": "59097de00394dc1e13f577a482c055edef4580b81ef6f4331fbe3ed76f32d41a",
+      "originalBytes": 201418,
+      "newBytes": 216838,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/02-last-light-vela/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "4217d3aaf7616a93fe945bb9e83be5c761e1d6fadab1df83c781d6848631e5ff"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "a99575c0aa1def619f19822666f7b42e483077700df493b9f29293d0502373ff",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "8999c2b583780640ae189316d1211f3c79da71949c0ebe9071cf8dfbff599ffd",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "a2711da09238176bc4a7e4092e9b16907d58c35e8ae51e60349ded7f8bf7b6b0",
+      "changedSamplesWithinStandingCel": 18743
+    },
+    {
+      "boss": "crapto",
+      "key": "03-mudline-crapto",
+      "phase": 1,
+      "public": "assets/bosses/03-mudline-crapto-p1.webp",
+      "originalFile": "original-banks/03-mudline-crapto-p1.webp",
+      "originalEncodedSha256": "5048b18341adc2340a9fcff7c75536b45f33c812bb246d7cc9d7da7fe55cc232",
+      "newEncodedSha256": "38b6fbbed053be19590a9e00415ac3b7b9f5ddff3a951daa0de56872f72f828e",
+      "originalBytes": 249232,
+      "newBytes": 268206,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/03-mudline-crapto/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "609d65d9879127ac9504a8711d72e1a9e5dd44c3dca3d0078242844c7c1477ca"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "36d5a05c8009c8a025ad692766526b17bc3968c340c6b4c67ce5866d666ebb5e",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "664e228ab7c06d2718abb3c9fdb110dc420602a7701c0b8ae7adf4a7a7f7524a",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "258684e7da74f6c08af76642b01cbd135188745daa86bcc7a23c0cb95509091c",
+      "changedSamplesWithinStandingCel": 20136
+    },
+    {
+      "boss": "crapto",
+      "key": "03-mudline-crapto",
+      "phase": 2,
+      "public": "assets/bosses/03-mudline-crapto-p2.webp",
+      "originalFile": "original-banks/03-mudline-crapto-p2.webp",
+      "originalEncodedSha256": "6f390fff83d8b6c30f7486f3b640067cbbfab9a88d910e54113a49efdd784745",
+      "newEncodedSha256": "550b04312ad5341f6bc39641c03861785663dc8459fb37ed81ef7bd9e0820710",
+      "originalBytes": 278576,
+      "newBytes": 301398,
+      "size": [
+        880,
+        1980
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/03-mudline-crapto/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "58e636ab8048dcd66044b8bce1954967e9cf1db0bcdc6f6a02362e1740a51ce3"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1760
+      ],
+      "attackDecodedRgbaSha256": "6176173886de9714a985d51917306d4ee38c52025cdd96629a32fc7922b3a690",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 32,
+      "wholeBankDecodedRgbaSha256": "77c4abf7b1a3d6a3dc64d4565034b648a85036ac24d80c7d13ef354cc77406f9",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "b599302911a4f333efd50427ccebc595c6a6e7c65cd2073cd6b695120529ec77",
+      "changedSamplesWithinStandingCel": 21318
+    },
+    {
+      "boss": "zephyr",
+      "key": "04-ranch-zephyr",
+      "phase": 1,
+      "public": "assets/bosses/04-ranch-zephyr-p1.webp",
+      "originalFile": "original-banks/04-ranch-zephyr-p1.webp",
+      "originalEncodedSha256": "1b66a26fd2dbb446f9034bc9d846f8af28d87b0b8365236bee36c2219924289a",
+      "newEncodedSha256": "144009f9bf648498d2c8779bb724a52655694097dbc69ba53a97a303cb0f60c8",
+      "originalBytes": 193262,
+      "newBytes": 204700,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/04-ranch-zephyr/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "042082952e3e9b6f9ecf4b7e91ed9a0f4960517cc23cc5e87c2ba94d4a8f25bb"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "f08f1eb0ff7288987c9cccf53b126f965de2e94833f8344972e1d15da1100d68",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "7cfb1c0c90ad34640fd920a34a776cd95212b4ca1ebb3ce6087d7a22962fd1be",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "e35486edb16553aa8d43eb27bfb9f27ea6c1adf63ec6a2c4c137cedb6f8e6223",
+      "changedSamplesWithinStandingCel": 15609
+    },
+    {
+      "boss": "zephyr",
+      "key": "04-ranch-zephyr",
+      "phase": 2,
+      "public": "assets/bosses/04-ranch-zephyr-p2.webp",
+      "originalFile": "original-banks/04-ranch-zephyr-p2.webp",
+      "originalEncodedSha256": "14d294918b893526c8d8f04f0b40c018438766d5f04ecaf3a42401f6e62c9131",
+      "newEncodedSha256": "05f683902d07a7b1d8e303e73787307fc142be63aff1bb5367118994d0326ad9",
+      "originalBytes": 212594,
+      "newBytes": 229884,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/04-ranch-zephyr/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "cf5420227b5a4d3b1adfc87388e8da85a560a23ceaa7859fc2e0e926f696ffb8"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "97100718646c9f7c480653778943e7cdd249b7c48b9d1409d687a839ee292028",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "db1d06f84d8f5a90cd1e5adc5f1f23a38952e70f7e661804107ccff4be8a1b9f",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "ddc4b79d11733c93e6271f2007251bb3dbd6850c98c086795be1fedcf2fcfad9",
+      "changedSamplesWithinStandingCel": 16456
+    },
+    {
+      "boss": "sproto102",
+      "key": "05-neon-sproto102",
+      "phase": 1,
+      "public": "assets/bosses/05-neon-sproto102-p1.webp",
+      "originalFile": "original-banks/05-neon-sproto102-p1.webp",
+      "originalEncodedSha256": "ee7d33a69ade6fecb2a6abfe6967a3c2cfaea51411ddc91a0452b657b16cb976",
+      "newEncodedSha256": "270aae23ffa7196a134ea9897b31e4745d906f812769fbff431a4a493d0ff136",
+      "originalBytes": 204080,
+      "newBytes": 225338,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/05-neon-sproto102/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "9754810d36a7c90578d0ab291e902ed633040a632f54f40af36d7a90b5da29be"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "f06d0e59029ac9a31c180be18041a15aaa527ed9cdc2742dd4afd651ac4176a7",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "60c36a2aebd608bfa39c5ba55239541719922b164587bde9867348bf8c1f8b36",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "bcf7c7e99cacee4e4a768ebe96338080b4e1fdfb1d803d77490e0bc5f67afaf1",
+      "changedSamplesWithinStandingCel": 20791
+    },
+    {
+      "boss": "sproto102",
+      "key": "05-neon-sproto102",
+      "phase": 2,
+      "public": "assets/bosses/05-neon-sproto102-p2.webp",
+      "originalFile": "original-banks/05-neon-sproto102-p2.webp",
+      "originalEncodedSha256": "b9cfb487f7663703537a0bf093a740b87a146b8c3151a33171441ea5cb772e28",
+      "newEncodedSha256": "f4b0793de71800c760f7cd686d1c13e3fc18fc554f8bbd4d95e92feb77e2579b",
+      "originalBytes": 234534,
+      "newBytes": 257630,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/05-neon-sproto102/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "a970ebd152527a915caee53175e8059ac541af73f35c6587f5a6d8519e034a5f"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "fb8644041d9ff4f421f5666d58f352eb8beb3319ca8044810a2c74fa08e688c0",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "7384ba08d8a426b50c06be58e3e80729879d2f048c2dc355f3979ee038499f13",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "598d8c8f113251bd4be86a62663edff2ae923c98f82261ff2a3c88794b35859f",
+      "changedSamplesWithinStandingCel": 21970
+    },
+    {
+      "boss": "rune",
+      "key": "06-circuit-rune",
+      "phase": 1,
+      "public": "assets/bosses/06-circuit-rune-p1.webp",
+      "originalFile": "original-banks/06-circuit-rune-p1.webp",
+      "originalEncodedSha256": "5bad3e7f86cdbdf26a784ac257a09caa3ac502e85c5710f43d714f5553328409",
+      "newEncodedSha256": "f4aac445f00466002aa0ab3c03c7f283fd334031fab89c98fd4365a2b835bfd5",
+      "originalBytes": 113684,
+      "newBytes": 123392,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/06-circuit-rune/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "e67b554dd6b4bc96882c38e2868567cf37d29c4d90b5937878917a02523a2964"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "c11cef5fba120eccb8f720dbb85d880f3d7857b97c3ecf0e700afdc657ce8245",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "47e1e9e3704f382ebc463c75affcbccfdf2e94f60b65e33746fa8a8b164a2244",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "15bb4cdaa40507f5d85f18d2c0dc042c85e36a117d94080a7fe05171a429ada4",
+      "changedSamplesWithinStandingCel": 18198
+    },
+    {
+      "boss": "rune",
+      "key": "06-circuit-rune",
+      "phase": 2,
+      "public": "assets/bosses/06-circuit-rune-p2.webp",
+      "originalFile": "original-banks/06-circuit-rune-p2.webp",
+      "originalEncodedSha256": "29ae722ec7dbd486a42bd2b5e1d430680d266f72ff519354a4906d81e993a0f9",
+      "newEncodedSha256": "1561429d6884424280c569580a79d41d541c07504f95d39ff2f220abd95a6627",
+      "originalBytes": 137406,
+      "newBytes": 152060,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/06-circuit-rune/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "c370bd7b5c3b55acbf49e45cbea06ae21f211bfc9b528f11334c0df04d727f23"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "49509df1909f5f2a1713c21375265f10cf5a10c3c3d2d2830ce593613d515383",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "3b1e45ac5e77a0bede14863d05872fea29c629644f9b8e051eea07ed7e114b15",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "094abd654e2410db61bc8fff1d29218d75356f3bf8c9a9ef9c5fdc3e37c601b2",
+      "changedSamplesWithinStandingCel": 23980
+    },
+    {
+      "boss": "bigswole",
+      "key": "07-moonkeep-bigswole",
+      "phase": 1,
+      "public": "assets/bosses/07-moonkeep-bigswole-p1.webp",
+      "originalFile": "original-banks/07-moonkeep-bigswole-p1.webp",
+      "originalEncodedSha256": "437ebcac3a8dc70eabba25311b0e1a6ffd5cf1560ae7a4a223fe964c2155c1a7",
+      "newEncodedSha256": "9eb046db80b1085caefd530fe0fa26dd344f0dd8605b7cbed7de23594bd2c98b",
+      "originalBytes": 252938,
+      "newBytes": 268726,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/07-moonkeep-bigswole/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "50201557c43f7a23e32a592821c1b1b4affe2023eee29d4c9061c1cbd373d972"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "bcd4da79f33519f07e7f5cb1762005f2cef8166336e60c49032dd5e1b295ad05",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "5732bc6e5b8ef3bd4ca300a5f2e3f9b09e57b0fe81734974f032299d84b24273",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "85109613e058a264b84193046686615a578d8eee898507ca6e257c09cdd68282",
+      "changedSamplesWithinStandingCel": 18679
+    },
+    {
+      "boss": "bigswole",
+      "key": "07-moonkeep-bigswole",
+      "phase": 2,
+      "public": "assets/bosses/07-moonkeep-bigswole-p2.webp",
+      "originalFile": "original-banks/07-moonkeep-bigswole-p2.webp",
+      "originalEncodedSha256": "9bdd64fed969fe1125ecf586f05d1a6d6101fb1dbb0ded585cd5ef9672d52420",
+      "newEncodedSha256": "a34ff85632c8a09a452f5ae88072bc67f4bbfdee2ade80b949a4260a97b42e0e",
+      "originalBytes": 303662,
+      "newBytes": 329308,
+      "size": [
+        880,
+        1980
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/07-moonkeep-bigswole/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "5baf351ade94e9fa20d6132d8a6fe57f3ff48046032c63059e0b7ac718390c45"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1760
+      ],
+      "attackDecodedRgbaSha256": "b3b36cba2abf4c2ed93744fdd4d624b6f1613aa660a6975307decf9cdda51ae1",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 32,
+      "wholeBankDecodedRgbaSha256": "b5456cce4b1ffd5a7cbe7b3fc0ddb20ab8171ce6d96a288b2046de2a9bb0cb09",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "6196e013ee198bfd71e87e6e9f4523bbbd25dd5ff21b8d27d42bdd112cbccfc7",
+      "changedSamplesWithinStandingCel": 20397
+    },
+    {
+      "boss": "alpha777",
+      "key": "08-crown-alpha777",
+      "phase": 1,
+      "public": "assets/bosses/08-crown-alpha777-p1.webp",
+      "originalFile": "original-banks/08-crown-alpha777-p1.webp",
+      "originalEncodedSha256": "3872668c9b4ae46901d8eb53e4c88db8e50f4eaf4769cfd1e6bb65bab00e6e82",
+      "newEncodedSha256": "3ecaf0b59f8f28b9e685eeb7135f9af906d512016d51ab3f7ab5bf1e2a777018",
+      "originalBytes": 191810,
+      "newBytes": 209958,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/08-crown-alpha777/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "16e100b90692c1e2c064c708d285e5505589dcea9d833d067b027702eb03abb4"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "198854ece5231ab2c459cc8572e15bea27a66ac3aac43e76aad660decc793418",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "b440198362e8a6ad1296ddb2254932fdb8449f76be73dd2828f82758720d1a9c",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "a49e0db08e270b30a9f0ad7aa5b5243a8953c20faf9d825150b4f0fa3571b9bc",
+      "changedSamplesWithinStandingCel": 20484
+    },
+    {
+      "boss": "alpha777",
+      "key": "08-crown-alpha777",
+      "phase": 2,
+      "public": "assets/bosses/08-crown-alpha777-p2.webp",
+      "originalFile": "original-banks/08-crown-alpha777-p2.webp",
+      "originalEncodedSha256": "5e01058869cd1005fb512f5434b358b382a1d4e515ce26438c4897f7342e274a",
+      "newEncodedSha256": "5c9270babe8eaca80f100d78a73765d7e9f2a4ed0a26c54e47ca05171218d4e6",
+      "originalBytes": 240622,
+      "newBytes": 256900,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/08-crown-alpha777/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "f21c6ad6c323767de8d8b8b120f0d392895990dc1485c279fa773e4bf2d3f7f2"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "154f6191fc5c848c96628e7fbb54eb0969ad94e8addfdcddd0b8dbd98f220466",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "066a1ac053b44937a680981eb4f6f11969d9bf6d8c135b713c743e84045ec921",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "90ba06b674dd6844b8a22341e45518946bcf88009034643beec9228941028b8f",
+      "changedSamplesWithinStandingCel": 20630
+    },
+    {
+      "boss": "highsproto",
+      "key": "09-hatchery-highsproto",
+      "phase": 1,
+      "public": "assets/bosses/09-hatchery-highsproto-p1.webp",
+      "originalFile": "original-banks/09-hatchery-highsproto-p1.webp",
+      "originalEncodedSha256": "ad705f2efa3430043722c67e0e6029e2b2bd6bdc336518b4a815c36022b963c3",
+      "newEncodedSha256": "22b9e495ac26e2b50850bad517165766356e151d477376f7ecdbc9de5fda47b0",
+      "originalBytes": 130856,
+      "newBytes": 145576,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/09-hatchery-highsproto/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "62902182e45a04af3422a1e83b534a772bfac13d5e70d3798a52ac5981bc7d72"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "dc454b3d64111af3df054d14846e4571e8c44a1c0b94ff563244dfddd2e9bf9e",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "952d7f32c1713cc46efa32b2d348c95419f9984c00eb6aa592e2564d6b39d2bd",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "5ba7a4ef451fa22ab1307abb5d0aee8f04d89f8e8c2af413d9e9358822af5682",
+      "changedSamplesWithinStandingCel": 18772
+    },
+    {
+      "boss": "highsproto",
+      "key": "09-hatchery-highsproto",
+      "phase": 2,
+      "public": "assets/bosses/09-hatchery-highsproto-p2.webp",
+      "originalFile": "original-banks/09-hatchery-highsproto-p2.webp",
+      "originalEncodedSha256": "1936112125909257b3215a07b9c37957a10dc68e5a92d8bf4a05872ab7ce886c",
+      "newEncodedSha256": "90bb3f704b5d987ecffd4a4914afb3a934de12d1fdf3e3dfc0dc185d26a518ca",
+      "originalBytes": 175208,
+      "newBytes": 190454,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/09-hatchery-highsproto/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "bf4ae3d30d0e734592f92a48c7c46cacee9d793f049bb993d582c6ef35d83133"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "5b02a9a7e84bc8ea10f21ab5529c1cd17de272e1d64fffa061ac36ca020f3ecb",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "4c32ffee11b01310c034836ea221c36584259e8fbf772dbdd1a7299ebbc9ddee",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "f8fbc378b027e8d4c6eee17eb9cf7b9ed6b9a29eebc42cf72c0170db16b15fde",
+      "changedSamplesWithinStandingCel": 22444
+    },
+    {
+      "boss": "sprotosales",
+      "key": "10-verse-sprotosales",
+      "phase": 1,
+      "public": "assets/bosses/10-verse-sprotosales-p1.webp",
+      "originalFile": "original-banks/10-verse-sprotosales-p1.webp",
+      "originalEncodedSha256": "963914b1f72cc5ad80d60e283bff3125aa5f132e09c929c0db599be2106ed940",
+      "newEncodedSha256": "eede95ba76519e65a86a103f7a4ec2754a2a1fdae07071ab54da512af74fe851",
+      "originalBytes": 118622,
+      "newBytes": 130252,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/10-verse-sprotosales/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "d668e6bdc56f30a17b7430ac946156787ea2ec55736838005ad2a0fc4375479a"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "3d244815b4ec06223d5cb143de5c14a880be2ce00e36000cb5006b52d8c83af1",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "dddf1291a14868136840b85a41e6b5a1c4ad1670defe52a57e1b77fd21f6f257",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "7cf63e23ea181dfa6827cf9dc0df2a6bee1f138bff81373ad0c6c63fc49aa3b8",
+      "changedSamplesWithinStandingCel": 16367
+    },
+    {
+      "boss": "sprotosales",
+      "key": "10-verse-sprotosales",
+      "phase": 2,
+      "public": "assets/bosses/10-verse-sprotosales-p2.webp",
+      "originalFile": "original-banks/10-verse-sprotosales-p2.webp",
+      "originalEncodedSha256": "f1d1f6b5b9293cf841a4b54f86db0ba695e75eff4509dbbf60a4bcc0782b3dbd",
+      "newEncodedSha256": "8e63ab699489c02f63fe59995c9e21d208db7967b5187faeac97393f7293b1a3",
+      "originalBytes": 166904,
+      "newBytes": 180304,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/10-verse-sprotosales/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "f7351d85b5a6b863cbe6ab182694b1fa5d0d43911bc8f86cf77d5fa3d397227d"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "cca22640da6b8c0f2de87202b593f413f85f45ba6d536cc7fc526257b0b7b136",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "7e9f1617bd0dba30c07ced6a153ea6d4d71df3cc20b4ffda918a06e0f7aa0c5e",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "0340abe0a0a70094d0626bab08e83a7a3604a3f79645a53e60c2d211040fc43b",
+      "changedSamplesWithinStandingCel": 23483
+    },
+    {
+      "boss": "sproto1668",
+      "key": "11-rooftop-sproto1668",
+      "phase": 1,
+      "public": "assets/bosses/11-rooftop-sproto1668-p1.webp",
+      "originalFile": "original-banks/11-rooftop-sproto1668-p1.webp",
+      "originalEncodedSha256": "0cf2063f0aced3b5bd93e6d3096646d51b0dcee7e885ca8fd8376a67b0cd9c99",
+      "newEncodedSha256": "d84aad246b9b7fa3191993796baf5ab1c4692a1d0562d188e2fb03a34493d23d",
+      "originalBytes": 208532,
+      "newBytes": 227638,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/11-rooftop-sproto1668/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "5ef57b9133615eb0521cd73b3be97aaf5f9c1a57221c6a1906d78abbafa80cdb"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "70d94d41e6a62a3a5adb1a1fc4f17f3bb5c44baea24dd94302cccd8cc220d932",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "c04fcb795974b7b230a15fcd7d981ca699824750edbc99973cbb5eadb4d86103",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "b553a317e13b4efdb612bdaa3046cfebc818d55551305c79045dac660bf7ec25",
+      "changedSamplesWithinStandingCel": 18742
+    },
+    {
+      "boss": "sproto1668",
+      "key": "11-rooftop-sproto1668",
+      "phase": 2,
+      "public": "assets/bosses/11-rooftop-sproto1668-p2.webp",
+      "originalFile": "original-banks/11-rooftop-sproto1668-p2.webp",
+      "originalEncodedSha256": "3d4660325048013f6c698430fbc5bad8780594a1ad07612d5005c76f0abc3108",
+      "newEncodedSha256": "7b195e180ee73e5538836388e5fbc7dcca6960effa49504675a48f36c5b1a2cb",
+      "originalBytes": 278776,
+      "newBytes": 302704,
+      "size": [
+        880,
+        1980
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/11-rooftop-sproto1668/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "f7ab1ef4d6f9c536ca1b973851993adbac334d1bd9f363cd7f7b5cda9b19ed22"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1760
+      ],
+      "attackDecodedRgbaSha256": "cafa39b23c93943753ae04604110e158f21fe10c67285ccf9e8b21d959e3c57d",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 32,
+      "wholeBankDecodedRgbaSha256": "f699a806ca8fca32b944750360b0b22d9c3d9bb968070a35fca5a9dc092dc7bc",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "4a6a22559583c443362bc263a002d11c68cbcdb869d8457ddf84aea4bbbd829f",
+      "changedSamplesWithinStandingCel": 23916
+    },
+    {
+      "boss": "sproto3106",
+      "key": "12-codebreak-sproto3106",
+      "phase": 1,
+      "public": "assets/bosses/12-codebreak-sproto3106-p1.webp",
+      "originalFile": "original-banks/12-codebreak-sproto3106-p1.webp",
+      "originalEncodedSha256": "98e00484d66108f88ac40ef4f4f23c0c995379003795084533f3020caa86b860",
+      "newEncodedSha256": "60cb64aea60673fabe06516238fc7957fc136852026e2d31176ba262ee511133",
+      "originalBytes": 197886,
+      "newBytes": 209448,
+      "size": [
+        880,
+        1540
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/12-codebreak-sproto3106/source-atlas.png",
+        "rect": [
+          0,
+          0,
+          220,
+          220
+        ],
+        "frame": 0,
+        "decodedRgbaSha256": "c9f00dd65dd46b984817330ece32b650d5d56683290fefaaf12b2c9aefdd812a"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1320
+      ],
+      "attackDecodedRgbaSha256": "3b19a89e37537e84fa07dc38f7de4315483c051f5c7afc68c1e0692fd58db580",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 24,
+      "wholeBankDecodedRgbaSha256": "b1b3d70ec12876088bb6a1705cbd87716f6ea70a78a420f09496e195bba8967f",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "6189e3d3b26089882b9b09334b89f2475decc3bd84ba449b7256d29ae5ca7cf8",
+      "changedSamplesWithinStandingCel": 18770
+    },
+    {
+      "boss": "sproto3106",
+      "key": "12-codebreak-sproto3106",
+      "phase": 2,
+      "public": "assets/bosses/12-codebreak-sproto3106-p2.webp",
+      "originalFile": "original-banks/12-codebreak-sproto3106-p2.webp",
+      "originalEncodedSha256": "013b131d497f37e0f819b637160058165be4095474d60ba12c3122c19ed50ff7",
+      "newEncodedSha256": "5c155671ae58388c23179774dc5f9ca60cae72c4115ad5cfd7e9ca7258216bec",
+      "originalBytes": 256188,
+      "newBytes": 275222,
+      "size": [
+        880,
+        1760
+      ],
+      "sourceEndpoint": {
+        "file": "source/transformations/12-codebreak-sproto3106/source-atlas.png",
+        "rect": [
+          1980,
+          3300,
+          220,
+          220
+        ],
+        "frame": 159,
+        "decodedRgbaSha256": "b28022a80a6c67cf5e28f94475df6e30d4aac0e5b6afa32135e1c6dc03374814"
+      },
+      "standingCopies": 1,
+      "standingHoldRow": 0,
+      "newWalkingPoses": 0,
+      "attackRowsRect": [
+        0,
+        220,
+        880,
+        1540
+      ],
+      "attackDecodedRgbaSha256": "4dac2fb441e811e5d5cc8ab7499e905bc2724d1bb57e3feba107dc0bcadb54b5",
+      "attackRGBAMismatchSamples": 0,
+      "attackCelsPreserved": 28,
+      "wholeBankDecodedRgbaSha256": "86b16cc9d459ebd846d1fe02b2d25a44cce1502551a6808dbe43daec0279bed0",
+      "standingHoldColumn": 0,
+      "walkColsPreserved": [
+        1,
+        2,
+        3
+      ],
+      "walkingCelsPreserved": 3,
+      "walkDecodedRgbaSha256": "17d82cb596805a60357a7eea370386ceba5355258589a8d7a9bc5bbcff6ac703",
+      "changedSamplesWithinStandingCel": 19961
+    }
+  ],
+  "attackCelsPreserved": 648,
+  "newLocalMotionPoses": 0,
+  "standingCopiesExact": 24,
+  "originalWalkingCelsPreserved": 72
+}

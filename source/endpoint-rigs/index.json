@@ -1,0 +1,254 @@
+{
+  "alpha777": {
+    "boss": "alpha777",
+    "bytes": 703895,
+    "file": "alpha777.zip",
+    "members": 117,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "16e100b90692c1e2c064c708d285e5505589dcea9d833d067b027702eb03abb4",
+        "nativeRgbaSha256": "89f34f0ca30914462661c96e7f09360d5bf7e89341ef01ea76179bd9648fe49d",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "f21c6ad6c323767de8d8b8b120f0d392895990dc1485c279fa773e4bf2d3f7f2",
+        "nativeRgbaSha256": "9af18b074ad6f4ea981ac742a1b4b9e333bcd28d67ff5d3841b07e1209db02be",
+        "phase": 2
+      }
+    ],
+    "sha256": "04a3ec3558e88c20a2512e9a5279b4accfa241bb063a977c2174686ab74aad77"
+  },
+  "bigswole": {
+    "boss": "bigswole",
+    "bytes": 671055,
+    "file": "bigswole.zip",
+    "members": 84,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "50201557c43f7a23e32a592821c1b1b4affe2023eee29d4c9061c1cbd373d972",
+        "nativeRgbaSha256": "16e0dfc7294a267818f6fd5026782f94af9a6c207bc8a6522da880eb5692915c",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "5baf351ade94e9fa20d6132d8a6fe57f3ff48046032c63059e0b7ac718390c45",
+        "nativeRgbaSha256": "e7e59c629de518d31422fbf9c11f0afd05d677d0772db2be815123abdea741d2",
+        "phase": 2
+      }
+    ],
+    "sha256": "288947c01edb04d8a409d69d44a0254a5218f5be808cee105247e45c8683fbdd"
+  },
+  "bront": {
+    "boss": "bront",
+    "bytes": 705214,
+    "file": "bront.zip",
+    "members": 44,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "f8e109378801d03731708aff12619c3a1dbf74ed70b500133a45c6ebcf2fb571",
+        "nativeRgbaSha256": "cd1932bc53149ac4ccb491500452b8f871442f5241dff66518774cdcd3b5fb4e",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "b95b17745ea7c49fa4b585411d9799f1386e58e250334e8e861d9f461d5c50a1",
+        "nativeRgbaSha256": "ebdc042b2a4be2bb701c4f016344da2a1d68817a05b46e28bb547a7643a6a592",
+        "phase": 2
+      }
+    ],
+    "sha256": "49e38dbe09f9b7ce31ce8dfcf9b72e8dcb62e915e6982c9c5ff620cb21e057fd"
+  },
+  "crapto": {
+    "boss": "crapto",
+    "bytes": 844163,
+    "file": "crapto.zip",
+    "members": 79,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "609d65d9879127ac9504a8711d72e1a9e5dd44c3dca3d0078242844c7c1477ca",
+        "nativeRgbaSha256": "7f23a5e583451f53c9aa1ef7c5998210f17fe7250f79e791d8472278264c89e2",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "58e636ab8048dcd66044b8bce1954967e9cf1db0bcdc6f6a02362e1740a51ce3",
+        "nativeRgbaSha256": "36bcbefaaadf653fd0adc6c9b03d62530d69dd9b59971ea54f8c454ff4c40737",
+        "phase": 2
+      }
+    ],
+    "sha256": "89debf53da24196af042c4aef83718a6314e612eedfc0ebaa8dcf73a238bbad5"
+  },
+  "highsproto": {
+    "boss": "highsproto",
+    "bytes": 923797,
+    "file": "highsproto.zip",
+    "members": 117,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "62902182e45a04af3422a1e83b534a772bfac13d5e70d3798a52ac5981bc7d72",
+        "nativeRgbaSha256": "6e89e1b55a8f10ab96a7d378747849f202031d0202f7daece9d75ce0519355b6",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "bf4ae3d30d0e734592f92a48c7c46cacee9d793f049bb993d582c6ef35d83133",
+        "nativeRgbaSha256": "2e432d479335be4f282cc5a0747b1857b5f9219e82e9b6c6a212cc1585169814",
+        "phase": 2
+      }
+    ],
+    "sha256": "9aaa155208b841eb5a65b824affc3d85eb6c6109675874a705d624462c5f1751"
+  },
+  "rune": {
+    "boss": "rune",
+    "bytes": 1033602,
+    "file": "rune.zip",
+    "members": 120,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "e67b554dd6b4bc96882c38e2868567cf37d29c4d90b5937878917a02523a2964",
+        "nativeRgbaSha256": "a0ecfa981310155e7e174e18415ee517d890a849fd8d9234f63ef7feef2664e7",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "c370bd7b5c3b55acbf49e45cbea06ae21f211bfc9b528f11334c0df04d727f23",
+        "nativeRgbaSha256": "81a7ed47a49940e95a27a56d949361f2bc1db8a42e8d464ab86562d0b6ae10f6",
+        "phase": 2
+      }
+    ],
+    "sha256": "cddbd428f1d068db1580dbd39c7fcc46f4f95fc8ed715ecf5b48ed867dc3df74"
+  },
+  "sproto102": {
+    "boss": "sproto102",
+    "bytes": 867542,
+    "file": "sproto102.zip",
+    "members": 101,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "9754810d36a7c90578d0ab291e902ed633040a632f54f40af36d7a90b5da29be",
+        "nativeRgbaSha256": "b0dae61c8ddda9ce79d94fa96abd6ba98993a170792fc4a7e25863a3466e4007",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "a970ebd152527a915caee53175e8059ac541af73f35c6587f5a6d8519e034a5f",
+        "nativeRgbaSha256": "47e5ba5906e6988aebcbb9e99ff8f31bce3ea32a312177f36560005778b0f44a",
+        "phase": 2
+      }
+    ],
+    "sha256": "c3c52999a0c9002adc7a1543f3bb5ca717f6e00bb6cf348d758c8b461a992b65"
+  },
+  "sproto1668": {
+    "boss": "sproto1668",
+    "bytes": 1054064,
+    "file": "sproto1668.zip",
+    "members": 166,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "5ef57b9133615eb0521cd73b3be97aaf5f9c1a57221c6a1906d78abbafa80cdb",
+        "nativeRgbaSha256": "2cc168668fd2819acb80e95c424116c3577b943354bf5fca539f144eceea23a4",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "f7ab1ef4d6f9c536ca1b973851993adbac334d1bd9f363cd7f7b5cda9b19ed22",
+        "nativeRgbaSha256": "7f84201cbbd21a497849b21640c1f4f6173ebd691be08ab4613444f889a9d7c9",
+        "phase": 2
+      }
+    ],
+    "sha256": "c06eb6b8e6b5574a2f812828c62362957598e06313e0751c4bf081f4ba81312d"
+  },
+  "sproto3106": {
+    "boss": "sproto3106",
+    "bytes": 905928,
+    "file": "sproto3106.zip",
+    "members": 126,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "c9f00dd65dd46b984817330ece32b650d5d56683290fefaaf12b2c9aefdd812a",
+        "nativeRgbaSha256": "777a49ad9ab78e52ab5b1df146483588b8e5ec24276c0ae5663886f748a1a6d8",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "b28022a80a6c67cf5e28f94475df6e30d4aac0e5b6afa32135e1c6dc03374814",
+        "nativeRgbaSha256": "9d0c5baf80fa967c108e273686b30ae9441584dcd929cb5837a88022cce47a38",
+        "phase": 2
+      }
+    ],
+    "sha256": "d0ad6897303e01cf0a0daa00c0691e9a1a5a03d69c076a32d4b05d3bf72599e6"
+  },
+  "sprotosales": {
+    "boss": "sprotosales",
+    "bytes": 750688,
+    "file": "sprotosales.zip",
+    "members": 90,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "d668e6bdc56f30a17b7430ac946156787ea2ec55736838005ad2a0fc4375479a",
+        "nativeRgbaSha256": "f048dbb0de7cfda6d7baa7ff1a0afd6b446932937abfaf291f4f6a97f0e2d416",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "f7351d85b5a6b863cbe6ab182694b1fa5d0d43911bc8f86cf77d5fa3d397227d",
+        "nativeRgbaSha256": "e7e5c84b20b99e5f08bc23a5161ebb4a3e23ead79ddb4580fd20af1b8057ff35",
+        "phase": 2
+      }
+    ],
+    "sha256": "4eb7f810f17be9f7019e75b217a377b0ca7e1d66fc15d5a13fd43a0b9d239b8e"
+  },
+  "vela": {
+    "boss": "vela",
+    "bytes": 677769,
+    "file": "vela.zip",
+    "members": 75,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "b9e220dd2dc20f0a7a579fa7385e0b4ebad02cb38e3682e89d029112f6e9dd37",
+        "nativeRgbaSha256": "8e4e71dfedbef615e8862e585ef613f09ceee673a839350cd96753bcc627095a",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "4217d3aaf7616a93fe945bb9e83be5c761e1d6fadab1df83c781d6848631e5ff",
+        "nativeRgbaSha256": "909531e128a39009861a5d2a17a6e232a29f67bf7997f72a7aae8b1bf72aaaf2",
+        "phase": 2
+      }
+    ],
+    "sha256": "05d9defc19d7ba79516bd8980cd35376afe5c6e2efe41cd08f965636023241ad"
+  },
+  "zephyr": {
+    "boss": "zephyr",
+    "bytes": 605740,
+    "file": "zephyr.zip",
+    "members": 71,
+    "nativeAndGameReplaysExact": true,
+    "newAnimationArt": false,
+    "phases": [
+      {
+        "finished220RgbaSha256": "042082952e3e9b6f9ecf4b7e91ed9a0f4960517cc23cc5e87c2ba94d4a8f25bb",
+        "nativeRgbaSha256": "e751a18335f74184ce42c3ac0329b67278f23599a5b5d639eaff0471e8b752fe",
+        "phase": 1
+      },
+      {
+        "finished220RgbaSha256": "cf5420227b5a4d3b1adfc87388e8da85a560a23ceaa7859fc2e0e926f696ffb8",
+        "nativeRgbaSha256": "943bcbf3b61387931a0f2ecaba1a72bed7fbbfe8661e631aaddafffc7950167f",
+        "phase": 2
+      }
+    ],
+    "sha256": "7a96c108c3d58ba174bbe0dce3883e3fdad591fdcde2c021db9a1b83e9950296"
+  }
+}

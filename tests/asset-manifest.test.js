@@ -44,6 +44,7 @@ async function main() {
   assert.strictEqual(built.manifest.optionalMediaTreeSha256, report.optionalMediaTreeSha256);
   assert.deepStrictEqual(built.manifest.optionalMediaPaths, report.streamedMedia.optionalPaths);
   assert.strictEqual(built.manifest.presentationDecodedBytesMax, report.streamedMedia.maxPresentationDecodedBytes);
+  assert.strictEqual(built.manifest.fxScratchDecodedBytes, report.fxScratchDecodedBytes);
   assert.deepStrictEqual(built.manifest.mediaBudgetLimits, report.streamedMedia.limits);
   assert.strictEqual(built.manifest.files.length, report.files.length, 'no inventory file is dropped by partition reporting');
   assert.ok(built.distFiles.includes('index.html'));

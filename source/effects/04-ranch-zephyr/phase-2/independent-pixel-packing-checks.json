@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "size": [
+    384,
+    768
+  ],
+  "originalTopRowsRGBAMismatches": 0,
+  "acceptedV3BottomRowsRGBAMismatches": 0,
+  "all16BottomCellsExact": true,
+  "all16OriginalTopCellsExact": true,
+  "sourceOriginalSha256": "8f50b3673283ecafe8ed5f0dfe8f3f3b7be5402024f03211f698f51c25e98adf",
+  "acceptedV3Sha256": "eafbbeae223b377afc28ddb1a321e86f0d87bebf2aef64ff916c58d36ec2dea1",
+  "stagedBankSha256": "13acc4990e93d439150588946121a39bde578bb49fd61bbbbe43797de1f01043",
+  "clipMetadataExact": true,
+  "decodedBytes": 1179648,
+  "decodedIncrease": 589824,
+  "newSourcePaths": 0,
+  "newPreloadRequestsExpected": 0
+}

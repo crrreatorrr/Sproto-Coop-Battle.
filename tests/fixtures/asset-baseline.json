@@ -1,21 +1,21 @@
 {
-  "description": "Four-seat Coop client with exact total/base payload inventory and validated optional snapshot-aged boss media. Reviewed replacement art remains staged outside the game.",
-  "assetCount": 123,
-  "assetBytes": 8989317,
-  "assetMegabytesDecimal": 8.989317,
-  "assetMebibytes": 8.573,
-  "publicFileCount": 152,
-  "publicBytes": 9524609,
-  "assetTreeSha256": "f93489b88f791868da7364917fbcbb73838b28fb86b1d8cd6a38f085a8436416",
-  "publicTreeSha256": "c4b5d20f550a14938a58dc74a0abadad31c23c016fe7108c50b2fbcf0d08b592",
+  "description": "Local WIP v2: twelve accepted eight-second transformations, exact24 standing col0 endpoints, original72 walk/648 attack cels preserved and four accepted Zephyr P2 effects. New provider combat streams pending.",
+  "assetCount": 171,
+  "assetBytes": 15223241,
+  "assetMegabytesDecimal": 15.223241,
+  "assetMebibytes": 14.518,
+  "publicFileCount": 200,
+  "publicBytes": 15770047,
+  "assetTreeSha256": "ea4cb50b8c6863f1afce3e4c6150a1cb735902a83a4f1f4d3170b401f1e57a33",
+  "publicTreeSha256": "5a56d6128e3dafa1e07be07336c6a7be11637bb1e272d3f909d221d69c8457b4",
   "preloadCount": 8,
   "preloadBytes": 718587,
   "preloadGzipBytes": 717670,
   "preloadDecodedBytes": 12313328,
-  "dynamicRefCount": 119,
-  "titleBytes": 1072178,
-  "firstStageBytes": 2090657,
-  "criticalRequests": 29,
+  "dynamicRefCount": 167,
+  "titleBytes": 1082844,
+  "firstStageBytes": 2178373,
+  "criticalRequests": 30,
   "staticBudgetBytes": 10485760,
   "titleBudgetBytes": 1572864,
   "firstStageBudgetBytes": 3145728,
@@ -46,10 +46,10 @@
       "decodedBytes": 808156
     },
     "boss": {
-      "count": 48,
-      "bytes": 5233724,
-      "gzipBytes": 5229408,
-      "decodedBytes": 158194176
+      "count": 96,
+      "bytes": 11467648,
+      "gzipBytes": 11417435,
+      "decodedBytes": 530496000
     },
     "fx": {
       "count": 5,
@@ -64,12 +64,14 @@
       "decodedBytes": 58261504
     }
   },
-  "basePublicBytes": 9524609,
-  "optionalMediaCount": 0,
-  "optionalMediaBytes": 0,
-  "optionalMediaTreeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "presentationDecodedBytesMax": 27140096,
+  "basePublicBytes": 10057497,
+  "optionalMediaCount": 48,
+  "optionalMediaBytes": 5712550,
+  "optionalMediaTreeSha256": "123d8b66befb42fdd76f3e60b7858439bc57e3818cb42029e7b867615952472e",
+  "presentationDecodedBytesMax": 30062912,
   "optionalMediaBudgetBytes": 67108864,
   "optionalMediaPageBudgetBytes": 1048576,
-  "presentationBudgetBytes": 33554432
+  "presentationBudgetBytes": 33554432,
+  "fxScratchDecodedBytes": 36864,
+  "importVersion": 2
 }

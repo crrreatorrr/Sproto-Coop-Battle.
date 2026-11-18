@@ -13,6 +13,8 @@ The **32 MiB retained boss-presentation envelope** includes the actual fallback 
 - Phase-one action current/next pages plus the first transformation standby page, held action cel and current fallback banks.
 - Phase-two action current/next pages plus held action cel and current fallback banks; transformation pages have been released.
 
+Every scene also reserves `fxScratchDecodedBytes`: the global maximum native cell RGBA size among valid registered FX plans. The renderer retains one reusable scratch rather than a cache per effect/frame. Current valid FX cells are96×96, so this adds36,864bytes once, conservatively even in a scene before an FX event has drawn. Invalid FX plans keep their existing legacy fallback and do not increase this reserve. The same runtime path, geometry, anchor, full-core,64frame and page resource checks determine eligibility. FX image banks remain base; the scratch is additional decoded residency, not an optional-media exemption.
+
 Each stream retains at most two distinct pages. Looping walk/charge-rush clips include the last-to-first page pair. Shared files are deduplicated by exact identity. The runtime already releases actions during transformation and clears old held cels on state/phase changes; this policy adds build-time validation, without changing loading or rendering behavior.
 
 This envelope is specifically retained boss presentation. Persistent selected fighters, scenery, shadows, UFO and other loader groups must be reported separately in actual integration measurements; the32MiBfigure is not a claim about total browser heap, total image residency, GPU allocation or when the browser collects released images.

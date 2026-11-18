@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const scope = {};
 scope.window = scope;
-for (const name of ['sprite-timeline', 'boss-transform-player']) {
+for (const name of ['sprite-timeline', 'boss-transform-player', 'boss-fx-selection']) {
   vm.runInNewContext(fs.readFileSync(path.join(root, 'public/js', name + '.js'), 'utf8'), scope);
 }
 
@@ -67,6 +67,35 @@ export function analyzeStreamedMedia(manifest, registry, files) {
   }
   const fallback = manifest.bosses.map(fallbackPaths);
   const alwaysBase = new Set(fallback.flat());
+  let fxScratchDecodedBytes = 0;
+  const fxScratchPlans = [], ignoredFxScratchPlans = [];
+  for (const boss of manifest.bosses) {
+    const phases = animations?.[boss.key]?.phases;
+    if (!Array.isArray(phases) || phases.length > boss.phases.length || phases.some(phase => !object(phase))) continue;
+    phases.forEach((phase, index) => {
+      for (const [purpose, clip] of Object.entries(phase.fx || {})) {
+        const owner = boss.key + '/' + index + '/fx/' + purpose;
+        if (!Object.prototype.hasOwnProperty.call(scope.CoopBossFxSelection.rows, purpose)) continue;
+        try {
+          // Match drawRegisteredBossFx's runtime plan options and its strict
+          // native96/full-core/64-frame checks. FX stays base media. Reserve
+          // for a valid plan even before decode, since it may allocate later.
+          const plan = scope.CoopSpriteTimeline.plan(clip, {
+            anchorInside: true, maxTextureSide: 2048, maxPageBytes: 8 * 1024 * 1024,
+            allowRepeatedSources: true,
+            validateSource: src => /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
+              src.split('/').every(part => part && part !== '.' && part !== '..') &&
+              !/^assets\/bosses\/(actions|transformations)\//.test(src),
+          });
+          if (plan.cell.some(n => n !== 96) || clip.frameTicks.length > 64 ||
+              plan.coreRect.some((n, i) => n !== [0, 0, 96, 96][i])) throw Error('not a runtime-valid native FX plan');
+          const bytes = plan.cell[0] * plan.cell[1] * 4;
+          fxScratchDecodedBytes = Math.max(fxScratchDecodedBytes, bytes);
+          fxScratchPlans.push({ owner, cell: plan.cell.slice(), decodedBytes: bytes });
+        } catch (error) { ignoredFxScratchPlans.push({ owner, reason: error.message }); }
+      }
+    });
+  }
 
   function register(owner, kind, clip, bossIndex, phase, loop = false) {
     let plan;
@@ -162,8 +191,9 @@ export function analyzeStreamedMedia(manifest, registry, files) {
       fallbackDecodedBytes: decoded(basePaths, 'retained-fallback'),
       transformDecodedBytes: decoded(transformPaths, 'transform-stream'),
       actionDecodedBytes: decoded(actionPaths, 'action-stream'), heldCelBytes: heldBytes,
+      fxScratchDecodedBytes,
       retainedTransformPages: unique(transformPaths).length, retainedActionPages: unique(actionPaths).length,
-      decodedBytes: decoded(all, 'presentation-scene') + heldBytes });
+      decodedBytes: decoded(all, 'presentation-scene') + heldBytes + fxScratchDecodedBytes });
   }
   for (let i = 0; i < manifest.bosses.length; i++) {
     // With neither stream pinned the existing loader warms the next boss too.
@@ -203,7 +233,8 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     maxPresentationDecodedBytes: scenes.reduce((n, row) => Math.max(n, row.decodedBytes), 0),
     registeredTransformClips: clips.filter(c => c.kind === 'transformations').length,
     registeredActionClips: clips.filter(c => c.kind === 'actions').length,
+    fxScratchDecodedBytes, fxScratchPlans, ignoredFxScratchPlans,
     validationErrors: errors, limitErrors, scenes,
-    residencyScope: 'Retained boss fallback body/FX banks, legal stream overlap and held cel. Persistent fighter/scenery/UFO/other loader residency is reported separately, not hidden inside this envelope.',
+    residencyScope: 'Retained boss fallback body/FX banks, legal stream overlap, held cel and one global maximum valid registered-FX scratch. Persistent fighter/scenery/UFO/other loader residency is reported separately, not hidden inside this envelope.',
   };
 }

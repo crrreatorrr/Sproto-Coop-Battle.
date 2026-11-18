@@ -1,0 +1,114 @@
+{
+  "acceptedCatalogSha256": "308449650a483ac7b76125ef84d78d8f72568c74036a0729de13dd7be6337410",
+  "bosses": [
+    {
+      "boss": "bront",
+      "key": "01-marina-bront",
+      "provenance": "source/transformations/01-marina-bront/provenance.json",
+      "sha256": "77b7faa154783240c5bced8b610bb75c6df7facf18b2288758f96584959f8e05",
+      "stage": 1
+    },
+    {
+      "boss": "vela",
+      "key": "02-last-light-vela",
+      "provenance": "source/transformations/02-last-light-vela/provenance.json",
+      "sha256": "f2625cb8b8660b529583abb93febdbb0cd30a4160d992cbe82d6b5af04204736",
+      "stage": 2
+    },
+    {
+      "boss": "crapto",
+      "key": "03-mudline-crapto",
+      "provenance": "source/transformations/03-mudline-crapto/provenance.json",
+      "sha256": "3613ed96dd365ab39584bdbbba984e7784664afde0fdea98d09774bc6d12c9b7",
+      "stage": 3
+    },
+    {
+      "boss": "zephyr",
+      "key": "04-ranch-zephyr",
+      "provenance": "source/transformations/04-ranch-zephyr/provenance.json",
+      "sha256": "2aebd579b9e6148a5081089ba3bd54eb89c70b0fb1333051e217a7890c480250",
+      "stage": 4
+    },
+    {
+      "boss": "sproto102",
+      "key": "05-neon-sproto102",
+      "provenance": "source/transformations/05-neon-sproto102/provenance.json",
+      "sha256": "17baafa2301f9477d0a14857f39f66fa1a17ecc4525945ec3d4696398c06b968",
+      "stage": 5
+    },
+    {
+      "boss": "rune",
+      "key": "06-circuit-rune",
+      "provenance": "source/transformations/06-circuit-rune/provenance.json",
+      "sha256": "95317b0a32be511759a64d7d3ad42b4b584ab1743d4c2898c1b0125cdca4c04e",
+      "stage": 6
+    },
+    {
+      "boss": "bigswole",
+      "key": "07-moonkeep-bigswole",
+      "provenance": "source/transformations/07-moonkeep-bigswole/provenance.json",
+      "sha256": "8fc731e288a33a8dcac636f33327499c01425e4092fecb3e2a3073c437db0402",
+      "stage": 7
+    },
+    {
+      "boss": "alpha777",
+      "key": "08-crown-alpha777",
+      "provenance": "source/transformations/08-crown-alpha777/provenance.json",
+      "sha256": "e6b639cd5c64abe432e68fd67c2edced718ca8f04897e608773bb97e1b6ad603",
+      "stage": 8
+    },
+    {
+      "boss": "highsproto",
+      "key": "09-hatchery-highsproto",
+      "provenance": "source/transformations/09-hatchery-highsproto/provenance.json",
+      "sha256": "6766f47929920c19d532679671c412ff81d53355fc8318f5cf4f5e8194403371",
+      "stage": 9
+    },
+    {
+      "boss": "sprotosales",
+      "key": "10-verse-sprotosales",
+      "provenance": "source/transformations/10-verse-sprotosales/provenance.json",
+      "sha256": "a66881b78da9ef65decd2746bdb1f4ec7ee8499265d592f13770b0ca7fc9aefe",
+      "stage": 10
+    },
+    {
+      "boss": "sproto1668",
+      "key": "11-rooftop-sproto1668",
+      "provenance": "source/transformations/11-rooftop-sproto1668/provenance.json",
+      "sha256": "3d34dac3ca3a57ab1ed32cd1e86ef49e6bf7fa6ab6be726d47f11891306768b6",
+      "stage": 11
+    },
+    {
+      "boss": "sproto3106",
+      "key": "12-codebreak-sproto3106",
+      "provenance": "source/transformations/12-codebreak-sproto3106/provenance.json",
+      "sha256": "0075dbe48f409525760b308853d379adbec589ce544bad36012dfa469752d9b3",
+      "stage": 12
+    }
+  ],
+  "endpointPacketIndexSha256": "a69518f512626bd06406132ae8053b0076c0be01085b76396190d2a73767ff44",
+  "motionTargetUserApproved": true,
+  "newAnimationArt": false,
+  "portableEndpointReader": {
+    "file": "source/endpoint-rigs/portable_rig.py",
+    "sha256": "4a836f358173e78ed07a3a45268744c4cbb77095656e0fe220b331620d1d6b80"
+  },
+  "sourcePolicy": "Exact reviewed 220px cels combined losslessly; native workspace evidence remains external.",
+  "stages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "status": "Validated staging bundle; not installed",
+  "userApproval": "Use this motion quality for all 12",
+  "version": 1
+}

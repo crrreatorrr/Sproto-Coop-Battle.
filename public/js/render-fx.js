@@ -947,6 +947,20 @@ function drawBoss(g, b, camX) {
 // FX clips share the actor timeline math, but never retain another event's
 // image or run a client-side clock. A late/malformed atlas keeps legacy art.
 const bossFxPlans = new WeakMap(), invalidBossFxClips = new WeakSet();
+let bossFxCellCanvas;
+function bossFxCell(sheet, frame) {
+  if (!bossFxCellCanvas) bossFxCellCanvas = document.createElement('canvas');
+  if (bossFxCellCanvas.width !== BOSS_FX_CELL || bossFxCellCanvas.height !== BOSS_FX_CELL) {
+    bossFxCellCanvas.width = bossFxCellCanvas.height = BOSS_FX_CELL;
+  }
+  const cell = bossFxCellCanvas.getContext('2d');
+  cell.clearRect(0, 0, BOSS_FX_CELL, BOSS_FX_CELL);
+  cell.imageSmoothingEnabled = false;
+  cell.drawImage(sheet, frame.x, frame.y, BOSS_FX_CELL, BOSS_FX_CELL,
+    0, 0, BOSS_FX_CELL, BOSS_FX_CELL);
+  return bossFxCellCanvas;
+}
+
 function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
   const clip = root.CoopBossFxSelection?.clipFor(root.CoopBossTransformations?.animations, M, choice);
   if (!clip || typeof clip !== 'object' || !root.CoopSpriteTimeline?.plan || invalidBossFxClips.has(clip)) return false;
@@ -967,6 +981,10 @@ function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
   }
   const frame = plan.at(choice.age, choice.loop), sheet = img(frame.page.src);
   if (!ready(sheet) || sheet.naturalWidth !== frame.page.width || sheet.naturalHeight !== frame.page.height) return false;
+  // Fractional world extents must sample the same cel regardless of its atlas
+  // row. One reusable 96x96 RGBA scratch (36,864 bytes) also clears transparent
+  // regions before the next cel; destination placement stays unchanged.
+  const picture = bossFxCell(sheet, frame);
   // Ground-contact cels opt in explicitly. The event's z remains serialized
   // and authoritative; only these two visual origins use the belt floor.
   if (clip.grounded === true && (choice.purpose === 'signature' || choice.purpose === 'special') &&
@@ -975,7 +993,7 @@ function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
   g.translate(Math.round(x), Math.round(y));
   g.imageSmoothingEnabled = false;
   if (flip) g.scale(-1, 1);
-  g.drawImage(sheet, frame.x, frame.y, ...plan.cell,
+  g.drawImage(picture, 0, 0, ...plan.cell,
     -plan.anchor[0] * size / BOSS_FX_CELL, -plan.anchor[1] * size / BOSS_FX_CELL, size, size);
   g.restore();
   return true;

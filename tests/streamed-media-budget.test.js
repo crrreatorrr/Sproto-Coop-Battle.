@@ -35,6 +35,12 @@ async function main() {
     f.files.push(...srcs.map(src=>image(src,padded?1650:220,padded?660:220)));
     return clip;
   }
+  function fx(f,purpose='hurt',phase=0) {
+    const boss=f.registry.animations.bosses[key]||={phases:[{},{}]};
+    const c={cell:[96,96],anchor:[48,48],frameTicks:[6],
+      pages:[{src:f.manifest.bosses[0].phases[0].proj,columns:1,frames:1}]};
+    boss.phases[phase].fx||={};boss.phases[phase].fx[purpose]=c;return c;
+  }
   const run=f=>analyze(f.manifest,f.registry,f.files);
   const valid=r=>{assert.deepEqual(r.validationErrors,[]);assert.deepEqual(r.limitErrors,[]);};
   const invalid=f=>{const r=run(f);assert(r.validationErrors.length,'malformed source must diagnose');return r;};
@@ -196,6 +202,45 @@ async function main() {
     const f=fixture();for(const file of f.files.filter(p=>p.decodedBytes))Object.assign(file,image(file.path,1,limits.presentationBytes/16));
     assert.equal(run(f).maxPresentationDecodedBytes,limits.presentationBytes);valid(run(f));
     f.files[1].height++;f.files[1].decodedBytes+=4;assert(run(f).limitErrors.some(e=>e.includes('32 MiB')));
+  });
+  test('valid registered FX reserves one global native scratch in every scene',()=>{
+    const f=fixture();transform(f);const before=run(f);fx(f);const after=run(f);valid(after);
+    assert.equal(after.fxScratchDecodedBytes,96*96*4);assert.equal(after.optionalBytes,before.optionalBytes);
+    assert.equal(after.basePublicBytes,before.basePublicBytes,'FX never gains an optional-media exemption');
+    for(let i=0;i<after.scenes.length;i++){
+      assert.equal(after.scenes[i].fxScratchDecodedBytes,36864);
+      assert.equal(after.scenes[i].decodedBytes-before.scenes[i].decodedBytes,36864);
+    }
+  });
+  test('invalid or unreachable FX metadata does not allocate a reserve',()=>{
+    for(const edit of [c=>c.cell=[128,96],c=>c.anchor=[96,48],c=>c.coreRect=[0,0,95,96],
+      c=>c.pages[0].src=A+'bad.webp',c=>c.pages[0].src='assets/bosses/./bad.png',
+      c=>c.pages[0].src='assets/bosses/bad.png?query=1',c=>c.pages[0].columns=1000,
+      c=>{c.frameTicks=Array(65).fill(1);c.pages[0].columns=8;c.pages[0].frames=65;}]){
+      const f=fixture(),c=fx(f);edit(c);assert.equal(run(f).fxScratchDecodedBytes,0);
+    }
+    for(const purpose of ['unreachable','toString']){const f=fixture();fx(f,purpose);assert.equal(run(f).fxScratchDecodedBytes,0);}
+  });
+  test('many valid FX purposes/phases share one scratch rather than a cache',()=>{
+    const f=fixture();for(const phase of [0,1])for(const purpose of ['signature','special','hurt','death'])fx(f,purpose,phase);
+    const r=run(f);valid(r);assert.equal(r.fxScratchPlans.length,8);assert.equal(r.fxScratchDecodedBytes,36864);
+    assert(r.scenes.every(s=>s.fxScratchDecodedBytes===36864));assert.equal(r.optionalBytes,0);
+  });
+  test('FX64frame and complete native-core limits mirror the runtime',()=>{
+    for(const frames of [64,65]){
+      const f=fixture(),c=fx(f);c.frameTicks=Array(frames).fill(1);c.pages[0].columns=8;c.pages[0].frames=frames;
+      Object.assign(f.files.find(p=>p.path===c.pages[0].src),image(c.pages[0].src,768,Math.ceil(frames/8)*96));
+      const r=run(f);valid(r);assert.equal(r.fxScratchDecodedBytes,frames===64?36864:0);
+    }
+  });
+  test('32MiB boundary includes the scratch, with no cap increase',()=>{
+    const f=fixture();fx(f);
+    const baseWithoutFirst=f.files.filter(p=>p.decodedBytes&&p!==f.files[1]).reduce((n,p)=>n+p.decodedBytes,0);
+    const firstHeight=(limits.presentationBytes-36864-baseWithoutFirst)/4;
+    Object.assign(f.files[1],image(f.files[1].path,1,firstHeight));
+    const r=run(f);valid(r);assert.equal(r.maxPresentationDecodedBytes,limits.presentationBytes);
+    assert.equal(r.fxScratchDecodedBytes,36864);f.files[1].height++;f.files[1].decodedBytes+=4;
+    assert(run(f).limitErrors.some(e=>e.includes('32 MiB')));
   });
   test('policy action names agree with actual reachable selector outputs',()=>{
     const scope={};scope.window=scope;vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/boss-action-selection.js'),'utf8'),scope);

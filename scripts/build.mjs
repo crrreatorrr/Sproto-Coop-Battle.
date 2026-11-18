@@ -102,6 +102,7 @@ export function buildDist() {
     optionalMediaTreeSha256: report.optionalMediaTreeSha256,
     optionalMediaPaths: report.streamedMedia.optionalPaths,
     presentationDecodedBytesMax: report.streamedMedia.maxPresentationDecodedBytes,
+    fxScratchDecodedBytes: report.fxScratchDecodedBytes,
     mediaBudgetLimits: report.streamedMedia.limits,
     assetTreeSha256: report.assetTreeSha256,
     publicTreeSha256: report.publicTreeSha256,
