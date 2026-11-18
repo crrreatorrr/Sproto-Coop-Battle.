@@ -76,10 +76,15 @@ function actionPaths(manifest, i) {
     .flatMap(clip => clip.pages.map(page => page.src))));
 }
 
-// Last Call's larger bespoke banks load on arrival. Holding them alongside
-// Codebreak would cross the decoded presentation budget.
+// Only the bespoke Last Call actor atlases are split across two pages.
 function stageOnlyBoss(manifest, i) {
   return i > 0 && manifest.bosses[i]?.attacks === 'bar';
+}
+
+// Load the late-stage boss banks on entry instead of keeping them alongside
+// the previous stage. The ordinary Codebreak atlases use their usual layout.
+function deferBossBanks(manifest, i) {
+  return stageOnlyBoss(manifest, i) || (i > 0 && manifest.bosses[i]?.key === '12-codebreak-sproto3106');
 }
 
 const BAR_ACTOR_PAGE_ROWS = 5;
@@ -96,7 +101,7 @@ function bossActorFrame(manifest, i, phaseIndex, row) {
 }
 
 function canPrefetchNext(manifest, i) {
-  return i + 1 < manifest.bosses.length && !stageOnlyBoss(manifest, i + 1);
+  return i + 1 < manifest.bosses.length && !deferBossBanks(manifest, i + 1);
 }
 
 function stagePaths(manifest, i) {
@@ -562,6 +567,7 @@ root.AssetLoader = {
   groups: groups,
   enemyProjectileSheet: enemyProjectileSheet,
   stageOnlyBoss: stageOnlyBoss,
+  deferBossBanks: deferBossBanks,
   lowerBossActorPath: lowerBossActorPath,
   bossActorFrame: bossActorFrame,
   barActorPageRows: BAR_ACTOR_PAGE_ROWS,

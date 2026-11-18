@@ -191,23 +191,30 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     });
   }
 
-  // Bespoke banks loaded only after entering their own stage can join the
-  // optional download budget. Validate ownership and exact decoded geometry
-  // atomically. They still count in that stage's resident presentation.
+  // On-entry banks can join the optional download budget. Validate ownership
+  // and exact decoded geometry atomically. They still count toward residency
+  // in their own stage.
   manifest.bosses.forEach((boss, index) => {
-    if (!scope.AssetLoader.stageOnlyBoss(manifest, index)) return;
+    if (!scope.AssetLoader.deferBossBanks(manifest, index)) return;
+    const split = scope.AssetLoader.stageOnlyBoss(manifest, index);
     const owner = boss.key + '/stage-only-banks';
     const banks = [];
     for (const [phaseIndex, phase] of boss.phases.entries()) {
       const stem = 'assets/bosses/' + boss.key + '-p' + (phaseIndex + 1);
-      const actorRows = scope.AssetLoader.barActorPageRows, width = phase.actorCell * phase.columns;
-      banks.push(
-        { src: phase.sheet, expectedSrc: stem + '.webp',
-          width, height: phase.actorCell * actorRows },
-        { src: scope.AssetLoader.lowerBossActorPath(phase), expectedSrc: stem + '-lower.webp',
-          width, height: phase.actorCell * ((phaseIndex ? 9 : 10) - actorRows) },
-        { src: phase.proj, expectedSrc: stem + '-projectiles.png',
-          width: phase.fxCell * phase.fxColumns, height: phase.fxCell * (phase.impactRow + 1) });
+      if (split) {
+        const actorRows = scope.AssetLoader.barActorPageRows, width = phase.actorCell * phase.columns;
+        banks.push(
+          { src: phase.sheet, expectedSrc: stem + '.webp',
+            width, height: phase.actorCell * actorRows },
+          { src: scope.AssetLoader.lowerBossActorPath(phase), expectedSrc: stem + '-lower.webp',
+            width, height: phase.actorCell * ((phaseIndex ? 9 : 10) - actorRows) },
+          { src: phase.proj, expectedSrc: stem + '-projectiles.png',
+            width: phase.fxCell * phase.fxColumns, height: phase.fxCell * (phase.impactRow + 1) });
+      } else {
+        banks.push(
+          { src: phase.sheet, expectedSrc: stem + '.webp', width: 4 * 220, height: (phaseIndex ? 8 : 7) * 220 },
+          { src: phase.proj, expectedSrc: stem + '-projectiles.png', width: 4 * 96, height: 4 * 96 });
+      }
     }
     const retainedElsewhere = new Set(fallback.flatMap((paths, i) => i === index ? [] : paths));
     const entries = banks.map(({ src, expectedSrc, width, height }) => {
@@ -224,7 +231,7 @@ export function analyzeStreamedMedia(manifest, registry, files) {
       else return file;
       return null;
     });
-    if (entries.length !== 6) fail(owner, 'expected two phases with three banks each');
+    if (entries.length !== (split ? 6 : 4)) fail(owner, 'unexpected bank count for the two stage phases');
     else if (entries.every(Boolean)) entries.forEach(file => optional.set(file.path, file));
   });
 

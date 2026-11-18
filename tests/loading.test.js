@@ -166,14 +166,23 @@ async function main() {
     memory.loader.enterStage(i, memory.manifest);
     await memory.drain();
   }
-  const stageOnly = memory.manifest.bosses.findIndex(boss => boss.attacks === 'bar');
-  assert.ok(stageOnly > 0);
-  memory.loader.enterStage(stageOnly - 1, memory.manifest);
-  await memory.drain();
-  assert.ok(plan.boss(stageOnly).every(src => !memory.loader.loaded(src)), 'bespoke banks wait until arrival');
-  memory.loader.enterStage(stageOnly, memory.manifest);
-  await memory.drain();
-  assert.ok(plan.boss(stageOnly).every(src => memory.loader.loaded(src)), 'arrival and late join load every bespoke bank');
+  for (const [key, bankCount] of [['12-codebreak-sproto3106', 4], ['13-last-call-sprotelbitcoin', 6]]) {
+    const late = harness();
+    const index = late.manifest.bosses.findIndex(boss => boss.key === key);
+    assert.ok(index > 0);
+    const banks = late.AssetLoader.groups(late.manifest).boss(index);
+    assert.strictEqual(banks.length, bankCount, 'only Last Call uses lower-page atlases');
+    late.loader.enterStage(index - 1, late.manifest);
+    await late.drain();
+    assert.ok(banks.every(src => !late.loader.loaded(src)), key + ' banks wait until arrival');
+    late.loader.enterStage(index, late.manifest);
+    await late.drain();
+    assert.ok(banks.every(src => late.loader.loaded(src)), key + ' loads its banks on entry');
+    const joining = harness();
+    joining.loader.enterStage(index, joining.manifest);
+    await joining.drain();
+    assert.ok(banks.every(src => joining.loader.loaded(src)), key + ' loads its banks on direct join');
+  }
   const stat = memory.loader.status();
   assert.ok(stat.resident.boss <= 8, 'boss resident ' + stat.resident.boss);
   assert.ok(stat.decoded.boss <= 8 * 1024 * 1024 * 4, 'boss decoded ' + stat.decoded.boss);

@@ -406,6 +406,33 @@ async function main() {
     assert(bad.validationErrors.some(error=>error.owner.endsWith('/stage-only-banks')));
     assert(banks.every(src=>!bad.optionalPaths.includes(src)), 'a bad stage bank keeps the whole batch in base bytes');
   });
+  test('Codebreak banks move to optional bytes only when the whole on-entry layout is valid',()=>{
+    const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
+    const index=manifest.bosses.findIndex(boss=>boss.key==='12-codebreak-sproto3106');
+    assert.ok(index>0);
+    const loader=realLoader(registry), plan=loader.groups(manifest);
+    assert(!loader.canPrefetchNext(manifest,index-1));
+    const banks=manifest.bosses[index].phases.flatMap(phase=>[phase.sheet,phase.proj]);
+    assert.equal(banks.length,4);
+    assert(banks.every(src=>report.streamedMedia.optionalPaths.includes(src)));
+    assert(plan.boss(index).every(src=>!src.endsWith('-lower.webp')));
+    const bankBytes=banks.reduce((sum,src)=>sum+report.files.find(file=>file.path===src).bytes,0);
+    const before=report.streamedMedia.scenes.find(row=>row.boss===manifest.bosses[index-1].key && row.state==='fallback-and-next-prefetch');
+    const here=report.streamedMedia.scenes.find(row=>row.boss===manifest.bosses[index].key && row.state==='fallback-and-next-prefetch');
+    const decoded=names=>names.reduce((sum,src)=>sum+report.files.find(file=>file.path===src).decodedBytes,0);
+    assert.equal(before.fallbackDecodedBytes,decoded(plan.boss(index-1)));
+    assert.equal(here.fallbackDecodedBytes,decoded(plan.boss(index)));
+
+    const files=copy(report.files), bad=files.find(file=>file.path===banks[0]);
+    bad.width++;
+    bad.decodedBytes=bad.width*bad.height*4;
+    const invalidReport=analyze(manifest,registry,files);
+    assert(invalidReport.validationErrors.some(error=>error.owner===manifest.bosses[index].key+'/stage-only-banks'));
+    assert(banks.every(src=>!invalidReport.optionalPaths.includes(src)));
+    assert.equal(invalidReport.basePublicBytes,report.basePublicBytes+bankBytes);
+    assert.equal(invalidReport.optionalBytes,report.optionalMediaBytes-bankBytes);
+    assert.equal(report.basePublicBytes+report.optionalMediaBytes,report.publicBytes);
+  });
   test('real first-boss loader budget still counts a dedicated FX bank request and first-stage bytes',()=>{
     const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
     const before=realLoader(registry),index=runtimeIndex(report),scriptPaths=before.pageScripts(index.html);
