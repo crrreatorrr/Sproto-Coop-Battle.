@@ -1,0 +1,657 @@
+{
+  "status": "PASS_NUMERIC_SOURCE_REPLAY_VISUAL_VERDICT_IN_REPORT",
+  "candidateFilesVerified": 202,
+  "priorFrozenInputFilesVerified": 503,
+  "sourceRGBAReassemblyExact": true,
+  "selectedSourceDrawings": 16,
+  "seedComponents": 27,
+  "seedSamples": 174203,
+  "deathFormatRuleAlphaOnlySamples": 60904,
+  "paletteColors": 128,
+  "trainingNativeErosionPixels": 8,
+  "trainingSamples": 2873977,
+  "paletteRelearnExact": true,
+  "sourceRGBMappings": 328673,
+  "nearestMappingsExact": true,
+  "nearestTieExtraEntries": 1089,
+  "changedNativeRGBSamples": 3267226,
+  "changedGame96RGBSamples": 37060,
+  "all16NativeAlphaAndGeometryExact": true,
+  "all16WholeNNAndContactInverseExact": true,
+  "clipsExact": true,
+  "records": [
+    {
+      "tile": 0,
+      "family": "signature",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 74966,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 9,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        12,
+        23,
+        84,
+        95
+      ],
+      "opaqueSamples": 2941,
+      "paint4ComponentSizes": [
+        2941
+      ],
+      "paint8ComponentSizes": [
+        2941
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 1,
+      "family": "signature",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 2,
+      "seedSamples": 42,
+      "trainingSamples": 88570,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 8,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        8,
+        24,
+        88,
+        95
+      ],
+      "opaqueSamples": 3556,
+      "paint4ComponentSizes": [
+        3556
+      ],
+      "paint8ComponentSizes": [
+        3556
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 2,
+      "family": "signature",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 8,
+      "seedSamples": 2574,
+      "trainingSamples": 62846,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 10,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        14,
+        28,
+        81,
+        95
+      ],
+      "opaqueSamples": 3004,
+      "paint4ComponentSizes": [
+        2948,
+        36,
+        20
+      ],
+      "paint8ComponentSizes": [
+        2948,
+        36,
+        20
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 3,
+      "family": "signature",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 1,
+      "seedSamples": 20,
+      "trainingSamples": 31959,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 18,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        16,
+        39,
+        77,
+        95
+      ],
+      "opaqueSamples": 1748,
+      "paint4ComponentSizes": [
+        1076,
+        212,
+        193,
+        129,
+        94,
+        44
+      ],
+      "paint8ComponentSizes": [
+        1076,
+        212,
+        193,
+        129,
+        94,
+        44
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 4,
+      "family": "special",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 2,
+      "seedSamples": 267,
+      "trainingSamples": 83322,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 28,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        30,
+        58,
+        66,
+        95
+      ],
+      "opaqueSamples": 831,
+      "paint4ComponentSizes": [
+        831
+      ],
+      "paint8ComponentSizes": [
+        831
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 5,
+      "family": "special",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 632321,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 2,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        4,
+        8,
+        92,
+        95
+      ],
+      "opaqueSamples": 5753,
+      "paint4ComponentSizes": [
+        5753
+      ],
+      "paint8ComponentSizes": [
+        5753
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 6,
+      "family": "special",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 4,
+      "seedSamples": 12164,
+      "trainingSamples": 280996,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 13,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        11,
+        25,
+        85,
+        95
+      ],
+      "opaqueSamples": 2935,
+      "paint4ComponentSizes": [
+        2898,
+        19,
+        18
+      ],
+      "paint8ComponentSizes": [
+        2916,
+        19
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 7,
+      "family": "special",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 57490,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 29,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        30,
+        58,
+        66,
+        95
+      ],
+      "opaqueSamples": 693,
+      "paint4ComponentSizes": [
+        443,
+        106,
+        92,
+        32,
+        11,
+        9
+      ],
+      "paint8ComponentSizes": [
+        581,
+        92,
+        11,
+        9
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 8,
+      "family": "hurt",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 127255,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        27,
+        29,
+        69,
+        67
+      ],
+      "opaqueSamples": 1203,
+      "paint4ComponentSizes": [
+        1203
+      ],
+      "paint8ComponentSizes": [
+        1203
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 9,
+      "family": "hurt",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 1,
+      "seedSamples": 1,
+      "trainingSamples": 372368,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "opaqueSamples": 3672,
+      "paint4ComponentSizes": [
+        3671,
+        1
+      ],
+      "paint8ComponentSizes": [
+        3672
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 10,
+      "family": "hurt",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 7,
+      "seedSamples": 83,
+      "trainingSamples": 174861,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        16,
+        17,
+        80,
+        81
+      ],
+      "opaqueSamples": 2150,
+      "paint4ComponentSizes": [
+        1436,
+        79,
+        78,
+        72,
+        70,
+        70,
+        66,
+        43,
+        42,
+        37,
+        34,
+        33,
+        32,
+        22,
+        14,
+        6,
+        3,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "paint8ComponentSizes": [
+        1473,
+        216,
+        79,
+        70,
+        70,
+        48,
+        43,
+        37,
+        36,
+        35,
+        34,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 11,
+      "family": "hurt",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 43142,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        35,
+        35,
+        60,
+        61
+      ],
+      "opaqueSamples": 457,
+      "paint4ComponentSizes": [
+        449,
+        8
+      ],
+      "paint8ComponentSizes": [
+        457
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 12,
+      "family": "death",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 197333,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        24,
+        24,
+        72,
+        72
+      ],
+      "opaqueSamples": 1837,
+      "paint4ComponentSizes": [
+        1837
+      ],
+      "paint8ComponentSizes": [
+        1837
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 13,
+      "family": "death",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 383199,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "opaqueSamples": 3844,
+      "paint4ComponentSizes": [
+        3844
+      ],
+      "paint8ComponentSizes": [
+        3844
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 14,
+      "family": "death",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 2,
+      "seedSamples": 159052,
+      "trainingSamples": 159174,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        16,
+        16,
+        80,
+        80
+      ],
+      "opaqueSamples": 1856,
+      "paint4ComponentSizes": [
+        1503,
+        353
+      ],
+      "paint8ComponentSizes": [
+        1503,
+        353
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    },
+    {
+      "tile": 15,
+      "family": "death",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "sourceOriginalMatteRGBAMismatches": 0,
+      "seedComponents": 0,
+      "seedSamples": 0,
+      "trainingSamples": 104175,
+      "trainingNativeErosion": 8,
+      "nearestPaletteRGBMismatches": 0,
+      "nativeAlphaChanges": 0,
+      "wholeNNRGBAMismatches": 0,
+      "translationY": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "oldFinishedAlphaMismatches": 0,
+      "bounds": [
+        29,
+        29,
+        68,
+        67
+      ],
+      "opaqueSamples": 1069,
+      "paint4ComponentSizes": [
+        1069
+      ],
+      "paint8ComponentSizes": [
+        1069
+      ],
+      "literalWhiteMinRGB220": 0,
+      "hotPinkR180B180G90": 0
+    }
+  ],
+  "sourceOrCandidateChanges": false,
+  "gameEdits": false
+}

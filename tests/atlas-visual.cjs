@@ -237,6 +237,9 @@ async function verifyBossPlayback(page) {
     if (bank.sourceOriginalPngBase64 && digest(Buffer.from(bank.sourceOriginalPngBase64, 'base64')) !== bank.sourceOriginalEncodedSha256) {
       throw new Error(asset + ' original FX reference bytes differ');
     }
+    if (bank.acceptedDedicatedSourceFile && digest(fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile))) !== bank.acceptedDedicatedSourceEncodedSha256) {
+      throw new Error(asset + ' dedicated FX reference bytes differ');
+    }
   }
   return page.evaluate(async reviewed => {
     const ACTOR = 220, FX = 96;
@@ -515,7 +518,7 @@ async function verifyBossPlayback(page) {
       check(sampled.size === 160, pilot + ' did not exercise every authored source cel');
       return { renders, cels: sampled.size };
     };
-    const projectileArt = new Set();
+    const projectileArt = new Set(), checkedDedicatedFx = new Set();
     // Lightly tinted steel can read as white at game scale. Saturated
     // colored glows and emissive paint remain available to each boss.
     const isPale = (r, g, b) => {
@@ -531,7 +534,7 @@ async function verifyBossPlayback(page) {
       // Browser-native comparison keeps original partial-alpha premultiplication
       // exact, while Node verifies the reference's original encoded SHA above.
       let legacyFxPixels;
-      if (cell === FX) {
+      if (cell === FX && reviewedBank.sourceOriginalPngBase64) {
         const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.sourceOriginalPngBase64;
         await reference.decode();
         const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4 * FX;
@@ -550,7 +553,7 @@ async function verifyBossPlayback(page) {
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
           const sourceHash = await sha256(rgba);
-          const expectedHash = cell === FX && row < 4
+          const expectedHash = cell === FX && row < 4 && legacyFxPixels
             ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
             : reviewedBank.rgbaSha256[row*4+col];
           check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
@@ -558,10 +561,12 @@ async function verifyBossPlayback(page) {
           check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
           const approvedStanding = cell === ACTOR && row === 0 && col === 0;
           const approvedAppendedFx = cell === FX && row >= 4 && reviewedBank.acceptedAppendedSourceEncodedSha256;
+          const approvedDedicatedFx = cell === FX && asset.startsWith('assets/bosses/effects/') &&
+            reviewedBank.acceptedDedicatedSourceEncodedSha256;
           if (approvedStanding) check(sourceHash === reviewedBank.standingCol0Sha256, asset + ' standing endpoint differs');
-          else if (approvedAppendedFx) acceptedFxCells++;
+          else if (approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
           else check(white === 0, asset + ' has pale-neutral highlights in untouched fallback cell ' + row + '/' + col);
-          if (cell === FX && row < 4 && col === 0) {
+          if (cell === FX && row < 4 && col === 0 && !approvedDedicatedFx) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row); projectileArt.add(hash);
           }
           frames.add(hash);
@@ -691,6 +696,14 @@ async function verifyBossPlayback(page) {
       for (const [ph, { sheet, proj }] of boss.phases.entries()) {
         await assertAtlas(sheet, ACTOR, 7 + ph + Number(summoners.has(boss.pilot)));
         await assertAtlas(proj, FX, reviewed.banks[proj].rows);
+        const authoredFx = CoopBossTransformations.animations?.bosses?.[boss.key]?.phases?.[ph]?.fx || {};
+        for (const clip of Object.values(authoredFx)) for (const page of clip.pages || []) {
+          if (!page.src.startsWith('assets/bosses/effects/') || checkedDedicatedFx.has(page.src)) continue;
+          const source = reviewed.banks[page.src];
+          check(source?.acceptedDedicatedSourceEncodedSha256, page.src + ' lacks exact accepted dedicated FX provenance');
+          await assertAtlas(page.src, FX, source.rows);
+          checkedDedicatedFx.add(page.src);
+        }
         if (boss.pilot === 'zephyr') verifyZephyrClawClearance(sheet, ph);
         const status = { bi, ph, ar, x: 420, y: 36, fc: -1, hp: 50, mh: 100, fl: 0, w: 130 };
         const label = boss.pilot + ' phase ' + (ph + 1);
@@ -826,7 +839,7 @@ async function verifyBossPlayback(page) {
     return {
       phases, launched, impacts, summons, transitions, extraAttacks, transformRenders, transformMorphs,
       legacyTransformRenders, registeredTransformCels, registeredFxDraws, exactSourceCells, acceptedFxCells,
-      projectileDesigns: projectileArt.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
+      projectileDesigns: projectileArt.size, dedicatedFxSheets: checkedDedicatedFx.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
     };
   }, reviewed);
 }
@@ -867,8 +880,8 @@ async function main() {
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
-            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1176 ||
-            bossPlayback.acceptedFxCells !== 48 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1192 ||
+            bossPlayback.acceptedFxCells !== 64 || bossPlayback.dedicatedFxSheets !== 1 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {

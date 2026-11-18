@@ -1,0 +1,119 @@
+{
+  "expectedSourceSha256": "4377e8d123370df67d16150a1ecd293d7a9670b359f0fd2e0b8f6a6071f773d7",
+  "providerProvenance": {
+    "actualProviderOriginalSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+    "actualProviderProvenance": {
+      "jobIds": [
+        "ef9103a9-8eb6-43ef-92a8-f7b0b30703a6"
+      ],
+      "referenceAssetId": "6fb271b5-0f42-491a-bf0d-d057d98edb96",
+      "model": "Nano Banana 2",
+      "quality": "2K",
+      "aspectRatio": "1:1",
+      "route": "website Unlimited",
+      "creditsAuthorized": 0,
+      "purpose": "Four finite bounded death-effect stages from complete small source case, no long beams/clipped rays",
+      "submittedAt": "2026-11-18T04:32:01.518Z"
+    },
+    "technicalFormatStage": "source-format/source-alpha-only-reviewed-rules.png",
+    "formatOperation": "Explicit source-SHA-bound central rule component alpha-only removal; every original RGB retained. No source pose, art or geometry repair."
+  },
+  "grid": {
+    "rows": 2,
+    "columns": 2,
+    "expectedImageSize": [
+      2048,
+      2048
+    ],
+    "expectedCellSize": [
+      1024,
+      1024
+    ]
+  },
+  "background": {
+    "mode": "edge-connected-key",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "tolerance": 32,
+    "connectivity": 4,
+    "seedsByTile": {
+      "2": [
+        {
+          "id": "tile-002-reviewed-ring-empty-space-00",
+          "point": [
+            762,
+            510
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 54499,
+          "expectedRemovedBounds": [
+            228,
+            228,
+            796,
+            797
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-matte-masks/tile-002-gap-00.png",
+          "expectedRemovedMaskFileSha256": "f7a0bbe3bad47f3a18694b768220acd3213a9f88d096de2c7db7e975d18522dd",
+          "seedInteriorDepth4Neighbor": 34,
+          "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+        },
+        {
+          "id": "tile-002-reviewed-ring-empty-space-01",
+          "point": [
+            512,
+            512
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 104553,
+          "expectedRemovedBounds": [
+            309,
+            309,
+            715,
+            715
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-matte-masks/tile-002-gap-01.png",
+          "expectedRemovedMaskFileSha256": "4571b93f910b6b71fa2dd0e1d299d3cb8885ca9cdfb47efaebd935248c0c0a85",
+          "seedInteriorDepth4Neighbor": 203,
+          "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+        }
+      ]
+    }
+  },
+  "sequence": [
+    {
+      "tile": 0,
+      "ticks": 38,
+      "segment": "death"
+    },
+    {
+      "tile": 1,
+      "ticks": 38,
+      "segment": "death"
+    },
+    {
+      "tile": 2,
+      "ticks": 38,
+      "segment": "death"
+    },
+    {
+      "tile": 3,
+      "ticks": 37,
+      "segment": "death"
+    }
+  ],
+  "tickHz": 60,
+  "loop": false,
+  "diagnostics": {
+    "minimumEdgeClearance": 1,
+    "rejectEdgeTouch": true
+  },
+  "previews": {
+    "contactMaxExtent": 512,
+    "contactColumns": 2,
+    "contactPageFrames": 4,
+    "gifMaxExtent": 192
+  }
+}

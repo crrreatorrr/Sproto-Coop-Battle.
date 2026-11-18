@@ -1,0 +1,113 @@
+{
+  "status": "INDEPENDENT_SOURCE96_PASS_STAGED_ONLY_ACTUAL_SIM_PENDING",
+  "mode": "dedicated-optional-page",
+  "bossKey": "12-codebreak-sproto3106",
+  "phase": 1,
+  "fx": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ],
+      "grounded": true
+    },
+    "hurt": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    },
+    "death": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        38,
+        38,
+        38,
+        37
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 12
+        }
+      ]
+    }
+  },
+  "sourceSheet": "accepted-source-oracle-atlas96.png",
+  "registered": false,
+  "sourceReviewManifestSha256": "383d6db762e014277782ae36d82ae9a91043de56e688b1b6d47b048a37e7eeac"
+}

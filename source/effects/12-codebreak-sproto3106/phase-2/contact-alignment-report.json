@@ -1,0 +1,568 @@
+{
+  "status": "WHOLE_CELL_CONTACT_ORIGIN_CANDIDATE_REQUIRES_REVIEW",
+  "groundedOnly": [
+    "signature",
+    "special"
+  ],
+  "contactEdge": 95,
+  "signatureSpecialAnchor": [
+    48,
+    95
+  ],
+  "hurtDeathAnchor": [
+    48,
+    48
+  ],
+  "sourceMaterialSheetSha256": "04627964988000c6b662d123e8c2198362fee889ea52df5af6305a62cc7b406f",
+  "inverseRGBAMismatches": 0,
+  "clippedOpaqueSamples": 0,
+  "hurtDeathIncludedCentered": true,
+  "frames": [
+    {
+      "tile": 0,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "362c96422ca13cbc4e3fbeaeae5cac512886a4a8726d45116ce365c524f3d560",
+      "alignedDecodedRGBASha256": "a30550a49455319bb52ea13110fd2a1ff85696331499b9163d51af577f10b1e9",
+      "wholeCellTranslation": [
+        0,
+        9
+      ],
+      "boundsBefore": [
+        12,
+        14,
+        84,
+        86
+      ],
+      "boundsAfter": [
+        12,
+        23,
+        84,
+        95
+      ],
+      "opaqueSamples": 2941,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 1,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "752c62fd6f27fa1ed256106964aef5ccc5fd02931fb5601fe4d9eea524a208b2",
+      "alignedDecodedRGBASha256": "fc38ea5fcd9af92a905ceea0e513d5d1d60d68ce6d8562b5331d128cb86dff37",
+      "wholeCellTranslation": [
+        0,
+        8
+      ],
+      "boundsBefore": [
+        8,
+        16,
+        88,
+        87
+      ],
+      "boundsAfter": [
+        8,
+        24,
+        88,
+        95
+      ],
+      "opaqueSamples": 3556,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 2,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "01d42f679742575accb35302467b222b8dc98fe3943a6b0ba80e9159773875aa",
+      "alignedDecodedRGBASha256": "d55407f6fdf12a30d07f0df9892ec025ac45c6b9c09f8771d842a79f42aa8e66",
+      "wholeCellTranslation": [
+        0,
+        10
+      ],
+      "boundsBefore": [
+        14,
+        18,
+        81,
+        85
+      ],
+      "boundsAfter": [
+        14,
+        28,
+        81,
+        95
+      ],
+      "opaqueSamples": 3004,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 3,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "9f96fc78635339bb5937da8176190444c2e9e0984356e11323451178e19b35d4",
+      "alignedDecodedRGBASha256": "6eeec992706d8d5d75e4e54daf0aa57b0d7f42dec7d16a3dc7748819cf29e8f7",
+      "wholeCellTranslation": [
+        0,
+        18
+      ],
+      "boundsBefore": [
+        16,
+        21,
+        77,
+        77
+      ],
+      "boundsAfter": [
+        16,
+        39,
+        77,
+        95
+      ],
+      "opaqueSamples": 1748,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 4,
+      "purpose": "special",
+      "sourceDecodedRGBASha256": "09a1da61899dc26bde6d4fb68b1bb096f9cc6f9349efa2367aca26f965a46c91",
+      "alignedDecodedRGBASha256": "f5ae6eb61775f8a5545431a8ab407e7c347137003517336fb4e44a1857e80d3d",
+      "wholeCellTranslation": [
+        0,
+        28
+      ],
+      "boundsBefore": [
+        30,
+        30,
+        66,
+        67
+      ],
+      "boundsAfter": [
+        30,
+        58,
+        66,
+        95
+      ],
+      "opaqueSamples": 831,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 5,
+      "purpose": "special",
+      "sourceDecodedRGBASha256": "e4eee3de1d67f6986c590d619539d1cc7df01a23eef2ef0fe5d233d6e72d8380",
+      "alignedDecodedRGBASha256": "16e3a1b905bff61053f1594784c48d51b2b23918a9758a7d9d30d12366cc09bd",
+      "wholeCellTranslation": [
+        0,
+        2
+      ],
+      "boundsBefore": [
+        4,
+        6,
+        92,
+        93
+      ],
+      "boundsAfter": [
+        4,
+        8,
+        92,
+        95
+      ],
+      "opaqueSamples": 5753,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 6,
+      "purpose": "special",
+      "sourceDecodedRGBASha256": "11cc24ac87e9ce2a994ddcac09b78cf565cc5969fbcc106137839e30846ef7cd",
+      "alignedDecodedRGBASha256": "7220ecd66578abf82de12de4692e8279a7e6859cfbbef668dd239be4ede0184e",
+      "wholeCellTranslation": [
+        0,
+        13
+      ],
+      "boundsBefore": [
+        11,
+        12,
+        85,
+        82
+      ],
+      "boundsAfter": [
+        11,
+        25,
+        85,
+        95
+      ],
+      "opaqueSamples": 2935,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 7,
+      "purpose": "special",
+      "sourceDecodedRGBASha256": "c350fcbc49573d520fcd0335af279bec4bf8936ea74fd20cfc3cf92de563c00a",
+      "alignedDecodedRGBASha256": "a6fb6301496e6819df7076343f871b5bb073abf436fc42c1cc46506ac2255c3c",
+      "wholeCellTranslation": [
+        0,
+        29
+      ],
+      "boundsBefore": [
+        30,
+        29,
+        66,
+        66
+      ],
+      "boundsAfter": [
+        30,
+        58,
+        66,
+        95
+      ],
+      "opaqueSamples": 693,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest strike endpoint/crown or residual pressure fragment contacts the ground event zone."
+    },
+    {
+      "tile": 8,
+      "purpose": "hurt",
+      "sourceDecodedRGBASha256": "c775c7cd0d075b4c3b554774852a47cc3b67f2e9ef5d68118f7e1af1c01f3519",
+      "alignedDecodedRGBASha256": "c775c7cd0d075b4c3b554774852a47cc3b67f2e9ef5d68118f7e1af1c01f3519",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        27,
+        29,
+        69,
+        67
+      ],
+      "boundsAfter": [
+        27,
+        29,
+        69,
+        67
+      ],
+      "opaqueSamples": 1203,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 9,
+      "purpose": "hurt",
+      "sourceDecodedRGBASha256": "677082e6689c8449a62926f228041b690ab118fd6993b303cd49ce98bc15e9e6",
+      "alignedDecodedRGBASha256": "677082e6689c8449a62926f228041b690ab118fd6993b303cd49ce98bc15e9e6",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "boundsAfter": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "opaqueSamples": 3672,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 10,
+      "purpose": "hurt",
+      "sourceDecodedRGBASha256": "f86a649e7591c9074d8374c5b3faeda5535718365c27ec3b189659e0d9660b68",
+      "alignedDecodedRGBASha256": "f86a649e7591c9074d8374c5b3faeda5535718365c27ec3b189659e0d9660b68",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        16,
+        17,
+        80,
+        81
+      ],
+      "boundsAfter": [
+        16,
+        17,
+        80,
+        81
+      ],
+      "opaqueSamples": 2150,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 11,
+      "purpose": "hurt",
+      "sourceDecodedRGBASha256": "3f112ec2943341fb9a819d0e031daf0b807d59f7f41c329cf738cf78aebf1e13",
+      "alignedDecodedRGBASha256": "3f112ec2943341fb9a819d0e031daf0b807d59f7f41c329cf738cf78aebf1e13",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        35,
+        35,
+        60,
+        61
+      ],
+      "boundsAfter": [
+        35,
+        35,
+        60,
+        61
+      ],
+      "opaqueSamples": 457,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 12,
+      "purpose": "death",
+      "sourceDecodedRGBASha256": "55d41f94fce1d97e20f45e80bd3902147d0333dbadbd2ffec388e044bca3fb86",
+      "alignedDecodedRGBASha256": "55d41f94fce1d97e20f45e80bd3902147d0333dbadbd2ffec388e044bca3fb86",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        24,
+        24,
+        72,
+        72
+      ],
+      "boundsAfter": [
+        24,
+        24,
+        72,
+        72
+      ],
+      "opaqueSamples": 1837,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 13,
+      "purpose": "death",
+      "sourceDecodedRGBASha256": "239ef2c87de88fdd3fb8f60b9cf538bd06c6440723dc862046e81b526cbd8e04",
+      "alignedDecodedRGBASha256": "239ef2c87de88fdd3fb8f60b9cf538bd06c6440723dc862046e81b526cbd8e04",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "boundsAfter": [
+        2,
+        2,
+        94,
+        94
+      ],
+      "opaqueSamples": 3844,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 14,
+      "purpose": "death",
+      "sourceDecodedRGBASha256": "d48c00af10c3ad38185c5c5619e51df5e3c29e86169ffd062f50a4d1ea0564c2",
+      "alignedDecodedRGBASha256": "d48c00af10c3ad38185c5c5619e51df5e3c29e86169ffd062f50a4d1ea0564c2",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        16,
+        16,
+        80,
+        80
+      ],
+      "boundsAfter": [
+        16,
+        16,
+        80,
+        80
+      ],
+      "opaqueSamples": 1856,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    },
+    {
+      "tile": 15,
+      "purpose": "death",
+      "sourceDecodedRGBASha256": "f68d0ea1db9acafd473eaeac1ad0781635b0f726ee7e89e4dc073f264b2453d0",
+      "alignedDecodedRGBASha256": "f68d0ea1db9acafd473eaeac1ad0781635b0f726ee7e89e4dc073f264b2453d0",
+      "wholeCellTranslation": [
+        0,
+        0
+      ],
+      "boundsBefore": [
+        29,
+        29,
+        68,
+        67
+      ],
+      "boundsAfter": [
+        29,
+        29,
+        68,
+        67
+      ],
+      "opaqueSamples": 1069,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": false,
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "physicalMeaning": "Centered actor/event overlay, preserves original event elevation."
+    }
+  ],
+  "newArtOrPoses": false,
+  "gameRegistration": false
+}
