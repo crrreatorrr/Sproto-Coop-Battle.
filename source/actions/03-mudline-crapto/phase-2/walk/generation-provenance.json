@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "originalToolPath": "/Users/kenhiraoka/.codex/generated_images/01a1eaeb-c583-7933-b73a-04bcfe0d7384/exec-76c3e265-dcc8-44d6-b665-b43a9923b98c.png",
+  "sourceSHA256": "b2cf430e5089f0df26302bfbce0ab5052d946207d3df3abb0fe7a4cc0ae90deb",
+  "size": [
+    1254,
+    1254
+  ],
+  "sourceCopiedExact": true,
+  "promptSHA256": "11ba7c0e977e3df908cb1ec6b80b5c37cff52bce3ef5fb66f32c30fa351f2922",
+  "sourceArtEdits": false,
+  "status": "NATIVE_GAIT_QA_PENDING"
+}

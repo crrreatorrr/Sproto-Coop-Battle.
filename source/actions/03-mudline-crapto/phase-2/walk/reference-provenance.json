@@ -1,0 +1,34 @@
+{
+  "boss": "03-mudline-crapto",
+  "phaseIndex": 1,
+  "state": "walk",
+  "refs": [
+    {
+      "file": "approved-p2-native640.png",
+      "sha256": "8a7f9c32ef0579c119287ae5443205271182be79dda6f2e09099a32401ec5a08"
+    },
+    {
+      "file": "approved-p2-padded1280.png",
+      "sha256": "6aabea86dbaedf56c5fd22efb50c0c780d99808df7c04cee6323abb664ba791c"
+    },
+    {
+      "file": "canonical-pilot.webp",
+      "sha256": "6cf0c8894213c51455cc2d514d667e57bdd7492507438f11a7d6eff4896b509e"
+    }
+  ],
+  "sourcePoseArtLocalEdits": false,
+  "technicalPadding": [
+    320,
+    320
+  ],
+  "sourceScale": 1,
+  "plannedTicks": [
+    9,
+    9,
+    9,
+    9
+  ],
+  "simBodyAdvanceWorldPerTick": 1.2,
+  "gaitQA": "Actual support change/foot paths required; no claim of continuous world-plant from4heldkeys",
+  "registrationBasis": "Rigid torso/cabin/rack landmarks, never moving soles"
+}
