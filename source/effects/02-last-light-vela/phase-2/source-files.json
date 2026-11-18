@@ -1,0 +1,95 @@
+{
+  "count": 18,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 367,
+      "sha256": "961a0e3545ae6aee51c6522bbb4fb6bb4eb0cae36695ae4f1ad39b1f6f2e26d7"
+    },
+    {
+      "path": "accepted-effects-atlas96.png",
+      "bytes": 12927,
+      "sha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286"
+    },
+    {
+      "path": "browser-REPORT.md",
+      "bytes": 4480,
+      "sha256": "0cedf9bce849574c6601f5341c5ddb6efb0e6bf8ef9ddfd0b502831f8bb16126"
+    },
+    {
+      "path": "browser-final-summary.json",
+      "bytes": 2550,
+      "sha256": "12a00cbe135138c546f98fb92f5825f832e4a52bf9555f426361749e1c0b5396"
+    },
+    {
+      "path": "browser-independent-draw-proof.json",
+      "bytes": 843,
+      "sha256": "05e69d51c14d7a209eed8cde3b22f8f5703a8b22e770abb15bccbfa80da3d173"
+    },
+    {
+      "path": "browser-runtime-checks.json",
+      "bytes": 15976,
+      "sha256": "d35fd5d21ee74be2838fe23d91c1e22cf17c7d0da952495bb448d7bc36a86caa"
+    },
+    {
+      "path": "browser-selected-scene-proof.json",
+      "bytes": 4197,
+      "sha256": "9cfe4ac46bb65650ada25d7d1d166c305ea98c6bc9b52d6a0adb0336e510fe31"
+    },
+    {
+      "path": "browser-source-readback.json",
+      "bytes": 2611,
+      "sha256": "58b81bb010e8c70d48c3de891b0ac268bc4d763ba3319016ae6e3fe82359a182"
+    },
+    {
+      "path": "imagegen-original-source.png",
+      "bytes": 431349,
+      "sha256": "9e892c7871e3324ed94a9c17b2a661b6eaa6baf018a172c2b5f45942bedf1d9a"
+    },
+    {
+      "path": "imagegen-prompt.txt",
+      "bytes": 1078,
+      "sha256": "b13aef798944311a9c44a353c3633ba8e4c0a9146088c1fc99b0a88eeee11b54"
+    },
+    {
+      "path": "imagegen-source-and-pack-audit.json",
+      "bytes": 2670,
+      "sha256": "0a4c72441d9eda7753660907d2f019f70557fcca06c6bcc24a0e0adcab771ec4"
+    },
+    {
+      "path": "imagegen-source.json",
+      "bytes": 563,
+      "sha256": "007a945f7d7ea1cbcb975b48eaa65674a766ee867ef7a60acbebea94d43001b9"
+    },
+    {
+      "path": "import-source-manifest.json",
+      "bytes": 5566,
+      "sha256": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6"
+    },
+    {
+      "path": "latest-registry-resource-review.json",
+      "bytes": 8563,
+      "sha256": "18d9231db05c9fdc14e6490fae31f054fbf0da147a8a60e4dda6539720123b8a"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 3675,
+      "sha256": "88b5a3294617965df22ca1e1af81ab4fc44b0c945e31fbc34671c5bbaeeb799c"
+    },
+    {
+      "path": "registry-fragment.json",
+      "bytes": 538,
+      "sha256": "ca327f256d294f54a3c8af015ab23ea58d3be8709f2a1df391545a37d3102546"
+    },
+    {
+      "path": "source-row-packing-proof.json",
+      "bytes": 934,
+      "sha256": "1bd4b8d9bf4c42def989a8bdbf1b2f7ee3a3f1c5b0f502af740100bd21542b67"
+    },
+    {
+      "path": "staging-freeze-manifest.json",
+      "bytes": 2569,
+      "sha256": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146"
+    }
+  ]
+}

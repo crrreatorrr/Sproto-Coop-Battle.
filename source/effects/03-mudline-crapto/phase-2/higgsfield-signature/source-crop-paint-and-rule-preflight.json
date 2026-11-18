@@ -1,0 +1,258 @@
+{
+  "sourceSHA256": "d1433df30a41c8fbd58fc4feb543b7f18fb3d21ed25e65ce6d31ef3faaffdf71",
+  "actualSize": [
+    4096,
+    4096
+  ],
+  "originalFieldSize": [
+    2048,
+    2048
+  ],
+  "commonCrop": [
+    512,
+    512,
+    1536,
+    1536
+  ],
+  "croppedPayloadSize": [
+    1024,
+    1024
+  ],
+  "sourceResizingRotationPartMotion": false,
+  "sourcePaintLossTotal": 0,
+  "sourcePaintProtectionPredicate": "G>R+60 and G>B+60 classifies source green background for crop/protection proof ONLY; all other original paint protected. Actual cleanup ONLY measured fixedRGB key32/exterior+explicit seeds.",
+  "centralVerticalRuleMedianGUnder160Columns": [
+    2013,
+    2050
+  ],
+  "centralHorizontalRuleMedianGUnder160Rows": [
+    2047,
+    2082
+  ],
+  "allRuleBandsOutsidePayloads": true,
+  "records": [
+    {
+      "tile": 0,
+      "original2048Field": [
+        0,
+        0,
+        2048,
+        2048
+      ],
+      "commonLocalPaddingCrop": [
+        512,
+        512,
+        1536,
+        1536
+      ],
+      "originalSourceCropBox": [
+        512,
+        512,
+        1536,
+        1536
+      ],
+      "payloadNativeSize": [
+        1024,
+        1024
+      ],
+      "sourcePaintLoss": 0,
+      "allDiscardedPixelsGreenFormattingBySemanticBackgroundProbe": true,
+      "semanticSourcePaintSamples": 95836,
+      "semanticPaintBoundsInPayload": [
+        354,
+        316,
+        703,
+        726
+      ],
+      "semanticPaintPaddingInPayload": [
+        354,
+        316,
+        321,
+        298
+      ],
+      "sourceCropRGBAMismatches": 0,
+      "magentaIsActualProtectedPaint": true,
+      "strictGreen32ForegroundBoundsIncludingEnclosedKey": [
+        352,
+        314,
+        705,
+        727
+      ],
+      "strictGreen32Padding": [
+        352,
+        314,
+        319,
+        297
+      ]
+    },
+    {
+      "tile": 1,
+      "original2048Field": [
+        2048,
+        0,
+        4096,
+        2048
+      ],
+      "commonLocalPaddingCrop": [
+        512,
+        512,
+        1536,
+        1536
+      ],
+      "originalSourceCropBox": [
+        2560,
+        512,
+        3584,
+        1536
+      ],
+      "payloadNativeSize": [
+        1024,
+        1024
+      ],
+      "sourcePaintLoss": 0,
+      "allDiscardedPixelsGreenFormattingBySemanticBackgroundProbe": true,
+      "semanticSourcePaintSamples": 491696,
+      "semanticPaintBoundsInPayload": [
+        108,
+        216,
+        950,
+        1005
+      ],
+      "semanticPaintPaddingInPayload": [
+        108,
+        216,
+        74,
+        19
+      ],
+      "sourceCropRGBAMismatches": 0,
+      "magentaIsActualProtectedPaint": true,
+      "strictGreen32ForegroundBoundsIncludingEnclosedKey": [
+        106,
+        214,
+        952,
+        1007
+      ],
+      "strictGreen32Padding": [
+        106,
+        214,
+        72,
+        17
+      ]
+    },
+    {
+      "tile": 2,
+      "original2048Field": [
+        0,
+        2048,
+        2048,
+        4096
+      ],
+      "commonLocalPaddingCrop": [
+        512,
+        512,
+        1536,
+        1536
+      ],
+      "originalSourceCropBox": [
+        512,
+        2560,
+        1536,
+        3584
+      ],
+      "payloadNativeSize": [
+        1024,
+        1024
+      ],
+      "sourcePaintLoss": 0,
+      "allDiscardedPixelsGreenFormattingBySemanticBackgroundProbe": true,
+      "semanticSourcePaintSamples": 189125,
+      "semanticPaintBoundsInPayload": [
+        287,
+        233,
+        813,
+        725
+      ],
+      "semanticPaintPaddingInPayload": [
+        287,
+        233,
+        211,
+        299
+      ],
+      "sourceCropRGBAMismatches": 0,
+      "magentaIsActualProtectedPaint": true,
+      "strictGreen32ForegroundBoundsIncludingEnclosedKey": [
+        285,
+        231,
+        815,
+        727
+      ],
+      "strictGreen32Padding": [
+        285,
+        231,
+        209,
+        297
+      ]
+    },
+    {
+      "tile": 3,
+      "original2048Field": [
+        2048,
+        2048,
+        4096,
+        4096
+      ],
+      "commonLocalPaddingCrop": [
+        512,
+        512,
+        1536,
+        1536
+      ],
+      "originalSourceCropBox": [
+        2560,
+        2560,
+        3584,
+        3584
+      ],
+      "payloadNativeSize": [
+        1024,
+        1024
+      ],
+      "sourcePaintLoss": 0,
+      "allDiscardedPixelsGreenFormattingBySemanticBackgroundProbe": true,
+      "semanticSourcePaintSamples": 70269,
+      "semanticPaintBoundsInPayload": [
+        369,
+        354,
+        691,
+        662
+      ],
+      "semanticPaintPaddingInPayload": [
+        369,
+        354,
+        333,
+        362
+      ],
+      "sourceCropRGBAMismatches": 0,
+      "magentaIsActualProtectedPaint": true,
+      "strictGreen32ForegroundBoundsIncludingEnclosedKey": [
+        368,
+        353,
+        692,
+        663
+      ],
+      "strictGreen32Padding": [
+        368,
+        353,
+        332,
+        361
+      ]
+    }
+  ],
+  "measuredMatteTargetRGB": [
+    22,
+    210,
+    19
+  ],
+  "enclosedKeyComponents": 5,
+  "enclosedKeySamples": 829
+}

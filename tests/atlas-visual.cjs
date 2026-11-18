@@ -244,8 +244,13 @@ async function verifyBossPlayback(page) {
       }
       bank.acceptedReplacedSourcePngBase64 = bytes.toString('base64'); // Test-only decoded reference.
     }
-    if (bank.acceptedDedicatedSourceFile && digest(fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile))) !== bank.acceptedDedicatedSourceEncodedSha256) {
-      throw new Error(asset + ' dedicated FX reference bytes differ');
+    if (bank.acceptedDedicatedSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile));
+      if (digest(bytes) !== bank.acceptedDedicatedSourceEncodedSha256 || bank.cell !== 96 ||
+          bank.acceptedDedicatedRgbaSha256?.length !== bank.rows * 4) {
+        throw new Error(asset + ' dedicated FX reference bytes differ');
+      }
+      bank.acceptedDedicatedSourcePngBase64 = bytes.toString('base64'); // Test-only independent decode preserves partial-alpha semantics.
     }
   }
   return page.evaluate(async reviewed => {
@@ -555,6 +560,14 @@ async function verifyBossPlayback(page) {
         const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4*FX;
         replacedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); replacedFxPixels.drawImage(reference,0,0);
       }
+      let dedicatedFxPixels;
+      if (cell === FX && reviewedBank.acceptedDedicatedSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedDedicatedSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4*FX && reference.naturalHeight === rows*FX, asset + ' dedicated source geometry');
+        const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = reference.naturalWidth; sourceCanvas.height = reference.naturalHeight;
+        dedicatedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); dedicatedFxPixels.drawImage(reference, 0, 0);
+      }
       const sheet = document.createElement('canvas');
       sheet.width = image.naturalWidth; sheet.height = image.naturalHeight;
       const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(image, 0, 0);
@@ -568,7 +581,11 @@ async function verifyBossPlayback(page) {
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
           const sourceHash = await sha256(rgba);
-          const expectedHash = cell === FX && row < 4 && replacedFxPixels
+          // Canvas may round RGB when premultiplying genuine partial alpha. Compare
+          // its independently decoded source exactly; raw PNG RGBA hashes stay in the fixture.
+          const expectedHash = dedicatedFxPixels
+            ? await sha256(dedicatedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+            : cell === FX && row < 4 && replacedFxPixels
             ? await sha256(replacedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
             : cell === FX && row < 4 && legacyFxPixels
               ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
@@ -899,8 +916,8 @@ async function main() {
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
-            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1192 ||
-            bossPlayback.acceptedFxCells !== 80 || bossPlayback.dedicatedFxSheets !== 1 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1204 ||
+            bossPlayback.acceptedFxCells !== 92 || bossPlayback.dedicatedFxSheets !== 3 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {

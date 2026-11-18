@@ -1,0 +1,59 @@
+{
+  "bossKey": "03-mudline-crapto",
+  "phase": 1,
+  "fx": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+          "columns": 4,
+          "rows": 2,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        72
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "grounded": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+          "columns": 4,
+          "rows": 2,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    }
+  },
+  "registered": false
+}

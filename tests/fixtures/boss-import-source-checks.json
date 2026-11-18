@@ -2071,6 +2071,54 @@
         "2821c73dc71f7fd7780de634184a0ffd40ea3e43b30cd430f89e982c1ed12a5b",
         "e039c2293673b059e487b2fef2868ea9eefd3b461d7878c86773048692bb8ade"
       ]
+    },
+    "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png": {
+      "runtimeEncodedSha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+      "kind": "fx",
+      "cell": 96,
+      "rows": 1,
+      "rgbaSha256": [
+        "6b3d2cf33598752cf53a7564f719e591c131e863eae256f4abaddebda312341e",
+        "a4618408860f79ae281d4f897070516330de16412b58e74b75672c4134e9aabc",
+        "8d0474d6ff6028cf00068039ad9d46e19cacaf754882ec47aaab1fbd39617a83",
+        "1ea64cdc8f80426242bd61bb1a2b91d4449a12a13c515847408b8fbdcf5fceb0"
+      ],
+      "acceptedDedicatedSourceFile": "source/effects/02-last-light-vela/phase-2/accepted-effects-atlas96.png",
+      "acceptedDedicatedSourceEncodedSha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+      "acceptedDedicatedRgbaSha256": [
+        "6b3d2cf33598752cf53a7564f719e591c131e863eae256f4abaddebda312341e",
+        "a4618408860f79ae281d4f897070516330de16412b58e74b75672c4134e9aabc",
+        "8d0474d6ff6028cf00068039ad9d46e19cacaf754882ec47aaab1fbd39617a83",
+        "1ea64cdc8f80426242bd61bb1a2b91d4449a12a13c515847408b8fbdcf5fceb0"
+      ]
+    },
+    "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png": {
+      "runtimeEncodedSha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+      "kind": "fx",
+      "cell": 96,
+      "rows": 2,
+      "rgbaSha256": [
+        "4f56c89980d20fbd853f24eaf1406e4d2f3e7d51e2f09906897d58dc04f16e57",
+        "c2c4db2766573bee4b2d681fcec053ecc8054633c10d2b6baa66a3c6b799e7da",
+        "666231d4301c074e67c30e6c4e22ed7aa797ead11edb081a3fd8a7b3e9790195",
+        "c03ab4a34b512d2acd8708ca8d7ad5e3beec5a765849e2b3dd570fb13ab9bf8c",
+        "10f073af563421b830a9532fc6abcd68aad3c46d95349fad2ec94da92167923b",
+        "f8ed16fe077fa4808609ddf3c55f8505b693b778e72d0310253e8b7e0b87c9aa",
+        "348ba08eface2bca1fb511c612888cab28ddce81d34bb6ded70b86b6f8b3ef5e",
+        "c5c1bb892b80c48bfdbc868caf669b75b8a3dc8e8079644abcd1e59448ff8560"
+      ],
+      "acceptedDedicatedSourceFile": "source/effects/03-mudline-crapto/phase-2/accepted-effects-atlas96.png",
+      "acceptedDedicatedSourceEncodedSha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+      "acceptedDedicatedRgbaSha256": [
+        "4f56c89980d20fbd853f24eaf1406e4d2f3e7d51e2f09906897d58dc04f16e57",
+        "c2c4db2766573bee4b2d681fcec053ecc8054633c10d2b6baa66a3c6b799e7da",
+        "666231d4301c074e67c30e6c4e22ed7aa797ead11edb081a3fd8a7b3e9790195",
+        "c03ab4a34b512d2acd8708ca8d7ad5e3beec5a765849e2b3dd570fb13ab9bf8c",
+        "10f073af563421b830a9532fc6abcd68aad3c46d95349fad2ec94da92167923b",
+        "f8ed16fe077fa4808609ddf3c55f8505b693b778e72d0310253e8b7e0b87c9aa",
+        "348ba08eface2bca1fb511c612888cab28ddce81d34bb6ded70b86b6f8b3ef5e",
+        "c5c1bb892b80c48bfdbc868caf669b75b8a3dc8e8079644abcd1e59448ff8560"
+      ]
     }
   },
   "transformations": {
@@ -4055,7 +4103,7 @@
       ]
     }
   },
-  "acceptedDedicatedFxCels": 16,
+  "acceptedDedicatedFxCels": 28,
   "archivedOriginalFxCels": 384,
   "acceptedReplacedFxCels": 16
 }
