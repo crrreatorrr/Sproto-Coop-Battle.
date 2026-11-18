@@ -37,8 +37,7 @@ const SFX = {
   respawn: () => tone(300, 0.3, 'triangle', 3, 0.3), crate: () => noise(0.15, 0.5, 1200), wave: () => tone(220, 0.3, 'square', 1.5, 0.2), go: () => { tone(660, 0.1); setTimeout(() => tone(880, 0.15), 120); },
   bossin: () => { tone(110, 0.8, 'sawtooth', 0.5, 0.4); [0, 220, 440].forEach(d => setTimeout(() => tone(740, 0.16, 'square', 0.8, 0.3), d)); }, transform: () => tone(90, 1.2, 'sawtooth', 3, 0.35), bossdown: () => noise(1.2, 0.8, 500),
   clear: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.18), i * 120)), stage: () => tone(440, 0.2, 'square', 1.5, 0.2),
-  charge: () => { tone(80, 0.6, 'sawtooth', 2, 0.4); tone(330, 0.5, 'square', 2.2, 0.28); },
-  // Boss telegraph: a two-tone klaxon, louder than anything else, when lanes light up or a missile locks.
+  // Ranged Shadow warning; bosses rely on their attack animations.
   warn: () => { tone(932, 0.13, 'square', 1, 0.5); setTimeout(() => tone(698, 0.2, 'square', 1, 0.5), 140); }, throw: () => noise(0.05, 0.15, 3000), victory: () => [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => tone(f, 0.25), i * 150)),
   menu: () => tone(700, 0.05, 'square', 1, 0.2), join: () => tone(500, 0.15, 'square', 2, 0.3),
 };

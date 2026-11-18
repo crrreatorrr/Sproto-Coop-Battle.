@@ -97,8 +97,47 @@ async function main() {
     });
     assert.strictEqual(result.actorFrames,136);assert.strictEqual(result.fxFrames,160);
     result.images.forEach(({name,data})=>fs.writeFileSync(path.join(out,name+'-in-game.png'),Buffer.from(data.split(',')[1],'base64')));
+    const warningChecks = await page.evaluate(async () => {
+      const plan = AssetLoader.groups(MANIFEST), cv = document.createElement('canvas');
+      cv.width = 640; cv.height = 360;
+      const g = cv.getContext('2d', { willReadFrequently: true }), draw = g.drawImage.bind(g), paths = [];
+      g.drawImage = (im, ...args) => { if (im.src) paths.push(im.src); draw(im, ...args); };
+      let checked = 0;
+      for (let bi = 0; bi < MANIFEST.bosses.length; bi++) {
+        Render.enterStage(bi);
+        await AssetLoader.shared().preload(plan.boss(bi).concat(plan.scenery(bi)));
+        for (let ph = 0; ph < MANIFEST.bosses[bi].phases.length; ph++) {
+          const modes = ['fire', 'charge', 'sweep'];
+          if (bi !== 12 && ph) modes.push('signature', 'special');
+          for (const st of modes) {
+            const boss = { bi, ph, st, t: 15, x: 470, y: 60, fc: -1, fl: 0, hp: 2000, mh: 4000,
+              row: 3, mi: 1, ar: 0, w: 130, wl: [20,60,100], bo: 1,
+              ba: bi === 12 ? (ph ? 1 : 0) : undefined, by: 60, bx: 120,
+              az: [[150,60,80,20,0,0]] };
+            const snap = { si: bi, t: 15, sk: 0, camX: 0, mode: 'play', players: [], enemies: [], items: [], projs: [], hz: [], banner: null, boss,
+              fx: [{id:1,k:'mark',bi,ph,x:180,y:60,z:0,t:15,sm:90}] };
+            paths.length = 0;
+            Render.drawWorld(g, snap, {noBanner:true});
+            if (paths.some(p => p.endsWith('/lights.png') || p.endsWith('/spikes.png'))) throw new Error('pre-attack warning sprite '+bi+':'+ph+':'+st);
+            const before = g.getImageData(0,0,640,360).data;
+            Render.drawWorld(g, {...snap,boss:{...boss,wl:null,az:[]},fx:[]}, {noBanner:true});
+            const after = g.getImageData(0,0,640,360).data;
+            if (!before.every((byte,i) => byte === after[i])) throw new Error('explicit warning changed pixels '+bi+':'+ph+':'+st);
+            checked++;
+          }
+        }
+      }
+      Render.enterStage(0); await AssetLoader.shared().preload(plan.boss(0).concat(plan.scenery(0),plan.fx));
+      paths.length = 0;
+      Render.drawWorld(g, {si:0,t:40,sk:0,camX:0,mode:'play',players:[],enemies:[],items:[],projs:[],fx:[],banner:null,
+        hz:[{id:1,x0:80,x1:340,y:60,hf:12,l:180,t:20}],
+        boss:{bi:0,ph:0,st:'sweep',t:Sim.SWEEP_WARN+4,x:470,y:60,fc:-1,fl:0,hp:2000,mh:4000,w:130,ar:0}}, {noBanner:true});
+      if (!paths.some(p => p.endsWith('/spikes.png')) || !paths.some(p => p.endsWith('/flame.png'))) throw new Error('active attack effects missing');
+      return checked;
+    });
+    assert.strictEqual(warningChecks, 102);
     assert.deepStrictEqual(errors, []); assert.deepStrictEqual(missing, []);
-    console.log('browser Sprotel: stage 13 start, all 136 actor / 160 projectile frames, no errors or missing assets');
+    console.log('browser Sprotel: stage 13 start, all 136 actor / 160 projectile frames, no errors or missing assets; 102 boss warning states hidden');
   } finally { if (browser) await browser.close(); server.kill(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

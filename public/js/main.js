@@ -959,10 +959,6 @@ function drawGame() {
   // End of run: stage reached, time, per-player totals and this browser's best run.
   const over = snap.mode === 'gameover' || snap.mode === 'victory';
   A.music(over ? '' : snap.boss && snap.boss.st !== 'dead' ? 'boss' : 'stage', snap.si);
-  // A klaxon the moment the boss telegraphs a shot (lanes or a missile lock), not when it lands.
-  const aiming = !!(snap.boss && snap.boss.st === 'fire' && snap.boss.t < 30);
-  if (aiming && !app.aiming) A.play('warn');
-  app.aiming = aiming;
   if (snap.god) app.godSeen = true;
   if (!over) app.summary = null;
   else if (!app.summary) {
