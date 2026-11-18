@@ -1,0 +1,34 @@
+{
+  "key": "03-mudline-crapto",
+  "scale": 0.365,
+  "sourceAnchor": [
+    335,
+    540
+  ],
+  "offsets": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ],
+  "ticks": [
+    54,
+    8,
+    8,
+    8,
+    25
+  ],
+  "standingLeadIn": true
+}

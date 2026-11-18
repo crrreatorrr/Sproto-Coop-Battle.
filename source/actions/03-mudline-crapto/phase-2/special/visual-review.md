@@ -1,0 +1,7 @@
+# Sludge Blackout and Citadel Breaker independent QA
+
+Both phase-two body animations pass. I opened the actual releases in each arena and rebuilt both packed pages from the frozen provider images and verified their matte masks, cel origins and lossless byte lineage. No trimmed limbs, cropped seams or detached white artifacts appeared at game size. The four generated poses keep the pilots visible and preserve the approved equipment and foot contact.
+
+Crapto retains its blue puppet with paired goggles, orange-yellow eyes and layered red smile, the five-canister rack and one connected carrier canister. The arm tilts and lifts through the four prepared ground eruptions at ticks 54, 62, 70 and 78. The animation draws the exact approved standing sprite during the lead-in, plus all four generated cels from one sheet. The in-game warmup and phase-two effects alone place each of the four damage zones. The clip passed 208 snapshots in both facings including late decode, reconnect and idle return.
+
+Big Swole retains both hands, full purple castle silhouette and the recognizable blue pilot. A low strike at tick 55 starts the wave, a deeper press of that same arm at 66 drives it forward, and the two-fist press at 77 marks the final burst. The second beat uses the same arm. Existing shockwave locations remain independent from the arms, so the artwork does not imply a telescoping fist. The clip passed 206 matching game snapshots in both facings through idle return.

@@ -1,0 +1,33 @@
+{
+  "key": "07-moonkeep-bigswole",
+  "scale": 0.36,
+  "sourceAnchor": [
+    332,
+    560
+  ],
+  "offsets": [
+    [
+      0,
+      0
+    ],
+    [
+      14,
+      0
+    ],
+    [
+      0,
+      -1
+    ],
+    [
+      1,
+      -1
+    ]
+  ],
+  "ticks": [
+    55,
+    11,
+    11,
+    25
+  ],
+  "standingLeadIn": false
+}
