@@ -1,0 +1,17 @@
+{
+  "tool": "Built-in image_gen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eaeb-c583-7933-b73a-04bcfe0d7384/exec-445e5123-77f3-4c24-a3bd-29433b031241.png",
+  "workspaceOriginal": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/rune-p1-rear-sweep-v1/provider-original.png",
+  "originalBytesUnchanged": true,
+  "sourceSha256": "8c4fc00337fb9fd88da37d3e4b079c1ca666afd8af15a6be8fa3e230ecddee6b",
+  "mode": "RGB",
+  "size": [
+    1254,
+    1254
+  ],
+  "promptSha256": "6236e59474158e40b2a7fa03b171ea423c30716ac18968ea3fb0a6fc6a338afe",
+  "transparentBackgroundRequested": false,
+  "matteRequested": "#00FF00",
+  "gameWrites": false,
+  "status": "NATIVE_QA_PENDING"
+}
