@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "06-circuit-rune",
+    "phase": 0,
+    "family": "boss-projectiles",
+    "purposes": [
+      "lane",
+      "spread",
+      "impact"
+    ],
+    "asset": "assets/bosses/effects/06-circuit-rune-p1-lane-spread-impact-8a624c8c7d1d.png",
+    "atlasSha256": "d986a3cd6853387b123f5371c69456ebea9708bf7a2cc4769c090dc76c2afad1",
+    "runtimeSha256": "8a624c8c7d1d76e49882f8a0c6862f6ff5248742d5cdb0aac46bd9e64263db5a",
+    "runtimeDimensions": [
+      384,
+      288
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 4
+      },
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "lane": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/06-circuit-rune-p1-lane-spread-impact-8a624c8c7d1d.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 0
+          }
+        ]
+      },
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/06-circuit-rune-p1-lane-spread-impact-8a624c8c7d1d.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/06-circuit-rune-p1-lane-spread-impact-8a624c8c7d1d.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 172,
+  "resumed": 4,
+  "hit": [
+    16,
+    16,
+    16,
+    16
+  ],
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14,
+    15
+  ]
+}
