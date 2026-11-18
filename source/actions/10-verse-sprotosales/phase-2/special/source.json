@@ -1,0 +1,14 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "7755eb77dec2576cdc04878ca5302756c9261b1706f1ed5bd91057201bacf20e",
+  "sourceSHA256": "d85bc43058085a56edba86d52edda548a50c75e4a204aa4ed16797c39fec6bd3",
+  "measuredMatteRGB": [
+    3.0,
+    249.0,
+    2.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1121311,
+  "additionalGreenMatteMixtureSamples": 9438,
+  "retainedRGBUnchanged": true
+}
