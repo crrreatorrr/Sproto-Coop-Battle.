@@ -390,4 +390,40 @@ assert.equal(select.projectile({k:'boss',bi:0,ph:9,t:1}),null);
 assert.equal(select.effect({k:'boom',bi:0,ph:1,t:0}),null);
 assert.equal(select.effect({...oldImpact,sm:70}).purpose,'signature');
 assert.equal(select.effect({...oldImpact,sm:69}).purpose,'impact');
+// Launch streaks are visual only. Release age and world positions come from
+// the same snapshot in local play and after an online reconnect.
+function muzzle(boss, shot, authored = false) {
+  const a = select.launch(boss, shot, M, authored);
+  return a && [a.x, a.y, a.z, a.strength];
+}
+for (const face of [-1, 1]) {
+  const source = arena(0, { face });
+  const snap = step(source);
+  const b = snap.boss;
+  const front = snap.projs.find(p => (p.x - b.x) * face > 0);
+  const rear = snap.projs.find(p => (p.x - b.x) * face < 0);
+  assert.deepEqual(muzzle(b, front, true), [b.x + face * 108, b.y, 38, .875]);
+  assert.deepEqual(muzzle(b, front), [b.x + face * 106, b.y, 67, .875]);
+  assert.deepEqual(muzzle(b, rear, true), [b.x - face * 75, b.y, 95, .875]);
+  assert.deepEqual(muzzle(b, rear), [b.x - face * 87, b.y, 98, .875]);
+  assert.deepEqual(Sim.snapshot(reconnect(source)).projs, snap.projs);
+  assert.equal(muzzle(b, { ...front, t: 8 }), null);
+  assert.equal(muzzle({ ...b, ph: 1 }, front), null);
+  assert.equal(muzzle({ ...b, st: 'dead' }, front), null);
+  assert.equal(muzzle(b, { ...front, k: 'enemyBolt' }), null);
+}
+
+const emitter = { bi: 3, ph: 0, ar: 3, st: 'fire', fc: -1, x: 330, y: 52 };
+const rearBoundBomb = { k: 'boss', bi: 3, ph: 0, r: 0, t: 1, x: 270, y: 54, vx: 5 };
+assert.deepEqual(muzzle(emitter, rearBoundBomb, true), [267, 52, 68, .875]);
+assert.deepEqual(muzzle(emitter, rearBoundBomb), [246, 52, 121, .875]);
+
+const foundry = { ...emitter, bi: 4, ph: 1, ar: 0 };
+const tracker = { ...rearBoundBomb, bi: 4, ph: 1, r: 3 };
+assert.deepEqual(muzzle(foundry, { ...tracker, y: 41 }), [237, 52, 116, .875]);
+assert.deepEqual(muzzle(foundry, { ...tracker, y: 63 }), [250, 52, 69, .875]);
+
+const marlin = { ...foundry, bi: 12 };
+assert.equal(muzzle(marlin, { ...tracker, bi: 12, ma: 0 }), null, 'native bill laser is already aligned');
+assert.deepEqual(muzzle(marlin, { ...tracker, bi: 12, ma: 1 }), [287, 52, 175, .875]);
 console.log('boss FX: actual Sim emissions, phase ownership, reconnect, finite ends, optional ground contacts, eight-row playback and legacy fallback ok');

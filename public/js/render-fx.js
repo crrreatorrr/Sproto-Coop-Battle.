@@ -902,6 +902,7 @@ function drawBoss(g, b, camX) {
     drawBossFx(g, ph, 3, Math.min(3, Math.floor(b.su / 7)), sx - b.fc * 62, sy - 74, 42, false);
     g.restore();
   }
+  return Boolean(played);
 }
 
 // FX clips share the actor timeline math, but never retain another event's
@@ -971,6 +972,27 @@ function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
   g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
   g.restore();
   return true;
+}
+
+function drawBossLaunch(g, p, boss, camX, authored) {
+  const launch = root.CoopBossFxSelection?.launch(boss, p, M, authored);
+  if (!launch) return;
+  const x = Math.round(launch.x - camX), y = Math.round(FLOOR_TOP + launch.y - launch.z);
+  const sx = Math.round(p.x - camX), sy = Math.round(FLOOR_TOP + p.y - p.z);
+  g.save();
+  g.strokeStyle = g.fillStyle = launch.color;
+  g.globalAlpha = launch.strength * 0.30;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(x, y);
+  g.lineTo(sx, sy);
+  g.stroke();
+  g.globalAlpha = launch.strength * 0.75;
+  g.lineWidth = 2;
+  g.stroke();
+  g.fillRect(x - 4, y - 1, 9, 3);
+  g.fillRect(x - 1, y - 3, 3, 7);
+  g.restore();
 }
 
 function drawProj(g, p, camX, shadowSheet) {
@@ -1106,7 +1128,13 @@ function drawWorld(g, snap, opts) {
     } });
   }
   floor(g, snap, camX, list); // active fire lanes and sweep impacts
-  if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
+  const boss = snap.boss;
+  if (boss) list.push({ y: boss.y, d: () => {
+    const authored = drawBoss(g, boss, camX);
+    if (boss.st === 'fire' && typeof authored === 'boolean') {
+      for (const p of snap.projs) drawBossLaunch(g, p, boss, camX, authored);
+    }
+  } });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX, shadowSheet) });
   list.sort((a, b) => a.y - b.y);
   for (const o of list) o.d();
