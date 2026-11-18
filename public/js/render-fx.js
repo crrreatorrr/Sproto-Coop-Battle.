@@ -740,11 +740,7 @@ function bossPose(b, sx) {
     if (b.st === 'dead') return [b.ph, 8, 4 + Math.min(3, Math.floor(t / 14))];
     if (b.fl > 0 && b.st !== 'fire') return [b.ph, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
     if (b.st === 'fire') {
-      // Keep the launch pod extended through every missile in the five-shot burst.
-      const age = t - 30;
-      const col = t < 30 ? Math.min(3, Math.floor(t / 7.5)) : b.ph && b.ba === 1
-        ? (age <= 20 ? 4 + Math.floor(age / 5) % 2 : age < 32 ? 6 : 7)
-        : 4 + Math.min(3, Math.floor(age / 7));
+      const col = root.CoopBossFxSelection.barFireColumn(b.ph, b.ba, t);
       return [b.ph, 1 + b.ba, col];
     }
     if (b.st === 'sweep') return [b.ph, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
@@ -902,7 +898,6 @@ function drawBoss(g, b, camX) {
     drawBossFx(g, ph, 3, Math.min(3, Math.floor(b.su / 7)), sx - b.fc * 62, sy - 74, 42, false);
     g.restore();
   }
-  return Boolean(played);
 }
 
 // FX clips share the actor timeline math, but never retain another event's
@@ -974,33 +969,12 @@ function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
   return true;
 }
 
-function drawBossLaunch(g, p, boss, camX, authored) {
-  const launch = root.CoopBossFxSelection?.launch(boss, p, M, authored);
-  if (!launch) return;
-  const x = Math.round(launch.x - camX), y = Math.round(FLOOR_TOP + launch.y - launch.z);
-  const sx = Math.round(p.x - camX), sy = Math.round(FLOOR_TOP + p.y - p.z);
-  g.save();
-  g.strokeStyle = g.fillStyle = launch.color;
-  g.globalAlpha = launch.strength * 0.30;
-  g.lineWidth = 5;
-  g.beginPath();
-  g.moveTo(x, y);
-  g.lineTo(sx, sy);
-  g.stroke();
-  g.globalAlpha = launch.strength * 0.75;
-  g.lineWidth = 2;
-  g.stroke();
-  g.fillRect(x - 4, y - 1, 9, 3);
-  g.fillRect(x - 1, y - 3, 3, 7);
-  g.restore();
-}
-
-function drawProj(g, p, camX, shadowSheet) {
-  const sx = p.x - camX, sy = FLOOR_TOP + p.y - p.z;
+function drawProj(g, p, camX, shadowSheet, position) {
+  const sx = position.x - camX, sy = FLOOR_TOP + position.y - position.z;
   if (projectile(g, p, sx, sy, shadowSheet)) return;
   if (p.k === 'boss') {
     const ph = M.bosses[p.bi].phases[p.ph];
-    shadow(g, sx, FLOOR_TOP + p.y, 7);
+    shadow(g, sx, FLOOR_TOP + position.y, 7);
     if (p.ma !== undefined) {
       const size = [96, 58, 44][p.ma];
       const angle = p.ma === 2 ? 0 : Math.sign(p.vx) * Math.atan2(-(p.vz || 0), Math.abs(p.vx));
@@ -1129,13 +1103,12 @@ function drawWorld(g, snap, opts) {
   }
   floor(g, snap, camX, list); // active fire lanes and sweep impacts
   const boss = snap.boss;
-  if (boss) list.push({ y: boss.y, d: () => {
-    const authored = drawBoss(g, boss, camX);
-    if (boss.st === 'fire' && typeof authored === 'boolean') {
-      for (const p of snap.projs) drawBossLaunch(g, p, boss, camX, authored);
-    }
-  } });
-  for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX, shadowSheet) });
+  if (boss) list.push({ y: boss.y, d: () => drawBoss(g, boss, camX) });
+  for (const p of snap.projs) {
+    const origin = root.CoopBossFxSelection?.projectileOrigin(boss, p, M, BOSS_SPRITE_SIZE, snap.players);
+    const depth = origin ? Math.max(boss.y, origin.y) : p.y;
+    list.push({ y: depth + 0.1, d: () => drawProj(g, p, camX, shadowSheet, origin || p) });
+  }
   list.sort((a, b) => a.y - b.y);
   for (const o of list) o.d();
   for (const f of snap.fx) drawFx(g, f, camX);
@@ -1160,16 +1133,31 @@ function interpolateSnapshot(a, b, k) {
       boss.t = L(previousBoss.t, nextBoss.t);
     }
   }
+  const sameBarAttack = boss?.st === 'fire' && previousBoss?.st === 'fire' &&
+    boss.bi === previousBoss.bi && boss.ph === previousBoss.ph && boss.ba === previousBoss.ba &&
+    boss.t < nextBoss.t && M.bosses[boss.bi]?.attacks === 'bar' && a.si === b.si;
+  const projs = [];
+  for (const shot of b.projs || []) {
+    const prev = ra.get(shot.id);
+    const blended = mix(shot, prev);
+    if (prev && shot.k === 'boss' && prev.k === shot.k && a.si === b.si) {
+      blended.t = L(prev.t, shot.t);
+    } else if (!prev && sameBarAttack && shot.k === 'boss' && shot.bi === boss.bi &&
+               shot.ph === boss.ph && (shot.ma ?? shot.ba) === boss.ba) {
+      // A new packet may already contain a shot the interpolated actor hasn't
+      // fired yet. Advance its visual age with the same clock as the pose.
+      const age = shot.t - (nextBoss.t - boss.t);
+      if (age < 1) continue;
+      projs.push({ ...shot, t: age });
+      continue;
+    }
+    projs.push(blended);
+  }
   return Object.assign({}, b, {
     camX: a.si === b.si ? L(a.camX, b.camX) : b.camX,
     players: (b.players || []).map(o => mix(o, pa.get(o.s))),
     enemies: (b.enemies || []).map(o => mix(o, ea.get(o.id))),
-    projs: (b.projs || []).map(o => {
-      const prev = ra.get(o.id);
-      const projectile = mix(o, prev);
-      if (prev && o.k === 'boss' && prev.k === o.k && a.si === b.si) projectile.t = L(prev.t, o.t);
-      return projectile;
-    }),
+    projs,
     boss,
   });
 }
