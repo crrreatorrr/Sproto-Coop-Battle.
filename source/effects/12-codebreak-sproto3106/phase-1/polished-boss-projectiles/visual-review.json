@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "bbac1d05db1387773ee3413ad823316085e065dd35fa0de6a66cfc3c02540fb0",
+  "providerSha256": "f61125ac9212cf89f6400c85a5328ca05cb6878b1b5b53531408e8d48020d6df",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Left-facing cyan drills/arcs on a slate-and-orange engine remain distinguishable by rows. The lane rolls through several views while its cyan trail stays to the right and the point returns; wide sharp spread fins and tracking motor loop are legible. A central cyan-orange flash breaks down in four states; pale points are attached to blue plasma/contact. No visible background matte, neighbor bleed, or text. Independently reviewed the raw sprites, foreground validation and dark/light game-size contact. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}
