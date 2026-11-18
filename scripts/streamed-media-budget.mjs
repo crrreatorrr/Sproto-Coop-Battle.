@@ -26,10 +26,11 @@ export const MEDIA_LIMITS = Object.freeze({
 export const ACTION_NAMES = Object.freeze(['walk', 'lane', 'spread', 'homing',
   'charge-windup', 'charge-rush', 'charge-brake', 'sweep', 'signature', 'special', 'dead', 'summon']);
 export const LOOPING_ACTION_NAMES = Object.freeze(['walk', 'charge-rush']);
+export const FX_NAMES = Object.freeze(Object.keys(scope.CoopBossFxSelection.rows));
 
 export function canonicalStreamPath(src, kind) {
-  if (!['transformations', 'actions'].includes(kind)) return false;
-  const suffix = kind === 'transformations' ? '(?:png|webp)' : 'webp';
+  if (!['transformations', 'actions', 'effects'].includes(kind)) return false;
+  const suffix = kind === 'actions' ? 'webp' : '(?:png|webp)';
   return typeof src === 'string' &&
     new RegExp('^assets/bosses/' + kind + '/[a-z0-9][a-z0-9/._-]*\\.' + suffix + '$').test(src) &&
     src.split('/').every(part => part && part !== '.' && part !== '..') &&
@@ -39,6 +40,27 @@ export function canonicalStreamPath(src, kind) {
 const safe = value => Number.isSafeInteger(value) && value >= 0;
 const unique = values => [...new Set(values)];
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
+// The FX selector owns serialized phases0/1, even if loader metadata has more.
+const runtimeFxPhase = phase => phase === 0 || phase === 1;
+const runtimeFxSource = src => typeof src === 'string' &&
+  /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
+  src.split('/').every(part => part && part !== '.' && part !== '..') &&
+  !/^assets\/bosses\/(actions|transformations)\//.test(src);
+const mentionsEffects = clip => Array.isArray(clip?.pages) && clip.pages.some(page =>
+  typeof page?.src === 'string' && /^assets\/bosses\/effects\//.test(page.src));
+
+function fxPlan(clip) {
+  if (!clip || typeof clip !== 'object') throw Error('FX clip must be an object');
+  const plan = scope.CoopSpriteTimeline.plan(clip, {
+    anchorInside: true, maxTextureSide: MEDIA_LIMITS.textureSide,
+    maxPageBytes: MEDIA_LIMITS.decodedPageBytes, allowRepeatedSources: true,
+    validateSource: runtimeFxSource,
+  });
+  if (plan.cell.some(n => n !== 96) || clip.frameTicks.length > 64 ||
+      plan.coreRect.some((n, i) => n !== [0, 0, 96, 96][i]))
+    throw Error('not a runtime-valid native FX plan');
+  return plan;
+}
 
 export function analyzeStreamedMedia(manifest, registry, files) {
   const byPath = new Map(files.map(file => [file.path, file]));
@@ -50,7 +72,7 @@ export function analyzeStreamedMedia(manifest, registry, files) {
   if (registry?.animations !== undefined && !object(registry.animations)) fail('animations', 'expected an object');
 
   // The real loader retains both fallback phases and their registered FX.
-  // FX are base media, including the original pinned projectile-bank paths.
+  // Byte classification never changes this stage-lifetime decoded residency.
   function fallbackPaths(boss) {
     const paths = boss.phases.flatMap(phase => [phase.sheet, phase.proj]).filter(Boolean);
     const rawPhases = animations?.[boss.key]?.phases;
@@ -58,37 +80,31 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     for (const phase of phases) for (const fx of Object.values(phase?.fx || {})) {
       for (const page of Array.isArray(fx?.pages) ? fx.pages : []) {
         const src = page?.src;
-        if (typeof src === 'string' && /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
-            src.split('/').every(part => part && part !== '.' && part !== '..') &&
-            !/^assets\/bosses\/(actions|transformations)\//.test(src)) paths.push(src);
+        if (runtimeFxSource(src)) paths.push(src);
       }
     }
     return unique(paths);
   }
   const fallback = manifest.bosses.map(fallbackPaths);
-  const alwaysBase = new Set(fallback.flat());
+  // Only original manifest fallback ownership forbids optional classification.
+  // Additional registered FX still appear in fallback above, even when optional.
+  const alwaysBase = new Set(manifest.bosses.flatMap(boss =>
+    boss.phases.flatMap(phase => [phase.sheet, phase.proj]).filter(Boolean)));
   let fxScratchDecodedBytes = 0;
   const fxScratchPlans = [], ignoredFxScratchPlans = [];
   for (const boss of manifest.bosses) {
     const phases = animations?.[boss.key]?.phases;
     if (!Array.isArray(phases) || phases.length > boss.phases.length || phases.some(phase => !object(phase))) continue;
     phases.forEach((phase, index) => {
+      if (!runtimeFxPhase(index)) return;
       for (const [purpose, clip] of Object.entries(phase.fx || {})) {
         const owner = boss.key + '/' + index + '/fx/' + purpose;
         if (!Object.prototype.hasOwnProperty.call(scope.CoopBossFxSelection.rows, purpose)) continue;
         try {
           // Match drawRegisteredBossFx's runtime plan options and its strict
-          // native96/full-core/64-frame checks. FX stays base media. Reserve
+          // native96/full-core/64-frame checks. Reserve
           // for a valid plan even before decode, since it may allocate later.
-          const plan = scope.CoopSpriteTimeline.plan(clip, {
-            anchorInside: true, maxTextureSide: 2048, maxPageBytes: 8 * 1024 * 1024,
-            allowRepeatedSources: true,
-            validateSource: src => /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
-              src.split('/').every(part => part && part !== '.' && part !== '..') &&
-              !/^assets\/bosses\/(actions|transformations)\//.test(src),
-          });
-          if (plan.cell.some(n => n !== 96) || clip.frameTicks.length > 64 ||
-              plan.coreRect.some((n, i) => n !== [0, 0, 96, 96][i])) throw Error('not a runtime-valid native FX plan');
+          const plan = fxPlan(clip);
           const bytes = plan.cell[0] * plan.cell[1] * 4;
           fxScratchDecodedBytes = Math.max(fxScratchDecodedBytes, bytes);
           fxScratchPlans.push({ owner, cell: plan.cell.slice(), decodedBytes: bytes });
@@ -101,6 +117,7 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     let plan;
     try {
       if (kind === 'transformations') plan = scope.CoopBossTransformPlayer.planClip(clip);
+      else if (kind === 'effects') plan = fxPlan(clip);
       else plan = scope.CoopSpriteTimeline.plan(clip, {
         anchorInside: true, maxTextureSide: MEDIA_LIMITS.textureSide,
         maxPageBytes: MEDIA_LIMITS.decodedPageBytes, allowRepeatedSources: true,
@@ -108,10 +125,13 @@ export function analyzeStreamedMedia(manifest, registry, files) {
       });
       const cell = plan.cell || clip.cell;
       for (const page of plan.pages) {
-        if (!canonicalStreamPath(page.src, kind)) throw Error('noncanonical stream source');
+        if (kind !== 'effects' && !canonicalStreamPath(page.src, kind)) throw Error('noncanonical stream source');
+        if (kind === 'effects' && /^assets\/bosses\/effects\//.test(page.src) &&
+            !canonicalStreamPath(page.src, kind)) throw Error('noncanonical effects source');
         const file = byPath.get(page.src);
         if (!file) throw Error('missing registered page: ' + page.src);
-        if (alwaysBase.has(page.src)) throw Error('stream source is also retained base media: ' + page.src);
+        if (alwaysBase.has(page.src) && (kind !== 'effects' || canonicalStreamPath(page.src, kind)))
+          throw Error('stream source is also retained manifest fallback media: ' + page.src);
         const decoded = page.width * page.height * 4;
         if (!safe(page.width) || !safe(page.height) || !safe(decoded) ||
             !page.width || !page.height || Math.max(page.width, page.height) > MEDIA_LIMITS.textureSide ||
@@ -125,7 +145,9 @@ export function analyzeStreamedMedia(manifest, registry, files) {
       const record = { owner, kind, bossIndex, phase, loop, cell: cell.slice(), pages: plan.pages };
       clips.push(record);
       // A clip is atomic: no page is exempted if any of its metadata/files fail.
-      for (const page of plan.pages) optional.set(page.src, byPath.get(page.src));
+      for (const page of plan.pages) {
+        if (kind !== 'effects' || canonicalStreamPath(page.src, kind)) optional.set(page.src, byPath.get(page.src));
+      }
     } catch (error) { fail(owner, error.message); }
   }
 
@@ -150,19 +172,27 @@ export function analyzeStreamedMedia(manifest, registry, files) {
     });
     if (invalidPhase) continue;
     value.phases.forEach((phase, index) => {
-      if (phase.actions === undefined) return;
-      if (!object(phase.actions)) { fail(owner + '/' + index, 'actions must be an object'); return; }
-      for (const [name, clip] of Object.entries(phase.actions)) {
+      if (phase.actions !== undefined && !object(phase.actions)) fail(owner + '/' + index, 'actions must be an object');
+      for (const [name, clip] of Object.entries(object(phase.actions) ? phase.actions : {})) {
         const actionOwner = owner + '/' + index + '/actions/' + name;
         if (!ACTION_NAMES.includes(name)) fail(actionOwner, 'unreachable action name');
         else register(actionOwner, 'actions', clip, entry.index, index, LOOPING_ACTION_NAMES.includes(name));
+      }
+      // Legacy-only malformed FX keeps its existing fallback semantics. New
+      // dedicated files qualify only through complete, recognized registrations.
+      for (const [purpose, clip] of Object.entries(object(phase.fx) ? phase.fx : {})) {
+        if (!mentionsEffects(clip)) continue;
+        const fxOwner = owner + '/' + index + '/fx/' + purpose;
+        if (!runtimeFxPhase(index)) fail(fxOwner, 'unreachable FX phase');
+        else if (!FX_NAMES.includes(purpose)) fail(fxOwner, 'unreachable FX purpose');
+        else register(fxOwner, 'effects', clip, entry.index, index);
       }
     });
   }
 
   const paths = [...optional.keys()].sort();
   for (const file of files) {
-    if (/^assets\/bosses\/(actions|transformations)\//.test(file.path) && !optional.has(file.path))
+    if (/^assets\/bosses\/(actions|transformations|effects)\//.test(file.path) && !optional.has(file.path))
       fail(file.path, 'unregistered or invalid stream file remains base media');
   }
   const optionalBytes = paths.reduce((sum, src) => sum + optional.get(src).bytes, 0);

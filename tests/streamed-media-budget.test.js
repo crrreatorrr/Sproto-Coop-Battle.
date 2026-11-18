@@ -5,9 +5,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 async function main() {
-  const {analyzeStreamedMedia: analyze, canonicalStreamPath, MEDIA_LIMITS: limits, ACTION_NAMES, LOOPING_ACTION_NAMES} =
+  const {analyzeStreamedMedia: analyze, canonicalStreamPath, MEDIA_LIMITS: limits, ACTION_NAMES, LOOPING_ACTION_NAMES, FX_NAMES} =
     await import('../scripts/streamed-media-budget.mjs');
-  const key = '01-test-boss', T = 'assets/bosses/transformations/', A = 'assets/bosses/actions/';
+  const assets = await import('../scripts/check-assets.mjs');
+  const {runtimeIndex} = await import('../scripts/build.mjs');
+  const key = '01-test-boss', T = 'assets/bosses/transformations/', A = 'assets/bosses/actions/', E = 'assets/bosses/effects/';
   const copy = value => JSON.parse(JSON.stringify(value));
   const image = (src,w=220,h=220,bytes=1024) =>
     ({path:src,bytes,width:w,height:h,decodedBytes:w*h*4,sha256:'a'.repeat(64)});
@@ -40,6 +42,16 @@ async function main() {
     const c={cell:[96,96],anchor:[48,48],frameTicks:[6],
       pages:[{src:f.manifest.bosses[0].phases[0].proj,columns:1,frames:1}]};
     boss.phases[phase].fx||={};boss.phases[phase].fx[purpose]=c;return c;
+  }
+  function effects(f,purpose='hurt',phase=0,n=1) {
+    const c=fx(f,purpose,phase);
+    c.pages=Array.from({length:n},(_,i)=>({src:E+`${phase}-${purpose}-${i}.png`,columns:1,frames:1}));
+    c.frameTicks=Array(n).fill(2);f.files.push(...c.pages.map(p=>image(p.src,96,96)));return c;
+  }
+  function realLoader(registry) {
+    const scope={URL,performance,CoopBossTransformations:registry};scope.window=scope;
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/asset-loader.js'),'utf8'),scope);
+    return scope.AssetLoader;
   }
   const run=f=>analyze(f.manifest,f.registry,f.files);
   const valid=r=>{assert.deepEqual(r.validationErrors,[]);assert.deepEqual(r.limitErrors,[]);};
@@ -241,6 +253,181 @@ async function main() {
     const r=run(f);valid(r);assert.equal(r.maxPresentationDecodedBytes,limits.presentationBytes);
     assert.equal(r.fxScratchDecodedBytes,36864);f.files[1].height++;f.files[1].decodedBytes+=4;
     assert(run(f).limitErrors.some(e=>e.includes('32 MiB')));
+  });
+  test('only the eight real FX purposes classify dedicated PNG/WebP pages',()=>{
+    assert.deepEqual([...FX_NAMES],['lane','spread','homing','impact','signature','special','hurt','death']);
+    for(const phase of [0,1])for(const purpose of FX_NAMES){
+      const f=fixture(),c=effects(f,purpose,phase,2);
+      c.pages[1].src=E+'nested/second.webp';f.files.at(-1).path=c.pages[1].src;
+      const r=run(f);valid(r);assert.equal(r.optionalCount,2);assert.equal(r.fxScratchDecodedBytes,36864);
+      assert.equal(r.basePublicBytes+r.optionalBytes,f.files.reduce((n,p)=>n+p.bytes,0));
+      assert(canonicalStreamPath(c.pages[0].src,'effects'));assert(canonicalStreamPath(c.pages[1].src,'effects'));
+      assert(!r.optionalPaths.includes(f.manifest.bosses[0].phases[phase].proj));
+    }
+  });
+  test('orphan effects and directory-only names stay base and fail diagnostics',()=>{
+    for(const name of [E+'orphan.png',E+'orphan.webp',E+'unknown.gif',E+'UPPER.png']){
+      const f=fixture();f.files.push(image(name,96,96));const r=invalid(f);assert.equal(r.optionalCount,0);
+      assert.equal(r.basePublicBytes,f.files.reduce((n,p)=>n+p.bytes,0));
+    }
+  });
+  test('unknown FX owner, phase, purpose and malformed containers cannot exempt files',()=>{
+    for(const edit of [f=>{f.registry.animations.bosses.unknown=f.registry.animations.bosses[key];delete f.registry.animations.bosses[key];},
+      f=>f.registry.animations.bosses[key].phases.push({}),f=>f.registry.animations.bosses[key].phases[0]=null,
+      f=>{const p=f.registry.animations.bosses[key].phases[0];p.fx.dance=p.fx.hurt;delete p.fx.hurt;},
+      f=>{const p=f.registry.animations.bosses[key].phases[0];p.fx.toString=p.fx.hurt;delete p.fx.hurt;},
+      f=>{const p=f.registry.animations.bosses[key].phases[0];p.fx=[p.fx.hurt];}]){
+      const f=fixture();effects(f);edit(f);assert.equal(invalid(f).optionalCount,0);
+    }
+  });
+  test('dedicated FX rejects aliases, encoded traversal, uppercase and URL suffixes atomically',()=>{
+    for(const src of [E+'a/../x.png',E+'./x.png',E+'a//x.png',E+'x.png?q=1',E+'x.png#x',
+      '/'+E+'x.png','https://example.com/'+E+'x.png',E+'%78.png',E+'X.png',E+'.hidden.png',A+'x.webp']){
+      const f=fixture(),c=effects(f,'hurt',0,2);c.pages[1].src=src;
+      assert.equal(invalid(f).optionalCount,0,src);
+    }
+  });
+  test('FX geometry, anchors, full-core, timings and source-cell bounds match runtime gates',()=>{
+    for(const edit of [c=>c.cell=[128,96],c=>c.cell=[96,0],c=>c.anchor=[96,48],c=>c.anchor=[-1,48],
+      c=>c.anchor=[NaN,48],c=>c.coreRect=[0,0,95,96],c=>c.coreRect=[1,0,96,96],
+      c=>c.frameTicks=[0,1],c=>c.frameTicks=[1],c=>c.pages[0].columns=1.5,
+      c=>{c.pages[0].rows=1;c.pages[0].cells=[1];},
+      c=>{c.pages[0].rows=1;c.pages[0].firstCell=1;},c=>c.pages[0].cells=[0,1]]){
+      const f=fixture(),c=effects(f,'hurt',0,2);edit(c);assert.equal(invalid(f).optionalCount,0);
+    }
+    for(const frames of [64,65]){
+      const f=fixture(),c=effects(f);c.frameTicks=Array(frames).fill(1);c.pages[0].columns=8;c.pages[0].frames=frames;
+      Object.assign(f.files.at(-1),image(c.pages[0].src,768,Math.ceil(frames/8)*96));
+      const r=run(f);if(frames===64){valid(r);assert.equal(r.optionalCount,1);}else assert.equal(invalid(f).optionalCount,0);
+    }
+  });
+  test('a function with timeline properties is rejected by the renderer object gate',()=>{
+    const f=fixture(),c=effects(f);f.registry.animations.bosses[key].phases[0].fx.hurt=Object.assign(function(){},c);
+    const r=invalid(f);assert.equal(r.optionalCount,0);assert.equal(r.fxScratchDecodedBytes,0);
+  });
+  test('full native FX core, explicit repeated cell lists and fractional anchors are valid',()=>{
+    const f=fixture(),c=effects(f);c.coreRect=[0,0,96,96];c.anchor=[47.5,95.5];c.frameTicks=[2,3,4];
+    c.pages[0]={src:c.pages[0].src,columns:4,rows:8,frames:3,cells:[31,16,31]};
+    Object.assign(f.files.at(-1),image(c.pages[0].src,384,768));valid(run(f));
+    c.pages[0].firstCell=0;assert.equal(invalid(f).optionalCount,0,'runtime rejects simultaneous cells/firstCell');
+  });
+  test('mixed legacy and dedicated FX validate every page but exempt only the dedicated source',()=>{
+    const f=fixture(),c=effects(f);const original=f.manifest.bosses[0].phases[0].proj;
+    c.pages.unshift({src:original,columns:1,frames:1});c.frameTicks.unshift(2);
+    const r=run(f);valid(r);assert.equal(r.optionalCount,1);assert(!r.optionalPaths.includes(original));
+    for(const field of ['width','decodedBytes','bytes']){
+      const g=copy(f),file=g.files.find(p=>p.path===original);
+      if(field==='bytes')file.bytes=limits.encodedPageBytes+1;else file[field]++;
+      assert.equal(invalid(g).optionalCount,0,'bad legacy '+field+' invalidates complete mixed clip');
+    }
+  });
+  test('missing or mismatched FX files invalidate the complete clip, not just the bad page',()=>{
+    for(const edit of [f=>f.files.pop(),f=>f.files.at(-1).width++,f=>f.files.at(-1).height++,
+      f=>f.files.at(-1).decodedBytes++,f=>f.files.at(-1).bytes=0,f=>f.files.at(-1).bytes=NaN]){
+      const f=fixture();effects(f,'hurt',0,3);edit(f);assert.equal(invalid(f).optionalCount,0);
+    }
+  });
+  test('manifest fallback body/projectile ownership always stays base, even under effects namespace',()=>{
+    for(const name of ['sheet','proj']){
+      const f=fixture(),c=effects(f);f.manifest.bosses[0].phases[0][name]=c.pages[0].src;
+      const r=invalid(f);assert.equal(r.optionalCount,0);assert(r.validationErrors.some(e=>e.message.includes('manifest fallback')));
+    }
+  });
+  test('FX encoded1MiB cap and full-grid decoded/texture limits remain unchanged',()=>{
+    const f=fixture();effects(f);f.files.at(-1).bytes=limits.encodedPageBytes;valid(run(f));
+    f.files.at(-1).bytes++;assert.equal(invalid(f).optionalCount,0);
+    for(const [columns,rows,ok]of[[21,10,true],[21,11,false],[22,1,false]]){
+      const g=fixture(),c=effects(g);c.pages[0].columns=columns;c.pages[0].rows=rows;
+      Object.assign(g.files.at(-1),image(c.pages[0].src,columns*96,rows*96));
+      if(ok)valid(run(g));else assert.equal(invalid(g).optionalCount,0);
+    }
+  });
+  test('FX optional64MiB total is enforced across separately valid phase clips',()=>{
+    for(const n of [64,65]){
+      const f=fixture();effects(f,'hurt',0,32);effects(f,'death',1,n-32);
+      for(const file of f.files.filter(p=>p.path.startsWith(E)))file.bytes=limits.encodedPageBytes;
+      const r=run(f);assert.deepEqual(r.validationErrors,[]);assert.equal(r.optionalBytes,n*limits.encodedPageBytes);
+      assert.equal(r.limitErrors.some(e=>e.includes('64 MiB')),n===65);
+    }
+  });
+  test('shared valid FX pages count once; invalid owner cannot partially exempt another page',()=>{
+    const f=fixture(),c=effects(f,'hurt',0,2);const good=copy(c);good.pages.pop();good.frameTicks.pop();
+    f.registry.animations.bosses[key].phases[1].fx={death:good};c.pages[1].columns=2;
+    const r=invalid(f);assert.equal(r.optionalCount,1);assert.deepEqual(r.optionalPaths,[good.pages[0].src]);
+    c.pages[1].columns=1;valid(run(f));assert.equal(run(f).optionalCount,2);
+  });
+  test('every FX page in both phases stays resident throughout T/action/held/scratch overlap',()=>{
+    const f=fixture();transform(f,2,true);action(f,0,true);effects(f,'hurt',0,3);effects(f,'death',1,3);
+    for(const phase of f.registry.animations.bosses[key].phases)for(const clip of Object.values(phase.fx))for(const p of clip.pages){
+      p.columns=20;p.rows=6;Object.assign(f.files.find(file=>file.path===p.src),image(p.src,1920,576));
+    }
+    const r=run(f);assert.deepEqual(r.validationErrors,[]);assert.equal(r.optionalCount,10);
+    const fxBytes=6*1920*576*4;
+    assert(r.scenes.every(s=>s.fallbackDecodedBytes>=fxBytes));
+    for(const state of ['transform-page-0','animations/bosses/'+key+'/0/actions/walk/page-0']){
+      const s=r.scenes.find(row=>row.state===state);assert(s&&s.heldCelBytes>0&&s.fxScratchDecodedBytes===36864);
+      assert(s.decodedBytes>limits.presentationBytes,'all6FXpages must exceed32MiB here, not a fictitious2page cache');
+    }
+    assert(r.limitErrors.some(e=>e.includes('32 MiB')));
+  });
+  test('next-boss prefetch includes every FX page from both phases, deduplicated with real loader groups',()=>{
+    const f=fixture();effects(f,'hurt',0,3);const next=copy(f.manifest.bosses[0]);next.key='02-next';f.manifest.bosses.push(next);
+    const phases=[{},{}];for(const phase of [0,1])phases[phase].fx={death:{cell:[96,96],anchor:[48,48],frameTicks:[2,2,2],
+      pages:Array.from({length:3},(_,i)=>({src:E+`next-${phase}-${i}.webp`,columns:1,frames:1}))}};
+    f.registry.animations.bosses[next.key]={phases};
+    f.files.push(...phases.flatMap(p=>p.fx.death.pages.map(p=>image(p.src,96,96))));
+    const r=run(f);valid(r);const groups=realLoader(f.registry).groups(f.manifest);
+    const retained=[...new Set([...groups.boss(0),...groups.boss(1)])];
+    const expected=retained.reduce((sum,src)=>sum+f.files.find(file=>file.path===src).decodedBytes,0);
+    assert.equal(r.scenes.find(s=>s.state==='fallback-and-next-prefetch').fallbackDecodedBytes,expected);
+    assert.equal(groups.boss(1).filter(src=>src.startsWith(E)).length,6);assert.equal(r.optionalCount,9);
+  });
+  test('current real inventory retains legacy Zephyr/Rune banks as BASE with identical classification',()=>{
+    const r=assets.inventory(),expected=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/asset-baseline.json')));
+    assert.equal(r.optionalMediaCount,expected.optionalMediaCount);assert.equal(r.optionalMediaBytes,expected.optionalMediaBytes);
+    assert.equal(r.basePublicBytes,expected.basePublicBytes);assert.equal(r.streamedMedia.maxPresentationDecodedBytes,expected.presentationDecodedBytesMax);
+    for(const name of ['04-ranch-zephyr','06-circuit-rune'])assert(!r.streamedMedia.optionalPaths.includes(`assets/bosses/${name}-p2-projectiles.png`));
+    assert.equal(r.fxScratchDecodedBytes,36864);
+  });
+  test('real first-boss loader budget still counts a dedicated FX bank request and first-stage bytes',()=>{
+    const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
+    const before=realLoader(registry),index=runtimeIndex(report),scriptPaths=before.pageScripts(index.html);
+    const bytes=new Map(report.files.map(p=>[p.path,p.bytes]));const src=E+'qa-metadata-only-not-art.png';bytes.set(src,1200);
+    const cost=loader=>loader.budgetOf(manifest,src=>{assert(bytes.has(src),src);return bytes.get(src);},scriptPaths,index.bytes);
+    const baseline=cost(before),expected=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/asset-baseline.json')));
+    assert.equal(baseline.criticalRequests,expected.criticalRequests);assert(baseline.criticalRequests<=30);
+    const first=manifest.bosses[0].key;registry.animations.bosses[first]||={phases:[{},{}]};
+    registry.animations.bosses[first].phases[0].fx={hurt:{cell:[96,96],anchor:[48,48],frameTicks:[2],pages:[{src,columns:1,frames:1}]}};
+    const after=realLoader(registry),groups=after.groups(manifest),budget=cost(after);
+    assert(groups.firstBoss.includes(src)&&groups.all.includes(src));assert(!groups.startup.includes(src));
+    assert(!groups.actions.includes(src)&&!groups.transformations.includes(src));
+    assert.equal(budget.criticalRequests,baseline.criticalRequests+1);
+    assert.equal(budget.criticalRequests>30,baseline.criticalRequests===30);
+    assert.equal(budget.firstStageBytes-baseline.firstStageBytes,1200);
+    const analyzed=analyze(manifest,registry,[...report.files,image(src,96,96,1200)]);
+    assert(analyzed.optionalPaths.includes(src),'optional BASE classification does not erase the real stage request');
+  });
+  test('only selector-owned FX phases classify or reserve scratch, even with a third manifest phase',()=>{
+    const selector=require('../public/js/boss-fx-selection.js');
+    for(const phase of [0,1,2])for(const legacy of [false,true]){
+      const f=fixture();f.manifest.bosses[0].phases.push(copy(f.manifest.bosses[0].phases[1]));
+      f.registry.animations.bosses[key]={phases:[{},{},{}]};
+      const c=legacy?fx(f,'homing',phase):effects(f,'homing',phase);
+      const owns=phase===0||phase===1;
+      assert.equal(!!selector.projectile({k:'boss',bi:0,ph:phase,r:3,t:0}),owns);
+      assert.equal(!!selector.effect({k:'bossSpecialImpact',bi:0,ph:phase,t:0}),owns);
+      assert.equal(selector.overlays({st:'dead',bi:0,ph:phase,t:0}).length,owns?1:0);
+      const r=run(f),retained=realLoader(f.registry).groups(f.manifest).boss(0);
+      assert(retained.includes(c.pages[0].src),'loader still retains unreachable FX metadata');
+      const expected=retained.reduce((sum,src)=>sum+f.files.find(file=>file.path===src).decodedBytes,0);
+      assert.equal(r.scenes[0].fallbackDecodedBytes,expected,'all loader-held banks remain decoded-resident');
+      if(owns)valid(r);
+      else if(legacy)valid(r);
+      else assert(r.validationErrors.some(e=>e.message==='unreachable FX phase'));
+      assert.equal(r.fxScratchDecodedBytes,owns?36864:0);
+      assert.equal(r.optionalCount,owns&&!legacy?1:0);
+      if(!owns)assert.equal(r.basePublicBytes,f.files.reduce((sum,file)=>sum+file.bytes,0));
+    }
   });
   test('policy action names agree with actual reachable selector outputs',()=>{
     const scope={};scope.window=scope;vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/boss-action-selection.js'),'utf8'),scope);
