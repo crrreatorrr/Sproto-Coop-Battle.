@@ -286,21 +286,13 @@ function projectile(g, p, sx, sy, shadowSheet) {
   return drawn;
 }
 
-// Flickering amber warning light standing at (x, y).
-function warnLight(g, x, y, t, k) {
-  const im = fxImg('lights'); if (!ready(im)) return;
-  const f = (t >> 2) % 4, h = 30 * (k || 1), w = h * 19 / 56;
-  g.save(); g.globalAlpha = Math.floor(t / 4) % 2 ? 1 : 0.62;
-  g.drawImage(im, f * 19, 0, 19, 56, Math.round(x - w / 2), Math.round(y - h), w, h);
-  g.restore();
-}
 // Impact burst frame f (0..3), row 0 orange, 1 violet.
 function burstFrame(g, row, f, x, y, size, alpha) {
   const im = fxImg('burst'); if (!ready(im)) return false;
   g.save(); g.globalAlpha = alpha; g.drawImage(im, f * 48, row * 48, 48, 48, Math.round(x - size / 2), Math.round(y - size / 2), size, size); g.restore();
   return true;
 }
-// Rear sweep: cracks glow, then crystal spikes ripple up and collapse (depth-sorted).
+// Rear sweep: crystal spikes ripple up and collapse only when the strike lands.
 function sweepSpikes(g, bw, camX, list, lx, lw) {
   const im = fxImg('spikes'); if (!ready(im)) return false;
   const warn = S.SWEEP_WARN, rear = -bw.fc, x0 = bw.x - camX;
@@ -309,11 +301,7 @@ function sweepSpikes(g, bw, camX, list, lx, lw) {
     for (let col = 0; ; col++) {
       const x = x0 + rear * ((bw.w || 150) * 0.3 + 14 + col * 30 + (row % 2) * 15);
       if (x < lx - 10 || x > lx + lw + 10) { if (col > 12) break; if ((x - x0) * rear > lw + 40) break; continue; }
-      if (bw.t < warn) {
-        const f = Math.min(2, Math.floor(bw.t / warn * 3));
-        g.drawImage(im, f * 42, 63, 42, 8, Math.round(x - 21), gy - 6, 42, 8);
-        continue;
-      }
+      if (bw.t < warn) continue;
       const e = bw.t - warn - Math.floor(col * 0.7) - (row % 2); // spikes ripple outward
       if (e < 0) continue;
       list.push({ y: ly - 0.2, d: () => {
@@ -328,13 +316,6 @@ function sweepSpikes(g, bw, camX, list, lx, lw) {
     }
   }
   return true;
-}
-
-// Warning lights on the machine during charge/sweep wind-ups and missile volleys.
-function windup(g, b, sx, sy, ph) {
-  if (!((b.st === 'charge' && b.t < (b.ar === 1 ? 36 : 24)) || (b.st === 'sweep' && b.t < S.SWEEP_WARN) || (b.st === 'fire' && b.mi && b.t < 30))) return;
-  const top = sy - (ph.body[3] - ph.body[1]) * BS * 0.55, half = (b.w || 150) * 0.32;
-  warnLight(g, sx - half, top, b.t, 0.8); warnLight(g, sx + half, top, b.t + 4, 0.8);
 }
 
 function drawFx(g, f, camX) {
@@ -439,77 +420,9 @@ function drawFx(g, f, camX) {
       g.strokeStyle = 'rgba(255,170,60,.7)'; g.lineWidth = 4; g.beginPath(); g.moveTo(mx + 20, my - 40); g.lineTo(mx, my); g.stroke();
       g.fillStyle = '#5a3a2a'; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.fill(); g.fillStyle = '#ff8a3d'; g.beginPath(); g.arc(mx - 2, my - 2, 3, 0, 7); g.fill();
     }
-  } else if (f.k === 'mark') {
-    // Where a bomber's bomb will land: a red ring that closes in until impact.
-    const k = Math.min(1, f.t / (f.sm || 1)), gy = FLOOR_TOP + f.y;
-    // Searchlight narrowing as the bomb falls.
-    const beam = g.createLinearGradient(0, 0, 0, gy);
-    beam.addColorStop(0, 'rgba(255,90,60,0)'); beam.addColorStop(0.35, 'rgba(255,170,110,.08)'); beam.addColorStop(1, `rgba(255,130,90,${0.3 + 0.3 * k})`);
-    g.fillStyle = beam; g.beginPath(); g.moveTo(sx - 6, 0); g.lineTo(sx + 6, 0); g.lineTo(sx + 30 - 12 * k, gy); g.lineTo(sx - 30 + 12 * k, gy); g.fill();
-    warnLight(g, sx + 34, gy + 2, f.t, 0.7);
-    g.fillStyle = `rgba(255,40,40,${0.25 + 0.3 * k})`; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.fill();
-    g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.beginPath(); g.ellipse(sx, gy, 30, 14, 0, 0, 7); g.stroke();
-    g.strokeStyle = '#ffb24f'; g.lineWidth = 2; g.beginPath(); g.ellipse(sx, gy, 30 * (1 - k) + 3, 14 * (1 - k) + 2, 0, 0, 7); g.stroke();
   } else if (f.k === 'shield') {
     g.strokeStyle = `rgba(120,255,140,${1 - f.t / 14})`; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, 30, 0, 7); g.stroke();
   }
-}
-
-function bossExtraWarnings(g, boss, camX) {
-  const attack = S.bossExtraAttack(boss.bi, boss.st);
-  const color = attack.color || '#ffad68';
-  g.save();
-  for (const [x, depth, wide, deep, delay, rounded] of boss.az) {
-    const until = attack.warning + delay - boss.t;
-    if (until <= 0) continue;
-    const cx = x - camX, y = FLOOR_TOP + depth;
-    g.globalAlpha = 0.32 + 0.26 * (1 - Math.min(1, until / attack.warning));
-    g.fillStyle = '#b42346'; g.strokeStyle = color; g.lineWidth = 2;
-    g.beginPath();
-    if (rounded) g.ellipse(cx, y, wide, deep, 0, 0, 7);
-    else g.rect(cx - wide, y - deep, wide * 2, deep * 2);
-    g.fill(); g.globalAlpha = 0.95; g.stroke();
-    const scale = Math.min(1, until / attack.warning);
-    g.globalAlpha = 0.8; g.lineWidth = 1; g.beginPath();
-    if (rounded) g.ellipse(cx, y, wide * scale, deep * scale, 0, 0, 7);
-    else g.rect(cx - wide * scale, y - deep * scale, wide * scale * 2, deep * scale * 2);
-    g.stroke();
-  }
-  if (boss.t < attack.warning) {
-    g.globalAlpha = 1;
-    const special = boss.st === 'special';
-    text(g, attack.name.toUpperCase(), W / 2, FLOOR_TOP - 15, special ? 10 : 8, color, 'center');
-  }
-  g.restore();
-}
-
-function barWarnings(g, b, camX) {
-  const names = b.ph ? ['BILL LASER', 'RAPID MISSILES', 'DEADLY BUBBLES'] : ['SNACK BURST', 'BEER LOB', 'COCKTAIL FAN', 'BOUNCING DRINKS', 'BLUE MARLIN'];
-  text(g, names[b.ba], W / 2, FLOOR_TOP - 12, 8, '#68f5ec', 'center');
-  if (!b.ph && b.ba === 1) return; // Landing rings are the host's locked marks.
-  g.save();
-  g.strokeStyle = '#ffe397'; g.lineWidth = 2; g.setLineDash([5, 4]);
-  const dirs = b.bo ? [b.fc, -b.fc] : [b.fc];
-  for (const d of dirs) {
-    const muzzle = b.ph ? (b.ba === 0 ? 100 : b.ba === 1 ? 55 : 48) : b.w * .55;
-    const x0 = b.x - camX + d * muzzle;
-    for (const spread of b.ba === 2 ? [-1, 0, 1] : [0]) {
-      g.beginPath();
-      for (let dist = 0; dist < W; dist += 8) {
-        const x = x0 + d * dist;
-        if (x < 0 || x > W) break;
-        const age = dist / 4.5;
-        const wave = 20 - Math.abs((age % 80) - 40);
-        const speed = b.ba === 0 ? 13 : 8.8;
-        const flight = Math.max(12, Math.abs((b.bx ?? b.x) - (b.x + d * muzzle)) / speed);
-        const y = b.ph ? (b.ba === 2 ? b.by + spread * 22 + spread * dist * .24 / 1.9 : b.y + (b.by - b.y) * dist / speed / flight) : b.ba === 2 ? b.y + spread * dist * .65 / 3.7 : b.ba === 4 ? S.clamp(b.by + wave * .85, 0, S.DEPTH) : b.by;
-        if (y < 0 || y > S.DEPTH) break;
-        if (!dist) g.moveTo(x, FLOOR_TOP + y); else g.lineTo(x, FLOOR_TOP + y);
-      }
-      g.stroke();
-    }
-  }
-  g.restore();
 }
 
 function floor(g, snap, camX, list) {
@@ -547,41 +460,12 @@ function floor(g, snap, camX, list) {
       g.restore();
     }
   }
-  // Boss lane warnings: a red stripe along each lane about to be shot.
+  // The rear-sweep impact remains visible, without a preview of its danger area.
   const bw = snap.boss;
-  if (bw?.az) bossExtraWarnings(g, bw, camX);
-  if (bw && bw.ba !== undefined && bw.st === 'fire' && bw.t < 30) barWarnings(g, bw, camX);
-  if (bw && bw.ba === undefined && bw.wl && bw.st === 'fire' && bw.t < 30) {
-    const k = bw.t / 30, x0 = bw.x - camX;
-    // bo: a mid-arena boss fires both ways.
-    const dirs = bw.bo ? [bw.fc, -bw.fc] : [bw.fc];
-    for (const ly of bw.wl) {
-      const y = FLOOR_TOP + ly;
-      for (const d of dirs) {
-        // Starts at 40% and is edged in a light colour so it reads on dark and light floors alike.
-        const lx = d < 0 ? 0 : x0, lw = d < 0 ? x0 : W - x0;
-        g.fillStyle = `rgba(255,40,40,${0.4 + 0.2 * k + (Math.floor(bw.t / 4) % 2 ? 0.12 : 0)})`;
-        g.fillRect(lx, y - 6, lw, 12);
-        g.fillStyle = `rgba(255,236,170,${0.75 + 0.25 * k})`;
-        g.fillRect(lx, y - 7, lw, 1); g.fillRect(lx, y + 6, lw, 1);
-        warnLight(g, x0 + d * ((bw.w || 150) * 0.55 + 8), y + 4, bw.t);
-        warnLight(g, d < 0 ? 10 : W - 10, y + 4, bw.t + 2);
-      }
-    }
-    if (Math.floor(bw.t / 6) % 2) for (const d of dirs) text(g, bw.bo ? 'BOTH SIDES!' : 'MOVE!', x0 + d * 90, FLOOR_TOP - 10, 8, '#ff6a6a', 'center');
-  }
-  // Rear sweep: the ground behind the boss is marked before it is hit (jump it, or get in front).
-  if (bw && bw.st === 'sweep') {
+  if (bw && bw.st === 'sweep' && bw.t >= S.SWEEP_WARN) {
     const rear = -bw.fc, reach = (bw.w || 150) / 2 + S.SWEEP_REACH, x0 = bw.x - camX, x1 = x0 + rear * reach;
-    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx, warn = bw.t < S.SWEEP_WARN;
-    const spikes = sweepSpikes(g, bw, camX, list, lx, lw);
-    if (warn || bw.t < S.SWEEP_WARN + 8) {
-      const k = bw.t / S.SWEEP_WARN;
-      g.fillStyle = warn ? `rgba(${spikes ? '220,60,255' : '255,150,30'},${(spikes ? 0.16 : 0.3) + 0.3 * k + (Math.floor(bw.t / 4) % 2 ? 0.1 : 0)})` : 'rgba(239,157,72,.7)';
-      g.fillRect(lx, FLOOR_TOP, lw, S.DEPTH);
-      g.strokeStyle = 'rgba(255,236,170,.95)'; g.lineWidth = 1; g.strokeRect(lx + 0.5, FLOOR_TOP + 0.5, lw - 1, S.DEPTH - 1);
-      if (warn && Math.floor(bw.t / 6) % 2) text(g, 'BEHIND! JUMP!', lx + lw / 2, FLOOR_TOP - 10, 8, '#ffb23d', 'center');
-    }
+    const lx = Math.max(0, Math.min(x0, x1)), lw = Math.min(W, Math.max(x0, x1)) - lx;
+    sweepSpikes(g, bw, camX, list, lx, lw);
   }
 }
 
@@ -967,7 +851,6 @@ function drawBoss(g, b, camX) {
   if (!ready(sheet)) return;
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
   drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
-  windup(g, b, sx, sy, ph);
   if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
     g.globalAlpha = (27 - b.su) / 27;
@@ -1118,7 +1001,7 @@ function drawWorld(g, snap, opts) {
       }
     } });
   }
-  floor(g, snap, camX, list); // fire lanes, lane and sweep warnings
+  floor(g, snap, camX, list); // active fire lanes and sweep impacts
   if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
   for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX, shadowSheet) });
   list.sort((a, b) => a.y - b.y);

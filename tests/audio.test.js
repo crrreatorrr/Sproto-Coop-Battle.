@@ -1,4 +1,4 @@
-// Synthesized music and the boss klaxon (public/js/audio.js), against a fake WebAudio clock.
+// Synthesized music and the ranged Shadow warning (public/js/audio.js), against a fake WebAudio clock.
 // No sound is checked, only scheduling: nothing before a user gesture, a steady look-ahead,
 // silence when muted or stopped, and no burst of notes after a stall.
 'use strict';
@@ -74,7 +74,9 @@ assert.strictEqual(liveTimers(), 0, 'no timer while silent');
 made = []; clock += 1; pump();
 assert.strictEqual(made.length, 0);
 A.play('warn');
-assert.ok(made.filter(n => n.kind === 'osc').length >= 1, 'the boss klaxon plays');
+assert.ok(made.filter(n => n.kind === 'osc').length >= 1, 'the ranged Shadow warning plays');
+made = []; A.play('charge');
+assert.strictEqual(made.length, 0, 'boss charge warnings are silent');
 A.play('no-such-event'); A.play('hit:120');
 A.music('nonsense');
 assert.strictEqual(liveTimers(), 0, 'an unknown track is silence');
