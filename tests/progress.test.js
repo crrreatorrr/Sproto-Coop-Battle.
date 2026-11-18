@@ -23,7 +23,7 @@ function fakeStore(initial) {
   assert.deepStrictEqual(P.loadSettings(null), { freePlay: false });
 }
 
-// ---- clearing stage N opens N + 1, once, and never past 12 ----
+// ---- clearing stage N opens N + 1, once, and never past the current campaign length ----
 {
   let d = P.blank();
   const step = n => { const c = P.clearStage(d, n); d = c.data; return c.opened; };
@@ -34,7 +34,7 @@ function fakeStore(initial) {
   assert.strictEqual(d.unlocked, 6);
   assert.strictEqual(step(3), false, 'unlocks never go backwards');
   assert.strictEqual(step(12), true);
-  assert.strictEqual(d.unlocked, 12);
+  assert.strictEqual(d.unlocked, P.STAGES);
   assert.strictEqual(P.weaponTier(d), 2, 'Free Play does not award tiers for stages skipped');
   for (let i = 2; i <= 11; i++) step(i);
   assert.strictEqual(P.weaponTier(d), 13, 'the previously recorded final clear opens the final tier');

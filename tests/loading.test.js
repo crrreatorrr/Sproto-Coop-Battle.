@@ -161,7 +161,7 @@ async function main() {
   await memory.drain();
   await startup;
   assert.strictEqual(memory.loader.status().resident.fighter, 4);
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < memory.manifest.bosses.length; i++) {
     memory.loader.enterStage(i, memory.manifest);
     await memory.drain();
   }

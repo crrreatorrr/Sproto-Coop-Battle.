@@ -1,4 +1,4 @@
-// C5: four humans, one account, mixed seats, twelve stages, UFO/revive/powers,
+// C5: four humans, one account, mixed seats, thirteen stages, UFO/revive/powers,
 // downed lives, AFK, late joins, and God Mode / practice isolation.
 'use strict';
 
@@ -14,6 +14,7 @@ const BOSSES = [
   '01-marina-bront', '02-last-light-vela', '03-mudline-crapto', '04-ranch-zephyr',
   '05-neon-sproto102', '06-circuit-rune', '07-moonkeep-bigswole', '08-crown-alpha777',
   '09-hatchery-highsproto', '10-verse-sprotosales', '11-rooftop-sproto1668', '12-codebreak-sproto3106',
+  '13-last-call-sprotelbitcoin',
 ];
 const out = artifactDir();
 
@@ -47,7 +48,7 @@ function authority() {
   const manifest = CoopProtocol.contentManifest(sandbox.MANIFEST);
   const bossIds = JSON.parse(JSON.stringify(manifest.stages.map(stage => stage.canonicalBossId)));
   assert.deepStrictEqual(bossIds, BOSSES);
-  assert.strictEqual(manifest.stages.length, 12);
+  assert.strictEqual(manifest.stages.length, 13);
 
   const goldens = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/sim-goldens.json'), 'utf8'));
   const ran = Scenarios.runAll();
@@ -62,7 +63,7 @@ function authority() {
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);
   assert.ok(ran.cases.find(row => row.id === 'human-seed64-stage1').flags.bossPhase >= 1);
-  for (let stage = 0; stage < 12; stage++) {
+  for (let stage = 0; stage < manifest.stages.length; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ran.cases.some(row => row.id === 'stage-' + stage + '-' + kind));
   }
 

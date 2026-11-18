@@ -1,0 +1,20 @@
+{
+  "key": "13-last-call-sprotelbitcoin",
+  "stage": "Last Call Bar",
+  "machines": ["Sprotel Bitcoin"],
+  "color": "#24d8df",
+  "pilot": "Sprotel Bitcoin",
+  "scenery": 2,
+  "shadowStage": 1,
+  "attacks": "bar",
+  "phases": [{
+    "sheet": "assets/bosses/13-last-call-sprotelbitcoin-p1.webp",
+    "proj": "assets/bosses/13-last-call-sprotelbitcoin-p1-projectiles.png",
+    "body": [78, 25, 178, 240],
+    "bounds": [6, 15, 250, 240],
+    "projRows": [[6, 70, 250, 190], [6, 70, 250, 190], [6, 70, 250, 190], [6, 70, 250, 190]],
+    "columns": 8,
+    "fxColumns": 16,
+    "fxCell": 64
+  }]
+}

@@ -110,6 +110,13 @@ function runCase(spec) {
   const loadouts = spec.party ? root.Sim.partySlots().map((p, i) => ({ ...p, ctrl: i === 0 ? 'local' : 'cpu' })) : slots(spec.kind);
   const state = root.Sim.create(loadouts, spec.seed, spec.stage || 0, { cpuParty: !!spec.party });
   const flags = { ufo: 0, revive: 0, dead: 0, power: 0, boss: 0, bossPhase: 0 };
+  if (spec.barArena) {
+    state.stage.waves.forEach(w => { w.done = true; });
+    state.camX = state.stage.len - root.Sim.W + 160;
+    state.god = true;
+    state.players.forEach((p, i) => { p.x = state.camX + 80 + i * 30; p.y = 16 + i * 24; });
+    flags.barAttacks = 0;
+  }
   let resumed = null;
   const limit = spec.ticks;
   for (let i = 0; i < limit && state.mode !== 'victory' && state.mode !== 'gameover'; i++) {
@@ -123,6 +130,7 @@ function runCase(spec) {
     if (state.boss) {
       flags.boss++;
       if (state.boss.phase > flags.bossPhase) flags.bossPhase = state.boss.phase;
+      if (spec.barArena && state.boss.st === 'fire') flags.barAttacks |= 1 << state.boss.barAttack;
     }
     state.events.length = 0;
   }
@@ -154,8 +162,9 @@ function caseList() {
     // A second run of the same policy covers the four-human boss phase change.
     { id: 'human-seed64-stage1', kind: 'local', seed: 64, stage: 0, ticks: 20000, input: 'policy' },
     { id: 'solo-cpu-party', kind: 'mixed', seed: 3, stage: 0, ticks: 3800, input: 'policy', party: true, resumeAt: 2000 },
+    { id: 'sprotel-bar-throws', kind: 'local', seed: 331, stage: 12, ticks: 1200, input: 'policy', barArena: true, resumeAt: 400 },
   ];
-  for (let stage = 0; stage < 12; stage++) {
+  for (let stage = 0; stage < root.MANIFEST.bosses.length; stage++) {
     list.push({ id: 'stage-' + stage + '-human', kind: 'local', seed: 4000 + stage * 17, stage: stage, ticks: 900, input: 'policy' });
     list.push({ id: 'stage-' + stage + '-mixed', kind: 'mixed', seed: 4000 + stage * 17, stage: stage, ticks: 700, input: 'policy' });
     list.push({ id: 'stage-' + stage + '-cpu', kind: 'cpu', seed: 4000 + stage * 17, stage: stage, ticks: 500, input: 'cpu' });

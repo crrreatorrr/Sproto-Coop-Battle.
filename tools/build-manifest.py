@@ -34,6 +34,8 @@ for key, stage, m1, m2, color in BOSSES:
             **geometry,
         })
     bosses.append({'key': key, 'stage': stage, 'machines': [m1, m2], 'color': color, 'pilot': key.split('-')[-1], 'phases': phases})
+with open(os.path.join(os.path.dirname(__file__), 'sprotel-bitcoin.json'), encoding='utf-8') as f:
+    bosses.append(json.load(f))
 def hands(fid, fb):
     # Front-most opaque pixel in the arm band of each pose: where the weapon is held.
     out = []

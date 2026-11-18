@@ -1,0 +1,69 @@
+{
+  "actor": {
+    "cell": 220,
+    "columns": 8,
+    "rows": [
+      [
+        "idle",
+        "walk"
+      ],
+      [
+        "snacks-a",
+        "snacks-b"
+      ],
+      [
+        "beer-a",
+        "beer-b"
+      ],
+      [
+        "cocktails-a",
+        "cocktails-b"
+      ],
+      [
+        "drinks-a",
+        "drinks-b"
+      ],
+      [
+        "marlin-a",
+        "marlin-b"
+      ],
+      [
+        "charge-a",
+        "charge-b"
+      ],
+      [
+        "sweep-a",
+        "sweep-b"
+      ],
+      [
+        "hit",
+        "death"
+      ]
+    ],
+    "frames": 72,
+    "foot": [
+      110,
+      206
+    ]
+  },
+  "projectiles": {
+    "cell": 64,
+    "columns": 16,
+    "rows": [
+      "snack-fx",
+      "beer-fx",
+      "cocktail-fx",
+      "drinks-fx",
+      "marlin-fx",
+      "impact-fx"
+    ],
+    "frames": 96
+  },
+  "generation": {
+    "actors": "2x2",
+    "projectiles": "4x4",
+    "tool": "image_gen",
+    "identity": "reference.png",
+    "phaseCount": 1
+  }
+}

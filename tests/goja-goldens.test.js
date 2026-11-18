@@ -59,7 +59,7 @@ function go(args) {
 
 function assertCoverage(result) {
   const ids = result.cases.map(row => row.id);
-  for (let stage = 0; stage < 12; stage++) {
+  for (let stage = 0; stage < 13; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ids.includes('stage-' + stage + '-' + kind));
   }
   const stage1 = result.cases.find(row => row.id === 'human-seed9-stage1');
@@ -69,6 +69,10 @@ function assertCoverage(result) {
   const phase2 = result.cases.find(row => row.id === 'human-seed64-stage1');
   assert.ok(phase2.flags.bossPhase >= 1 && phase2.flags.ufo > 0 && phase2.flags.revive > 0);
   const terminal = result.cases.find(row => row.id === 'cpu-seed1-terminal');
+  const bar = result.cases.find(row => row.id === 'sprotel-bar-throws');
+  assert.strictEqual(bar.flags.barAttacks, 31, 'all five bar throws execute in every engine');
+  assert.strictEqual(bar.flags.bossPhase, 0);
+  assert.ok(bar.resume && bar.resume.hash);
   assert.strictEqual(terminal.mode, 'gameover');
   assert.ok(terminal.flags.bossPhase >= 1 && terminal.flags.dead > 0);
 }

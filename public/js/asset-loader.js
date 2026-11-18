@@ -37,10 +37,10 @@ function motionPath(fighter) {
   return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.png' : null;
 }
 
-function stageNo(i) { return String((i % 12) + 1).padStart(2, '0'); }
+function stageNo(i, manifest) { return String(manifest?.bosses[i]?.scenery || i + 1).padStart(2, '0'); }
 
-function scenery(i) {
-  const n = stageNo(i);
+function scenery(i, manifest) {
+  const n = stageNo(i, manifest || root.MANIFEST);
   return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.png'];
 }
 
@@ -52,8 +52,8 @@ function bossPaths(manifest, i) {
 }
 
 function stagePaths(manifest, i) {
-  const paths = scenery(i).concat(bossPaths(manifest, i));
-  const shadow = manifest.shadows?.sheets[i];
+  const paths = scenery(i, manifest).concat(bossPaths(manifest, i));
+  const shadow = manifest.shadows?.sheets[manifest.bosses[i].shadowStage ?? i];
   if (shadow) paths.push(shadow);
   return paths;
 }
@@ -82,11 +82,11 @@ function groups(manifest) {
   const stages = [];
   const bosses = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
-    stages.push.apply(stages, scenery(i));
+    stages.push.apply(stages, scenery(i, manifest));
     bosses.push.apply(bosses, bossPaths(manifest, i));
   }
   // The title shows the original first four. All other bodies load when selected.
-  const startup = atlas.slice(0, 4).concat(scenery(0), scenery(4));
+  const startup = atlas.slice(0, 4).concat(scenery(0, manifest), scenery(4, manifest));
   const firstBoss = bossPaths(manifest, 0);
   return {
     atlas: atlas,
@@ -99,7 +99,7 @@ function groups(manifest) {
     stages: stages,
     bosses: bosses,
     all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, shadows, UFO, FX)),
-    scenery: scenery,
+    scenery: function (i) { return scenery(i, manifest); },
     boss: function (i) { return bossPaths(manifest, i); },
   };
 }

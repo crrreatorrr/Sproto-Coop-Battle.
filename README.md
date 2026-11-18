@@ -1,6 +1,6 @@
 # Sproto Coop Battle
 
-A 4-player co-op pixel beat-'em-up. Four armed Sprotos fight their way through Shadow Sproto gangs and twelve two-phase mecha bosses. Every run has a four-seat party. Humans can play locally, online, or both, and CPU teammates fill the remaining seats. Press Attack on an unused device to take control of a CPU seat.
+A 4-player co-op pixel beat-'em-up. Four armed Sprotos fight their way through Shadow Sproto gangs and thirteen mecha bosses: twelve two-phase battles plus Sprotel Bitcoin phase one in Last Call Bar. Every run has a four-seat party. Humans can play locally, online, or both, and CPU teammates fill the remaining seats. Press Attack on an unused device to take control of a CPU seat.
 
 ## Run it
 
@@ -57,7 +57,7 @@ The party editor shows all 16 Sprotos and separates character, class, and weapon
 
 **Why this pad layout:** A jumps, X attacks, and B blocks. LB and RB also block and attack so you can use those actions together. Y and both triggers are Power. Start opens the battle menu, and View opens the lobby menu.
 
-Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto Arcade stages, then fight. The run continues from that stage.
+Start / Enter in the lobby opens the **stage select**: pick any of the 13 stages, then fight. The run continues from that stage.
 
 **God mode:** press **9 twice** quickly during a battle, the same input as Sproto Arcade. Human Sprotos get unlimited health and attack twice as fast (UFO lasers and bombs too). Press 9 twice again to turn it off. Online guests can toggle it too, and it applies to the whole team.
 
@@ -97,7 +97,9 @@ Start / Enter in the lobby opens the **stage select**: pick any of the 12 Sproto
 - **Sproto passives:** each Sproto has one small passive, shown in the lobby. Sproto Sheriff is a **Duelist** (parry window +50%), VAMP a **Leech** (+2 health per KO), Red Kev a **Brawler** (+10% weapon damage), Sprotel Bitcoin a **Medic** (revives 40% faster), Golden Sproto is **Tough** (+10 max health) and Dumpstar a **Sprinter** (walks 10% faster).
 - **Stages, unlocks and bests:** clearing a stage unlocks the next one. On the stage screen, Power (R, ', or Y on a pad) toggles **free play**, which opens all twelve for groups that just want to pick one; free play is a setting kept in that browser. Every run ends on a summary: stage reached, time, and each Sproto's score, KOs, revives and parries, next to the best run so far. Unlocks and the best run belong to whoever earned them: on a hub visit, the hub player (account or guest), whose progress is kept in the hub cloud save and loads on any device; outside the hub, that browser. Neither ever moves into the other. God Mode runs are shown but never recorded, and no Tickets or scores are sent to the hub. See `docs/coop-hub.md`.
 
-The twelve stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway and Codebreak Ascent.
+The thirteen stages are Tidebreak Marina, Last Light Bar, Mudline Trenches, Sproto Ranch, Neon Tomorrow, Circuit Gate, Moonkeep Castle, Crown Relay Chamber, The Hatchery, Verse Gate, Rooftop Breakaway, Codebreak Ascent and Last Call Bar.
+
+[Last Call Bar / Sprotel Bitcoin phase-one art, attacks and server handoff](docs/sprotel-bitcoin-phase-one.md).
 
 ## Server loop budget
 
