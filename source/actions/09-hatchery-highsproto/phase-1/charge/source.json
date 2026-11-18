@@ -1,0 +1,37 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "3e6952f27d99f3f1d2595e14af8e754d0a611245168794e4b9293269d2ffa62f",
+  "sourceSHA256": "8eea0cf35f7d556e3ec1a8c814b981a1cc52f85fea9a3ba9ee83beea060b55c0",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    246.0,
+    3.0,
+    245.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1053922,
+  "additionalMagentaMatteMixtureSamples": 6999,
+  "additionalMaskScope": "Saturated magenta within four native pixels of the flat matte. Teal, cream, coral and blue paint are retained.",
+  "retainedRGBUnchanged": true,
+  "baseSourceV1SHA256": "94823eb9a515bb025e887076289e21aad11b87b4bed1db8a4df21bd0931a5b81",
+  "additionalReviewedOpenGapSamples": 136,
+  "reviewedMask": "reviewed-clear-gap-mask.png",
+  "reviewedMaskSHA256": "f184523e64f841b0627c3f0883a0e7abd399a2e72dfa56eabc3388663687f7ea",
+  "reviewedMaskPacketManifestSHA256": "1e1a45ebae4d76906373d2fd69025dcf885e6bb23ec09825fa466bf966160195",
+  "retainedRGBAExactOutsideMask": true,
+  "protectedAmbiguousFields": [
+    [
+      840,
+      313,
+      875,
+      341
+    ],
+    [
+      224,
+      929,
+      257,
+      958
+    ]
+  ],
+  "derivativeOnly": true
+}
