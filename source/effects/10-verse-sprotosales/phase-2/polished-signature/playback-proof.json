@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "10-verse-sprotosales",
+    "phase": 1,
+    "family": "signature",
+    "purposes": [
+      "signature"
+    ],
+    "asset": "assets/bosses/effects/10-verse-sprotosales-p2-signature-6377b6013650.png",
+    "atlasSha256": "6377b60136508ef4157c206df3cbfb4caa236985c6600655c5c71343552776c9",
+    "runtimeSha256": "6377b60136508ef4157c206df3cbfb4caa236985c6600655c5c71343552776c9",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "signature": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/10-verse-sprotosales-p2-signature-6377b6013650.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 110,
+  "animatedDraws": 92,
+  "resumed": 2,
+  "hit": [
+    15,
+    15
+  ],
+  "warnings": 30,
+  "lastWave": 0,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    11
+  ]
+}

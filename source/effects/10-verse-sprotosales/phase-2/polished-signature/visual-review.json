@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "6377b60136508ef4157c206df3cbfb4caa236985c6600655c5c71343552776c9",
+  "providerSha256": "14b07fe9365572a6bc6aed9c15621404ce8071fd0d8c741c46e1c870fc735e11",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Twin Scythe Crosscut reads as two opposing amber and scarlet crescents meeting in an X, then breaking into ember fragments. The two simultaneous impact zones stay distinct in direct gameplay, with sharp luminous clusters readable on the cool arena. Near-neutral spark cores stay tied to colored blade arcs and no near-white sample lies farther than two pixels from chromatic material. All 16 unique source-derived cels were checked at gameplay scale on light and dark backgrounds. Actual Chromium proof verifies real release damage, 24-tick lifetime, both facings, all source cels and reconnects."
+}
