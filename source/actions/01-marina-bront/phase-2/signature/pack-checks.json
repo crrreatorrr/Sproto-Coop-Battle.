@@ -1,0 +1,45 @@
+{
+  "status": "staged technical candidate only; no actualSim acceptance or game writes",
+  "pageSHA256": "5585785e805dbc03ae83458717de020c8b793e2fc9d8252e79dbf766a7d64118",
+  "pageBytes": 183088,
+  "decodedBytes": 1742400,
+  "exactRGBAReplay": true,
+  "celRGBAHashes": [
+    "f970d99257822380fb5e18693024831e6eb248c19494554edbc0eac72b22d612",
+    "126f6a874eda335542179dcc2bd3f6100915b8f5e5ee14b57f181abbffee6601",
+    "453d9ad08aff8cc2746fdb76662d56d1af416fbd5cd31f8263de302f5a5c0c5c",
+    "2eb6f080ad30b03d7e3911f309262a34b60fd48fc13e3d8d01fb34e6c1e48e76"
+  ],
+  "nativeTranslation": [
+    -62,
+    56
+  ],
+  "nativeCanvasOffset": [
+    98,
+    216
+  ],
+  "sourceScale": 1,
+  "newPoses": false,
+  "alphaOrColorCleanup": false,
+  "durationTicks": 55,
+  "firstReleaseAge": 30,
+  "celRangeInclusive": [
+    [
+      0,
+      29
+    ],
+    [
+      30,
+      33
+    ],
+    [
+      34,
+      41
+    ],
+    [
+      42,
+      54
+    ]
+  ],
+  "idleResetAge": 55
+}
