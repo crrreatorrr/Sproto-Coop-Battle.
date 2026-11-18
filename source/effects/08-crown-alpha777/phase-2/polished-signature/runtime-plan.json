@@ -1,0 +1,82 @@
+{
+  "boss": "08-crown-alpha777",
+  "phase": 1,
+  "family": "signature",
+  "purposes": [
+    "signature"
+  ],
+  "asset": "assets/bosses/effects/08-crown-alpha777-p2-signature-2e8215582f23.png",
+  "atlasSha256": "2e8215582f237e291d233f6b9e1b61495fba36aa5f74b717e9963d3afc943f76",
+  "runtimeSha256": "2e8215582f237e291d233f6b9e1b61495fba36aa5f74b717e9963d3afc943f76",
+  "runtimeDimensions": [
+    384,
+    384
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 0,
+      "frames": 16
+    }
+  ],
+  "clips": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p2-signature-2e8215582f23.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 16,
+          "firstCell": 0
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}
