@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "edit existing source guide with approved model/pilot refs",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eaeb-c583-7933-b73a-04bcfe0d7384/exec-e00e74c6-10ae-4dc4-b830-04cad4388334.png",
+  "sourceSha256": "3d5f7d0d00270cde167db6fd551902cf931b5798d1f782fb0ee7c123b734cf78",
+  "size": [
+    1254,
+    1254
+  ],
+  "promptSha256": "0d1079659b84ba075a4789f8d8846f756afccd39d3913646bb2b783129e935c2",
+  "originalBytesUnchanged": true,
+  "status": "NATIVE_QA_PENDING"
+}
