@@ -1,0 +1,169 @@
+{
+  "boss": "08-crown-alpha777",
+  "phase": 0,
+  "family": "boss-projectiles",
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "asset": "assets/bosses/effects/08-crown-alpha777-p1-boss-projectiles-e9ddd7025105.png",
+  "atlasSha256": "e9ddd7025105cbab089f5fdfc659982ed543e16e5c3e0dd2bec683e92108cefe",
+  "runtimeSha256": "e9ddd7025105cbab089f5fdfc659982ed543e16e5c3e0dd2bec683e92108cefe",
+  "runtimeDimensions": [
+    384,
+    384
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 0,
+      "frames": 4
+    },
+    {
+      "firstCell": 4,
+      "sourceFirstCell": 4,
+      "frames": 4
+    },
+    {
+      "firstCell": 8,
+      "sourceFirstCell": 8,
+      "frames": 4
+    },
+    {
+      "firstCell": 12,
+      "sourceFirstCell": 12,
+      "frames": 4
+    }
+  ],
+  "clips": {
+    "lane": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p1-boss-projectiles-e9ddd7025105.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    },
+    "spread": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p1-boss-projectiles-e9ddd7025105.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    },
+    "homing": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p1-boss-projectiles-e9ddd7025105.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    },
+    "impact": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p1-boss-projectiles-e9ddd7025105.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 12
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}
