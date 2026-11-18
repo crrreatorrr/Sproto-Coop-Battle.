@@ -4651,6 +4651,96 @@
         "3aa6baf92962dae753026b606fcd22892751dd1bcf386b9e5113a6546f4771ed",
         "cc2ca410bb4511ea0d7f79fdec82348337c508ed056317636dab85d0f7923523"
       ]
+    },
+    "assets/bosses/effects/09-hatchery-highsproto-p2-special-82e9d2ceb636.png": {
+      "runtimeEncodedSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+      "kind": "fx",
+      "cell": 96,
+      "rows": 4,
+      "acceptedDedicatedSourceFile": "source/effects/09-hatchery-highsproto/phase-2/polished-special/runtime-atlas.png",
+      "acceptedDedicatedSourceEncodedSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+      "higgsfieldSources": [
+        {
+          "firstCell": 0,
+          "sourceFirstCell": 0,
+          "frames": 16,
+          "file": "source/effects/09-hatchery-highsproto/phase-2/polished-special/reviewed-atlas.png",
+          "encodedSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+          "rgbaSha256": [
+            "30658e45f3a48fc540422bc7c22bc2fb318905365b35f0b732fe5cf473c9c7fd",
+            "1d23e01db1a62b55c2af15633e15135ced68580952b360f1e8d3cefdb8b231f3",
+            "c5f05a432ba13803e2d38cfe83c8b58b7a90fc9848920ee8b7ba28b56c5f58f2",
+            "a77e3a1c787d12c9a4c2e353fffab7d2df3a85a57fa52773616dff5ef1985d49",
+            "e3f57a8f01b87c5e0d4bd6919ca0855ef8e7bb7fce25c006a2b9fde811d7329f",
+            "e554eaa7eb0f63d368a1e82125b773286d098969da10dd4fd665d218b17730ff",
+            "722a068f60c6cb98489ddae7725604ece12dfc0acb1711cb0e3a0ae918676e0c",
+            "a5a51dbf8cea69fd2c74bb62beb4f1b5774a91a030eec6fa033e7ad390692ad0",
+            "b4e731ba40efc5307d8a05b6c07f4dbb14f3b29420aabeb1ad68a65c341a4beb",
+            "adc7b52706cf79599e210e4d4c0486922abdadd4269ed9d03b3f0af5ada1bdc0",
+            "48b58272641164c0df7eb0888d71ca9407cc7d1b30f4fbc2302dd48770aecb43",
+            "8166173b7cd9da0e114b779bb2733a46416eba03199ba172735dd93375ee30f0",
+            "a3be154a2fe7fc21eefc9da9373516da3535bdb40bb3bcb286f37fa85f2b8810",
+            "e1dcb940619be0a1848c1fb562814f195a7168a5b7c42835a3330636a47511c1",
+            "4437b8ddb9a53d44e138a38d4b7d1a620df9e0fe5a1f5dfa9b94249c44068065",
+            "0087fd28ff1fcf73da0562be1142ee5d8a2ff1a1621470defcbd7f7c65179e07"
+          ],
+          "family": "special",
+          "partialAlphaCells": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        }
+      ],
+      "rgbaSha256": [
+        "30658e45f3a48fc540422bc7c22bc2fb318905365b35f0b732fe5cf473c9c7fd",
+        "1d23e01db1a62b55c2af15633e15135ced68580952b360f1e8d3cefdb8b231f3",
+        "c5f05a432ba13803e2d38cfe83c8b58b7a90fc9848920ee8b7ba28b56c5f58f2",
+        "a77e3a1c787d12c9a4c2e353fffab7d2df3a85a57fa52773616dff5ef1985d49",
+        "e3f57a8f01b87c5e0d4bd6919ca0855ef8e7bb7fce25c006a2b9fde811d7329f",
+        "e554eaa7eb0f63d368a1e82125b773286d098969da10dd4fd665d218b17730ff",
+        "722a068f60c6cb98489ddae7725604ece12dfc0acb1711cb0e3a0ae918676e0c",
+        "a5a51dbf8cea69fd2c74bb62beb4f1b5774a91a030eec6fa033e7ad390692ad0",
+        "b4e731ba40efc5307d8a05b6c07f4dbb14f3b29420aabeb1ad68a65c341a4beb",
+        "adc7b52706cf79599e210e4d4c0486922abdadd4269ed9d03b3f0af5ada1bdc0",
+        "48b58272641164c0df7eb0888d71ca9407cc7d1b30f4fbc2302dd48770aecb43",
+        "8166173b7cd9da0e114b779bb2733a46416eba03199ba172735dd93375ee30f0",
+        "a3be154a2fe7fc21eefc9da9373516da3535bdb40bb3bcb286f37fa85f2b8810",
+        "e1dcb940619be0a1848c1fb562814f195a7168a5b7c42835a3330636a47511c1",
+        "4437b8ddb9a53d44e138a38d4b7d1a620df9e0fe5a1f5dfa9b94249c44068065",
+        "0087fd28ff1fcf73da0562be1142ee5d8a2ff1a1621470defcbd7f7c65179e07"
+      ],
+      "acceptedDedicatedRgbaSha256": [
+        "30658e45f3a48fc540422bc7c22bc2fb318905365b35f0b732fe5cf473c9c7fd",
+        "1d23e01db1a62b55c2af15633e15135ced68580952b360f1e8d3cefdb8b231f3",
+        "c5f05a432ba13803e2d38cfe83c8b58b7a90fc9848920ee8b7ba28b56c5f58f2",
+        "a77e3a1c787d12c9a4c2e353fffab7d2df3a85a57fa52773616dff5ef1985d49",
+        "e3f57a8f01b87c5e0d4bd6919ca0855ef8e7bb7fce25c006a2b9fde811d7329f",
+        "e554eaa7eb0f63d368a1e82125b773286d098969da10dd4fd665d218b17730ff",
+        "722a068f60c6cb98489ddae7725604ece12dfc0acb1711cb0e3a0ae918676e0c",
+        "a5a51dbf8cea69fd2c74bb62beb4f1b5774a91a030eec6fa033e7ad390692ad0",
+        "b4e731ba40efc5307d8a05b6c07f4dbb14f3b29420aabeb1ad68a65c341a4beb",
+        "adc7b52706cf79599e210e4d4c0486922abdadd4269ed9d03b3f0af5ada1bdc0",
+        "48b58272641164c0df7eb0888d71ca9407cc7d1b30f4fbc2302dd48770aecb43",
+        "8166173b7cd9da0e114b779bb2733a46416eba03199ba172735dd93375ee30f0",
+        "a3be154a2fe7fc21eefc9da9373516da3535bdb40bb3bcb286f37fa85f2b8810",
+        "e1dcb940619be0a1848c1fb562814f195a7168a5b7c42835a3330636a47511c1",
+        "4437b8ddb9a53d44e138a38d4b7d1a620df9e0fe5a1f5dfa9b94249c44068065",
+        "0087fd28ff1fcf73da0562be1142ee5d8a2ff1a1621470defcbd7f7c65179e07"
+      ]
     }
   },
   "transformations": {
@@ -6635,7 +6725,7 @@
       ]
     }
   },
-  "acceptedDedicatedFxCels": 252,
+  "acceptedDedicatedFxCels": 268,
   "archivedOriginalFxCels": 384,
   "acceptedReplacedFxCels": 36
 }
