@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "e19041b93dd339d4bbbc4ec339bce5df0ae2cc4bc3327682468defb8a3f18d92",
+  "sourceSHA256": "01d3cf77515b7a0bbf070be24a2a1163fea1b789c04a09d682b9bc489b1a358f",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    248.0,
+    8.0,
+    244.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1053121,
+  "additionalMagentaMatteMixtureSamples": 5242,
+  "additionalMaskScope": "Saturated magenta within four native pixels of the flat matte. Red, cream, amber and blue paint are retained.",
+  "retainedRGBUnchanged": true
+}
