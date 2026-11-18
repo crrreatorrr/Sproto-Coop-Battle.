@@ -237,6 +237,13 @@ async function verifyBossPlayback(page) {
     if (bank.sourceOriginalPngBase64 && digest(Buffer.from(bank.sourceOriginalPngBase64, 'base64')) !== bank.sourceOriginalEncodedSha256) {
       throw new Error(asset + ' original FX reference bytes differ');
     }
+    if (bank.acceptedReplacedSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedReplacedSourceFile));
+      if (digest(bytes) !== bank.acceptedReplacedSourceEncodedSha256 || bank.cell !== 96 || bank.rows !== 8 || bank.acceptedReplacedRgbaSha256?.length !== 16) {
+        throw new Error(asset + ' accepted replacement FX source differs');
+      }
+      bank.acceptedReplacedSourcePngBase64 = bytes.toString('base64'); // Test-only decoded reference.
+    }
     if (bank.acceptedDedicatedSourceFile && digest(fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile))) !== bank.acceptedDedicatedSourceEncodedSha256) {
       throw new Error(asset + ' dedicated FX reference bytes differ');
     }
@@ -540,6 +547,14 @@ async function verifyBossPlayback(page) {
         const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4 * FX;
         legacyFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); legacyFxPixels.drawImage(reference,0,0);
       }
+      let replacedFxPixels;
+      if (cell === FX && reviewedBank.acceptedReplacedSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedReplacedSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4*FX && reference.naturalHeight === 4*FX, asset + ' replacement source geometry');
+        const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4*FX;
+        replacedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); replacedFxPixels.drawImage(reference,0,0);
+      }
       const sheet = document.createElement('canvas');
       sheet.width = image.naturalWidth; sheet.height = image.naturalHeight;
       const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(image, 0, 0);
@@ -553,18 +568,22 @@ async function verifyBossPlayback(page) {
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
           const sourceHash = await sha256(rgba);
-          const expectedHash = cell === FX && row < 4 && legacyFxPixels
-            ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
-            : reviewedBank.rgbaSha256[row*4+col];
+          const expectedHash = cell === FX && row < 4 && replacedFxPixels
+            ? await sha256(replacedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+            : cell === FX && row < 4 && legacyFxPixels
+              ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+              : reviewedBank.rgbaSha256[row*4+col];
+          if (replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
           check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
           exactSourceCells++;
           check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
           const approvedStanding = cell === ACTOR && row === 0 && col === 0;
+          const approvedReplacedFx = cell === FX && row < 4 && replacedFxPixels;
           const approvedAppendedFx = cell === FX && row >= 4 && reviewedBank.acceptedAppendedSourceEncodedSha256;
           const approvedDedicatedFx = cell === FX && asset.startsWith('assets/bosses/effects/') &&
             reviewedBank.acceptedDedicatedSourceEncodedSha256;
           if (approvedStanding) check(sourceHash === reviewedBank.standingCol0Sha256, asset + ' standing endpoint differs');
-          else if (approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
+          else if (approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
           else check(white === 0, asset + ' has pale-neutral highlights in untouched fallback cell ' + row + '/' + col);
           if (cell === FX && row < 4 && col === 0 && !approvedDedicatedFx) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row); projectileArt.add(hash);
@@ -881,7 +900,7 @@ async function main() {
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
             bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1192 ||
-            bossPlayback.acceptedFxCells !== 64 || bossPlayback.dedicatedFxSheets !== 1 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.acceptedFxCells !== 80 || bossPlayback.dedicatedFxSheets !== 1 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {

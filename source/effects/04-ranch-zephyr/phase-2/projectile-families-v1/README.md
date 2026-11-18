@@ -1,0 +1,5 @@
+# Accepted Zephyr P2 projectile families
+
+Exact reviewed Lanev2,Spread,Homing and ordinaryImpact96cels replace onlytop16of the existing bank. Four complete source pages and combined acceptedtop16reference bind the browser's exact-cell test. Bottom16, original source archive/base64 and allotherboss/phase/art/pinned/runtime content remain unchanged. These are existing Higgsfield drawings, not local new poses.
+
+The frozenV3 proof (source0c1) covers2224actualSimscenes/9770independentdraws,all8purposeages/anchors/facings,one96scratch and current-age recovery after late decode. Import rebases on b16withSproto3106dedicatedpage retained. Full current-checkpoint build/assets/budget/browser results live in the import handoff. Priorphase2provenance files remain immutable historical records of the earlier bottom16import; this subfolder records the later top16replacement. Native fringe remains disclosed; delivered96passed source review. No cap change or new gamecode/physics/artwork belongs to this import.

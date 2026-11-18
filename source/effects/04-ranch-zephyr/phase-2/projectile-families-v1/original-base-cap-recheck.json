@@ -1,0 +1,12 @@
+{
+  "status": "PASS_EXACT_ORIGINAL_BASE_10MIB_CAP",
+  "frozenV3ManifestSha256": "06b668fee6f891cd7b091ad60f0e6f2089343cabd54aafcf36deddab12e98afe",
+  "resourceReplaySha256": "1b7f27319804385e74b94cfe654610d2a63151f947f795546d31abb27e88b8b9",
+  "sourceBudgetModuleGitObject": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92:scripts/check-budgets.mjs",
+  "sourceBudgetModuleSha256": "4e37fcb941804727329e8fb632b25b003278223e6f2b5e7739dc21a1e6619d96",
+  "baseCapBytes": 10485760,
+  "predictedBaseStaticBytes": 10286386,
+  "marginBytes": 199374,
+  "frozenSupplementReason": "OriginalV3 extra assertion used64MiB(optionalcap)forBASE. ExactmeasuredBASE and unchanged gamebudget already fit actual10MiB; this additivecheck corrects standalonecap assertion without editing frozenproof or changingcaps.",
+  "frozenV3Unchanged": true
+}
