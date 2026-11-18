@@ -1,0 +1,32 @@
+{
+  "status": "PASS_BOTH_REVIEWED_MATTE_DELIVERED96_SOURCE_ONLY",
+  "inputPacketFilesVerified": 406,
+  "spread": {
+    "nativeRemoved": 27,
+    "gameRemoved": 6,
+    "retainedRimControls": 405,
+    "atlasSha256": "289468f2b19c27a4512a2575a98b699a32f3e52e4e201ab804670709e0128bee"
+  },
+  "brontHurt": {
+    "nativeRemoved": 13806,
+    "gameRemoved": 176,
+    "oldCoralWitnessesRemoved": 147,
+    "ambiguousKept": 14175,
+    "other12DeliveryCelsRGBAMismatch": 0,
+    "atlasSha256": "400596d17d09084e73b954e17177b1b294750c8433c91932b5c0eb23a5ba8f09",
+    "fourConnectedCel1Components": 3,
+    "eightConnectedCel1Components": 1,
+    "diagonalSingletonsAreProtectedRealCyan": true
+  },
+  "retainedRGBAMismatches": 0,
+  "newPaletteColors": 0,
+  "wholeCellNNMismatches": 0,
+  "bothFacingsPaleDarkVisualPass": true,
+  "nativeHaloFreeClaimed": false,
+  "masterScriptExecuted": false,
+  "frozenInputsMutated": false,
+  "gameWrites": false,
+  "providerActions": false,
+  "registered": false,
+  "actualSimGatePending": true
+}

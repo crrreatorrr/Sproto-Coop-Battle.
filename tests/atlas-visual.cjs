@@ -867,8 +867,8 @@ async function main() {
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
-            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1160 ||
-            bossPlayback.acceptedFxCells !== 32 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1176 ||
+            bossPlayback.acceptedFxCells !== 48 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {

@@ -1,0 +1,12 @@
+{
+  "sourceEffectsAtlasSha256": "0b5df36823c78f2087f39af897ee37d6d98c2a36ae824c5bce6564e1b6e67c32",
+  "originalEncodedSha256": "b1ea6b00ac584ef2a8eff1b6b7635b5adac513a260c5ed88e8201bfbe9019a52",
+  "newBankSha256": "987d818dccb05bc33424677f2aace7ab84464488a1a0d6e2ff1bcae86dacaa11",
+  "original16TopCellsRGBAExact": true,
+  "reviewed16BottomCellsRGBAExact": true,
+  "bytes": 116464,
+  "extraBankRequests": 0,
+  "decodedDeltaBytes": 589824,
+  "registered": false,
+  "actualSimProofPending": true
+}

@@ -1,0 +1,17 @@
+{
+  "status": "DELIVERED96_ROOT_VISUAL_PASS_SECOND_REVIEW_PENDING_NOT_REGISTERED",
+  "sourceBoundExactMatteMaskApproved": true,
+  "approvedNativeBackgroundSamples": 13806,
+  "nativeAndDeliveredPaleDarkBothFacingsInspected": true,
+  "finding": "Previously observed bright/coral matte marks resolved at96. Remaining violet/dark hardware edges and real copper/energy paint coherent. No global tolerance expansion, new pose, RGB paint, recolor, part resize or motion was added. Native ambiguous fringe is still retained and not claimed halo-free.",
+  "registration": false,
+  "actualSimProofPending": true,
+  "scope": {
+    "nativeSamples": 13806,
+    "gameSamples": 176,
+    "maskPurpose": "Complete peripheral high-magenta background-mixing masks only; all14175 ambiguous samples and all real graphite/copper/cyan/lime protected paint remain.",
+    "otherFrames": 12
+  },
+  "combinedAtlasSha256": "0b5df36823c78f2087f39af897ee37d6d98c2a36ae824c5bce6564e1b6e67c32",
+  "other12ContactCelsRGBAExact": true
+}

@@ -1,0 +1,200 @@
+{
+  "version": 1,
+  "status": "Root accepted four Bront P2 families after independent source and actual-Sim QA; complete combat motion pending",
+  "public": "assets/bosses/01-marina-bront-p2-projectiles.png",
+  "publicEncodedSha256": "987d818dccb05bc33424677f2aace7ab84464488a1a0d6e2ff1bcae86dacaa11",
+  "originalTopBankEncodedSha256": "b1ea6b00ac584ef2a8eff1b6b7635b5adac513a260c5ed88e8201bfbe9019a52",
+  "acceptedBottomAtlasEncodedSha256": "0b5df36823c78f2087f39af897ee37d6d98c2a36ae824c5bce6564e1b6e67c32",
+  "originalTopRowsRgbaSha256": "f1609be002707bb418c14316706a02922610eda15ca13e1b4245b9eacd5b4b31",
+  "acceptedBottomRowsRgbaSha256": "0bcde18eef52f0c7ee10ce14a38584add32871d2f6270082ea4f0a2eb87a4ade",
+  "oldTopRGBAMismatches": 0,
+  "acceptedBottomRGBAMismatches": 0,
+  "acceptedBottomRgbaSha256": [
+    "6b8f29ee88cbe573f888a645336e148e243eea820941d767fd47b69d41352194",
+    "d05946550b6b7fddcba33f9a6c89e80aee9f771edbdfb314996f17263de70752",
+    "a58582dee33a3706ff14765eaa129c4cb5bd7e325778e127c5c88f3d91941e6b",
+    "535a0a9aec4df159d071e272263808c64350fa1bc43ced186912942d9eb63705",
+    "776e8420b6e307a251818a1695c6aedecc32468e9c8d60df56d2df46a55e69ab",
+    "fd5a53819cae4649aa1352b58a1df51b31232db3fbe5b5720c7b15a5303bbf43",
+    "95d33eeb6c82995bb32b6f8eccd06b41a59a74a452efd520373ce6e2639721eb",
+    "79162d879f2394b9a77939880f4d4b2dc8be5f79bfa22869dadc967d153e0ecb",
+    "15fd1ef31005d8323e8f3e5f7464b311b45a1f7ca9d0df8dedf103bbdb93a6ce",
+    "675e0710ca3dc939347363d96a325a33d062950e294169e556d9b8a4fe30be06",
+    "1c945332910f85fb8531a511470af7bc282b84cbbf315932829592695291e933",
+    "c811d479afbac52143a262193ddcbfce1d9d472dc229fb99531f615cfd240d9d",
+    "ceb44f757aeb3ad6d4009a254431d1fc9d8d32a26b46e42e571938b538aef60a",
+    "06ae808a5303607c3fe67bc3e06516b05a9e72f6ff09e8933874d9568dfbcc1c",
+    "f0556667a2e6740800466de566cd4d9154fe6aa319680e178624db0320ac31e8",
+    "b9cc883a810958f60ea783d072235db79420ffdcc01de5a2c57a26ec97d9ba4d"
+  ],
+  "providerFamilies": {
+    "signature": {
+      "sourceSha256": "afaa25a7ad4bb57c72203512e0826d4796639d4480d9da8d38f4cdfbf57d880f",
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-signature-03/provider-original.png"
+    },
+    "special": {
+      "sourceSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-special-03/provider-original.png"
+    },
+    "hurt": {
+      "sourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png"
+    },
+    "death": {
+      "sourceSha256": "4b54b69d0895592aa0ae9b74be5deb398c02a0dbcb60220f88b062269d68ee37",
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-death-02/provider-original.png"
+    }
+  },
+  "specialCel2TemporalName": "PEAK-PLATEAU; genuine source is preserved, not a contraction",
+  "exactHurt04MaskApproval": "reviewed-hurt04/approved-background-masks.json",
+  "reviewedHurt04ManifestSha256": "ac511ffef6887f372e1b8973f33e0ffccc947487a11ce51f2f311fbaef552814",
+  "independentSourceManifestSha256": "3cd985149d9ee49ad6860bdf8cb93feb37f3c7b2ce742ee4a9cc02e2f50412b5",
+  "runtimeReplayManifestSha256": "9cb8f02cbc6865330d69b1dca5a4bb68940686ddfedf5206a5523193a5ce7191",
+  "runtimeReplayBaseCommit": "57463ef21bcb4b924654e804c393cd26d089ac94",
+  "runtimePublicFxSha256": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+  "runtimeSnapshots": 624,
+  "runtimeFullSceneMismatches": 0,
+  "runtimeIndependentAuthoredDraws": 624,
+  "runtimeGroundedDraws": 288,
+  "runtimeBankRequests": 1,
+  "registry": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 16
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 20
+        }
+      ],
+      "grounded": true
+    },
+    "hurt": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 24
+        }
+      ]
+    },
+    "death": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        38,
+        38,
+        38,
+        37
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 28
+        }
+      ]
+    }
+  },
+  "decodedBankIncreaseBytes": 589824,
+  "newBankPreloadRequests": 0,
+  "newLocalArtOrMotion": false,
+  "nativeLimitation": "Native fringe/grain limitations remain disclosed; delivered96 and exact actual-world placement passed. No native halo-free claim.",
+  "sourceEvidenceCopies": {
+    "accepted-effects-atlas96.png": "0b5df36823c78f2087f39af897ee37d6d98c2a36ae824c5bce6564e1b6e67c32",
+    "original-projectile-bank.png": "b1ea6b00ac584ef2a8eff1b6b7635b5adac513a260c5ed88e8201bfbe9019a52",
+    "registry-fragment.json": "5bb9e837d9ca29978246d8e409ee146ec0a2248d835ee2dfbbe510bc01192542",
+    "pack-checks.json": "07197bdb4e5ff556a1386a96eec4234f0a1e0495c4c56f640f23472a7dd2deba",
+    "source-selection-provenance.json": "ce4c3f9d886711b1e2267e756a8d9eaabeed05d00a5202a953b5be89d1831a98",
+    "provider-source-hashes.json": "ed640cdc97b01585137dd65e61a403e75b8ecd9f487b336a84b8331a20c7e7c8",
+    "independent-source-REPORT.md": "2514c7489e090558232ebe969f03e5061c4306654c30b1db16e5da03870d0578",
+    "independent-source-checks.json": "0616e42f8077d10388e3a906e63619dd4197ee74f560bb8594e9965873257841",
+    "independent-source-handoff.json": "dae64d3f01e15efba09fb132ec3dd0214eff9bb87653adf4a258a92df4047bcd",
+    "independent-runtime-REPORT.md": "62b48af79958c514c07d2f82a86adf1c2b9cd630c1000135dff66ea1d7df0af8",
+    "independent-runtime-summary.json": "f2305fb170c87badde1fb58393270b84088cfdd0590fd346bb208bb1456b9c52",
+    "independent-runtime-draw-proof.json": "06400de821fc1b42a0b0659985d78ec03466521bfc6d88e0c138d72ae4c14723",
+    "independent-runtime-handoff.json": "02166cbe7624adcfa94b496365b3b7ebd11d18489f8f5b8f0b89850a3b35d7ea",
+    "reviewed-hurt04/root-visual-verdict.json": "fba7d2731375643571516f092f82cbd9963a44c74127a0af4a4ac3f5862d8888",
+    "reviewed-hurt04/application-checks.json": "23fdadfdde5e3a7d99ac0f0c05217cdbb7de5f5dd18108b51cd1fad2972b0b76",
+    "reviewed-hurt04/application-script-snapshot.py": "4755942e8f3c5082505e8bde7c6fa481632621a9d55582708273bbf7a5a414a5",
+    "reviewed-hurt04/original-unapplied-proposal.json": "d679b752ef89f325029e6b302b7d2e87a573debce23aad5989d9b957f211575e",
+    "reviewed-hurt04/components4-native-exact-RLE.json": "2cbe61a7dd05b942990aba59aab7a57e6254d2cd33ac0d8b0dddf64f718d66af",
+    "reviewed-hurt04/proposal-masks/cel-000.png": "574a9cdcaff6b16040060c98a78a8cc637e6cb929a919fdcd54f9118f413eac9",
+    "reviewed-hurt04/ambiguous-KEEP-masks/cel-000.png": "9b98c2a35eab4004ae6213bfd3bea12d11e8df0773df3c65baa037f4ceb2f7c7",
+    "reviewed-hurt04/proposal-masks/cel-001.png": "1413b793f12cdd067ac58e8b9d9c77e6a60c99a58053cec3b2874c0bb262293a",
+    "reviewed-hurt04/ambiguous-KEEP-masks/cel-001.png": "c07f19abbc6993336760708ad31c7bc8fab7ed15cfd854b1b6ac08b7f503ecb8",
+    "reviewed-hurt04/proposal-masks/cel-002.png": "b312dce7bcabd4e4d5acf5049840aca86a9d94749aef36a586365083d2a1c67e",
+    "reviewed-hurt04/ambiguous-KEEP-masks/cel-002.png": "3d4184b33b1cbe5b6f964b54993dcf1826888bf6739ab71583afe3dfd3d6da9c",
+    "reviewed-hurt04/proposal-masks/cel-003.png": "2059828ef6058f6855856c1c2f9c0600e472e70b219823c2b64256afcc253911",
+    "reviewed-hurt04/ambiguous-KEEP-masks/cel-003.png": "720285ec13aae0720c2bb37dd5a662a4551d224b5881791b27ef68ed19fa1a86",
+    "provider-jobs/bront-p2-signature-03-provenance.json": "be100231ff040ea40fc1a56f0e7da958a127c8c120330ee03f23ecd18963fbc3",
+    "provider-jobs/bront-p2-special-03-provenance.json": "73c44e86fa9c48c184f9205900f77b2bcd1317a23f18823450cb3d44ba0524f5",
+    "provider-jobs/bront-p2-hurt-04-provenance.json": "5d27842a4d82bc4c228c93b747e293aa7829faf6b687330c37d00bba6efc7704",
+    "provider-jobs/bront-p2-death-02-provenance.json": "720ff41f92da992e44fe419690958d496b0e61db6879f4f4034f1579e4672093"
+  }
+}
