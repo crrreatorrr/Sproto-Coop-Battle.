@@ -62,6 +62,9 @@ function assertCoverage(result) {
   for (let stage = 0; stage < 13; stage++) {
     for (const kind of ['human', 'mixed', 'cpu']) assert.ok(ids.includes('stage-' + stage + '-' + kind));
   }
+  const marlin = result.cases.find(row => row.id === 'sprotel-marlin-weapons');
+  assert.strictEqual(marlin.flags.marlinAttacks, 7);
+  assert.ok(marlin.resume && marlin.resume.hash);
   const stage1 = result.cases.find(row => row.id === 'human-seed9-stage1');
   assert.ok(stage1.flags.ufo > 0 && stage1.flags.revive > 0 && stage1.flags.dead > 0 && stage1.flags.power > 0);
   assert.ok(stage1.flags.boss > 0);

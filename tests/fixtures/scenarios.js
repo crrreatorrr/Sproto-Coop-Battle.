@@ -117,12 +117,17 @@ function runCase(spec) {
     state.players.forEach((p, i) => { p.x = state.camX + 80 + i * 30; p.y = 16 + i * 24; });
     flags.barAttacks = 0;
   }
-  let resumed = null;
+  let resumed = null, marlinReady = false;
   const limit = spec.ticks;
   for (let i = 0; i < limit && state.mode !== 'victory' && state.mode !== 'gameover'; i++) {
     if (spec.resumeAt === state.t) resumed = resumeTwin(state);
     apply(state, i, spec.input || 'policy');
     root.Sim.step(state);
+    if (spec.marlinArena && state.boss && !marlinReady) {
+      Object.assign(state.boss, { phase: 1, cycle: 0, st: 'idle', t: 0 });
+      marlinReady = true; flags.marlinAttacks = 0;
+    }
+    if (spec.marlinArena && state.boss?.st === 'fire') flags.marlinAttacks |= 1 << state.boss.barAttack;
     if (state.players.some(p => p.st === 'ufo')) flags.ufo++;
     for (let e = 0; e < state.events.length; e++) if (String(state.events[e]).indexOf('revive') === 0) flags.revive++;
     if (state.players.some(p => p.dead)) flags.dead++;
@@ -162,6 +167,7 @@ function caseList() {
     // A second run of the same policy covers the four-human boss phase change.
     { id: 'human-seed64-stage1', kind: 'local', seed: 64, stage: 0, ticks: 20000, input: 'policy' },
     { id: 'solo-cpu-party', kind: 'mixed', seed: 3, stage: 0, ticks: 3800, input: 'policy', party: true, resumeAt: 2000 },
+    { id: 'sprotel-marlin-weapons', kind: 'local', seed: 332, stage: 12, ticks: 1000, input: 'policy', barArena: true, marlinArena: true, resumeAt: 400 },
     { id: 'sprotel-bar-throws', kind: 'local', seed: 331, stage: 12, ticks: 1200, input: 'policy', barArena: true, resumeAt: 400 },
   ];
   for (let stage = 0; stage < root.MANIFEST.bosses.length; stage++) {

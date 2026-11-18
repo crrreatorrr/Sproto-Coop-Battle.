@@ -3,7 +3,7 @@
   "loopHz": 20,
   "substeps": 3,
   "snapshotHz": 10,
-  "content": "f9f112cec535147fd07272270b4c70d36e85dc32f6cd63f9b68c9d0f2d9c7b2d",
+  "content": "3fddedd1b65c0e2d71600e54822e0db5c66b45ac765535b7d0e88c2cf262e97b",
   "cases": [
     {
       "id": "cpu-seed42-terminal",
@@ -165,6 +165,35 @@
       }
     },
     {
+      "id": "sprotel-marlin-weapons",
+      "kind": "local",
+      "seed": 332,
+      "stage": 12,
+      "tick": 1000,
+      "mode": "play",
+      "stageNow": 12,
+      "flags": {
+        "ufo": 0,
+        "revive": 0,
+        "dead": 0,
+        "power": 0,
+        "boss": 1000,
+        "bossPhase": 1,
+        "barAttacks": 7,
+        "marlinAttacks": 7
+      },
+      "stateHash": "a232d703292b31343fa4aa8da667e3b5bfcf20116cee72b4d8f9669deb630233",
+      "snapHash": "d26ece59302666c482de17ab8f674e603d1fd18984a98722f85798a69c573827",
+      "stateBytes": 5592,
+      "resume": {
+        "lives": 8,
+        "powers": 0,
+        "items": 4,
+        "steps": 120,
+        "hash": "a0c70abdd31273019c6aef4f7ae26cb0ac85d23a5a468954380422d61e078a90"
+      }
+    },
+    {
       "id": "sprotel-bar-throws",
       "kind": "local",
       "seed": 331,
@@ -182,7 +211,7 @@
         "barAttacks": 31
       },
       "stateHash": "96b49ec48805c8e1103af7afd08b84551e26218318535b81fb4de76cc022ae1a",
-      "snapHash": "9eb443bec24fcb7aaa1eb2b9630d81fc0f700687f3bdd41b3a1869f49094e7c8",
+      "snapHash": "02c1fb0a82184bc2867fbf69a8f40378fcbbbb04a506e7bba131102871fcd8ea",
       "stateBytes": 4647,
       "resume": {
         "lives": 8,

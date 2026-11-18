@@ -40,57 +40,65 @@ async function main() {
       SprotoApp.frozen = true;
       const plan = AssetLoader.groups(MANIFEST);
       await AssetLoader.shared().preload(plan.boss(12).concat(plan.scenery(12), [MANIFEST.shadows.sheets[1]]));
-      const ph = MANIFEST.bosses[12].phases[0];
-      const actor = Render.img(ph.sheet), fx = Render.img(ph.proj);
-      if (actor.naturalWidth !== 1760 || actor.naturalHeight !== 1980 || fx.naturalWidth !== 1024 || fx.naturalHeight !== 384) throw new Error('atlas dimensions');
       const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360;
       const g = cv.getContext('2d'), draw = g.drawImage.bind(g), calls = [];
       g.drawImage = (...args) => { calls.push(args); draw(...args); };
-      const seenActor = new Set(), seenFx = new Set();
+      const seenActor = new Set(), seenFx = new Set(), images = [];
       const snap = Sim.snapshot(SprotoApp.sim);
       Object.assign(snap, { camX: 0, sk: 0, banner: null, enemies: [], items: [], projs: [], fx: [], hz: [] });
       snap.players.forEach((p, i) => { p.x = 80 + i * 60; p.y = 75; p.z = 0; p.st = 'idle'; });
-      const boss = { bi: 12, ph: 0, x: 485, y: 60, fc: -1, st: 'idle', t: 0, hp: 4000, mh: 4000, fl: 0, w: 90, ar: 0 };
-      const pose = (extra, row, col) => {
-        calls.length = 0;
-        Render.drawWorld(g, { ...snap, boss: { ...boss, ...extra } }, { local: [0], noBanner: true });
-        const hit = calls.find(a => a[0] === actor);
-        if (!hit || hit[1] !== col * 220 || hit[2] !== row * 220) throw new Error('actor playback ' + JSON.stringify({ extra, row, col, got: hit?.slice(1, 5) }));
-        seenActor.add(row + ':' + col);
-      };
-      for (let a = 0; a < 5; a++) [0, 8, 15, 23, 30, 37, 44, 51].forEach((t, col) => pose({ st: 'fire', ba: a, by: 60, row: a + 1, t, wl: [60] }, 1 + a, col));
-      [0, 6, 12, 18, 24, 30, 40, 35].forEach((t, col) => pose({ st: 'charge', t, x: col >= 6 ? 75 : 485 }, 6, col));
-      [0, 7, 14, 21].forEach((t, col) => pose({ st: 'sweep', t: Math.floor(t * Sim.SWEEP_WARN / 28) }, 7, col));
-      [0, 6, 12, 18].forEach((t, col) => pose({ st: 'sweep', t: Sim.SWEEP_WARN + t }, 7, 4 + col));
-      [0, 9, 18, 27].forEach((t, col) => pose({ t }, 0, col));
-      [0, 9, 18, 27].forEach((t, col) => pose({ st: 'enter', t }, 0, 4 + col));
-      [6, 4, 2, 1].forEach((fl, col) => pose({ fl }, 8, col));
-      [0, 14, 28, 42].forEach((t, col) => pose({ st: 'dead', t }, 8, 4 + col));
-      const images = [];
-      for (let a = 0; a < 5; a++) {
-        for (let col = 0; col < 16; col++) {
+      for (let phase = 0; phase < 2; phase++) {
+        const ph = MANIFEST.bosses[12].phases[phase];
+        const actor = Render.img(ph.sheet), fx = Render.img(ph.proj), C = ph.actorCell;
+        if (actor.naturalWidth !== C * 8 || actor.naturalHeight !== C * (phase ? 9 : 10) ||
+            fx.naturalWidth !== 1024 || fx.naturalHeight !== 64 * (phase ? 4 : 6)) throw new Error('atlas dimensions');
+        const boss = { bi: 12, ph: phase, x: 485, y: 60, fc: -1, st: 'idle', t: 0, hp: phase ? 2000 : 4000, mh: 4000, fl: 0, w: phase ? 140 : 90, ar: 0 };
+        const pose = (extra, row, col) => {
           calls.length = 0;
-          Render.drawWorld(g, { ...snap, boss: { ...boss, st: 'fire', ba: a, row: a + 1, t: 30 },
-            projs: [{ id: 1, k: 'boss', bi: 12, ph: 0, ba: a, r: a, t: col * 3, x: 290, y: 55, z: 25, vx: -4 }] }, { noBanner: true });
-          const hit = calls.find(args => args[0] === fx);
-          if (!hit || hit[1] !== col * 64 || hit[2] !== a * 64) throw new Error('projectile playback');
-          seenFx.add(a + ':' + col);
-          if (col === 4) images.push(cv.toDataURL('image/png'));
+          Render.drawWorld(g, { ...snap, boss: { ...boss, ...extra } }, { local: [0], noBanner: true });
+          const hit = calls.find(a => a[0] === actor);
+          if (!hit || hit[1] !== col*C || hit[2] !== row*C) throw new Error('actor playback ' + JSON.stringify({ phase, extra, row, col, got: hit?.slice(1, 5) }));
+          seenActor.add(phase+':'+row+':'+col);
+        };
+        for (let a = 0; a < (phase ? 3 : 5); a++) {
+          const ages = phase && a === 1 ? [0,8,15,23,30,35,51,62] : [0,8,15,23,30,37,44,51];
+          ages.forEach((t,col) => pose({ st: 'fire', ba: a, by: 60, row: a+1, t, wl: [60] }, 1+a,col));
+        }
+        [0,6,12,18,24,30,40,35].forEach((t,col) => pose({ st:'charge',t,x:col>=6?75:485 },6,col));
+        [0,9,18,27].forEach((t,col) => pose({ st:'sweep',t },7,col));
+        [0,6,12,18].forEach((t,col) => pose({ st:'sweep',t:Sim.SWEEP_WARN+t },7,4+col));
+        [0,9,18,27].forEach((t,col) => pose({t},0,col));
+        [0,9,18,27].forEach((t,col) => pose({st:'enter',t},0,4+col));
+        [6,4,2,1].forEach((fl,col) => pose({fl},8,col));
+        [0,14,28,42].forEach((t,col) => pose({st:'dead',t},8,4+col));
+        if (!phase) {
+          for (let col=0;col<8;col++) pose({st:'transform',ph:1,t:col*60},9,col);
+        }
+        for (let a=0;a<(phase?3:5);a++) {
+          for (let col=0;col<16;col++) {
+            calls.length=0;
+            Render.drawWorld(g,{...snap,boss:{...boss,st:'fire',ba:a,by:60,row:a+1,t:35},
+              projs:[{id:1,k:'boss',bi:12,ph:phase,ba:phase?undefined:a,ma:phase?a:undefined,r:a,t:col*3,x:290,y:55,z:25,vx:-4}]},{noBanner:true});
+            const hit=calls.find(args=>args[0]===fx);
+            if(!hit||hit[1]!==col*64||hit[2]!==a*64)throw new Error('projectile playback '+phase+':'+a+':'+col);
+            seenFx.add(phase+':'+a+':'+col);
+            if(col===4)images.push({name:(phase?'phase2-':'phase1-')+a,data:cv.toDataURL('image/png')});
+          }
+        }
+        for(let col=0;col<16;col++) {
+          calls.length=0;
+          Render.drawWorld(g,{...snap,boss,fx:[{id:1,k:'bossImpact',bi:12,ph:phase,x:290,y:55,z:25,t:col*1.5}]},{noBanner:true});
+          const hit=calls.find(args=>args[0]===fx);
+          if(!hit||hit[1]!==col*64||hit[2]!==ph.impactRow*64)throw new Error('impact playback');
+          seenFx.add(phase+':impact:'+col);
         }
       }
-      for (let col = 0; col < 16; col++) {
-        calls.length = 0;
-        Render.drawWorld(g, { ...snap, boss, fx: [{ id: 1, k: 'bossImpact', bi: 12, ph: 0, x: 290, y: 55, z: 25, t: col * 1.5 }] }, { noBanner: true });
-        const hit = calls.find(args => args[0] === fx);
-        if (!hit || hit[1] !== col * 64 || hit[2] !== 5 * 64) throw new Error('impact playback');
-        seenFx.add('5:' + col);
-      }
-      return { actorFrames: seenActor.size, fxFrames: seenFx.size, images };
+      return {actorFrames:seenActor.size,fxFrames:seenFx.size,images};
     });
-    assert.strictEqual(result.actorFrames, 72); assert.strictEqual(result.fxFrames, 96);
-    result.images.forEach((data, i) => fs.writeFileSync(path.join(out, ['snacks', 'beer', 'cocktails', 'drinks', 'blue-marlin'][i] + '-in-game.png'), Buffer.from(data.split(',')[1], 'base64')));
+    assert.strictEqual(result.actorFrames,136);assert.strictEqual(result.fxFrames,160);
+    result.images.forEach(({name,data})=>fs.writeFileSync(path.join(out,name+'-in-game.png'),Buffer.from(data.split(',')[1],'base64')));
     assert.deepStrictEqual(errors, []); assert.deepStrictEqual(missing, []);
-    console.log('browser Sprotel: stage 13 start, all 72 actor / 96 projectile frames, no errors or missing assets');
+    console.log('browser Sprotel: stage 13 start, all 136 actor / 160 projectile frames, no errors or missing assets');
   } finally { if (browser) await browser.close(); server.kill(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -9,7 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
-const STAGES = 13; // Twelve original stages plus Last Call Bar (phase one).
+const STAGES = 13; // Twelve original stages plus Last Call Bar.
 
 const ROOT = path.resolve(__dirname, '..', 'public');
 const ROOT_WITH_SEP = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;

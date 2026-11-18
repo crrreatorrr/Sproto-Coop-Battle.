@@ -19,10 +19,10 @@ function arena(stage = 12) {
 
 const boss = MANIFEST.bosses[12];
 assert.strictEqual(boss.scenery, 2);
-assert.strictEqual(boss.phases.length, 1);
+assert.strictEqual(boss.phases.length, 2);
 const content = CoopProtocol.contentManifest(MANIFEST);
 assert.strictEqual(content.stages.length, 13);
-assert.strictEqual(content.stages[12].phaseCount, 1);
+assert.strictEqual(content.stages[12].phaseCount, 2);
 assert.deepStrictEqual(content.stages[12].phase2Attacks, []);
 const oldWin = P.normalize({ unlocked: 12, best: { stage: 12, score: 123, ticks: 200, victory: true } });
 assert.strictEqual(oldWin.unlocked, 13, 'old campaign winners can play the added stage');
@@ -82,7 +82,7 @@ for (let attack = 0; attack < 5; attack++) {
   assert.deepStrictEqual([...seen].sort(), [0, 1, 2, 3, 4, 'charge']);
 }
 
-// Crossing 50% must never enter an unprovided phase; zero HP finishes stage 13.
+// Crossing 50% enters the eight-second marlin transformation; phase two can be defeated.
 {
   const g = arena(), b = g.boss, p = g.players[0];
   const hit = hp => {
@@ -91,7 +91,11 @@ for (let attack = 0; attack < 5; attack++) {
     S.step(g);
   };
   hit(b.maxHp / 2 + 1);
-  assert.strictEqual(b.phase, 0); assert.notStrictEqual(b.st, 'transform');
+  assert.strictEqual(b.phase, 1); assert.strictEqual(b.st, 'transform');
+  assert.strictEqual(b.cycle, 0);
+  for (let t = 0; t < S.BOSS_TRANSFORM_TICKS; t++) { p.inv = 9999; S.step(g); }
+  assert.strictEqual(b.st, 'idle');
+  assert.strictEqual(S.snapshot(g).boss.ph, 1);
   hit(1);
   assert.strictEqual(b.st, 'dead');
   for (let t = 0; t < 400; t++) { p.inv = 9999; S.step(g); }
@@ -101,4 +105,44 @@ for (let attack = 0; attack < 5; attack++) {
   assert.strictEqual(prev.stageIdx, 12, 'stage 12 advances to Last Call');
   assert.strictEqual(prev.mode, 'play');
 }
-console.log('Sprotel Bitcoin: five trajectories, phase-one clear, stage 13, progress and resume ok');
+// Phase two has rapid aimed lasers, a five-missile burst, and drifting bubbles.
+for (let attack = 0; attack < 3; attack++) {
+  const g = arena(), b = g.boss;
+  Object.assign(b, { phase: 1, st: 'fire', t: 29, barAttack: attack, row: attack + 1,
+    ty: 60, tx: g.camX + 180, both: false, warn: [60] });
+  S.step(g);
+  const first = g.projs.filter(p => p.marlin === attack);
+  assert.strictEqual(first.length, attack === 2 ? 3 : 1);
+  assert.ok(first.every(p => p.phase === 1 && !p.homing));
+  const initial = first[0].z;
+  for (let tick = 0; tick < 20; tick++) S.step(g);
+  const shots = g.projs.filter(p => p.marlin === attack);
+  if (attack === 0) assert.strictEqual(Math.abs(first[0].vx), 13, 'laser lances fly quickly');
+  if (attack === 1) { assert.strictEqual(shots.length, 5, 'launcher emits five missiles before retracting'); assert.strictEqual(Math.abs(first[0].vx), 8.8); }
+  if (attack === 2) assert.ok(first[0].z !== initial && first[0].vy !== 0, 'bubbles drift in depth and height');
+  const snap = S.snapshot(g);
+  assert.ok(snap.projs.every(p => p.ma === attack && p.ph === 1), 'phase-two art survives network snapshots');
+  const resumed = S.importState(JSON.parse(JSON.stringify(S.exportState(g))));
+  for (let tick = 0; tick < 24; tick++) { S.step(g); S.step(resumed); }
+  assert.deepStrictEqual(S.exportState(resumed), S.exportState(g));
+}
+{
+  const g = arena(), b = g.boss, seen = new Set(); b.phase = 1; b.cycle = 0;
+  for (let t = 0; t < 700; t++) {
+    g.players[0].inv = 9999;
+    if (b.st === 'idle') b.t = 40;
+    S.step(g);
+    if (b.st === 'fire') seen.add(b.barAttack);
+    if (b.st === 'charge') seen.add('charge');
+    assert.ok(!['signature', 'special'].includes(b.st), 'marlin runs its authored weapons');
+  }
+  assert.deepStrictEqual([...seen].sort(), [0, 1, 2, 'charge']);
+}
+// Fast projectiles must hit a crossed player even when both endpoints miss its box.
+{
+  const g = arena(), p = g.players[0]; p.inv = 0; p.hp = 100; p.x = g.camX + 200; p.y = 30;
+  g.projs.push({ id: g.nextId++, kind: 'boss', marlin: 0, bi: 12, phase: 1, row: 0,
+    x: p.x - 45, y: p.y, z: 22, vx: 90, vy: 0, vz: 0, dmg: 20, t: 0, life: 100, enemy: true });
+  S.step(g); assert.ok(p.hp < 100, 'laser segment collision prevents tunneling');
+}
+console.log('Sprotel Bitcoin: both phases, eight ranged attacks, transform, stage 13, progression and deterministic resume ok');

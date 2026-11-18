@@ -1241,6 +1241,7 @@ function hurtBoss(state, b, dmg, p) {
   if (b.phase === 0 && b.hp <= b.maxHp / 2 && (!bossInfo(b.bi) || bossInfo(b.bi).phases.length > 1)) {
     b.hp = Math.max(1, b.hp);
     b.phase = 1; b.st = 'transform'; b.t = 0;
+    if (isBarBoss(b)) { b.cycle = 0; delete b.barAttack; b.warn = null; b.marks = null; for (const pr of state.projs) if (pr.bi === b.bi) pr.remove = true; }
     b.transformAt = state.t;
     b.nextExtra = b.cycle + 1;
     const info = bossInfo(b.bi); if (info) b.w = (info.phases[1].body[2] - info.phases[1].body[0]) * BOSS_SCALE * 0.85;
@@ -1321,13 +1322,13 @@ function updateBoss(state) {
     const wait = (arch === 'summoner' ? 50 : 34) * fast;
     if (b.t > wait && ((behind >= 2 && b.rear > SWEEP_AFTER) || b.rear > SWEEP_AFTER_ONE)) {
       b.st = 'sweep'; b.t = 0; b.rear = 0; b.tx = -b.face; ev(state, 'charge');
-    } else if (b.t > wait && b.phase && b.cycle >= (b.nextExtra ?? 2)) {
+    } else if (b.t > wait && b.phase && !isBarBoss(b) && b.cycle >= (b.nextExtra ?? 2)) {
       startBossExtra(state, b, target);
     } else if (b.t > wait) {
       b.cycle++;
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1); the
       // charger rushes every third attack, and every second one in phase 2.
-      const charge = isBarBoss(b) ? b.cycle % 6 === 0 : arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
+      const charge = isBarBoss(b) ? b.cycle % (b.phase ? 4 : 6) === 0 : arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
       if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; b.cx = b.x; ev(state, 'charge'); }
       else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y;
         b.both = inMiddle(state, b); // decided now, so the floor warning shows both sides
@@ -1337,12 +1338,13 @@ function updateBoss(state) {
         b.warn = b.missile || b.lob ? null : offs.map(o => clamp(Math.round(b.ty + o), 0, DEPTH)).filter((v, i, a) => a.indexOf(v) === i);
         // The bomber marks where its bombs will land: one Sproto each, two bombs (three in phase 2).
         if (isBarBoss(b)) {
-          b.barAttack = (b.cycle - 1) % 6;
+          b.barAttack = (b.cycle - 1) % (b.phase ? 4 : 6);
           b.row = b.barAttack + 1; b.missile = false; b.lob = false;
           b.warn = b.barAttack === 2 ? [b.ty - 30, b.ty, b.ty + 30].map(y => clamp(Math.round(y), 0, DEPTH)) : b.barAttack === 1 ? null : [Math.round(b.ty)];
-          b.marks = b.barAttack === 1 ? [[Math.round(target.x), Math.round(target.y)]] : null;
+          b.marks = !b.phase && b.barAttack === 1 ? [[Math.round(target.x), Math.round(target.y)]] : null;
+          if (b.phase) b.warn = b.barAttack === 2 ? [-28, 0, 28].map(off => clamp(Math.round(b.ty + off), 0, DEPTH)) : [Math.round(b.ty)];
         }
-        if (b.lob || (isBarBoss(b) && b.barAttack === 1)) {
+        if (b.lob || (isBarBoss(b) && !b.phase && b.barAttack === 1)) {
           b.marks = [];
           // In the middle it marks Sprotos on both sides of it in turn, front first.
           let pool = ps;
@@ -1365,9 +1367,10 @@ function updateBoss(state) {
   } else if (b.st === 'fire') {
     // 4-frame weapon animation: anticipation, locked, muzzle (fire), recoil.
     // Weapons A and C fire bursts (3 shots, 5 in phase 2); weapon B fires one wide volley.
-    const fireAt = 30, burst = isBarBoss(b) ? (b.barAttack === 0 ? 3 : 1) : b.missile || b.row === 2 || b.lob || arch === 'summoner' ? 1 : (b.phase ? 3 : 2);
-    if (b.t >= fireAt && (b.t - fireAt) % 8 === 0 && (b.t - fireAt) / 8 < burst) { if (isBarBoss(b)) barThrow(state, b); else if (b.lob) bossLob(state, b); else bossShoot(state, b); }
-    if (b.t > 54 + (burst - 1) * 8) { b.st = 'idle'; b.t = 0; b.warn = null; }
+    const fireAt = 30, burst = isBarBoss(b) ? (b.phase ? (b.barAttack === 1 ? 5 : b.barAttack === 2 ? 2 : 3) : b.barAttack === 0 ? 3 : 1) : b.missile || b.row === 2 || b.lob || arch === 'summoner' ? 1 : (b.phase ? 3 : 2);
+    const interval = isBarBoss(b) && b.phase ? (b.barAttack === 1 ? 5 : 6) : 8;
+    if (b.t >= fireAt && (b.t - fireAt) % interval === 0 && (b.t - fireAt) / interval < burst) { if (isBarBoss(b)) barThrow(state, b); else if (b.lob) bossLob(state, b); else bossShoot(state, b); }
+    if (b.t > 54 + (burst - 1) * interval) { b.st = 'idle'; b.t = 0; b.warn = null; }
   } else if (b.st === 'sweep') {
     // Rear sweep: the zone behind the machine is marked, then everything standing in it is hit.
     // It is low: a jump clears it, and so does walking round to the front.
@@ -1389,6 +1392,7 @@ function updateBoss(state) {
 
 // Last Call: five readable, non-homing trajectories, all available in phase one.
 function barThrow(state, b) {
+  if (b.phase) { marlinShoot(state, b); return; }
   const a = b.barAttack, mz = a === 1 ? 82 : a === 3 ? 8 : 22;
   ev(state, 'bossfire');
   for (const dir of a === 1 ? [b.face] : b.both ? [b.face, -b.face] : [b.face]) {
@@ -1410,6 +1414,28 @@ function barThrow(state, b) {
     } else if (a === 4) {
       add({ vx: dir * 4.5, baseY: b.ty, dmg: 23 });
     } else add({ vx: dir * 5.2, dmg: 14 });
+  }
+}
+
+// The marlin locks aim during its windup. All three weapons stay dodgeable after release.
+function marlinShoot(state, b) {
+  const a = b.barAttack;
+  ev(state, 'bossfire');
+  for (const dir of b.both ? [b.face, -b.face] : [b.face]) {
+    const speed = a === 0 ? 13 : a === 1 ? 8.8 : 1.9;
+    const x = b.x + dir * (a === 0 ? 100 : a === 1 ? 55 : 48);
+    const height = a === 0 ? 174 : a === 1 ? 165 : 126;
+    // Shoot from the drawn bill / extended dorsal pod, descending toward the locked aim.
+    const flight = Math.max(12, Math.abs(b.tx - x) / speed);
+    const add = extra => state.projs.push({ id: state.nextId++, kind: 'boss', row: a, marlin: a,
+      bi: b.bi, phase: 1, x, y: b.y, z: height, vx: dir * speed,
+      vy: (b.ty - b.y) / flight, vz: (22 - height) / flight,
+      dmg: 22, t: 0, life: Math.ceil(flight + 12), enemy: true, ...extra });
+    if (a === 0) add({ dmg: 24 });
+    else if (a === 1) add({ dmg: 20, boom: true });
+    else for (const off of [-1, 0, 1]) add({ y: clamp(b.ty + off * 22, 0, DEPTH),
+      vx: dir * (1.7 + .2 * (off + 1)), vy: off * .24, vz: 0,
+      baseZ: 20 + (off + 1) * 7, dmg: 18, life: 220 });
   }
 }
 
@@ -1500,13 +1526,18 @@ function updateProjs(state) {
       pr.y = clamp(pr.baseY + wave * .85, 0, DEPTH);
       pr.z = 24 + wave * .45;
     }
+    if (pr.marlin === 2) {
+      const wave = 12 - Math.abs(pr.t % 48 - 24);
+      pr.z = Math.max(126 - pr.t * 1.8, pr.baseZ + wave * .55);
+    }
+    if (pr.marlin !== undefined && pr.z <= 0) { pr.remove = true; bossImpact(state, pr, pr.x, pr.y, 0); continue; }
     if (pr.kind === 'ball') { pr.vz -= 0.3; if (pr.z <= 0) { pr.z = 0; pr.life = 0; ballBoom(state, pr); } }
     if (pr.t > pr.life || pr.x < state.camX - 80 || pr.x > state.camX + W + 80) { pr.remove = true; continue; }
     if (pr.enemy) {
       const shadowShot = isShadowShot(pr);
-      if ((shadowShot || pr.bar !== undefined) && (pr.y < 0 || pr.y > DEPTH)) { pr.remove = true; continue; }
+      if ((shadowShot || pr.bar !== undefined || pr.marlin !== undefined) && (pr.y < 0 || pr.y > DEPTH)) { pr.remove = true; continue; }
       for (const p of ps) {
-        const hit = shadowShot || pr.bar !== undefined
+        const hit = shadowShot || pr.bar !== undefined || pr.marlin !== undefined
           ? Combat.segmentHitsBox(x0, y0, z0, pr.x, pr.y, pr.z, p.x - 14, p.x + 14, p.y - 9, p.y + 9, p.z - 4, p.z + 54)
           : Math.abs(p.x - pr.x) < 14 && Math.abs(p.y - pr.y) < 9 && pr.z >= p.z - 4 && pr.z <= p.z + 54;
         if (hit) {
@@ -1681,10 +1712,10 @@ function snapshot(state) {
     banner: state.banner,
     players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice(), k: p.kills || 0, rvn: p.revs || 0, pa: p.parries || 0, mh: maxHp(p), cl: p.classId || 'fighter', ac: p.abilityCd || 0, ab: p.ability ? 1 : 0 })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0, el: e.elite ? (e.guard > 0 ? 2 : 1) : 0, ax: e.st === 'ranged' ? r1(e.aimX) : undefined, ay: e.st === 'ranged' ? r1(e.aimY) : undefined, sh: e.sh })),
-    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, ba: p.bar, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
+    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, ba: p.bar, ma: p.marlin, vz: p.marlin === undefined ? undefined : r1(p.vz), x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small, bi: f.bi, ph: f.ph })),
-    boss: b && { bi: b.bi, ph: b.phase, hp: b.hp, mh: b.maxHp, x: r1(b.x), y: r1(b.y), fc: b.face, st: b.st, t: b.t, row: b.row, wl: b.st === 'fire' ? b.warn : null, fl: b.flash, mi: b.missile ? 1 : 0, ba: b.barAttack, by: b.barAttack === undefined ? undefined : r1(b.ty), bo: b.st === 'fire' && b.both ? 1 : 0, w: Math.round(b.w), ar: b.arch || 0, su: summonAge < 27 ? summonAge : undefined, az: b.st === 'signature' || b.st === 'special' ? b.extraZones : undefined },
+    boss: b && { bi: b.bi, ph: b.phase, hp: b.hp, mh: b.maxHp, x: r1(b.x), y: r1(b.y), fc: b.face, st: b.st, t: b.t, row: b.row, wl: b.st === 'fire' ? b.warn : null, fl: b.flash, mi: b.missile ? 1 : 0, ba: b.barAttack, by: b.barAttack === undefined ? undefined : r1(b.ty), bx: b.barAttack === undefined ? undefined : r1(b.tx), bo: b.st === 'fire' && b.both ? 1 : 0, w: Math.round(b.w), ar: b.arch || 0, su: summonAge < 27 ? summonAge : undefined, az: b.st === 'signature' || b.st === 'special' ? b.extraZones : undefined },
     hz: (state.hazards || []).map(h => ({ id: h.id, y: h.y, x0: Math.round(h.x0), x1: Math.round(h.x1), t: h.t, l: h.life, hf: h.half })),
   };
 }

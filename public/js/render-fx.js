@@ -484,14 +484,15 @@ function bossExtraWarnings(g, boss, camX) {
 }
 
 function barWarnings(g, b, camX) {
-  const names = ['SNACK BURST', 'BEER LOB', 'COCKTAIL FAN', 'BOUNCING DRINKS', 'BLUE MARLIN'];
+  const names = b.ph ? ['BILL LASER', 'RAPID MISSILES', 'DEADLY BUBBLES'] : ['SNACK BURST', 'BEER LOB', 'COCKTAIL FAN', 'BOUNCING DRINKS', 'BLUE MARLIN'];
   text(g, names[b.ba], W / 2, FLOOR_TOP - 12, 8, '#68f5ec', 'center');
-  if (b.ba === 1) return; // Landing rings are the host's locked marks.
+  if (!b.ph && b.ba === 1) return; // Landing rings are the host's locked marks.
   g.save();
   g.strokeStyle = '#ffe397'; g.lineWidth = 2; g.setLineDash([5, 4]);
   const dirs = b.bo ? [b.fc, -b.fc] : [b.fc];
   for (const d of dirs) {
-    const x0 = b.x - camX + d * b.w * .55;
+    const muzzle = b.ph ? (b.ba === 0 ? 100 : b.ba === 1 ? 55 : 48) : b.w * .55;
+    const x0 = b.x - camX + d * muzzle;
     for (const spread of b.ba === 2 ? [-1, 0, 1] : [0]) {
       g.beginPath();
       for (let dist = 0; dist < W; dist += 8) {
@@ -499,7 +500,9 @@ function barWarnings(g, b, camX) {
         if (x < 0 || x > W) break;
         const age = dist / 4.5;
         const wave = 20 - Math.abs((age % 80) - 40);
-        const y = b.ba === 2 ? b.y + spread * dist * .65 / 3.7 : b.ba === 4 ? S.clamp(b.by + wave * .85, 0, S.DEPTH) : b.by;
+        const speed = b.ba === 0 ? 13 : 8.8;
+        const flight = Math.max(12, Math.abs((b.bx ?? b.x) - (b.x + d * muzzle)) / speed);
+        const y = b.ph ? (b.ba === 2 ? b.by + spread * 22 + spread * dist * .24 / 1.9 : b.y + (b.by - b.y) * dist / speed / flight) : b.ba === 2 ? b.y + spread * dist * .65 / 3.7 : b.ba === 4 ? S.clamp(b.by + wave * .85, 0, S.DEPTH) : b.by;
         if (y < 0 || y > S.DEPTH) break;
         if (!dist) g.moveTo(x, FLOOR_TOP + y); else g.lineTo(x, FLOOR_TOP + y);
       }
@@ -830,15 +833,22 @@ function drawSummary(g, sum, info) {
 function bossPose(b, sx) {
   const t = b.t;
   if (M.bosses[b.bi].attacks === 'bar') {
-    if (b.st === 'dead') return [0, 8, 4 + Math.min(3, Math.floor(t / 14))];
-    if (b.fl > 0) return [0, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
-    if (b.st === 'fire') return [0, 1 + b.ba, t < 30 ? Math.min(3, Math.floor(t / 7.5)) : 4 + Math.min(3, Math.floor((t - 30) / 7))];
-    if (b.st === 'sweep') return [0, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
+    if (b.st === 'dead') return [b.ph, 8, 4 + Math.min(3, Math.floor(t / 14))];
+    if (b.fl > 0 && b.st !== 'fire') return [b.ph, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
+    if (b.st === 'fire') {
+      // Keep the launch pod extended through every missile in the five-shot burst.
+      const age = t - 30;
+      const col = t < 30 ? Math.min(3, Math.floor(t / 7.5)) : b.ph && b.ba === 1
+        ? (age <= 20 ? 4 + Math.floor(age / 5) % 2 : age < 32 ? 6 : 7)
+        : 4 + Math.min(3, Math.floor(age / 7));
+      return [b.ph, 1 + b.ba, col];
+    }
+    if (b.st === 'sweep') return [b.ph, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
     if (b.st === 'charge') {
       const remaining = b.fc < 0 ? sx - 60 : W - 60 - sx;
-      return [0, 6, t < 24 ? Math.floor(t / 6) : remaining < 34 ? 6 + Math.floor(t / 5) % 2 : 4 + Math.floor(t / 6) % 2];
+      return [b.ph, 6, t < 24 ? Math.floor(t / 6) : remaining < 34 ? 6 + Math.floor(t / 5) % 2 : 4 + Math.floor(t / 6) % 2];
     }
-    return [0, 0, (b.st === 'enter' || t % 72 >= 36 ? 4 : 0) + Math.floor(t / 9) % 4];
+    return [b.ph, 0, (b.st === 'enter' || t % 72 >= 36 ? 4 : 0) + Math.floor(t / 9) % 4];
   }
   if (b.st === 'signature' || b.st === 'special') {
     const attack = S.bossExtraAttack(b.bi, b.st);
@@ -909,19 +919,29 @@ function drawTransformDischarge(g, b, sx, sy, width, color, keys) {
 }
 
 function drawBossCel(g, b, sx, sy, sprite, row, col) {
-  const C = BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const phase = M.bosses[b.bi].phases[b.ph], C = phase.actorCell || BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const foot = phase.actorFoot ? Math.round(phase.actorFoot * size / C) : BOSS_SPRITE_FOOT;
   g.save();
   g.imageSmoothingEnabled = false;
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   g.translate(Math.round(sx), Math.round(sy));
   if (b.fc > 0) g.scale(-1, 1);
   if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -BOSS_SPRITE_FOOT, size, size);
+  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -foot, size, size);
   g.restore();
 }
 
 function drawBossTransform(g, b, sx, sy) {
   const phases = M.bosses[b.bi].phases;
+  if (M.bosses[b.bi].attacks === 'bar') {
+    const sheet = img(phases[0].sheet);
+    if (ready(sheet)) {
+      shadow(g, sx, sy, b.w * .45);
+      const col = Math.min(7, Math.floor(b.t * 8 / S.BOSS_TRANSFORM_TICKS));
+      drawBossCel(g, { ...b, ph: 0 }, sx, sy, sheet, 9, col);
+    }
+    return;
+  }
   const morph = root.CoopBossMorph;
   const frame = morph?.pose(b.t);
   const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 258 ? 0 : 1, 0, 0];
@@ -956,13 +976,14 @@ function drawBoss(g, b, camX) {
   }
 }
 
-function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow) {
+function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
   const sheet = img(ph.proj), C = ph.fxCell || BOSS_FX_CELL;
-  if (ph.fxColumns && row === 3 && !rawRow) row = 5;
+  if (ph.fxColumns && row === 3 && !rawRow) row = ph.impactRow;
   if (!ready(sheet)) return false;
   g.save();
   g.translate(Math.round(x), Math.round(y));
   g.imageSmoothingEnabled = false;
+  if (angle) g.rotate(angle);
   if (flip) g.scale(-1, 1);
   g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
   g.restore();
@@ -975,6 +996,12 @@ function drawProj(g, p, camX, shadowSheet) {
   if (p.k === 'boss') {
     const ph = M.bosses[p.bi].phases[p.ph];
     shadow(g, sx, FLOOR_TOP + p.y, 7);
+    if (p.ma !== undefined) {
+      const size = [96, 58, 44][p.ma];
+      const angle = p.ma === 2 ? 0 : Math.sign(p.vx) * Math.atan2(-(p.vz || 0), Math.abs(p.vx));
+      drawBossFx(g, ph, p.ma, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0, true, angle);
+      return;
+    }
     if (p.ba !== undefined) {
       const size = [28, 38, 36, 34, 78][p.ba];
       drawBossFx(g, ph, p.ba, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0 && p.ba === 4, true);
