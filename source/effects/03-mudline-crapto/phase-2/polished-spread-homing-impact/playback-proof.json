@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "03-mudline-crapto",
+    "phase": 1,
+    "family": "boss-projectiles",
+    "purposes": [
+      "spread",
+      "homing",
+      "impact"
+    ],
+    "asset": "assets/bosses/effects/03-mudline-crapto-p2-spread-homing-impact-4b9b3adb7f89.png",
+    "atlasSha256": "7519232eb2e1e0efc604a20262b34a6662135738afc89fb3a5c96d6736a3c040",
+    "runtimeSha256": "4b9b3adb7f899ae61f2540defcf6b368df436698eb4ed7408b5a4f5c12543dbb",
+    "runtimeDimensions": [
+      384,
+      288
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 8,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/03-mudline-crapto-p2-spread-homing-impact-4b9b3adb7f89.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 0
+          }
+        ]
+      },
+      "homing": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/03-mudline-crapto-p2-spread-homing-impact-4b9b3adb7f89.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/03-mudline-crapto-p2-spread-homing-impact-4b9b3adb7f89.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 188,
+  "resumed": 4,
+  "hit": [
+    13,
+    21,
+    13,
+    21
+  ],
+  "frames": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

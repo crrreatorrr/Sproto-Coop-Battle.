@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "7519232eb2e1e0efc604a20262b34a6662135738afc89fb3a5c96d6736a3c040",
+  "providerSha256": "0111ebf44facf2d710730ed86bb7ee227c08768c445cd91660c0023324ad75ed",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Left-pointed plum canister retains coherent front cap, banded lime/ochre tank and right fluid exhaust. The wide spread opens large wet fins, the asymmetrically banded tracker holds its distinct body, and the magenta/lime impact dissolves to particles. Near-white details remain attached to bands or bright fluid specks. No visible backdrop, neighbor bleed or divider marks. Independently reviewed in raw-derived and dark/light game-size contact. Preserve installed lane; this review is only for rows 2 through 4. Runtime proof still required.",
+  "reviewedPartialAlpha": true
+}
