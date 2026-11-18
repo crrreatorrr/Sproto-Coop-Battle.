@@ -1,0 +1,45 @@
+{
+  "sourceFrozenPacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/imagegen-combat/sproto3106-p2-hammer-01",
+  "sourceFrozenManifestSha256": "d6e555ecd582825729e267f69a5e9326700d050af7f26724ac58783a28d98593",
+  "clips": {
+    "signature": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        32,
+        4,
+        8,
+        13
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/12-codebreak-sproto3106/phase-2/sproto3106-p2-hammer-c4c9f0a2f5286755.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "width": 660,
+          "height": 660
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "status": "CANDIDATE_PENDING_INDEPENDENT_VISUAL_AND_SIM_REVIEW",
+  "bossId": "12-codebreak-sproto3106",
+  "phaseIndex": 1,
+  "purpose": "signature",
+  "pageFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/imagegen-combat/sproto3106-p2-hammer-01/technical-stage-v1/actions-page.webp",
+  "pageSha256": "c4c9f0a2f52867551f767ad637872e326e18a39f02c2f69b24a08d5f3393fe1e",
+  "clip": {
+    "cell": [
+      330,
+      330
+    ],
+    "anchor": [
+      165,
+      261
+    ],
+    "coreRect": [
+      55,
+      55,
+      220,
+      220
+    ],
+    "loop": false,
+    "frameTicks": [
+      32,
+      4,
+      8,
+      13
+    ],
+    "pages": [
+      {
+        "src": "NOT_REGISTERED",
+        "columns": 2,
+        "rows": 2,
+        "frames": 4,
+        "cells": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "width": 660,
+        "height": 660
+      }
+    ]
+  },
+  "timingStatus": "Proposed full57tick signature: ready32; release4; recoil8; recovery13. Release at authoritative age32. Actual-Sim contact geometry pending.",
+  "sourceScale": 0.365,
+  "sourceAnchor": [
+    340,
+    560
+  ],
+  "noLocalPoseOrPartEdits": true,
+  "pilotCompositeApplied": false,
+  "pagePngFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/imagegen-combat/sproto3106-p2-hammer-01/technical-stage-v1/actions-page.png",
+  "pagePngSha256": "1c9d119a252b0f94f6c38ae2f160ed03bc1c4888ba5624b02354f12484c20a99",
+  "measuredAuthoritativeSignature": {
+    "warning": 32,
+    "releaseTicks": [
+      32
+    ],
+    "durationTicks": 57,
+    "zone": [
+      83,
+      0,
+      55,
+      19,
+      0,
+      0
+    ]
+  }
+}
