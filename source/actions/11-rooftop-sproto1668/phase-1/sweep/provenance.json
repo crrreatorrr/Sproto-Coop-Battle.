@@ -1,0 +1,185 @@
+{
+  "status": "PRIVATE_CANDIDATE_NOT_REGISTERED_PENDING_INDEPENDENT_QA",
+  "version": 1,
+  "id": "sproto1668-p1-rear-sweep-v1",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "clips": {
+    "sweep": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        36,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/11-rooftop-sproto1668/phase-1/sproto1668-p1-rear-sweep-v1-1055758063bc220f.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "1055758063bc220fd3b1def9936f646ed26ca7cb087e61150a11c06654661df3",
+  "pageSize": [
+    660,
+    660
+  ],
+  "encodedBytes": 154428,
+  "decodedBytes": 1742400,
+  "sourceOriginalSHA256": "1dc81aba5010c70a18ff7ff518a8b4c9a5add640be3343fa50ca5563c088c4a9",
+  "extractedSHA256": "a8302ff46767e4b8e33687e3a55d3550c4b21dde3b0d7e4d9b8a94426e1844aa",
+  "sourceLineage": [
+    {
+      "index": 0,
+      "generatedIndex": 0,
+      "role": "ready",
+      "sourceFile": "generated-cel-0.png",
+      "sourcePngSHA256": "1a5da614b2e3de17ea05fdd39603db014fd207f991e00ba927a6caf036b8c04b",
+      "sourceRGBASHA256": "a5f4eb1615cdb7e918fc4e29509f0fb7ed157d3c5b522b2e3be90c23c756ce41",
+      "sourceBounds": [
+        96,
+        71,
+        513,
+        523
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.394,
+      "sourceAnchor": [
+        282,
+        523
+      ],
+      "deliveryBounds": [
+        92,
+        83,
+        256,
+        261
+      ],
+      "deliveryRGBASHA256": "c006cfd7064c7b6eb5e83ee8c6a4ba540878ff1f17246035c9341bd3a0d22bbd",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 1,
+      "generatedIndex": 1,
+      "role": "release",
+      "sourceFile": "generated-cel-1.png",
+      "sourcePngSHA256": "76de0c74c9e33af12387604b8478c582f7d91461f9fc66dad12dd04de3d417d9",
+      "sourceRGBASHA256": "82c710287a375dd623ca3eab112bf9cc8af512cfa6b6285e6cc66b5e384ad926",
+      "sourceBounds": [
+        40,
+        71,
+        580,
+        523
+      ],
+      "originRegistration": [
+        56,
+        0
+      ],
+      "sharedScale": 0.394,
+      "sourceAnchor": [
+        282,
+        523
+      ],
+      "deliveryBounds": [
+        92,
+        83,
+        304,
+        261
+      ],
+      "deliveryRGBASHA256": "78a4e0fef5f09ac16ec065ecfe1b5363c93a935880811b0f8d41253bc1e2b69e",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 2,
+      "generatedIndex": 2,
+      "role": "followup",
+      "sourceFile": "generated-cel-2.png",
+      "sourcePngSHA256": "62db34908142c29d3999465ff88524842b2337c00fe153e9bae1248b59767330",
+      "sourceRGBASHA256": "b5292d86e839703d2f734e331c1c3e24684889d9cc8518a4c8afef652808cc44",
+      "sourceBounds": [
+        94,
+        72,
+        595,
+        524
+      ],
+      "originRegistration": [
+        0,
+        -1
+      ],
+      "sharedScale": 0.394,
+      "sourceAnchor": [
+        282,
+        523
+      ],
+      "deliveryBounds": [
+        91,
+        83,
+        288,
+        261
+      ],
+      "deliveryRGBASHA256": "350480177374cb08d3e3757f247aee44464d86f7f3c770abbd14b4ceabe8a3fa",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 3,
+      "generatedIndex": 3,
+      "role": "recovery",
+      "sourceFile": "generated-cel-3.png",
+      "sourcePngSHA256": "4933b80c5d63743a6b9cca9f6bd117970395e348a209aba2df0d1f2eadd751f1",
+      "sourceRGBASHA256": "a08b06b4ecb8d278c4952e27de2a111128da04683208dcdd5325ee16dfe78739",
+      "sourceBounds": [
+        88,
+        70,
+        510,
+        524
+      ],
+      "originRegistration": [
+        5,
+        -1
+      ],
+      "sharedScale": 0.394,
+      "sourceAnchor": [
+        282,
+        523
+      ],
+      "deliveryBounds": [
+        91,
+        82,
+        257,
+        261
+      ],
+      "deliveryRGBASHA256": "a2b5ee6ac65c360be69dc92fbd88bfdc3b3ca65fb55ee6494d8d82f3d547a2e0",
+      "completeTransformedSourceExtentInsideField": true
+    }
+  ],
+  "newProviderDrawings": 4,
+  "localNewPoses": 0,
+  "noPerPartPatch": true,
+  "canonicalStandingLeadIn": false
+}
