@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "b984cc9a1e1760e2cc23c6bed3f669c6a7be38a09e065b383cbc79593eca7902",
+  "providerSha256": "f569de3f8174d2598077164a20f0330992d19dd4ab1f8f7fee1366f85742e77c",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Mirrored teal hook-crescents expand on amber and jade filaments, split cleanly, then dim to colored sparks. The natural core stays centered over the event. The 2/255 matte cutoff preserves all opaque and partial-alpha effect material beyond the backdrop noise. No isolated white defects or seam bleed on either background."
+}

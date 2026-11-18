@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "09-hatchery-highsproto",
+    "phase": 1,
+    "family": "signature",
+    "purposes": [
+      "signature"
+    ],
+    "asset": "assets/bosses/effects/09-hatchery-highsproto-p2-signature-b984cc9a1e17.png",
+    "atlasSha256": "b984cc9a1e1760e2cc23c6bed3f669c6a7be38a09e065b383cbc79593eca7902",
+    "runtimeSha256": "b984cc9a1e1760e2cc23c6bed3f669c6a7be38a09e065b383cbc79593eca7902",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "signature": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/09-hatchery-highsproto-p2-signature-b984cc9a1e17.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 128,
+  "animatedDraws": 92,
+  "resumed": 2,
+  "hit": [
+    15,
+    15
+  ],
+  "warnings": 31,
+  "lastWave": 8,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    3
+  ]
+}
