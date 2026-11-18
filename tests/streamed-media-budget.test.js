@@ -432,7 +432,8 @@ async function main() {
   test('policy action names agree with actual reachable selector outputs',()=>{
     const scope={};scope.window=scope;vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/boss-action-selection.js'),'utf8'),scope);
     const select=scope.CoopBossActionSelection.select;
-    const samples=[{st:'idle'},{st:'fire',row:1},{st:'fire',row:2},{st:'fire',mi:1},
+    assert.equal(select({ st: 'idle', t: 0 }), null, 'the standing endpoint does not request a walk page');
+    const samples=[{st:'idle',t:1},{st:'fire',row:1},{st:'fire',row:2},{st:'fire',mi:1},
       {st:'charge',t:0},{st:'charge',t:40,fc:-1,x:400},{st:'charge',t:40,fc:-1,x:70},
       ...['sweep','signature','special','dead'].map(st=>({st})),{st:'idle',ar:2,su:1}];
     assert.deepEqual([...new Set(samples.map(s=>select(s).action))].sort(),[...ACTION_NAMES].sort());
