@@ -6773,6 +6773,96 @@
         "6a7b8256bd14f948416c679bb90f094576a1c19cc20507ff4e3d582b42aa6311",
         "fd850177b3266742a279f0fe977096a04f9387c24213b3124639e3088aa5bf1b"
       ]
+    },
+    "assets/bosses/effects/07-moonkeep-bigswole-p2-signature-b44b3d66d7b9.png": {
+      "runtimeEncodedSha256": "b44b3d66d7b9acbb9bc69b76ff4bf257826be80458f7a8d7f9e994809e253e9d",
+      "kind": "fx",
+      "cell": 96,
+      "rows": 4,
+      "acceptedDedicatedSourceFile": "source/effects/07-moonkeep-bigswole/phase-2/polished-signature/runtime-atlas.png",
+      "acceptedDedicatedSourceEncodedSha256": "b44b3d66d7b9acbb9bc69b76ff4bf257826be80458f7a8d7f9e994809e253e9d",
+      "higgsfieldSources": [
+        {
+          "firstCell": 0,
+          "sourceFirstCell": 0,
+          "frames": 16,
+          "file": "source/effects/07-moonkeep-bigswole/phase-2/polished-signature/reviewed-atlas.png",
+          "encodedSha256": "b44b3d66d7b9acbb9bc69b76ff4bf257826be80458f7a8d7f9e994809e253e9d",
+          "rgbaSha256": [
+            "96fd13219299cc94f774420ce3a4b10c56a2dd6f0bbf05f61cb0ad7072328046",
+            "74f2b3d7d70902a04bda4ef4d6925e7cce60194089651beb61ddde00f3e4103e",
+            "81142ab6b8239168dc2fc3d19b9bd86653078de0c2c9aa76fa60a45b3bbd4886",
+            "c67784a679abab8085ce732f17ed952e45910b7bde16d38ead5d4533e6316695",
+            "ac6b8a02725c4e93c3a31ed05b39fed332713bfa0ce6d2ae484bfe0a761898ff",
+            "d0ca482e09db5256960506dac4795bec86aa99bae465b4bacbb516679ab8f166",
+            "89ea34e6f5dc3711763ef8bbd8627232f0b27455f6a636172f7f794746f3fc2f",
+            "f17dcee35b9547ee98931ceeea889643a19c86d0e78f1a7ddfcd560c4edbc478",
+            "3dd70f4fe72c8cd10f6521a907ada89dd2d1e3ad36b0029d50c64470fdc4ee16",
+            "5cd8285e850fd37b62e32223e0abaa61ca0b63c251145a88f674e3c2dfe5f9ba",
+            "6ee739ab216323beafb2c8ecef513abfeed0fccbad21c7fc5ab7d6451b2ef87e",
+            "4fd1f19a44eff0c8b99c7ca8332bd5f62a7e7583be0f0c33968e2aa8bd3951e3",
+            "a22c5eed1f6271ee0c917bc16b0da9dd833824124c2518f199c436a090adb36b",
+            "ec160446534a4e81d09cc29ac0bf94250636678a6cdf690047b2eebe3d8eb549",
+            "059d503582f8f6c76ccffd893e32d83c9cd8d68f7a44303239b34aff67414884",
+            "ee5de05af609db0b12653ab01a522b5b79845138852b8f9514f0544fb41d77f5"
+          ],
+          "family": "signature",
+          "partialAlphaCells": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        }
+      ],
+      "rgbaSha256": [
+        "96fd13219299cc94f774420ce3a4b10c56a2dd6f0bbf05f61cb0ad7072328046",
+        "74f2b3d7d70902a04bda4ef4d6925e7cce60194089651beb61ddde00f3e4103e",
+        "81142ab6b8239168dc2fc3d19b9bd86653078de0c2c9aa76fa60a45b3bbd4886",
+        "c67784a679abab8085ce732f17ed952e45910b7bde16d38ead5d4533e6316695",
+        "ac6b8a02725c4e93c3a31ed05b39fed332713bfa0ce6d2ae484bfe0a761898ff",
+        "d0ca482e09db5256960506dac4795bec86aa99bae465b4bacbb516679ab8f166",
+        "89ea34e6f5dc3711763ef8bbd8627232f0b27455f6a636172f7f794746f3fc2f",
+        "f17dcee35b9547ee98931ceeea889643a19c86d0e78f1a7ddfcd560c4edbc478",
+        "3dd70f4fe72c8cd10f6521a907ada89dd2d1e3ad36b0029d50c64470fdc4ee16",
+        "5cd8285e850fd37b62e32223e0abaa61ca0b63c251145a88f674e3c2dfe5f9ba",
+        "6ee739ab216323beafb2c8ecef513abfeed0fccbad21c7fc5ab7d6451b2ef87e",
+        "4fd1f19a44eff0c8b99c7ca8332bd5f62a7e7583be0f0c33968e2aa8bd3951e3",
+        "a22c5eed1f6271ee0c917bc16b0da9dd833824124c2518f199c436a090adb36b",
+        "ec160446534a4e81d09cc29ac0bf94250636678a6cdf690047b2eebe3d8eb549",
+        "059d503582f8f6c76ccffd893e32d83c9cd8d68f7a44303239b34aff67414884",
+        "ee5de05af609db0b12653ab01a522b5b79845138852b8f9514f0544fb41d77f5"
+      ],
+      "acceptedDedicatedRgbaSha256": [
+        "96fd13219299cc94f774420ce3a4b10c56a2dd6f0bbf05f61cb0ad7072328046",
+        "74f2b3d7d70902a04bda4ef4d6925e7cce60194089651beb61ddde00f3e4103e",
+        "81142ab6b8239168dc2fc3d19b9bd86653078de0c2c9aa76fa60a45b3bbd4886",
+        "c67784a679abab8085ce732f17ed952e45910b7bde16d38ead5d4533e6316695",
+        "ac6b8a02725c4e93c3a31ed05b39fed332713bfa0ce6d2ae484bfe0a761898ff",
+        "d0ca482e09db5256960506dac4795bec86aa99bae465b4bacbb516679ab8f166",
+        "89ea34e6f5dc3711763ef8bbd8627232f0b27455f6a636172f7f794746f3fc2f",
+        "f17dcee35b9547ee98931ceeea889643a19c86d0e78f1a7ddfcd560c4edbc478",
+        "3dd70f4fe72c8cd10f6521a907ada89dd2d1e3ad36b0029d50c64470fdc4ee16",
+        "5cd8285e850fd37b62e32223e0abaa61ca0b63c251145a88f674e3c2dfe5f9ba",
+        "6ee739ab216323beafb2c8ecef513abfeed0fccbad21c7fc5ab7d6451b2ef87e",
+        "4fd1f19a44eff0c8b99c7ca8332bd5f62a7e7583be0f0c33968e2aa8bd3951e3",
+        "a22c5eed1f6271ee0c917bc16b0da9dd833824124c2518f199c436a090adb36b",
+        "ec160446534a4e81d09cc29ac0bf94250636678a6cdf690047b2eebe3d8eb549",
+        "059d503582f8f6c76ccffd893e32d83c9cd8d68f7a44303239b34aff67414884",
+        "ee5de05af609db0b12653ab01a522b5b79845138852b8f9514f0544fb41d77f5"
+      ]
     }
   },
   "transformations": {
@@ -8757,7 +8847,7 @@
       ]
     }
   },
-  "acceptedDedicatedFxCels": 420,
+  "acceptedDedicatedFxCels": 436,
   "archivedOriginalFxCels": 384,
   "acceptedReplacedFxCels": 48
 }
