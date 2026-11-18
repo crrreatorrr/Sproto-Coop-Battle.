@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { analyzeStreamedMedia } from './streamed-media-budget.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
@@ -93,6 +94,14 @@ export function loadAssetLoader() {
   vm.runInNewContext(fs.readFileSync(path.join(pub, 'js', 'asset-loader.js'), 'utf8'), sandbox, { filename: 'asset-loader.js' });
   if (!sandbox.window.AssetLoader) throw new Error('asset-loader.js did not set AssetLoader');
   return sandbox.window.AssetLoader;
+}
+
+export function loadPresentationRegistry() {
+  const sandbox = {};
+  sandbox.window = sandbox;
+  vm.runInNewContext(fs.readFileSync(path.join(pub, 'js', 'boss-transformations.js'), 'utf8'), sandbox,
+    { filename: 'boss-transformations.js' });
+  return sandbox.CoopBossTransformations || {};
 }
 
 export function loadPlan(manifest) {
@@ -203,12 +212,18 @@ export function inventory() {
   }
   const unused = [...assetSet].filter(rel => !refs.has(rel)).sort();
   const literalsReport = literalProblems(literals, assetSet);
+  const streamedMedia = analyzeStreamedMedia(manifest, loadPresentationRegistry(), files);
   return {
     files,
     assetCount: assetFiles.length,
     assetBytes,
     publicFileCount: publicFiles.length,
     publicBytes,
+    basePublicBytes: streamedMedia.basePublicBytes,
+    optionalMediaCount: streamedMedia.optionalCount,
+    optionalMediaBytes: streamedMedia.optionalBytes,
+    optionalMediaTreeSha256: streamedMedia.optionalTreeSha256,
+    streamedMedia,
     assetTreeSha256: treeHash(assetFiles, pub),
     publicTreeSha256: treeHash(publicFiles, pub),
     preload,
@@ -256,6 +271,8 @@ function printReport(report) {
   const lines = [
     `assets ${report.assetCount} files, ${report.assetBytes} bytes (${(report.assetBytes / 1e6).toFixed(6)} MB decimal, ${(report.assetBytes / 1024 / 1024).toFixed(3)} MiB)`,
     `public ${report.publicFileCount} files, ${report.publicBytes} bytes`,
+    `base public ${report.basePublicBytes} bytes; optional registered media ${report.optionalMediaCount} files, ${report.optionalMediaBytes} bytes`,
+    `retained boss presentation peak ${report.streamedMedia.maxPresentationDecodedBytes} decoded bytes`,
     `asset tree ${report.assetTreeSha256}`,
     `public tree ${report.publicTreeSha256}`,
     `preload ${report.preloadCount} images, transfer ${report.preloadCost.bytes} bytes, gzip-9 ${report.preloadCost.gzipBytes} bytes, decoded RGBA ${report.preloadCost.decodedBytes} bytes`,
@@ -270,7 +287,9 @@ function printReport(report) {
 }
 
 function fail(report) {
-  return report.missingDynamic.length || report.missingLiterals.length || report.unreadable.length;
+  const issues = report.streamedMedia.validationErrors.concat(report.streamedMedia.limitErrors);
+  for (const issue of issues) console.error(typeof issue === 'string' ? issue : issue.owner + ': ' + issue.message);
+  return report.missingDynamic.length || report.missingLiterals.length || report.unreadable.length || issues.length;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

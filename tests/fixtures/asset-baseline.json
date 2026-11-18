@@ -1,5 +1,5 @@
 {
-  "description": "Four-seat Coop client with snapshot-aged actor/FX playback, exact padded body cores and release-versioned assets. Reviewed replacement boss art is not installed in this infrastructure checkpoint.",
+  "description": "Four-seat Coop client with exact total/base payload inventory and validated optional snapshot-aged boss media. Reviewed replacement art remains staged outside the game.",
   "assetCount": 123,
   "assetBytes": 8989317,
   "assetMegabytesDecimal": 8.989317,
@@ -63,5 +63,13 @@
       "gzipBytes": 1021415,
       "decodedBytes": 58261504
     }
-  }
+  },
+  "basePublicBytes": 9524609,
+  "optionalMediaCount": 0,
+  "optionalMediaBytes": 0,
+  "optionalMediaTreeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "presentationDecodedBytesMax": 27140096,
+  "optionalMediaBudgetBytes": 67108864,
+  "optionalMediaPageBudgetBytes": 1048576,
+  "presentationBudgetBytes": 33554432
 }

@@ -10,8 +10,12 @@ async function main() {
   const report = assets.inventory();
   assert.strictEqual(report.categories.shadow.count, 12, 'each stage has a Shadow atlas');
   assert.strictEqual(report.preloadCount, 8);
-  assert.strictEqual(report.categories.boss.count, 48, 'each boss phase has actor and projectile atlases');
-  assert.ok(report.publicBytes <= 10 * 1024 * 1024);
+  assert.strictEqual(report.categories.boss.count, 48 + report.optionalMediaCount,
+    'legacy boss banks and every registered stream page remain inventoried');
+  assert.ok(report.basePublicBytes <= 10 * 1024 * 1024);
+  assert.strictEqual(report.publicBytes, report.basePublicBytes + report.optionalMediaBytes);
+  assert.deepStrictEqual(report.streamedMedia.validationErrors, []);
+  assert.deepStrictEqual(report.streamedMedia.limitErrors, []);
   assert.deepStrictEqual(report.missingDynamic, []);
   assert.deepStrictEqual(report.missingLiterals, []);
   assert.ok(report.unused.includes('assets/ufo/red-laser.png'));
@@ -30,6 +34,18 @@ async function main() {
   assert.ok(secret.some(hit => hit.includes('SPROTO_PRACTICE_RELAY')));
   assert.deepStrictEqual(assets.scanText('ordinary game source'), []);
   const built = build.buildDist();
+  const live = budgets.runtimeBudget(report);
+  assert.strictEqual(built.manifest.publicBytes, report.publicBytes);
+  assert.strictEqual(built.manifest.runtimePublicBytes, live.staticBytes);
+  assert.strictEqual(built.manifest.basePublicBytes, report.basePublicBytes);
+  assert.strictEqual(built.manifest.runtimeBasePublicBytes, live.baseStaticBytes);
+  assert.strictEqual(built.manifest.optionalMediaCount, report.optionalMediaCount);
+  assert.strictEqual(built.manifest.optionalMediaBytes, report.optionalMediaBytes);
+  assert.strictEqual(built.manifest.optionalMediaTreeSha256, report.optionalMediaTreeSha256);
+  assert.deepStrictEqual(built.manifest.optionalMediaPaths, report.streamedMedia.optionalPaths);
+  assert.strictEqual(built.manifest.presentationDecodedBytesMax, report.streamedMedia.maxPresentationDecodedBytes);
+  assert.deepStrictEqual(built.manifest.mediaBudgetLimits, report.streamedMedia.limits);
+  assert.strictEqual(built.manifest.files.length, report.files.length, 'no inventory file is dropped by partition reporting');
   assert.ok(built.distFiles.includes('index.html'));
   assert.ok(built.distFiles.includes('js/sim.js'));
   assert.ok(built.distFiles.includes('js/combat.js'));
