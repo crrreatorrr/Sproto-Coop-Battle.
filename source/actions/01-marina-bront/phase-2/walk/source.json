@@ -1,0 +1,28 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "cb8ed891303c2367e6e4c6d742bb9b76950978448dc74beaa69b27bd8a567c2d",
+  "sourceSHA256": "b16425caf82067f5ac68ad7fb0656327695633f93a348d864ac7c0fec49daeb6",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    249.0,
+    3.0,
+    249.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 994856,
+  "additionalMagentaMatteMixtureSamples": 6701,
+  "additionalMaskScope": "Saturated magenta within four native pixels of the flat matte. Steel, green, blue and red paint are retained.",
+  "retainedRGBUnchanged": true,
+  "previousDerivedSourceSHA256": "db7b75be542539d5da2374dd63fad10b7b9b6b4d4c356602498fd57a2e3d3394",
+  "openGapMatteMaskSha256": "47329e07f7a83f2976af22491d50187ca669593d46071a2775c4927a0cfd31a3",
+  "openGapRegions": [
+    [
+      831,
+      936,
+      848,
+      951
+    ]
+  ],
+  "additionalSamples": 9,
+  "maskReason": "Narrow, independently identified background color in open armor joints. Every source RGBA outside the explicit mask is preserved, including the cockpit paint."
+}

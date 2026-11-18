@@ -1,0 +1,87 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "0b490c7e81f477fe66b6f7d56f2e22aaf4578f18c91b321585bb53d44eb9e7a1",
+  "sourceSHA256": "31e786d67aea168ae7c0e08a157ae3c34f1c80ba867fedc5a8711f1ac0a51170",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    1.0,
+    251.0,
+    253.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1079049,
+  "additionalCyanMatteMixtureSamples": 6756,
+  "additionalMaskScope": "Saturated cyan within four native pixels of the flat matte. Purple armor and royal-blue pilot paint are retained.",
+  "retainedRGBUnchanged": true,
+  "preDetachedMaskSHA256": "d73bb294bfa5bbe0aab3e717811c3ba7257167d9167e7f7c6d6309fe559ebcd9",
+  "detachedMatteMaskSHA256": "effbcd394f5a58325ffd894d2d097b92a986729a85236a9fcc25321bca31b6aa",
+  "detachedClearRects": [
+    [
+      985,
+      507,
+      1083,
+      524
+    ],
+    [
+      801,
+      1133,
+      901,
+      1149
+    ]
+  ],
+  "detachedMatteSamples": 79,
+  "previousDerivedSourceSHA256": "5bf0cf37d812ed4860e24d71999473acd190a59fb924108530fece11e0f406b0",
+  "openGapMatteMaskSha256": "4a914e37eb8b621bebb36e9e3fdde2e8af3a872a38217389c52dbf30372566e4",
+  "additionalSamples": 38,
+  "openGapRegions": [
+    [
+      452,
+      202,
+      470,
+      221
+    ],
+    [
+      1079,
+      202,
+      1097,
+      221
+    ],
+    [
+      452,
+      829,
+      470,
+      847
+    ],
+    [
+      1079,
+      829,
+      1097,
+      847
+    ],
+    [
+      884,
+      267,
+      900,
+      285
+    ],
+    [
+      257,
+      895,
+      273,
+      911
+    ],
+    [
+      884,
+      895,
+      900,
+      911
+    ],
+    [
+      886,
+      90,
+      905,
+      109
+    ]
+  ],
+  "maskReason": "Exact cyan in open shoulder, launcher and roof gaps. Full pilot and connected hardware paint are preserved outside these regions."
+}

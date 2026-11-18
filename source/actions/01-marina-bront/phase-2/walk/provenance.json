@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "bront-p2-walk-v3",
+  "clips": {
+    "walk": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": true,
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/01-marina-bront/bront-p2-walk-v3-ee294051c719d96c.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/01-marina-bront/bront-p2-walk-v3-ee294051c719d96c.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 169426,
+      "sha256": "ee294051c719d96c8650b6db3f475e34e87a770dd555d721ebcae3bc3d1f61b1"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "walk",
+      "file": "cel-1.png",
+      "sha256": "47c63e009c14e7b3ee2587a0964423d67f4768382265c40d849e2c8d65a9b921",
+      "rgbaSha256": "baeff76573dc145b14a5c2b63dc1a3bd13e9d0ecb148ab5e6e8e2c8d4bb39341",
+      "uniqueCel": 0,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-2.png",
+      "sha256": "e0636c5241616b0936351a83f30c09f2c8601d24684bb303198b500b2f33e726",
+      "rgbaSha256": "4aff6cadeb49526ec1584031ef5252ed8ffbecb99fc41f8174cd9e23eac9d4b1",
+      "uniqueCel": 1,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-3.png",
+      "sha256": "1878ded4788d2c6a922cc787301aee161cf0b01bda39a65202cc61b371ff70dc",
+      "rgbaSha256": "aed6c861d96221eb4cf6cd036762b04b1dc611ada8ce647439484f097a604aed",
+      "uniqueCel": 2,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-4.png",
+      "sha256": "bad750508f69f6516bcb356731516b6efc0d1c31ed3e05daf6131790efd0f3f4",
+      "rgbaSha256": "a278f570615152e1a956d572b1f11151c978ca68f5305a94493f9510c9a37728",
+      "uniqueCel": 3,
+      "ticks": 9
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}
