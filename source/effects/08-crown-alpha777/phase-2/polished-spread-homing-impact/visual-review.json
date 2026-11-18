@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "9d6575defb922da60dd049c6d1e8db42aa6171cbed16a47edbbd472f9c1299de",
+  "providerSha256": "876ac0cbc3ee937ca9fb44af9a68b75b7dce2b4720632e72eae39e3c62222444",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Purple left tips stay registered with gold-yellow body and right acid wake; the spread row sweeps its fins and the tracker keeps a heavy vented silhouette. Impact starts bright lime, opens shards, then dies down to colored flecks. Independently reviewed the native geometry and dark/light gameplay contact. No detached opaque pale islands, text, panel matte or neighbor bleed. Existing authored rows stay protected. This verdict covers only the ordered purposes. Runtime proof is separate.",
+  "reviewedPartialAlpha": true
+}
