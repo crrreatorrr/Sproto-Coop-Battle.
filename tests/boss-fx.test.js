@@ -218,6 +218,52 @@ for(const mode of ['signature','special']) {
   const ended=copy(detached);ended.fx=ended.fx.map(f=>({...f,t:mode==='special'?36:24}));
   assert.equal(fxDraws(rendered,ended,src).length,0,'stale finite event cannot loop or leak its final cel');
 }
+
+// Grounding is an optional visual origin for event-owned signature/special
+// clips. It never edits the snapshot z, damage zone or finite event timeline.
+for(const mode of ['signature','special']) {
+  const snapshot=impactSnapshots[mode],registry=copy(animations);
+  const event=snapshot.fx.find(f=>select.effect(f)?.purpose===mode);
+  const src=M.bosses[event.bi].phases[event.ph].proj;
+  const authored=registry.bosses[M.bosses[event.bi].key].phases[event.ph].fx[mode];
+  authored.grounded=true;authored.anchor=[48,95];
+  const r=renderer(registry),original=copy(snapshot),draws=fxDraws(r,snapshot,src);
+  const shakeY=snapshot.sk?Math.round(Math.cos(snapshot.t*2.3)*snapshot.sk*.6):0;
+  for(const f of snapshot.fx.filter(f=>select.effect(f)?.purpose===mode)) {
+    const shakeX=snapshot.sk?Math.round(Math.sin(snapshot.t*1.7)*snapshot.sk):0;
+    const draw=draws.find(c=>c.args[2]===select.rows[mode]*96&&
+      c.transform.x===shakeX+Math.round(f.x-snapshot.camX));
+    assert(draw,'actual zone event drew its grounded source cel');
+    assert.equal(draw.transform.y,shakeY+Math.round(Sim.FLOOR_TOP+f.y));
+    const size=mode==='special'?f.sm+25:f.sm||82;
+    assert.equal(draw.args[6],-95*size/96);
+    assert(Math.abs(draw.args[6]+95*draw.args[8]/96)<1e-9,
+      'opaque contact edge95 lands on the exact floor at every effect size');
+  }
+  assert.deepEqual(snapshot,original,'grounding preserves snapshot collision position and elevation');
+  const detached=copy(snapshot);detached.boss=null;
+  assert.deepEqual(fxDraws(renderer(registry),detached,src),draws,'ground origin does not depend on current actor state');
+  for(const flag of [false,undefined,'true',1]) {
+    const ungrounded=copy(animations);
+    ungrounded.bosses[M.bosses[event.bi].key].phases[event.ph].fx[mode].grounded=flag;
+    assert.deepEqual(fxDraws(renderer(ungrounded),snapshot,src),fxDraws(renderer(),snapshot,src),
+      'only explicit boolean true changes the visual origin');
+  }
+  const unavailable=copy(registry);
+  unavailable.bosses[M.bosses[event.bi].key].phases[event.ph].fx[mode].pages[0].src='assets/bosses/fx/pending.webp';
+  const pending=fxDraws(renderer(unavailable),snapshot,src),legacy=fxDraws(renderer({}),snapshot,src);
+  assert.deepEqual(pending,legacy,'undecoded grounded art retains legacy elevated placement');
+}
+const activeExtra=extra(0,'special');step(activeExtra.state,activeExtra.attack.warning+2);
+const stateBeforeDraw=Sim.exportState(activeExtra.state),allGroundFlags=copy(animations);
+for(const boss of Object.values(allGroundFlags.bosses))for(const phase of boss.phases)
+  for(const fx of Object.values(phase.fx))fx.grounded=true;
+renderer(allGroundFlags).draw(Sim.snapshot(activeExtra.state));
+assert.deepEqual(Sim.exportState(activeExtra.state),stateBeforeDraw,'live collision/event restart state is unchanged by grounded rendering');
+for(const snapshot of shotSnapshots.concat([hurtSnapshot])) {
+  assert.deepEqual(renderer(allGroundFlags).draw(snapshot),renderer().draw(snapshot),
+    'projectile elevation and hurt overlays ignore grounded flags');
+}
 const transitionDraws=fxDraws(rendered,transitionSnapshot,M.bosses[0].phases[0].proj);
 assert(transitionDraws.some(c=>c.args[2]===3*96),'P1 impact keeps its original atlas during P2 transform');
 assert(fxDraws(rendered,hurtSnapshot,M.bosses[0].phases[1].proj).some(c=>c.args[2]===6*96));
@@ -227,6 +273,8 @@ const deathRun=arena(1,{hp:5}); strike(deathRun);step(deathRun,113);
 const liveDeath=Sim.snapshot(deathRun);
 assert(fxDraws(rendered,liveDeath,M.bosses[0].phases[1].proj).some(c=>c.args[2]===7*96));
 assert.equal(rendered.draw(afterRemoval).length,0,'untagged booms after owner removal stay generic');
+assert.deepEqual(renderer(allGroundFlags).draw(liveDeath),renderer().draw(liveDeath),
+  'death overlay and untagged booms ignore grounded flags');
 
 // Finite clips clamp after their own last cel; projectile clips loop from the
 // serialized age, including a fresh renderer joining after several cycles.
@@ -245,6 +293,8 @@ for(const p of travelSnapshot.projs.filter(p=>p.t===20)) {
 const ordinary=copy(transitionSnapshot); ordinary.boss=null;
 ordinary.fx=[oldImpact]; ordinary.projs=[];ordinary.items=[];
 const src=M.bosses[0].phases[0].proj;
+assert.deepEqual(fxDraws(renderer(allGroundFlags),ordinary,src),fxDraws(renderer(),ordinary,src),
+  'ordinary projectile impacts ignore grounded flags');
 const legacyColumn=Math.min(3,Math.floor(oldImpact.t/6))*96;
 function fallback(registry,adjust=()=>{}) {
   const r=renderer(registry);adjust(r);
@@ -308,4 +358,4 @@ assert.equal(select.projectile({k:'boss',bi:0,ph:9,t:1}),null);
 assert.equal(select.effect({k:'boom',bi:0,ph:1,t:0}),null);
 assert.equal(select.effect({...oldImpact,sm:70}).purpose,'signature');
 assert.equal(select.effect({...oldImpact,sm:69}).purpose,'impact');
-console.log('boss FX: actual Sim emissions, phase ownership, reconnect, finite ends, eight-row playback and legacy fallback ok');
+console.log('boss FX: actual Sim emissions, phase ownership, reconnect, finite ends, optional ground contacts, eight-row playback and legacy fallback ok');

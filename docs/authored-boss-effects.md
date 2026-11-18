@@ -13,6 +13,8 @@ fx: {
   signature: {
     cell: [96, 96],
     anchor: [48, 48],
+    // Optional for signature/special only, after whole-cel contact alignment:
+    // grounded: true,
     frameTicks: [6, 6, 6, 6],
     pages: [{
       src: 'assets/bosses/03-mudline-crapto-p2-projectiles.png',
@@ -46,6 +48,16 @@ locate their cells, so the renderer does not assume that physical arrangement.
 Short finite clips hold their final cel until the existing simulation lifetime
 ends. Projectiles loop only their visual clip. Projectile positions, depth,
 elevation, velocity, collision, damage and effect lifetimes are unchanged.
+
+Signature/special clips may opt in with `grounded: true`. Their visual anchor
+then draws at `FLOOR_TOP + event.y`, independently of `event.z`. Align each
+whole source cel to a common opaque contact row before enabling it; for a
+96px cell whose last opaque row is94, anchor `[48,95]` places that contact edge
+exactly on the belt floor at every effect size. Origin alignment must preserve
+all source opaque pixels and prove zero clipping. Other purposes ignore this
+flag. Missing/false flags, undecoded or invalid clips and legacy fallback keep
+their existing elevated origin. The simulation event's z and collision data
+are never changed.
 
 The pure selector reads the owner index and phase carried by each projectile
 or effect. It never classifies an impact using the current actor state: a P1
@@ -83,4 +95,7 @@ restart export/import. It exercises the public world renderer with those
 snapshots, validates exact source rectangles/placement/facing, eight-row and
 explicit-cell atlases, finite clamp/projectile loops, late decode, path/resource
 validation and four-row fallback. The test also checks that rendering leaves
-the snapshots unchanged.
+the snapshots unchanged. Grounded cases verify exact contact-edge placement
+across actual effect sizes, explicit-boolean opt-in, actor-independent origins,
+legacy decode fallback, ignored flags on other purposes, and unchanged live
+collision/event restart state.

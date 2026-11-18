@@ -343,7 +343,7 @@ function drawFx(g, f, camX) {
   const authored = root.CoopBossFxSelection?.effect(f);
   if (authored?.ended) return;
   if (authored && drawRegisteredBossFx(g, authored, sx, sy,
-    f.k === 'bossSpecialImpact' ? f.sm + 25 : f.sm || 82, false)) return;
+    f.k === 'bossSpecialImpact' ? f.sm + 25 : f.sm || 82, false, FLOOR_TOP + f.y)) return;
   if (f.k === 'bossSpecialImpact') {
     const ph = M.bosses[f.bi].phases[f.ph], color = S.bossExtraAttack(f.bi, 'special').color;
     const size = f.sm, age = f.t / 36, alpha = Math.max(0, 1 - age);
@@ -947,7 +947,7 @@ function drawBoss(g, b, camX) {
 // FX clips share the actor timeline math, but never retain another event's
 // image or run a client-side clock. A late/malformed atlas keeps legacy art.
 const bossFxPlans = new WeakMap(), invalidBossFxClips = new WeakSet();
-function drawRegisteredBossFx(g, choice, x, y, size, flip) {
+function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
   const clip = root.CoopBossFxSelection?.clipFor(root.CoopBossTransformations?.animations, M, choice);
   if (!clip || typeof clip !== 'object' || !root.CoopSpriteTimeline?.plan || invalidBossFxClips.has(clip)) return false;
   let plan = bossFxPlans.get(clip);
@@ -967,6 +967,10 @@ function drawRegisteredBossFx(g, choice, x, y, size, flip) {
   }
   const frame = plan.at(choice.age, choice.loop), sheet = img(frame.page.src);
   if (!ready(sheet) || sheet.naturalWidth !== frame.page.width || sheet.naturalHeight !== frame.page.height) return false;
+  // Ground-contact cels opt in explicitly. The event's z remains serialized
+  // and authoritative; only these two visual origins use the belt floor.
+  if (clip.grounded === true && (choice.purpose === 'signature' || choice.purpose === 'special') &&
+      Number.isFinite(groundY)) y = groundY;
   g.save();
   g.translate(Math.round(x), Math.round(y));
   g.imageSmoothingEnabled = false;
