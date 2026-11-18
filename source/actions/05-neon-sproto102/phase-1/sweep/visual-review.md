@@ -1,0 +1,13 @@
+# Sproto102 P1 rear sweep v2 — independent review
+
+**PASS with retained connector-shading caveat** for exact pagea84aecc535b40acea688a06bb293c7f3d38d1c4b5831cee6bcfb3c41ff6b0747,660²/173700encoded/1742400decoded bytes. No source, candidate, game or provider action by reviewer.
+
+All four genuine native ImageGen drawings and all16 delivered330views (both faces, pale/dark) were inspected. Phase-one red/cream/charcoal two-leg model and original recognizable blue floppy hair/yellow eyes/orange nose-grin/curled ears/yellow scarf pilot remain coherent. One front cannon stays forward, one connected shoulder/elbow/wrist/fist arm sweeps toward the rear. At real tick36 the body drops into a supported crouch and the fist hovers near ground in the actual rear impact zone; both complete armored boots stay planted. Recovery raises the same arm, guard returns. No front/body reversal, extra leg, phase-two chassis, detached fist/particles, source clipping or missing case. No detached white flecks observed; pale highlights are attached metal.
+
+**Caveat retained to protect source paint:** cel4 game[138,199]RGBA[200,44,159,255] and[137,200]RGBA[218,36,174,255] replay exactly to raw[866,984]/[864,987]. These are two high-magenta diagnostic hits, not grounds for automatic deletion. The complete native context follows the diagonal front hip connector inside a distinct continuous dark outline, reading as its shading at gameplay scale. Root independently classified the context and directed keeping both ambiguous samples. nonpilot-hue-context.png and hip-chain-comparison-native.png preserve raw/strict evidence. No reviewer cleanup/global hue erase was applied; no blanket native halo-free claim.
+
+Exact technical replay: immutable providerSHAe19041b93dd339d4bbbc4ec339bce5df0ae2cc4bc3327682468defb8a3f18d92, magenta[248,8,244],1053121flat32+5242bounded-mixture removals match masks/source/retained RGBA. Every native cel has one connected foreground component. All four complete627²fields→common721²NN→whole placements[110,169],[129,169],[110,169],[127,169] into960²→330²NN and660²lossless page match exactly, zero opaque clipping. Anchor[165,261],coreRect[55,55,220,220], nonloop[36,6,8,11]. No new pose, scale warp, repaint or part patch.
+
+Fresh independent isolated exact98921c0 Chromium proof passes124actualSim/browser cases, phase0, both facings, real tick36 rear nova release, correct selected age, cold fallback, late decode, one page request and two export/import reconnects. The author's separate124-case proof binds the same exact page. Fresh source-bound release captures are saved; this is not a full-scene independent pixel-oracle claim.
+
+All source/input hashes were rechecked unchanged before freeze. Root owns registration and commit.

@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "08-crown-alpha777",
+    "phase": 1,
+    "family": "special",
+    "purposes": [
+      "special"
+    ],
+    "asset": "assets/bosses/effects/08-crown-alpha777-p2-special-04439650e77e.png",
+    "atlasSha256": "04439650e77edba684b035c5831c4560c1fd631dc354b87267cfeb4bcdde0f3b",
+    "runtimeSha256": "04439650e77edba684b035c5831c4560c1fd631dc354b87267cfeb4bcdde0f3b",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "special": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          47,
+          50
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/08-crown-alpha777-p2-special-04439650e77e.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 230,
+  "animatedDraws": 350,
+  "resumed": 2,
+  "hit": [
+    19,
+    19
+  ],
+  "warnings": 55,
+  "lastWave": 23,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    11
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "d944d641d5ea3fcd9ba8dd5eb5ad69662d51a7b4f387b5e724240b46328c36f0",
+  "providerSha256": "c96754f3c6f777901d9f321d069b7ba0f7e28f337748d0ec16eb59a5429ee946",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Independently reviewed the native sequences and dark/light gameplay contact. The lane core tumbles around its stable center, exposing different faces of the same amethyst and ochre housing with consistently right-trailing exhaust. The spread and tracker silhouettes are discernible from the lane and retain a strong leftward ceramic tip. Impact dissipates through amethyst fragments to a tiny illuminated core. Pale samples are concentrated in the attached crystal plasma/emission areas, not background islands. No visible cell seams, labels, or foreign fragments. Centered [48,48] anchor. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

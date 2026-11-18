@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "vela-p2-emerald-guillotine-v1",
+  "clips": {
+    "special": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        49,
+        16,
+        8,
+        17
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/02-last-light-vela/vela-p2-emerald-guillotine-v1-65222fdec0c58c40.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/02-last-light-vela/vela-p2-emerald-guillotine-v1-65222fdec0c58c40.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 164288,
+      "sha256": "65222fdec0c58c402a1e759cfed4f313a2b996d12401f56016f0008959ca7dd4"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "special",
+      "file": "cel-1.png",
+      "sha256": "bfc558ca089660bc1286a6d98e1691e35a5d7f15a1d231fb5b149c5ca150f824",
+      "rgbaSha256": "1422b4efe35acb198d7958c065c3284800a3053e73ebaf9b1600423101d65299",
+      "uniqueCel": 0,
+      "ticks": 49
+    },
+    {
+      "action": "special",
+      "file": "cel-2.png",
+      "sha256": "b784559d41b47a921a11898ee9714cb212582750867f56a0f3570e84bbf681ee",
+      "rgbaSha256": "84df13ad9dcf891268750f1f46590bc7df18444273a115b3f8833f6fdfa457c7",
+      "uniqueCel": 1,
+      "ticks": 16
+    },
+    {
+      "action": "special",
+      "file": "cel-3.png",
+      "sha256": "a6a596f3ba2fa4bc5de5a64a23664ffdf8aa636e0a0678e709d8c7724742434e",
+      "rgbaSha256": "19d9f313005a3bd3b07a7a1d434925bb0c70b77930f0826ddc270ec9b128e706",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "special",
+      "file": "cel-4.png",
+      "sha256": "f58589b07df863fc5923e828f48fe46856ededdb8622d2b77d96a2ef5e062817",
+      "rgbaSha256": "ae22cf83ad94f3fe7f22ab5841c2b49a26b8f3f3d4735d4a706fdae67e3a1b16",
+      "uniqueCel": 3,
+      "ticks": 17
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

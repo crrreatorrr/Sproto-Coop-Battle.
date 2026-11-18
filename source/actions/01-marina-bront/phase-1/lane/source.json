@@ -1,0 +1,44 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "1868261917bdf5ba1fc0e43ebd19e81f53385b80d78b4119438c20aa7c1a3db2",
+  "sourceSHA256": "0c6f526f48ea1faf9d6d8840398eaeff5837a0e62ef897192e235f10cdbadeb7",
+  "measuredMatteRGB": [
+    249.0,
+    3.0,
+    249.0
+  ],
+  "flatTolerance": 32,
+  "flatCount": 1015522,
+  "mixedCount": 3619,
+  "mixedRule": "r>180,b>180,g<125 within Chebyshev4 of measured flat matte",
+  "retainedRGBExact": true,
+  "phase": 0,
+  "action": "lane",
+  "status": "SELF-QA technical/identity PASS; independent root emission/likeness admission pending",
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      610,
+      627
+    ],
+    [
+      610,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      610,
+      1254
+    ],
+    [
+      610,
+      627,
+      1254,
+      1254
+    ]
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "status": "PRIVATE_CANDIDATE_NOT_REGISTERED_PENDING_INDEPENDENT_QA",
+  "version": 1,
+  "id": "crapto-p2-sludge-blackout-v1",
+  "phaseIndex": 1,
+  "state": "special",
+  "clips": {
+    "special": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        54,
+        8,
+        8,
+        8,
+        25
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/03-mudline-crapto/phase-2/crapto-p2-sludge-blackout-v1-211fb854ed056f35.webp",
+          "columns": 3,
+          "rows": 2,
+          "frames": 5,
+          "cells": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "211fb854ed056f35815d28c520a973f8e4e3744b6a9cd1fc021bd0254b50a302",
+  "pageSize": [
+    990,
+    660
+  ],
+  "encodedBytes": 205618,
+  "decodedBytes": 2613600,
+  "sourceOriginalSHA256": "c257ff3d649168f2048d17065b93fbd1826a8f8bbd39d4d8e46426543fe95d06",
+  "extractedSHA256": "fa2d66c2fc82698e136c6b7e1c5d873154dcec32a6d06d073a993c615952fd0a",
+  "sourceLineage": [
+    {
+      "index": 0,
+      "role": "approved exact original standing lead-in",
+      "sourceFile": "inputs/approved-p2-native640.png",
+      "sourcePngSHA256": "8a7f9c32ef0579c119287ae5443205271182be79dda6f2e09099a32401ec5a08",
+      "sourceRGBASHA256": "36bcbefaaadf653fd0adc6c9b03d62530d69dd9b59971ea54f8c454ff4c40737",
+      "transform": "640\u2192220NN, paste[55,55] into330, no body/pilot edit",
+      "deliveryRGBASHA256": "3a854f67131d17c7e7f2f65c7f4f8caf46c01a61fe87bd1203573fbee04241de"
+    },
+    {
+      "index": 1,
+      "generatedIndex": 0,
+      "role": "actual generated release1",
+      "sourceFile": "generated-cel-0.png",
+      "sourcePngSHA256": "25ac6aff5614805bec897b15d0f03ad8f6e08131a7f180905673576fecee3874",
+      "sourceRGBASHA256": "6e0382890fd0daf6488b2e54823ff342e4ce2b2f9fa086c827b6d05922edcbcb",
+      "sourceBounds": [
+        43,
+        52,
+        582,
+        540
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.365,
+      "sourceAnchor": [
+        335,
+        540
+      ],
+      "deliveryBounds": [
+        58,
+        83,
+        255,
+        261
+      ],
+      "deliveryRGBASHA256": "4fcb1636d485a06c03980e0ee78a39d64bb432c13d24e1728117ecef027b69f7",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 2,
+      "generatedIndex": 1,
+      "role": "actual generated release2",
+      "sourceFile": "generated-cel-1.png",
+      "sourcePngSHA256": "a45ad9a2739a8331124671a29b969a32b3a861dc82aaab75762494e1b5f87c33",
+      "sourceRGBASHA256": "b711e51d4fda1712ea78a7eb3245415e34b05783d85175e96cac9c3c32cdb1de",
+      "sourceBounds": [
+        71,
+        52,
+        582,
+        540
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.365,
+      "sourceAnchor": [
+        335,
+        540
+      ],
+      "deliveryBounds": [
+        69,
+        83,
+        255,
+        261
+      ],
+      "deliveryRGBASHA256": "1ee36088b3a44734d17e428aa1b4862cc474b91d9c18fa011506f94bf8289e4c",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 3,
+      "generatedIndex": 2,
+      "role": "actual generated release3",
+      "sourceFile": "generated-cel-2.png",
+      "sourcePngSHA256": "035126ec2d1828c48f8e5601623de1d59fd897bafd0fb32d1d8a5fcc10c19278",
+      "sourceRGBASHA256": "71758f5e0f046a68bf51aadfc214f742987bd8850e2bd29050c04443c2393363",
+      "sourceBounds": [
+        88,
+        52,
+        582,
+        540
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.365,
+      "sourceAnchor": [
+        335,
+        540
+      ],
+      "deliveryBounds": [
+        75,
+        83,
+        255,
+        261
+      ],
+      "deliveryRGBASHA256": "3db42294a697389d0df181584f6cf7da96c21ad1afc212f2a0685d19039f0f8f",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 4,
+      "generatedIndex": 3,
+      "role": "actual generated release4",
+      "sourceFile": "generated-cel-3.png",
+      "sourcePngSHA256": "44897bccbb10f9dda21d660fdba706a825494055f16fff033b230f128475c7eb",
+      "sourceRGBASHA256": "b548b0e0bc4fd8a86fee141398aeb57c325584e1badbd464387925197d0b90ea",
+      "sourceBounds": [
+        26,
+        52,
+        583,
+        540
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.365,
+      "sourceAnchor": [
+        335,
+        540
+      ],
+      "deliveryBounds": [
+        52,
+        83,
+        255,
+        261
+      ],
+      "deliveryRGBASHA256": "af1a06074a9917914c0eeaf53212bb6af446d1b80abfd87877092b61e20e4e14",
+      "completeTransformedSourceExtentInsideField": true
+    }
+  ],
+  "newProviderDrawings": 4,
+  "localNewPoses": 0,
+  "noPerPartPatch": true,
+  "canonicalStandingLeadIn": true
+}

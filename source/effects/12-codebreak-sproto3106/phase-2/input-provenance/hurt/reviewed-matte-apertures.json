@@ -1,0 +1,166 @@
+{
+  "sourceSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+  "physicalNegativeSpaces": 3,
+  "fourConnectedSeedComponents": 8,
+  "totalSamples": 84,
+  "components": {
+    "1": [
+      {
+        "id": "tile-001-reviewed-pressure-aperture-00",
+        "point": [
+          766,
+          443
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 1,
+        "expectedRemovedBounds": [
+          766,
+          443,
+          767,
+          444
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-001-gap-00.png",
+        "expectedRemovedMaskFileSha256": "a0008e98e2150814e855ede6f63e844e8d15ba309efbd8423b490a62ddf52ba5",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      }
+    ],
+    "2": [
+      {
+        "id": "tile-002-reviewed-pressure-aperture-01",
+        "point": [
+          407,
+          325
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 44,
+        "expectedRemovedBounds": [
+          400,
+          320,
+          415,
+          331
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-01.png",
+        "expectedRemovedMaskFileSha256": "58ef835ea811c0be81d20176f1dd8a516fac1d24eca0f0044670c8757a02ebea",
+        "seedInteriorDepth4Neighbor": 2,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-02",
+        "point": [
+          493,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 16,
+        "expectedRemovedBounds": [
+          485,
+          755,
+          501,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-02.png",
+        "expectedRemovedMaskFileSha256": "7cae17817c8a81cd600b86139e197c27925ab876df6ffe3bd1f86fe6f362a2f9",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-03",
+        "point": [
+          507,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 10,
+        "expectedRemovedBounds": [
+          502,
+          755,
+          512,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-03.png",
+        "expectedRemovedMaskFileSha256": "d15f44364a4829b87bdb9306c8d75b5eb8381bb6f55e4791f4321dcab08c6477",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-04",
+        "point": [
+          517,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 7,
+        "expectedRemovedBounds": [
+          514,
+          755,
+          521,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-04.png",
+        "expectedRemovedMaskFileSha256": "ba6b950ab5f13fa61974d492b04d02e9e2968755e1f82aa069cf7c9422b52dff",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-05",
+        "point": [
+          523,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 2,
+        "expectedRemovedBounds": [
+          522,
+          755,
+          524,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-05.png",
+        "expectedRemovedMaskFileSha256": "d7d69ce2b90f7008104b8dfaea81d2cbcb90010aff9ac1de692c58931ab0d0dc",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-06",
+        "point": [
+          526,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 3,
+        "expectedRemovedBounds": [
+          525,
+          755,
+          528,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-06.png",
+        "expectedRemovedMaskFileSha256": "1d69235cd21952a0e20f3f6e4fd6b77281b642e4759ab65bf5f487ca3ee591e1",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-07",
+        "point": [
+          536,
+          755
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 1,
+        "expectedRemovedBounds": [
+          536,
+          755,
+          537,
+          756
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-matte-masks/tile-002-gap-07.png",
+        "expectedRemovedMaskFileSha256": "372343264220f87c45acb1277274c87e6f93ee33fa272ec24014ef68a4e1c078",
+        "seedInteriorDepth4Neighbor": 1,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+      }
+    ]
+  },
+  "sourceReviewContext": "aperture-native-contexts-NNx2.png",
+  "noWiderMatteThreshold": true
+}

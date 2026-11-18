@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "cf20917eeab04967cc40fe18fe6a7cefead6c27a8286e40db52b48101dda0387",
+  "sourceSHA256": "3ce90664614d738bdba95289601f7ebf6e53b0fa6fc9527e5730b4af7faa0867",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    3.0,
+    248.0,
+    3.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1067024,
+  "additionalGreenMatteMixtureSamples": 11280,
+  "additionalMaskScope": "Green-dominant samples within 4 native pixels of the flat matte. No green material in approved Rune.",
+  "retainedRGBUnchanged": true
+}

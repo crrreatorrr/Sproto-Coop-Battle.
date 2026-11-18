@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "frozenPackets": [
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-p2-signature-v1/delivery-manifest.json",
+      "sha256": "ad0838f0f47365b563207b976ec2c36ad0ca6036abc9dec9c6cbfb9e9ac00cd9",
+      "filesReadBackExact": 20
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/crapto-p2-blackout-v1/delivery-manifest.json",
+      "sha256": "c4c7e82e2f65886038459beefe860825f8ebad0bced205469574e441691ec6cc",
+      "filesReadBackExact": 20
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/delivery-manifest.json",
+      "sha256": "0fdf61412270f4e351745feb6bc4b3b1e8b180414085bffe330a0a420e3d7273",
+      "filesReadBackExact": 127
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/qa/vela-p2-signature-independent-v1/delivery-manifest.json",
+      "sha256": "1b1503b79679226f146e26052733bfd1701ee4b5291a03da7897eb370d9f4103",
+      "filesReadBackExact": 41
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/qa/crapto-p2-sludge-blackout-brief-review-v1/delivery-manifest.json",
+      "sha256": "2d66209685cf7c862ab6dd985ba0bad16cea974cf09fce5be4cc20cd241d10ff",
+      "filesReadBackExact": 18
+    }
+  ],
+  "originals": [
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/vela-p2-signature/source.png",
+      "sha256": "9e892c7871e3324ed94a9c17b2a661b6eaa6baf018a172c2b5f45942bedf1d9a",
+      "bytes": 431349
+    },
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/crapto-p2-sludge-blackout/source.png",
+      "sha256": "9573cf76fb0c356a521056b878a4c05eabd7ac70634ce1e60f473219e8f06de0",
+      "bytes": 711470
+    },
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/crapto-p2-signature-02-seedream5/provider-original.png",
+      "sha256": "d1433df30a41c8fbd58fc4feb543b7f18fb3d21ed25e65ce6d31ef3faaffdf71",
+      "bytes": 17965420
+    }
+  ],
+  "newSourceOrAlphaChanges": false
+}

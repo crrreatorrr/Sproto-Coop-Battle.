@@ -1,0 +1,54 @@
+{
+  "actualProviderOriginalSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+  "formattedSourceSHA256": "4377e8d123370df67d16150a1ecd293d7a9670b359f0fd2e0b8f6a6071f773d7",
+  "physicalNegativeSpaces": 2,
+  "fourConnectedSeedComponents": 2,
+  "totalSamples": 159052,
+  "components": {
+    "2": [
+      {
+        "id": "tile-002-reviewed-ring-empty-space-00",
+        "point": [
+          762,
+          510
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 54499,
+        "expectedRemovedBounds": [
+          228,
+          228,
+          796,
+          797
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-matte-masks/tile-002-gap-00.png",
+        "expectedRemovedMaskFileSha256": "f7a0bbe3bad47f3a18694b768220acd3213a9f88d096de2c7db7e975d18522dd",
+        "seedInteriorDepth4Neighbor": 34,
+        "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+      },
+      {
+        "id": "tile-002-reviewed-ring-empty-space-01",
+        "point": [
+          512,
+          512
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 104553,
+        "expectedRemovedBounds": [
+          309,
+          309,
+          715,
+          715
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-matte-masks/tile-002-gap-01.png",
+        "expectedRemovedMaskFileSha256": "4571b93f910b6b71fa2dd0e1d299d3cb8885ca9cdfb47efaebd935248c0c0a85",
+        "seedInteriorDepth4Neighbor": 203,
+        "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+      }
+    ]
+  },
+  "sourceReviewContext": [
+    "strict-preflight-native-002-pale-NNhalf.png",
+    "raw-cels/frame-002.png"
+  ],
+  "noWiderMatteThreshold": true
+}

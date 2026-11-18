@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "02-last-light-vela",
+    "phase": 1,
+    "family": "special",
+    "purposes": [
+      "special"
+    ],
+    "asset": "assets/bosses/effects/02-last-light-vela-p2-special-966924c4febf.png",
+    "atlasSha256": "966924c4febfa7452150fcd2d8f2995a4b6e012437a98c69fa8516dc9e12050c",
+    "runtimeSha256": "966924c4febfa7452150fcd2d8f2995a4b6e012437a98c69fa8516dc9e12050c",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "special": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/02-last-light-vela-p2-special-966924c4febf.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    }
+  },
+  "requests": 1,
+  "snapshots": 204,
+  "animatedDraws": 210,
+  "resumed": 2,
+  "hit": [
+    15,
+    15
+  ],
+  "warnings": 49,
+  "lastWave": 16,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    11
+  ]
+}

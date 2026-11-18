@@ -1,0 +1,9 @@
+{
+  "provider": "Built-in ImageGen (samev1 source)",
+  "providerSHA256": "3e6952f27d99f3f1d2595e14af8e754d0a611245168794e4b9293269d2ffa62f",
+  "newGeneration": false,
+  "newLocalPoseOrPalette": false,
+  "onlyChange": "Root-reviewed136 exact open-gap background samples transparent; every otherRGBA exact",
+  "baseSource": "../highsproto-p1-charge-v1",
+  "reviewedMaskPacket": "../qa/highsproto-p1-charge-v1-clear-gap-mask-v1"
+}

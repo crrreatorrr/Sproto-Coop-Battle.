@@ -1,0 +1,21 @@
+{
+  "boss": "03-mudline-crapto",
+  "phaseIndex": 1,
+  "state": "special",
+  "standing": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/mechanical-crapto/frames/frame-159.png",
+  "standingSHA": "8a7f9c32ef0579c119287ae5443205271182be79dda6f2e09099a32401ec5a08",
+  "pilot": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/outputs/mecha-complete-movesets/portraits/crapto.webp",
+  "pilotSHA": "6cf0c8894213c51455cc2d514d667e57bdd7492507438f11a7d6eff4896b509e",
+  "padding": [
+    320,
+    320
+  ],
+  "sourceRGBAChanges": 0,
+  "scale": 1,
+  "anchor": [
+    640,
+    920
+  ],
+  "soleRow": 919,
+  "exactStandingLeadIn": true
+}

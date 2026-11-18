@@ -1,0 +1,122 @@
+{
+  "boss": "06-circuit-rune",
+  "phase": 1,
+  "kind": "lane",
+  "htmlStagePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/rune-p2-lane-projectile-v1/staged/06-circuit-rune-p2-lane-5dc8428a3913.png",
+  "providerSourceSHA256": "fb9bd5b5078e478bd9a2c12723d0145743a32e9bdad916dd9368795b6c450d6b",
+  "sourceSHA256": "f9965c0e967be68f044c0a478b81e456c4e1b9bdaedb1280bfe94437c46fe4b3",
+  "pageSHA256": "5dc8428a391301c0dc63c67ea403f1f2773bafca62826b7aa146dcee29b29eac",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/effects/06-circuit-rune-p2-lane-5dc8428a3913.png",
+        "columns": 4,
+        "rows": 1,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "flatMatteRGB": [
+    249.0,
+    4.0,
+    250.0
+  ],
+  "flatSamples": 1273139,
+  "boundedMix": 2842,
+  "scale": 0.13968253968253969,
+  "transforms": [
+    {
+      "sourceBox": [
+        112,
+        146,
+        514,
+        459
+      ],
+      "packedBounds": [
+        20,
+        26,
+        76,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "3fe09d86ebb5f4c8422e394900cf28c8221d8deac7b06d3bcae24c1aafd34dcd"
+    },
+    {
+      "sourceBox": [
+        86,
+        145,
+        489,
+        458
+      ],
+      "packedBounds": [
+        20,
+        26,
+        76,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "760140e53733c2aee7f846805a52b95a3c97418712de731150d4cc164817b14d"
+    },
+    {
+      "sourceBox": [
+        112,
+        119,
+        514,
+        434
+      ],
+      "packedBounds": [
+        20,
+        26,
+        76,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "5f386ca5aa4a3efc0eba150ad7c19d02f7fceb39dac7745ebc189143e633f0bc"
+    },
+    {
+      "sourceBox": [
+        87,
+        120,
+        489,
+        434
+      ],
+      "packedBounds": [
+        20,
+        26,
+        76,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "9d42ceabd565f36c79c6c1228f8a94017d920eec919cdfe821051cdb7da44d6a"
+    }
+  ],
+  "purposeReview": "Pending independent source and renderer QA"
+}

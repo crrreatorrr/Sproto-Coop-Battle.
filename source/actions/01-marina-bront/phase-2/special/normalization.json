@@ -1,0 +1,91 @@
+{
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "sourceCellSizes": [
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ]
+  ],
+  "sourceSHA256": "c24670d3a8742df7eed9ff9c317ecd516c57b37c92db3371693b0b19dd2ebf08",
+  "uniformNearestOutputSizes": [
+    [
+      646,
+      646
+    ],
+    [
+      646,
+      646
+    ],
+    [
+      646,
+      646
+    ],
+    [
+      646,
+      646
+    ]
+  ],
+  "nativePlacements": [
+    [
+      127,
+      222
+    ],
+    [
+      120,
+      222
+    ],
+    [
+      103,
+      222
+    ],
+    [
+      109,
+      222
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "extraLeftPaddingNative": 0,
+  "bootSilhouetteIntersectionOverUnion": 0.6602056639190402,
+  "placementBasis": "One scale and a compound rear-boot registration using the same sole landmark across all cels.",
+  "newArtworkOrAlphaEdits": false
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "crapto-p2-sludge-canister-drop",
+  "clips": {
+    "signature": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        33,
+        10,
+        9,
+        16
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/03-mudline-crapto/crapto-p2-sludge-canister-drop-86b59bbaaaffd8cb.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/03-mudline-crapto/crapto-p2-sludge-canister-drop-86b59bbaaaffd8cb.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 183732,
+      "sha256": "86b59bbaaaffd8cb4023cc21846996a3888fc7c368b1a1144494528f280da519"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "signature",
+      "file": "cel-1.png",
+      "sha256": "a105441f5519f21fb660515b001375c34764e7c6ca1e32c050d7c8c01e0e062b",
+      "rgbaSha256": "b7e510ab3302c8a7b831bb34a7f453e6325faa01882f9705ee6e1a91159780fc",
+      "uniqueCel": 0,
+      "ticks": 33
+    },
+    {
+      "action": "signature",
+      "file": "cel-2.png",
+      "sha256": "0ed8d37fef8624925d8f3e01b07492554b5ee01b1a801a0576f36e854351e337",
+      "rgbaSha256": "62276a61c79f31c211aab0870e810373608af36649b0c08cb076e74565524546",
+      "uniqueCel": 1,
+      "ticks": 10
+    },
+    {
+      "action": "signature",
+      "file": "cel-3.png",
+      "sha256": "2f4a63f156ca0cebbe4cbeef97a603944e53ea88e61e489baf846ffc60b20f58",
+      "rgbaSha256": "5a95d811c1d9181ea6f4136cb6c62feb0d08d84018f3a584536b204e240f3358",
+      "uniqueCel": 2,
+      "ticks": 9
+    },
+    {
+      "action": "signature",
+      "file": "cel-4.png",
+      "sha256": "f911f6d6ae42491788f303b44ab4b98cf2e7311988f1f87e966b63d9f89c3795",
+      "rgbaSha256": "588bf8386dc5e84b745ac491abf48fc6ca0a8896afce77175e5af0ddeae87874",
+      "uniqueCel": 3,
+      "ticks": 16
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

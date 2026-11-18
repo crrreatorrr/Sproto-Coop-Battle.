@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "baseCommit": "5c15f30462dd485e3a304449b73073e0d7e8184a",
+  "status": "Local WIP standing/transformation/effects checkpoint; full provider combat set pending",
+  "transformations": {
+    "clips": 12,
+    "cels": 1920,
+    "durationTicksEach": 480,
+    "bundleManifestSha256": "c86bac0347d3bada00d604f44f7126a813ebe7e0a13f238151d1289000367357",
+    "acceptedCatalogSha256": "308449650a483ac7b76125ef84d78d8f72568c74036a0729de13dd7be6337410",
+    "portableSources": "source/transformations",
+    "endpointRigs": "source/endpoint-rigs"
+  },
+  "fallbackStandingHolds": {
+    "manifest": "source/fallback-standing-holds/manifest.json",
+    "banks": 24,
+    "exactCopies": 96,
+    "newWalkingPoses": 0,
+    "allOtherAttackRowRgbaUnchanged": true
+  },
+  "acceptedEffects": {
+    "boss": "04-ranch-zephyr",
+    "phase": 2,
+    "families": [
+      "signature",
+      "special",
+      "hurt",
+      "death"
+    ],
+    "source": "source/effects/04-ranch-zephyr/phase-2",
+    "originalProjectileRowsRgbaUnchanged": true
+  },
+  "pinnedFilesChanged": false,
+  "newLocalMotion": false,
+  "otherCombatRegistration": false
+}

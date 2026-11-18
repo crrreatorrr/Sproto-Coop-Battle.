@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "d7fb1c57b918ddb651633dfc7cf6dad98946b314c5e65d7c504a37d6b2f85a00",
+  "sourceSHA256": "ffc3a658355c4cc0283504033f0d9ed82f54dc810bca9c1d7be40cecdd963d81",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    1.0,
+    251.0,
+    253.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1157780,
+  "additionalCyanMatteMixtureSamples": 6155,
+  "additionalMaskScope": "Saturated cyan within four native pixels of the flat matte. Purple armor and royal-blue pilot paint are retained.",
+  "retainedRGBUnchanged": true
+}

@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / 'art/sprotel-bitcoin'
 OUT = ROOT / 'public/assets/bosses'
 CELL, FOOT = 176, 165
+ACTOR_PAGE_ROWS = 5
 ACTORS = {
     'p1': [('idle', 'walk')] + [(a+'-a', a+'-b') for a in
         ['snacks', 'beer', 'cocktails', 'drinks', 'marlin', 'charge', 'sweep']]
@@ -69,7 +70,10 @@ for phase, rows in ACTORS.items():
     actor = actor.quantize(colors=128,method=Image.Quantize.FASTOCTREE,
                            dither=Image.Dither.NONE).convert('RGBA')
     key = '13-last-call-sprotelbitcoin-'+phase
-    actor.save(OUT/(key+'.webp'),lossless=True,exact=True,method=6)
+    edge = ACTOR_PAGE_ROWS * CELL
+    for suffix, top, bottom in [('', 0, edge), ('-lower', edge, actor.height)]:
+        actor.crop((0, top, actor.width, bottom)).save(
+            OUT/(key+suffix+'.webp'), lossless=True, exact=True, method=6)
     effects = EFFECTS[phase]
     fx = Image.new('RGBA',(64*16,64*len(effects)))
     for row,name in enumerate(effects):
@@ -84,9 +88,9 @@ for phase, rows in ACTORS.items():
             fx.alpha_composite(cell,(col*64,row*64))
     fx.quantize(colors=128,method=Image.Quantize.FASTOCTREE,dither=Image.Dither.NONE).save(
         OUT/(key+'-projectiles.png'),optimize=True)
-    layouts[phase] = {'actor':{'cell':CELL,'columns':8,'rows':rows,'frames':count,'foot':[CELL//2,FOOT]},
+    layouts[phase] = {'actor':{'cell':CELL,'columns':8,'rows':rows,'frames':count,'foot':[CELL//2,FOOT],'pageRows':ACTOR_PAGE_ROWS},
                       'projectiles':{'cell':64,'columns':16,'rows':effects,'frames':16*len(effects)}}
-    for path in [OUT/(key+'.webp'),OUT/(key+'-projectiles.png')]:
+    for path in [OUT/(key+'.webp'),OUT/(key+'-lower.webp'),OUT/(key+'-projectiles.png')]:
         print(path.name,path.stat().st_size,'bytes')
 meta={'phases':layouts,'generation':{'actors':'2x2','projectiles':'4x4','tool':'image_gen','phaseCount':2}}
 (RAW/'layout.json').write_text(json.dumps(meta,indent=2)+'\n')

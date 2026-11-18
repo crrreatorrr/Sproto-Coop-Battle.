@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "vela-p1-rear-sweep-v1",
+  "phaseIndex": 0,
+  "action": "sweep",
+  "clips": {
+    "sweep": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        36,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/02-last-light-vela/phase-1/vela-p1-rear-sweep-v1-f3428e7a2125eec2.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSHA256": "f3428e7a2125eec2b9e5962446355ad9070564dd43f97afced7e0c70e2957876",
+  "encodedBytes": 160698,
+  "decodedBytes": 1742400,
+  "sourceSHA256": "5b62dfc52779b60694ae7ab8ce457b70de09d8c7a81e74bafdcc7d2e9647ab06",
+  "rawSourceRGBAPreserved": true,
+  "synthesizedFrames": 0,
+  "allFourSourceCelsComplete": true,
+  "independentAdmission": "PENDING"
+}

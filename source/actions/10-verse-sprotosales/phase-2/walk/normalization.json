@@ -1,0 +1,203 @@
+{
+  "sourceSHA256": "d8fe22ca4341e9426e5ce94dd35ec0211d416ddcf4f36c9bf3c1551564becbfd",
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "fixedUniformScale": 1.1164274322169059,
+  "uniformNearestOutputSizes": [
+    [
+      700,
+      700
+    ],
+    [
+      700,
+      700
+    ],
+    [
+      700,
+      700
+    ],
+    [
+      700,
+      700
+    ]
+  ],
+  "nativePlacements": [
+    [
+      89,
+      154
+    ],
+    [
+      116,
+      153
+    ],
+    [
+      93,
+      157
+    ],
+    [
+      110,
+      159
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "gameCell": [
+    330,
+    330
+  ],
+  "coreRect": [
+    55,
+    55,
+    220,
+    220
+  ],
+  "anchor": [
+    165,
+    261
+  ],
+  "placementBasis": "Common standing/contact height scale, source fixed chest-diamond amber centroid for horizontal whole-cel registration, planted support sole759. No per-part movement.",
+  "sourceChestDiamondAmberCentroidX": [
+    345.6680497925311,
+    321.424,
+    342.09505703422053,
+    327.260101010101
+  ],
+  "targetChestDiamondAmberCentroidX": 475.2796208530806,
+  "newArtworkOrRetainedRGBEdits": false,
+  "cases": [
+    {
+      "cel": 1,
+      "nativeBounds": [
+        216,
+        203,
+        726,
+        760
+      ],
+      "gameBounds": [
+        74,
+        70,
+        250,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 2,
+      "nativeBounds": [
+        212,
+        202,
+        688,
+        760
+      ],
+      "gameBounds": [
+        73,
+        69,
+        236,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 3,
+      "nativeBounds": [
+        212,
+        197,
+        710,
+        760
+      ],
+      "gameBounds": [
+        73,
+        68,
+        244,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": [
+        {
+          "xy": [
+            174,
+            131
+          ],
+          "rgba": [
+            187,
+            146,
+            191,
+            255
+          ]
+        },
+        {
+          "xy": [
+            175,
+            131
+          ],
+          "rgba": [
+            187,
+            144,
+            206,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "cel": 4,
+      "nativeBounds": [
+        206,
+        198,
+        686,
+        760
+      ],
+      "gameBounds": [
+        71,
+        68,
+        236,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": [
+        {
+          "xy": [
+            159,
+            147
+          ],
+          "rgba": [
+            176,
+            123,
+            170,
+            255
+          ]
+        }
+      ]
+    }
+  ],
+  "revision": "v3 identical whole-source normalization; only10 reviewed background source alpha samples removed",
+  "sourceV3NormalizationSHA256": "f932e937c83d19210e93dfc18e07a4bb6897619a51890e64b8029f2cdbc97d29"
+}

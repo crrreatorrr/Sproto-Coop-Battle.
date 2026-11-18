@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "08d53334900f850f798a34c7b096397dddeabe57a631a8b37d88d221f9e9ba42",
+  "sourceSHA256": "f271c2e8cbc670a56851a12b6826ead9152ec92225e1b5198cbd20da9de8730d",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    3.0,
+    249.0,
+    3.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1124548,
+  "additionalGreenMatteMixtureSamples": 8418,
+  "additionalMaskScope": "Saturated green within four native pixels of the flat matte. Neutral steel and blue pilot paint are retained.",
+  "retainedRGBUnchanged": true
+}

@@ -1,0 +1,302 @@
+{
+  "status": "EXACT_PREVIOUSLY_MATTE_REVIEWED_SOURCE_RGBA_SELECTED",
+  "originals": [
+    {
+      "family": "signature",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "packetFreezeSHA256": "753926e09939748113dc3c175702607584e23c1f4e540415cebe2231108d5acf",
+      "originalCopy": "source-originals/signature-provider-original.png",
+      "allOriginalPacketFilesVerified": 134
+    },
+    {
+      "family": "special",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "packetFreezeSHA256": "ad596a99210c49575890e9848440557b26bcf3c12505824f70d1090dafd45c09",
+      "originalCopy": "source-originals/special-provider-original.png",
+      "allOriginalPacketFilesVerified": 120
+    },
+    {
+      "family": "hurt",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "packetFreezeSHA256": "144395dd58c9cd3ce26b05dddd4cd3ed21605a353bd89f6b823ac34744ed592a",
+      "originalCopy": "source-originals/hurt-provider-original.png",
+      "allOriginalPacketFilesVerified": 124
+    },
+    {
+      "family": "death",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "packetFreezeSHA256": "1a7f06dfb458c6510b422f5badaca9f0ada1a6f4eaf6951e4e5bb3fe791fc57a",
+      "originalCopy": "source-originals/death-provider-original.png",
+      "allOriginalPacketFilesVerified": 125
+    }
+  ],
+  "frames": [
+    {
+      "tile": 0,
+      "family": "signature",
+      "familyCel": 0,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSourceSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-extraction/frames/frame-000.png",
+      "sourceFrameSHA256": "65cfe8d1668f8269a88566b7d11d50724a29fea91c16144699475d13db02aac2",
+      "selectedPNG": "selected-source-cels/frames/frame-000.png",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 1,
+      "family": "signature",
+      "familyCel": 1,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSourceSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-extraction/frames/frame-001.png",
+      "sourceFrameSHA256": "cd15a0948d64893446985306874a58be29d821f1599e1f8e8f03f7216c832fef",
+      "selectedPNG": "selected-source-cels/frames/frame-001.png",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 2,
+      "family": "signature",
+      "familyCel": 2,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSourceSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-extraction/frames/frame-002.png",
+      "sourceFrameSHA256": "b869d9a61c084642abafd3a7a10b54025cc478e73318d3c0703fb9c1cbfe274a",
+      "selectedPNG": "selected-source-cels/frames/frame-002.png",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 3,
+      "family": "signature",
+      "familyCel": 3,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSourceSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-extraction/frames/frame-003.png",
+      "sourceFrameSHA256": "c10c5ad8291d5e00380d2f2a474ea183f8902d47d4a791d408f660e3b583c7f1",
+      "selectedPNG": "selected-source-cels/frames/frame-003.png",
+      "nativeCell": [
+        512,
+        512
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 4,
+      "family": "special",
+      "familyCel": 0,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSourceSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-extraction/frames/frame-000.png",
+      "sourceFrameSHA256": "853002347ede25758d0e9239ded6edda6f9ee129821faa3b571a6ae2e59b2390",
+      "selectedPNG": "selected-source-cels/frames/frame-004.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 5,
+      "family": "special",
+      "familyCel": 1,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSourceSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-extraction/frames/frame-001.png",
+      "sourceFrameSHA256": "64194252137f7097b27a1980f7350ae703c5200f47cc5c26764f6c9393049936",
+      "selectedPNG": "selected-source-cels/frames/frame-005.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 6,
+      "family": "special",
+      "familyCel": 2,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSourceSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-extraction/frames/frame-002.png",
+      "sourceFrameSHA256": "2ff140241f10e7b822b98b50ec5cd172b1b943e9af05eba35b077bbb8d1ae5bc",
+      "selectedPNG": "selected-source-cels/frames/frame-006.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 7,
+      "family": "special",
+      "familyCel": 3,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSourceSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-extraction/frames/frame-003.png",
+      "sourceFrameSHA256": "fca630a00534fb6a6587d753775a73a32f95e5637965d4304a9de5630d3058a6",
+      "selectedPNG": "selected-source-cels/frames/frame-007.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 8,
+      "family": "hurt",
+      "familyCel": 0,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSourceSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-extraction/frames/frame-000.png",
+      "sourceFrameSHA256": "a1edb5fac1bbf83b3c860207f546939d7fbdb1b417966b54cf40f4cdec386782",
+      "selectedPNG": "selected-source-cels/frames/frame-008.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 9,
+      "family": "hurt",
+      "familyCel": 1,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSourceSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-extraction/frames/frame-001.png",
+      "sourceFrameSHA256": "9387387f7301813e9d4a2882c1ada91b5d4cb73826038c771f03d75f430e28b6",
+      "selectedPNG": "selected-source-cels/frames/frame-009.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 10,
+      "family": "hurt",
+      "familyCel": 2,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSourceSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-extraction/frames/frame-002.png",
+      "sourceFrameSHA256": "2d07220400c6a3a5e8220c892f7a35b6edb8e83889090ee2045c54c6dff79141",
+      "selectedPNG": "selected-source-cels/frames/frame-010.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 11,
+      "family": "hurt",
+      "familyCel": 3,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSourceSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1/reviewed-extraction/frames/frame-003.png",
+      "sourceFrameSHA256": "9591835ac8a3c67490aa51cf73d2236847f71bcf928d78bde1c9c9c5fa9064c3",
+      "selectedPNG": "selected-source-cels/frames/frame-011.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 12,
+      "family": "death",
+      "familyCel": 0,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSourceSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-extraction/frames/frame-000.png",
+      "sourceFrameSHA256": "24734f985e7266a8bb53d6707fef2fd38c27ec89bd9e3c25db2e4d78a2c0663b",
+      "selectedPNG": "selected-source-cels/frames/frame-012.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 13,
+      "family": "death",
+      "familyCel": 1,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSourceSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-extraction/frames/frame-001.png",
+      "sourceFrameSHA256": "346f9009800f574d788cc70e01c8b7f3942a41ae7df49e01e6d26605b45bcfdf",
+      "selectedPNG": "selected-source-cels/frames/frame-013.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 14,
+      "family": "death",
+      "familyCel": 2,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSourceSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-extraction/frames/frame-002.png",
+      "sourceFrameSHA256": "2e1b37874e14f2803dd777c957b0e1d7ea1eca7ba127a54777ada91e1f2621be",
+      "selectedPNG": "selected-source-cels/frames/frame-014.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    },
+    {
+      "tile": 15,
+      "family": "death",
+      "familyCel": 3,
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSourceSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "sourcePacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "sourceFrame": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1/reviewed-extraction/frames/frame-003.png",
+      "sourceFrameSHA256": "170979d506c1293860361d793cbc7c586bfda19fff4e4df27e2fbc89b06eff5f",
+      "selectedPNG": "selected-source-cels/frames/frame-015.png",
+      "nativeCell": [
+        1024,
+        1024
+      ],
+      "selectedSourceRGBAChanges": 0
+    }
+  ],
+  "noNewMatteEdits": true,
+  "signatureNative512OtherFamiliesNative1024": true,
+  "oldPalettesNotSilentlyReused": "New shared128 finish is separate; original finished packets unchanged."
+}

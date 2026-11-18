@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "ef63472a5a7eef81c0ee3ae2cc3127e5e1a1244b5bd7f4624a34e4096a1669d4",
+  "providerSha256": "ac056787b714acaaf845509cd11503bbde2c69d40f52527a7a8f766832e4d1be",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "True-alpha retry frames visually passed at native and packed game size against dark and light. A recognizable left-facing amethyst split nose and dark gold-trimmed motor drive spread, then the heavier pointed crystal/vented tracker holds its position with a right-trailing purple wake. Impact opens a gold-edged break, disperses crystal shards and finishes as sparse fragments. Darker plum bodies remain readable through solid amethyst front and amber accents. No pale matte, panel, lettering, detached noise, or seam bleed. Retain installed lane; this verdict selects only the three missing effects. Centered [48,48] anchor. Visual approval only. Runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

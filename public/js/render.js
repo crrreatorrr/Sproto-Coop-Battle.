@@ -33,6 +33,12 @@ function loadFx() {
   if (fxRequested || !root.document) return;
   fxRequested = true;
   const scripts = [
+    ['CoopSpriteTimeline', 'sprite-timeline.js'],
+    ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
+    ['CoopBossActionSelection', 'boss-action-selection.js'],
+    ['CoopBossActionPlayer', 'boss-action-player.js'],
+    ['CoopBossFxSelection', 'boss-fx-selection.js'],
+    ['CoopBossTransformPlayer', 'boss-transform-player.js'],
     ['CoopBossMorphField', 'boss-morph-field.js'],
     ['CoopBossMorph', 'boss-morph.js'],
     ['RenderFx', 'render-fx.js'],
@@ -41,7 +47,7 @@ function loadFx() {
     if (root[global]) continue;
     const el = root.document.createElement('script');
     el.async = false;
-    el.src = 'js/' + file;
+    el.src = root.AssetLoader.resolve('js/' + file, root.document.baseURI);
     el.onerror = () => { root.setTimeout(() => { fxRequested = false; }, 1000); };
     root.document.head.appendChild(el);
   }

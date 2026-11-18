@@ -1,0 +1,126 @@
+{
+  "status": "PASS_SOURCE_MATTE_MATERIAL_AND_CONTACT_REPLAY",
+  "independentReviewer": "root",
+  "frozenFilesChecked": 259,
+  "exactSourceCels": 16,
+  "paletteMappingsChecked": 156702,
+  "reviewedSeedPixels": 8851,
+  "allReplaysRGBAMismatches": 0,
+  "atlasSha256": "990c836dcb4ef1e6b324ffc965aeab333eede859c543f7d4b53d1a1ea0e92b62",
+  "frames": [
+    {
+      "tile": 0,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 26,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 1,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 7,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 2,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 13,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 3,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 36,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 4,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 20,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 5,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 2,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 6,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 7,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 7,
+      "source": "old01",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 27,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 8,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 9,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 10,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 11,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 12,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 13,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 14,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    },
+    {
+      "tile": 15,
+      "source": "new02",
+      "sourceMatteMaterialNNAlignmentRGBAReplay": "PASS",
+      "dy": 0,
+      "clippedSamples": 0
+    }
+  ],
+  "nativeLimitation": "Thin connected coral fringe remains in native evidence; delivered96 artwork reviewed separately.",
+  "actualSimPlacement": "Pending; this check does not accept production integration."
+}

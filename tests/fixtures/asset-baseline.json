@@ -1,21 +1,21 @@
 {
-  "description": "13 two-phase bosses including Sprotel Bitcoin at Last Call Bar: 136 added actor frames and 160 projectile/effect frames; existing byte and request caps unchanged.",
-  "assetCount": 127,
-  "assetBytes": 9751013,
-  "assetMegabytesDecimal": 9.809439,
-  "assetMebibytes": 9.355,
-  "publicFileCount": 149,
-  "publicBytes": 10262087,
-  "assetTreeSha256": "dea1dc622427acc7dbd6528f9611a182aace14161723b29ed990afb1ddef0c54",
-  "publicTreeSha256": "2235eac08ed055887da89e46859cda4966aa602c5a4a521ccd70af13d8327b68",
+  "description": "Reviewed boss transformations, combat action clips and effects with exact source provenance.",
+  "assetCount": 274,
+  "assetBytes": 27896570,
+  "assetMegabytesDecimal": 27.89657,
+  "assetMebibytes": 26.604,
+  "publicFileCount": 303,
+  "publicBytes": 28499757,
+  "assetTreeSha256": "50523a087589c76be2e2ae28e3d2097a07701ef06b292ea4771837396c646195",
+  "publicTreeSha256": "ebe0dca8e2ff29f44c7173e7500574cdca32952aae7bb731fc3f07bc2ad98794",
   "preloadCount": 8,
   "preloadBytes": 718587,
   "preloadGzipBytes": 717670,
   "preloadDecodedBytes": 12313328,
-  "dynamicRefCount": 123,
-  "titleBytes": 1073672,
-  "firstStageBytes": 2065665,
-  "criticalRequests": 28,
+  "dynamicRefCount": 270,
+  "titleBytes": 1134814,
+  "firstStageBytes": 2584122,
+  "criticalRequests": 30,
   "staticBudgetBytes": 10485760,
   "titleBudgetBytes": 1572864,
   "firstStageBudgetBytes": 3145728,
@@ -46,16 +46,16 @@
       "decodedBytes": 808156
     },
     "boss": {
-      "count": 52,
-      "bytes": 5995420,
-      "gzipBytes": 5990430,
-      "decodedBytes": 179649024
+      "count": 198,
+      "bytes": 24131283,
+      "gzipBytes": 24056603,
+      "decodedBytes": 660894336
     },
     "fx": {
-      "count": 5,
-      "bytes": 25140,
-      "gzipBytes": 24084,
-      "decodedBytes": 2527648
+      "count": 6,
+      "bytes": 34834,
+      "gzipBytes": 33306,
+      "decodedBytes": 2789792
     },
     "shadow": {
       "count": 12,
@@ -63,5 +63,15 @@
       "gzipBytes": 1021415,
       "decodedBytes": 58261504
     }
-  }
+  },
+  "basePublicBytes": 10064581,
+  "optionalMediaCount": 154,
+  "optionalMediaBytes": 18435176,
+  "optionalMediaTreeSha256": "0f94b658e73e29b6d333b1174d5071abc4853cc4de2d1b715006db82916a4c72",
+  "presentationDecodedBytesMax": 32422208,
+  "optionalMediaBudgetBytes": 67108864,
+  "optionalMediaPageBudgetBytes": 1048576,
+  "presentationBudgetBytes": 33554432,
+  "fxScratchDecodedBytes": 36864,
+  "importVersion": 2
 }

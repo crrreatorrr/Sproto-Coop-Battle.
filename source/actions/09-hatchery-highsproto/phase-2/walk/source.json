@@ -1,0 +1,21 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "728c2eb41afd2cc9b6b315da3a3446a0515f884d41720bda5762783ec0627424",
+  "sourceSHA256": "0a8f0dafe684f86486fe335e2c0b8339b76c26f6a2596a9871ad8f3c3289a8c2",
+  "measuredMatteRGB": [
+    248.0,
+    3.0,
+    249.0
+  ],
+  "flatTolerance": 32,
+  "flatCount": 987666,
+  "mixedCount": 6786,
+  "mixedRule": "R>G+38,B>G+38,R>150,B>150 within Chebyshev4 of measured flat matte",
+  "retainedRGBAExactOutsideMask": true,
+  "phase": 1,
+  "action": "walk",
+  "status": "bounded technical gap revision candidate",
+  "baseSourceV2SHA256": "5980318a9e7043ab4de4e4c5a76d12cbed9c3b08c13ef12591c68fa977d6412a",
+  "additionalReviewedBackgroundSamples": 35,
+  "reviewedMask": "reviewed-gap-mask.png"
+}

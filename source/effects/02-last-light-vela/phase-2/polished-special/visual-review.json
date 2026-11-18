@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "atlasSha256": "966924c4febfa7452150fcd2d8f2995a4b6e012437a98c69fa8516dc9e12050c",
+  "providerSha256": "265456b7815018113bd4681659c5c0d7ba95430b012b2f5f13147177cc6a60c3",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "notes": "Emerald Guillotine remains a cool green crescent with a forceful amber-green fracture, a returning curl and fading shards. The initial and delayed waves are legible at gameplay size on the bar scene. No near-white paint, retained grid rails or repeated cels were found. V2 clears only demonstrated vivid magenta mixed pixels touching v1 transparent exterior. Every unmasked native and packed RGBA sample stays exact, including all ambiguous darker blue-violet rim and interior colors. The lower volley can extend behind the bottom HUD at its normal belt position. The actual Chromium sequence verified both directions, all sixteen frame positions along the 36-tick playback, release damage, phase ownership, and expiration.",
+  "inGameProof": {
+    "frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "snapshots": 204,
+    "animatedDraws": 210,
+    "resumed": 2
+  },
+  "qualification": "Independent visual/source approval for V2. Candidate only pending installation and repo QA."
+}

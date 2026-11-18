@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "zephyr-p1-lob-low-v2",
+  "clips": {
+    "lane": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        30,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/04-ranch-zephyr/zephyr-p1-lob-low-v2-d15728e5e98b403d.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/04-ranch-zephyr/zephyr-p1-lob-low-v2-d15728e5e98b403d.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 88746,
+      "sha256": "d15728e5e98b403dd06ab4556666f0b2d5d731163a852c2d3b5429b320a802c6"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "lane",
+      "file": "cel-1.png",
+      "sha256": "bc97134536bb3447eda09e9b8e0a6f15a3df315d6639c3f6a8ad698991fb2d94",
+      "rgbaSha256": "4c9a166a5a123ff31de81a0276327b50522620fcb6dce1f11ac0a8ce32d72981",
+      "uniqueCel": 0,
+      "ticks": 30
+    },
+    {
+      "action": "lane",
+      "file": "cel-2.png",
+      "sha256": "05090b177380ec437b1dea168d395f066078eb8550eabfd6c3f3990eece36f40",
+      "rgbaSha256": "0ae279452d302ee59894bffd30fda3293cf1766330b1c1f3d7281c110a7c3d82",
+      "uniqueCel": 1,
+      "ticks": 6
+    },
+    {
+      "action": "lane",
+      "file": "cel-3.png",
+      "sha256": "4dc498ec4e6615772605af66c72d806c94f4d5ad250c8c55dd3e023035a4fe5f",
+      "rgbaSha256": "de1829288c53133e2b7578e423c6eb2acd30eca0a64c8051bf79dfb75a3ffc56",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "lane",
+      "file": "cel-4.png",
+      "sha256": "cfe5aa48482bcd1a3cde7b890b690fa9348de8a9c32a1ff235e21a98693c2aa1",
+      "rgbaSha256": "3c5b58f92a34a532feaa5c12e39258c9fc01f548d2c2b2966c87c2bdc95dd075",
+      "uniqueCel": 3,
+      "ticks": 11
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

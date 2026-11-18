@@ -1,0 +1,97 @@
+{
+  "status": "SOURCE_BOUND_INDEPENDENT_IMPORT_REVIEW_READY_NOT_REGISTERED",
+  "sourcePackets": [
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/runtime-qa/effect-replay-v3/freeze-manifest.json",
+      "sha256": "7ef322a2985c5e1078625a7026b69453811e84c10bdf935ffb2bcc8eef7a574a"
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-p2-signature-v1/delivery-manifest.json",
+      "sha256": "ad0838f0f47365b563207b976ec2c36ad0ca6036abc9dec9c6cbfb9e9ac00cd9"
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/crapto-p2-blackout-v1/delivery-manifest.json",
+      "sha256": "c4c7e82e2f65886038459beefe860825f8ebad0bced205469574e441691ec6cc"
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/delivery-manifest.json",
+      "sha256": "0fdf61412270f4e351745feb6bc4b3b1e8b180414085bffe330a0a420e3d7273"
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/qa/vela-p2-signature-independent-v1/delivery-manifest.json",
+      "sha256": "1b1503b79679226f146e26052733bfd1701ee4b5291a03da7897eb370d9f4103"
+    },
+    {
+      "manifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/qa/crapto-p2-sludge-blackout-brief-review-v1/delivery-manifest.json",
+      "sha256": "2d66209685cf7c862ab6dd985ba0bad16cea974cf09fce5be4cc20cd241d10ff"
+    }
+  ],
+  "originals": [
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/vela-p2-signature/source.png",
+      "sha256": "9e892c7871e3324ed94a9c17b2a661b6eaa6baf018a172c2b5f45942bedf1d9a",
+      "bytes": 431349
+    },
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/crapto-p2-sludge-blackout/source.png",
+      "sha256": "9573cf76fb0c356a521056b878a4c05eabd7ac70634ce1e60f473219e8f06de0",
+      "bytes": 711470
+    },
+    {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/crapto-p2-signature-02-seedream5/provider-original.png",
+      "sha256": "d1433df30a41c8fbd58fc4feb543b7f18fb3d21ed25e65ce6d31ef3faaffdf71",
+      "bytes": 17965420
+    }
+  ],
+  "pageProof": [
+    {
+      "boss": "vela",
+      "bossKey": "02-last-light-vela",
+      "page": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-crapto-browser-reviewed-v1/02-last-light-vela-p2-attacks-74421fdd5132.png",
+      "runtimePath": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+      "sha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+      "bytes": 12927,
+      "dimensions": [
+        384,
+        96
+      ],
+      "decodedBytes": 147456,
+      "exactBytesEqualBrowserTestFixture": true,
+      "sourceBrowserFixture": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/runtime-qa/effect-replay-v3/fixtures/vela/candidate-attacks.png",
+      "registryChangesFromBrowserTest": [
+        "pages[].src only"
+      ],
+      "otherMetadataExact": true
+    },
+    {
+      "boss": "crapto",
+      "bossKey": "03-mudline-crapto",
+      "page": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-crapto-browser-reviewed-v1/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+      "runtimePath": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+      "sha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+      "bytes": 40452,
+      "dimensions": [
+        384,
+        192
+      ],
+      "decodedBytes": 294912,
+      "exactBytesEqualBrowserTestFixture": true,
+      "sourceBrowserFixture": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/runtime-qa/effect-replay-v3/fixtures/crapto/candidate-attacks.png",
+      "registryChangesFromBrowserTest": [
+        "pages[].src only"
+      ],
+      "otherMetadataExact": true
+    }
+  ],
+  "technicalFinish": {
+    "ImageGen": "Original RGBA unchanged; complete627square fields translated into common672(Vela)/704(Crapto) padding then nearest96. All raw alpha tails retained; custom contact anchors63/72.",
+    "Higgsfield": "Previously reviewed single green key32/source-bound5mattecomponents; emptycommon1024crop/fixed128nondither finish/contact95 exact. Native contour tones disclosed."
+  },
+  "nativeHaloFree": false,
+  "browserReplayManifestSha256": "7ef322a2985c5e1078625a7026b69453811e84c10bdf935ffb2bcc8eef7a574a",
+  "runtimeBase": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "latestReadyHead": "f538aaa7df11daf7ed5d4a6f4179e555555b7780",
+  "caveat": "Vela rear chop correctly projects behind the committed legacy front leg and is partially occluded; forward chop is clear in all4cels/bothfacings. No depth/move correction included.",
+  "noLocalNewMotion": true,
+  "sourceOriginalsPreserved": true
+}

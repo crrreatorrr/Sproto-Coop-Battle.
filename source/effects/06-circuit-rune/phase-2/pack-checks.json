@@ -1,0 +1,16 @@
+{
+  "status": "EXACT_CANDIDATE_BANK_REPACKED_REAL_SIM_PENDING",
+  "originalBankSha256": "d104786b26c4d71d8f5ad0a02c5d0a717d52a2aa46b6a4bd34216e8e21b9390b",
+  "effectsAtlasSha256": "990c836dcb4ef1e6b324ffc965aeab333eede859c543f7d4b53d1a1ea0e92b62",
+  "outputSha256": "410766836253bd72a59fea0ec8ccfdeec2cff754ea8734928ab2d38d3df8d520",
+  "outputBytes": 116613,
+  "outputSize": [
+    384,
+    768
+  ],
+  "topOldRowsRGBAMismatches": 0,
+  "bottomCandidateRowsRGBAMismatches": 0,
+  "newLocalArtworkOrMotion": false,
+  "newBankPreloadRequests": 0,
+  "decodedBytesIncrease": 589824
+}

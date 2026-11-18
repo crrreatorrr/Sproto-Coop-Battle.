@@ -1,0 +1,164 @@
+{
+  "sourceSHA256": "0a8f0dafe684f86486fe335e2c0b8339b76c26f6a2596a9871ad8f3c3289a8c2",
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "fixedUniformScale": 1.0733652312599682,
+  "uniformNearestOutputSizes": [
+    [
+      673,
+      673
+    ],
+    [
+      673,
+      673
+    ],
+    [
+      673,
+      673
+    ],
+    [
+      673,
+      673
+    ]
+  ],
+  "nativePlacements": [
+    [
+      97,
+      193
+    ],
+    [
+      127,
+      193
+    ],
+    [
+      97,
+      194
+    ],
+    [
+      127,
+      193
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "gameCell": [
+    330,
+    330
+  ],
+  "coreRect": [
+    55,
+    55,
+    220,
+    220
+  ],
+  "anchor": [
+    165,
+    261
+  ],
+  "placementBasis": "Common standing/contact height scale, source yellow pilot hair/eyes within rigid front cabin; rear-cylinder study archived because generated cylinder-to-cabin spacing differed for horizontal whole-cel registration, planted support sole759. No per-part movement.",
+  "sourceCabinPilotYellowCentroidX": [
+    335.95254237288134,
+    307.70118343195264,
+    336.29893238434164,
+    308.1792717086835
+  ],
+  "targetCabinPilotYellowCentroidX": 457.66906474820144,
+  "newArtworkOrRetainedRGBEdits": false,
+  "cases": [
+    {
+      "cel": 1,
+      "nativeBounds": [
+        174,
+        250,
+        702,
+        760
+      ],
+      "gameBounds": [
+        60,
+        86,
+        241,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 2,
+      "nativeBounds": [
+        176,
+        250,
+        706,
+        760
+      ],
+      "gameBounds": [
+        61,
+        86,
+        243,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 3,
+      "nativeBounds": [
+        174,
+        251,
+        714,
+        760
+      ],
+      "gameBounds": [
+        60,
+        86,
+        245,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 4,
+      "nativeBounds": [
+        176,
+        250,
+        724,
+        760
+      ],
+      "gameBounds": [
+        61,
+        86,
+        249,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    }
+  ],
+  "revision": "v2 exact scale/whole placement;35 background gap samples transparent"
+}

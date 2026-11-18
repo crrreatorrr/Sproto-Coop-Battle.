@@ -1,0 +1,31 @@
+{
+  "status": "FROZEN_PASS_PRIVATE_DEDICATED_FX_ACTUAL_SIM",
+  "report": "REPORT.md",
+  "sourceCommit": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "stagedManifestSha256": "0bd1113490da341e19c610ab881c26c2805ba154468759b9a6f53aa92c8d3719",
+  "pageSha256": "367aedae1b936cc4fe2012d2146098cb18b4338db96d97de7fabb8336c96b50e",
+  "actualSimSnapshots": 640,
+  "fullScenePNGComparisons": 640,
+  "registeredDraws": 694,
+  "observedScratchCanvases": 1,
+  "fractionalAndGroundedDraws": 358,
+  "groundPaintGapPixels": [
+    1,
+    1
+  ],
+  "phase0ImpactsDuringP2T": 28,
+  "exportImportCases": 14,
+  "all16CelsBothFacings": true,
+  "finiteEnds": true,
+  "legacyBankRequests": 1,
+  "dedicatedPageRequests": 1,
+  "pendingLateWrongDimensionReleasePass": true,
+  "nativeContacts": "attempt-1/critical-contacts",
+  "motionPreviews": "attempt-1/actual-sim-gifs",
+  "noSourceOverride": true,
+  "gameEdits": 0,
+  "providerActions": 0,
+  "newArtOrMotion": 0,
+  "commits": 0,
+  "frozen": true
+}

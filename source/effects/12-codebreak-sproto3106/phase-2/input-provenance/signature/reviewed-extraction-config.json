@@ -1,0 +1,321 @@
+{
+  "expectedSourceSha256": "72f8ca91d4cfd8e578cc457e76f61effd0bd0f7e863c719dc5264af86f7787ee",
+  "providerProvenance": {
+    "actualOriginalSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+    "actualOriginalProvenance": {
+      "provider": "Higgsfield website",
+      "model": "Nano Banana 2",
+      "quality": "2K",
+      "aspectRatio": "1:1",
+      "mode": "Unlimited",
+      "creditBudget": 0,
+      "creditsBefore": 132.6,
+      "assetId": "bc9af852-77eb-4eea-88d1-501bcc56636a",
+      "status": "completed_pending_QA",
+      "prompt": "prompt.txt",
+      "geometryReferenceAsset": "4523398f-0e5f-49d4-9503-e1218f33140e",
+      "reference": "accepted-phase2-reference-magenta.png",
+      "referenceProof": "reference-provenance.json",
+      "localMotionSynthesis": false,
+      "requestedCells": 16,
+      "requestedCellSize": 512,
+      "requestedFamilies": [
+        "signature",
+        "special",
+        "hurt",
+        "death"
+      ],
+      "resultUrl": "https://d8j0ntlcm91z4.cloudfront.net/user_3EhTMTxw0fkqxeeNVPZRAKwzj8d/hf_20261118_014715_bc9af852-77eb-4eea-88d1-501bcc56636a.png",
+      "resultFile": "result-original.png",
+      "resultSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "creditsAfterCompletion": 132.6
+    },
+    "sourceSelection": [
+      0,
+      0,
+      2048,
+      512
+    ],
+    "actualOriginalCells": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "selectedRGBAExact": true,
+    "otherOriginalRowsRejectedAndNotImported": true
+  },
+  "grid": {
+    "rows": 1,
+    "columns": 4,
+    "expectedImageSize": [
+      2048,
+      512
+    ],
+    "expectedCellSize": [
+      512,
+      512
+    ]
+  },
+  "background": {
+    "mode": "edge-connected-key",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "tolerance": 32,
+    "connectivity": 4,
+    "seedsByTile": {
+      "1": [
+        {
+          "id": "tile-001-reviewed-signature-empty-space-00",
+          "point": [
+            87,
+            355
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 24,
+          "expectedRemovedBounds": [
+            85,
+            352,
+            92,
+            361
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-001-gap-00.png",
+          "expectedRemovedMaskFileSha256": "78f1ade063ff49fc6ee48c94edc80f3f3601f0ffed3593f2251f195ecc4f5d36",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-001-reviewed-signature-empty-space-01",
+          "point": [
+            422,
+            357
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 18,
+          "expectedRemovedBounds": [
+            421,
+            352,
+            427,
+            360
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-001-gap-01.png",
+          "expectedRemovedMaskFileSha256": "3a961fa10c9bca64dbeba402a15c256a4aca5352c0d09877199e3b3ae0f03010",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        }
+      ],
+      "2": [
+        {
+          "id": "tile-002-reviewed-signature-empty-space-02",
+          "point": [
+            155,
+            279
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 2536,
+          "expectedRemovedBounds": [
+            146,
+            253,
+            365,
+            332
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-02.png",
+          "expectedRemovedMaskFileSha256": "ebe90396688eb5166f066153d92fc5e5cbe2780df86cf316e53ba6a2d77f9ea2",
+          "seedInteriorDepth4Neighbor": 10,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-03",
+          "point": [
+            114,
+            350
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 9,
+          "expectedRemovedBounds": [
+            111,
+            349,
+            116,
+            353
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-03.png",
+          "expectedRemovedMaskFileSha256": "9cbfbcb2a866b5a9ca35c5a90f2ac6e1398145941309ec57cdc2f4ed3ffb4f82",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-04",
+          "point": [
+            394,
+            358
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 1,
+          "expectedRemovedBounds": [
+            394,
+            358,
+            395,
+            359
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-04.png",
+          "expectedRemovedMaskFileSha256": "d9fb5dce69291d11e25d0ff154a684c31b7d740534584406257a869276fbd2d0",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-05",
+          "point": [
+            391,
+            361
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 11,
+          "expectedRemovedBounds": [
+            389,
+            360,
+            394,
+            363
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-05.png",
+          "expectedRemovedMaskFileSha256": "d7ce25d3a6fe2d6ff8a1257491e2b1689b78c74cbd7b13f7366c3674e78f330c",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-06",
+          "point": [
+            388,
+            362
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 1,
+          "expectedRemovedBounds": [
+            388,
+            362,
+            389,
+            363
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-06.png",
+          "expectedRemovedMaskFileSha256": "fe5e1002dfccdbacdff308bb98c9cc314fe6e1f3aa390d2b7e002a520105db58",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-07",
+          "point": [
+            383,
+            366
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 7,
+          "expectedRemovedBounds": [
+            382,
+            365,
+            385,
+            368
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-07.png",
+          "expectedRemovedMaskFileSha256": "60089cdb83a013ceb4e838c1a79dc56c8997236406e0f1f83e3c65e91204428d",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-08",
+          "point": [
+            379,
+            371
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 7,
+          "expectedRemovedBounds": [
+            378,
+            370,
+            381,
+            373
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-08.png",
+          "expectedRemovedMaskFileSha256": "8ff7d3a14463c3f12b729974aed8195c8a4d493ae042a528fa382769816ea90b",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-09",
+          "point": [
+            134,
+            372
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 2,
+          "expectedRemovedBounds": [
+            134,
+            371,
+            135,
+            373
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-002-gap-09.png",
+          "expectedRemovedMaskFileSha256": "18bf410b1e4eebedfda0324b95a4ecdb096041ad5e7c4a36e11ad6961e7e9fdb",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        }
+      ],
+      "3": [
+        {
+          "id": "tile-003-reviewed-signature-empty-space-10",
+          "point": [
+            302,
+            212
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 20,
+          "expectedRemovedBounds": [
+            300,
+            209,
+            304,
+            216
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1/reviewed-matte-masks/tile-003-gap-10.png",
+          "expectedRemovedMaskFileSha256": "89058a6f0708514506d21924a0b9c4f1605c53dc854576ef12040bc1b06b970d",
+          "seedInteriorDepth4Neighbor": 2,
+          "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+        }
+      ]
+    }
+  },
+  "sequence": [
+    {
+      "tile": 0,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 1,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 2,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 3,
+      "ticks": 6,
+      "segment": "signature"
+    }
+  ],
+  "tickHz": 60,
+  "loop": false,
+  "diagnostics": {
+    "minimumEdgeClearance": 1,
+    "rejectEdgeTouch": true
+  },
+  "previews": {
+    "contactMaxExtent": 512,
+    "contactColumns": 4,
+    "contactPageFrames": 4,
+    "gifMaxExtent": 192
+  }
+}

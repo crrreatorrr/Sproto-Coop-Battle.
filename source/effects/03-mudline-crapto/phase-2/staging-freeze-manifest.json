@@ -1,0 +1,81 @@
+{
+  "status": "FROZEN_EXACT_IMPORT_REVIEW_PACKET",
+  "count": 15,
+  "files": [
+    {
+      "path": "02-last-light-vela-p2-attacks-74421fdd5132.png",
+      "bytes": 12927,
+      "sha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286"
+    },
+    {
+      "path": "03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+      "bytes": 40452,
+      "sha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2663,
+      "sha256": "9025722bd846e9d7d89aef47914e959d464412c5f781ebd3640833dd2359aa35"
+    },
+    {
+      "path": "browser-REPORT.md",
+      "bytes": 4480,
+      "sha256": "0cedf9bce849574c6601f5341c5ddb6efb0e6bf8ef9ddfd0b502831f8bb16126"
+    },
+    {
+      "path": "browser-final-summary.json",
+      "bytes": 2550,
+      "sha256": "12a00cbe135138c546f98fb92f5825f832e4a52bf9555f426361749e1c0b5396"
+    },
+    {
+      "path": "check-latest-registry.mjs",
+      "bytes": 6345,
+      "sha256": "dea30b11588cbbbc565359910bb8d97a6f90a00b5008356a58ae7e85aeb648d0"
+    },
+    {
+      "path": "crapto-clip-fragment-NOT-REGISTERED.json",
+      "bytes": 982,
+      "sha256": "38302c79b726f1abe682a4eb93c03dc47bb8e80d122058b67a81b62af6f61e87"
+    },
+    {
+      "path": "crapto-source-packing-proof.json",
+      "bytes": 1794,
+      "sha256": "052c17c4579d0128a5d5e455bbbdaa7801aadf3f944907f4b0a56353f929a8ab"
+    },
+    {
+      "path": "latest-registry-resource-review.json",
+      "bytes": 8563,
+      "sha256": "18d9231db05c9fdc14e6490fae31f054fbf0da147a8a60e4dda6539720123b8a"
+    },
+    {
+      "path": "page-registry-equivalence.json",
+      "bytes": 1809,
+      "sha256": "312620a73741e74c930191b02b55809874b50882d59c0142bf61d1ab8358f7a0"
+    },
+    {
+      "path": "registry-merge-NOT-REGISTERED.json",
+      "bytes": 2449,
+      "sha256": "8fd265a1aac9c636b2432596abaef5e2a79981fcec95739f6d7bf294944ee6c5"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 5566,
+      "sha256": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6"
+    },
+    {
+      "path": "vela-clip-fragment-NOT-REGISTERED.json",
+      "bytes": 538,
+      "sha256": "ca327f256d294f54a3c8af015ab23ea58d3be8709f2a1df391545a37d3102546"
+    },
+    {
+      "path": "vela-source-packing-proof.json",
+      "bytes": 934,
+      "sha256": "1bd4b8d9bf4c42def989a8bdbf1b2f7ee3a3f1c5b0f502af740100bd21542b67"
+    },
+    {
+      "path": "virtual-presentation-scenes.json",
+      "bytes": 29579,
+      "sha256": "280429b33b9a6d8cb002690e1dc2cec82ceef8069451605d524389e23cc68ea9"
+    }
+  ]
+}

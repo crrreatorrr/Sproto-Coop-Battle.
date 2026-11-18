@@ -1,0 +1,360 @@
+{
+  "status": "PREVIOUSLY_REVIEWED_SOURCE_BOUND_COMPONENTS_REPLAYED_WITHOUT_NEW_ERASURE",
+  "components": 27,
+  "nativeSamples": 174203,
+  "matteConnectivity": 4,
+  "deathFormatRuleAlphaOnlySamples": 60904,
+  "bindings": [
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 1,
+      "seedPoint": [
+        87,
+        355
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-001-gap-00.png",
+      "maskSha256": "78f1ade063ff49fc6ee48c94edc80f3f3601f0ffed3593f2251f195ecc4f5d36",
+      "nativeSamples": 24,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 1,
+      "seedPoint": [
+        422,
+        357
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-001-gap-01.png",
+      "maskSha256": "3a961fa10c9bca64dbeba402a15c256a4aca5352c0d09877199e3b3ae0f03010",
+      "nativeSamples": 18,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        155,
+        279
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-00.png",
+      "maskSha256": "ebe90396688eb5166f066153d92fc5e5cbe2780df86cf316e53ba6a2d77f9ea2",
+      "nativeSamples": 2536,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        114,
+        350
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-01.png",
+      "maskSha256": "9cbfbcb2a866b5a9ca35c5a90f2ac6e1398145941309ec57cdc2f4ed3ffb4f82",
+      "nativeSamples": 9,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        394,
+        358
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-02.png",
+      "maskSha256": "d9fb5dce69291d11e25d0ff154a684c31b7d740534584406257a869276fbd2d0",
+      "nativeSamples": 1,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        391,
+        361
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-03.png",
+      "maskSha256": "d7ce25d3a6fe2d6ff8a1257491e2b1689b78c74cbd7b13f7366c3674e78f330c",
+      "nativeSamples": 11,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        388,
+        362
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-04.png",
+      "maskSha256": "fe5e1002dfccdbacdff308bb98c9cc314fe6e1f3aa390d2b7e002a520105db58",
+      "nativeSamples": 1,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        383,
+        366
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-05.png",
+      "maskSha256": "60089cdb83a013ceb4e838c1a79dc56c8997236406e0f1f83e3c65e91204428d",
+      "nativeSamples": 7,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        379,
+        371
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-06.png",
+      "maskSha256": "8ff7d3a14463c3f12b729974aed8195c8a4d493ae042a528fa382769816ea90b",
+      "nativeSamples": 7,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 2,
+      "seedPoint": [
+        134,
+        372
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-002-gap-07.png",
+      "maskSha256": "18bf410b1e4eebedfda0324b95a4ecdb096041ad5e7c4a36e11ad6961e7e9fdb",
+      "nativeSamples": 2,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "signature",
+      "sourceOriginalSha256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "tile": 3,
+      "seedPoint": [
+        302,
+        212
+      ],
+      "maskFile": "reviewed-matte-masks/signature/tile-003-gap-00.png",
+      "maskSha256": "89058a6f0708514506d21924a0b9c4f1605c53dc854576ef12040bc1b06b970d",
+      "nativeSamples": 20,
+      "semanticScope": "Native contexts reviewed: actual empty magenta pocket between source cyan terminal and graphite case, between detached gold ring plates and primary casing, or between cyan pressure core and gold rim. No actual source metal or cyan energy."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 0,
+      "seedPoint": [
+        469,
+        378
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-000-gap-00.png",
+      "maskSha256": "8ec7c0f6c48b9769a83602cc01dcf60782a3ba53f0dc625bfddf743b598a7a5d",
+      "nativeSamples": 141,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 0,
+      "seedPoint": [
+        555,
+        379
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-000-gap-01.png",
+      "maskSha256": "3b019bf1053bda740d46951fa5eabb78d6915b190b98c22650346af2aac88635",
+      "nativeSamples": 126,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 2,
+      "seedPoint": [
+        786,
+        295
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-002-gap-00.png",
+      "maskSha256": "ffdcad387df8003d3baeb92d66ff9c18db2d2d9cae94f52b4b0e8d59d02c87d3",
+      "nativeSamples": 3852,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 2,
+      "seedPoint": [
+        233,
+        299
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-002-gap-01.png",
+      "maskSha256": "960501e9e7a17885cb4ee694198d3efaa7a3fb8624006fc48627b2b032a3aa6e",
+      "nativeSamples": 3532,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 2,
+      "seedPoint": [
+        178,
+        371
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-002-gap-02.png",
+      "maskSha256": "9c24662fb0c23ef359049997fbe6c4f2781254dfabe377bf99468c15615fec48",
+      "nativeSamples": 13,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "special",
+      "sourceOriginalSha256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "tile": 2,
+      "seedPoint": [
+        816,
+        628
+      ],
+      "maskFile": "reviewed-matte-masks/special/tile-002-gap-03.png",
+      "maskSha256": "3cabb915ec1cbbc7d1db2165de8c1a7e1dc193dcbcf3971c313def888e1b1ba9",
+      "nativeSamples": 4767,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 1,
+      "seedPoint": [
+        766,
+        443
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-001-gap-00.png",
+      "maskSha256": "a0008e98e2150814e855ede6f63e844e8d15ba309efbd8423b490a62ddf52ba5",
+      "nativeSamples": 1,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        407,
+        325
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-00.png",
+      "maskSha256": "58ef835ea811c0be81d20176f1dd8a516fac1d24eca0f0044670c8757a02ebea",
+      "nativeSamples": 44,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        493,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-01.png",
+      "maskSha256": "7cae17817c8a81cd600b86139e197c27925ab876df6ffe3bd1f86fe6f362a2f9",
+      "nativeSamples": 16,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        507,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-02.png",
+      "maskSha256": "d15f44364a4829b87bdb9306c8d75b5eb8381bb6f55e4791f4321dcab08c6477",
+      "nativeSamples": 10,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        517,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-03.png",
+      "maskSha256": "ba6b950ab5f13fa61974d492b04d02e9e2968755e1f82aa069cf7c9422b52dff",
+      "nativeSamples": 7,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        523,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-04.png",
+      "maskSha256": "d7d69ce2b90f7008104b8dfaea81d2cbcb90010aff9ac1de692c58931ab0d0dc",
+      "nativeSamples": 2,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        526,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-05.png",
+      "maskSha256": "1d69235cd21952a0e20f3f6e4fd6b77281b642e4759ab65bf5f487ca3ee591e1",
+      "nativeSamples": 3,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "hurt",
+      "sourceOriginalSha256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "tile": 2,
+      "seedPoint": [
+        536,
+        755
+      ],
+      "maskFile": "reviewed-matte-masks/hurt/tile-002-gap-06.png",
+      "maskSha256": "372343264220f87c45acb1277274c87e6f93ee33fa272ec24014ef68a4e1c078",
+      "nativeSamples": 1,
+      "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; including tiny actual negative spaces at the impact/case/ripple boundary. No real pressure energy or metal."
+    },
+    {
+      "family": "death",
+      "sourceOriginalSha256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "tile": 2,
+      "seedPoint": [
+        762,
+        510
+      ],
+      "maskFile": "reviewed-matte-masks/death/tile-002-gap-00.png",
+      "maskSha256": "f7a0bbe3bad47f3a18694b768220acd3213a9f88d096de2c7db7e975d18522dd",
+      "nativeSamples": 54499,
+      "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+    },
+    {
+      "family": "death",
+      "sourceOriginalSha256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "tile": 2,
+      "seedPoint": [
+        512,
+        512
+      ],
+      "maskFile": "reviewed-matte-masks/death/tile-002-gap-01.png",
+      "maskSha256": "4571b93f910b6b71fa2dd0e1d299d3cb8885ca9cdfb47efaebd935248c0c0a85",
+      "nativeSamples": 104553,
+      "semanticScope": "Raw native full construction reviewed: empty magenta central aperture or annular space between the actual nested gold/graphite segmented rings and cyan connectors. No actual metal or energy paint."
+    }
+  ]
+}

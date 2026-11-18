@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "e5f6c17c6ff4a1bef43140a5cd0754dfd2ef957fcee91facf2b2f366b426af42",
+  "providerSha256": "1f58b0083adc231530372bdff25af006838a19dc90d96c83510e1f36bd4ee870",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Left-pointed brass/red engine stays registered through fin spread and tracker loops with right trailing red-orange energy. Flame jets flare and contract without translating the rigid nose. Impact passes from ruby contact to gold fragments then sparse red sparks. Concentrated near-white highlights belong to the ruby/gold emission and contact, with no detached white matte. Independently reviewed in raw-derived and dark/light game-size contact. Preserve installed lane; this review is only for rows 2 through 4. Runtime proof still required.",
+  "reviewedPartialAlpha": true
+}

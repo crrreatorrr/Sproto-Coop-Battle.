@@ -1,0 +1,64 @@
+{
+  "sourceCellSizes": [
+    [
+      656,
+      599
+    ],
+    [
+      656,
+      599
+    ],
+    [
+      656,
+      600
+    ],
+    [
+      656,
+      600
+    ]
+  ],
+  "sourceSHA256": "a14ef98e0a5f4adf35cc3fcb5ce3ceaf53a1efa5d426c6a41ef80379f12b7c5c",
+  "uniformNearestOutputSizes": [
+    [
+      749,
+      684
+    ],
+    [
+      749,
+      684
+    ],
+    [
+      749,
+      685
+    ],
+    [
+      749,
+      685
+    ]
+  ],
+  "nativePlacements": [
+    [
+      141,
+      178
+    ],
+    [
+      141,
+      178
+    ],
+    [
+      141,
+      186
+    ],
+    [
+      141,
+      186
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "bootSilhouetteIntersectionOverUnion": 0.8390766694146744,
+  "placementBasis": "One horizontal offset maximizing approved boot region overlap in recovery; shared scale and ground across all poses.",
+  "newArtworkOrAlphaEdits": false
+}

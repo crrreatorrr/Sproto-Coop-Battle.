@@ -1,0 +1,65 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "8cd88cf0f98d5c09a9d9ee0782f0173786b8b08cf17122db65f811ce35635ef3",
+  "sourceSHA256": "2538487d4d598b166a29c2d3970689402ff6dd3b1846a36b5bbaa4b5ceb49564",
+  "matteRGB": [
+    249.0,
+    3.0,
+    249.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1079389,
+  "boundedMixtureSamples": 4190,
+  "mixtureRule": "R>180,B>180,G<125 within4nativepx of source flat field",
+  "retainedRGBExact": true,
+  "sourceFieldsComplete": true,
+  "records": [
+    {
+      "sourceCel": 0,
+      "bounds": [
+        73,
+        45,
+        577,
+        532
+      ],
+      "sourceRGBASHA256": "73596153d8985148d14e6918b28466fe7c3e748bcd517e2bb2ccc31d5cef897d",
+      "sourceBorderPaint": 0
+    },
+    {
+      "sourceCel": 1,
+      "bounds": [
+        73,
+        45,
+        567,
+        535
+      ],
+      "sourceRGBASHA256": "b32649e14a508c2bc5b18779ef5bea5997f46433c97d8bee7b927177e149d2ac",
+      "sourceBorderPaint": 0
+    },
+    {
+      "sourceCel": 2,
+      "bounds": [
+        71,
+        45,
+        568,
+        529
+      ],
+      "sourceRGBASHA256": "661b99d2da00076df1c6567d7ee171f317b00daa13fe2c519e13e2520983345d",
+      "sourceBorderPaint": 0
+    },
+    {
+      "sourceCel": 3,
+      "bounds": [
+        73,
+        45,
+        566,
+        531
+      ],
+      "sourceRGBASHA256": "9ebaf470b4d7eee4b8687bbf8b801662220ed9d4011636f3011a5bffdb15e487",
+      "sourceBorderPaint": 0
+    }
+  ],
+  "footMotionRetained": true,
+  "noLocalNewPoses": true,
+  "status": "PRIVATE_FORWARD_SIDE_MARCH_GAIT_REVIEW_PENDING"
+}

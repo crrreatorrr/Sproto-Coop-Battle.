@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "vela-p2-twin-axe-chops",
+  "clips": {
+    "signature": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        31,
+        8,
+        8,
+        17
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/02-last-light-vela/vela-p2-twin-axe-chops-a60d6e4ec224bf7e.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/02-last-light-vela/vela-p2-twin-axe-chops-a60d6e4ec224bf7e.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 185690,
+      "sha256": "a60d6e4ec224bf7e70bb5dab3f3917122c36926f3ebd8b8ab38ebb8cc1d36e54"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "signature",
+      "file": "cel-1.png",
+      "sha256": "fb2a2dbbc95c5915cfd5a8419edd3d3fcbc94648d27479453d6e3b40066337a5",
+      "rgbaSha256": "1b61783b1265d37b9d8f9b2d19a8342042ac2013def36e079a5d09237a97601f",
+      "uniqueCel": 0,
+      "ticks": 31
+    },
+    {
+      "action": "signature",
+      "file": "cel-2.png",
+      "sha256": "285c94971992ce88c2d6c98ba4414f8341e54a3f852f094b8a60c446c6af964f",
+      "rgbaSha256": "fda9fc20ad4066698fac2b47b98bd57830ee7416f99abb736e45535632446631",
+      "uniqueCel": 1,
+      "ticks": 8
+    },
+    {
+      "action": "signature",
+      "file": "cel-3.png",
+      "sha256": "f87c45d0005018efad3c6f5d472ef4fcd43865f2a18357c6c4fcf00b99d9f8a6",
+      "rgbaSha256": "1412f23fbea9fe7d65c10483d69fe5633b5c0b1e6a106503658ce0a7c48af552",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "signature",
+      "file": "cel-4.png",
+      "sha256": "2c718383b08ea54cdbb3442b1bde5dfef29425d3b20662f894a629a93b652fe2",
+      "rgbaSha256": "ac6bd341543e3d1389ea9423df0c717db33a6a68f7dd589ae1922d56532e153c",
+      "uniqueCel": 3,
+      "ticks": 17
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

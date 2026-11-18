@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "a77e8395bd8fdaa27b5510f766a9520044d5e61a1dc4dd561d237810147c9fb9",
+  "providerSha256": "264b74a0ae59534d3d7515bdb0bd4d80d6e487dcc4ac869c91b6687349164ec1",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Bright teal sharp-edged fins and distinctive golden point stay left; turquoise trails expand to the right. The homing engine is a stable heavy assembly while its fin lights rhythmically change. The impact moves from green plasma contact through warm fragments to single sparks. Pale pixels attach to intended emitter glints. Native and dark/light gameplay assets independently reviewed. No lettering, neighboring foreground, or grid material. Preserve existing P2 lane. Authored runtime QA remains separate.",
+  "reviewedPartialAlpha": true
+}

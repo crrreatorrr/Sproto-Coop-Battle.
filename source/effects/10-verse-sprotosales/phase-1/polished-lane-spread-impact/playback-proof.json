@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "10-verse-sprotosales",
+    "phase": 0,
+    "family": "boss-projectiles",
+    "purposes": [
+      "lane",
+      "spread",
+      "impact"
+    ],
+    "asset": "assets/bosses/effects/10-verse-sprotosales-p1-lane-spread-impact-32e9b720aefc.png",
+    "atlasSha256": "619cd523bafaac782b2e32e62792051350cdd4c7ecb41fb3b799eb34b448fb92",
+    "runtimeSha256": "32e9b720aefc56afe3e3c8d29de62e0422deb62ca6e66c89f9c31ff452c968d3",
+    "runtimeDimensions": [
+      384,
+      288
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 4
+      },
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "lane": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/10-verse-sprotosales-p1-lane-spread-impact-32e9b720aefc.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 0
+          }
+        ]
+      },
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/10-verse-sprotosales-p1-lane-spread-impact-32e9b720aefc.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/10-verse-sprotosales-p1-lane-spread-impact-32e9b720aefc.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 172,
+  "resumed": 4,
+  "hit": [
+    20,
+    20,
+    20,
+    20
+  ],
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14,
+    15
+  ]
+}

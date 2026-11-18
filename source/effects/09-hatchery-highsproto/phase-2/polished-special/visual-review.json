@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+  "providerSha256": "9a4f81488672dadf2db8f2695795bf7023402ec75fbbc06c0ef2ae1ac8a9aec0",
+  "anchor": [
+    48,
+    50
+  ],
+  "grounded": false,
+  "notes": "Teal clasp arcs and amber fragments grow and open from a steady lime contact core, then fade as sparks over the existing circular zones. Pale pixels are attached to the central star, with no exterior white spots or alpha bleed. The 3/255 cutoff clears near-invisible backdrop noise and leaves 14px minimum native seam clearance. The centered event anchor agrees with the contact glow in both facings.",
+  "reviewedPartialAlpha": true
+}

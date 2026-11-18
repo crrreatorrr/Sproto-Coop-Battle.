@@ -1,0 +1,136 @@
+{
+  "boss": "08-crown-alpha777",
+  "phase": 1,
+  "family": "boss-projectiles",
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "asset": "assets/bosses/effects/08-crown-alpha777-p2-spread-homing-impact-e7e430338095.png",
+  "atlasSha256": "9d6575defb922da60dd049c6d1e8db42aa6171cbed16a47edbbd472f9c1299de",
+  "runtimeSha256": "e7e4303380953d5bfc1ed1d57871f8fe252f771906a1fb865a26202daafe1a07",
+  "runtimeDimensions": [
+    384,
+    288
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 4,
+      "frames": 4
+    },
+    {
+      "firstCell": 4,
+      "sourceFirstCell": 8,
+      "frames": 4
+    },
+    {
+      "firstCell": 8,
+      "sourceFirstCell": 12,
+      "frames": 4
+    }
+  ],
+  "clips": {
+    "spread": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p2-spread-homing-impact-e7e430338095.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    },
+    "homing": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p2-spread-homing-impact-e7e430338095.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    },
+    "impact": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/08-crown-alpha777-p2-spread-homing-impact-e7e430338095.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

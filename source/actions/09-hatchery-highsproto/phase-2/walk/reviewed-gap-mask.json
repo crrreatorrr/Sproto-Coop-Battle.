@@ -1,0 +1,736 @@
+{
+  "status": "APPLIED in this NEW author derivative; independent admission pending",
+  "sourceProviderSHA256": "728c2eb41afd2cc9b6b315da3a3446a0515f884d41720bda5762783ec0627424",
+  "sourceRGBASHA256": "5980318a9e7043ab4de4e4c5a76d12cbed9c3b08c13ef12591c68fa977d6412a",
+  "sourcePacketManifestSHA256": "a69c3f221f51c9e487e5328b155c8c1f70b7bd75393839ac46d6abe882749d8c",
+  "proposedMaskSHA256": "73db62e07e6a65dc13cc8aea3b6c8cf72f2fefac85547ac927f51bd83a22f831",
+  "semanticRegions": [
+    [
+      475,
+      180,
+      505,
+      215
+    ],
+    [
+      1074,
+      180,
+      1104,
+      215
+    ],
+    [
+      475,
+      807,
+      505,
+      842
+    ],
+    [
+      1074,
+      807,
+      1104,
+      842
+    ],
+    [
+      418,
+      349,
+      440,
+      374
+    ],
+    [
+      1017,
+      349,
+      1039,
+      374
+    ],
+    [
+      418,
+      976,
+      440,
+      1001
+    ],
+    [
+      1017,
+      976,
+      1039,
+      1001
+    ]
+  ],
+  "rule": "Previously retained alpha; R>G+38,B>G+38,R>150,B>150; complete8connected eligible components wholly inside reviewed cap-strut/hip gap ROIs. Dark/uncertain edges excluded. No global tolerance expansion.",
+  "samples": 35,
+  "components": [
+    {
+      "samples": 14,
+      "bounds": [
+        485,
+        190,
+        490,
+        197
+      ],
+      "points": [
+        [
+          488,
+          190
+        ],
+        [
+          489,
+          191
+        ],
+        [
+          489,
+          192
+        ],
+        [
+          488,
+          193
+        ],
+        [
+          487,
+          194
+        ],
+        [
+          486,
+          195
+        ],
+        [
+          485,
+          196
+        ],
+        [
+          485,
+          195
+        ],
+        [
+          486,
+          194
+        ],
+        [
+          487,
+          193
+        ],
+        [
+          487,
+          192
+        ],
+        [
+          488,
+          192
+        ],
+        [
+          488,
+          191
+        ],
+        [
+          489,
+          190
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 5,
+      "bounds": [
+        1085,
+        194,
+        1089,
+        196
+      ],
+      "points": [
+        [
+          1086,
+          194
+        ],
+        [
+          1087,
+          195
+        ],
+        [
+          1088,
+          194
+        ],
+        [
+          1085,
+          195
+        ],
+        [
+          1087,
+          194
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 1,
+      "bounds": [
+        478,
+        213,
+        479,
+        214
+      ],
+      "points": [
+        [
+          478,
+          213
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 4,
+      "bounds": [
+        428,
+        362,
+        431,
+        364
+      ],
+      "points": [
+        [
+          429,
+          362
+        ],
+        [
+          430,
+          363
+        ],
+        [
+          429,
+          363
+        ],
+        [
+          428,
+          363
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 1,
+      "bounds": [
+        488,
+        820,
+        489,
+        821
+      ],
+      "points": [
+        [
+          488,
+          820
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 5,
+      "bounds": [
+        1085,
+        821,
+        1089,
+        823
+      ],
+      "points": [
+        [
+          1086,
+          821
+        ],
+        [
+          1087,
+          822
+        ],
+        [
+          1088,
+          821
+        ],
+        [
+          1085,
+          822
+        ],
+        [
+          1087,
+          821
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 2,
+      "bounds": [
+        485,
+        822,
+        487,
+        824
+      ],
+      "points": [
+        [
+          486,
+          822
+        ],
+        [
+          485,
+          823
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 1,
+      "bounds": [
+        478,
+        840,
+        479,
+        841
+      ],
+      "points": [
+        [
+          478,
+          840
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    },
+    {
+      "samples": 2,
+      "bounds": [
+        429,
+        990,
+        431,
+        991
+      ],
+      "points": [
+        [
+          429,
+          990
+        ],
+        [
+          430,
+          990
+        ]
+      ],
+      "completeEligibleAlpha8Component": true
+    }
+  ],
+  "removedRGBAProposed": [
+    {
+      "xy": [
+        488,
+        190
+      ],
+      "rgba": [
+        157,
+        114,
+        161,
+        255
+      ]
+    },
+    {
+      "xy": [
+        489,
+        190
+      ],
+      "rgba": [
+        242,
+        176,
+        220,
+        255
+      ]
+    },
+    {
+      "xy": [
+        488,
+        191
+      ],
+      "rgba": [
+        223,
+        165,
+        214,
+        255
+      ]
+    },
+    {
+      "xy": [
+        489,
+        191
+      ],
+      "rgba": [
+        254,
+        186,
+        231,
+        255
+      ]
+    },
+    {
+      "xy": [
+        487,
+        192
+      ],
+      "rgba": [
+        192,
+        122,
+        179,
+        255
+      ]
+    },
+    {
+      "xy": [
+        488,
+        192
+      ],
+      "rgba": [
+        255,
+        198,
+        239,
+        255
+      ]
+    },
+    {
+      "xy": [
+        489,
+        192
+      ],
+      "rgba": [
+        196,
+        98,
+        168,
+        255
+      ]
+    },
+    {
+      "xy": [
+        487,
+        193
+      ],
+      "rgba": [
+        255,
+        182,
+        242,
+        255
+      ]
+    },
+    {
+      "xy": [
+        488,
+        193
+      ],
+      "rgba": [
+        216,
+        109,
+        189,
+        255
+      ]
+    },
+    {
+      "xy": [
+        486,
+        194
+      ],
+      "rgba": [
+        237,
+        149,
+        221,
+        255
+      ]
+    },
+    {
+      "xy": [
+        487,
+        194
+      ],
+      "rgba": [
+        241,
+        140,
+        214,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1086,
+        194
+      ],
+      "rgba": [
+        234,
+        186,
+        227,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1087,
+        194
+      ],
+      "rgba": [
+        255,
+        207,
+        250,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1088,
+        194
+      ],
+      "rgba": [
+        209,
+        101,
+        175,
+        255
+      ]
+    },
+    {
+      "xy": [
+        485,
+        195
+      ],
+      "rgba": [
+        226,
+        155,
+        210,
+        255
+      ]
+    },
+    {
+      "xy": [
+        486,
+        195
+      ],
+      "rgba": [
+        250,
+        161,
+        232,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1085,
+        195
+      ],
+      "rgba": [
+        183,
+        109,
+        178,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1087,
+        195
+      ],
+      "rgba": [
+        249,
+        182,
+        235,
+        255
+      ]
+    },
+    {
+      "xy": [
+        485,
+        196
+      ],
+      "rgba": [
+        226,
+        128,
+        200,
+        255
+      ]
+    },
+    {
+      "xy": [
+        478,
+        213
+      ],
+      "rgba": [
+        251,
+        89,
+        185,
+        255
+      ]
+    },
+    {
+      "xy": [
+        429,
+        362
+      ],
+      "rgba": [
+        178,
+        33,
+        162,
+        255
+      ]
+    },
+    {
+      "xy": [
+        428,
+        363
+      ],
+      "rgba": [
+        198,
+        26,
+        173,
+        255
+      ]
+    },
+    {
+      "xy": [
+        429,
+        363
+      ],
+      "rgba": [
+        212,
+        77,
+        201,
+        255
+      ]
+    },
+    {
+      "xy": [
+        430,
+        363
+      ],
+      "rgba": [
+        205,
+        53,
+        188,
+        255
+      ]
+    },
+    {
+      "xy": [
+        488,
+        820
+      ],
+      "rgba": [
+        233,
+        161,
+        203,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1086,
+        821
+      ],
+      "rgba": [
+        237,
+        190,
+        231,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1087,
+        821
+      ],
+      "rgba": [
+        255,
+        192,
+        237,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1088,
+        821
+      ],
+      "rgba": [
+        196,
+        100,
+        156,
+        255
+      ]
+    },
+    {
+      "xy": [
+        486,
+        822
+      ],
+      "rgba": [
+        247,
+        189,
+        232,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1085,
+        822
+      ],
+      "rgba": [
+        189,
+        119,
+        182,
+        255
+      ]
+    },
+    {
+      "xy": [
+        1087,
+        822
+      ],
+      "rgba": [
+        223,
+        137,
+        197,
+        255
+      ]
+    },
+    {
+      "xy": [
+        485,
+        823
+      ],
+      "rgba": [
+        230,
+        160,
+        209,
+        255
+      ]
+    },
+    {
+      "xy": [
+        478,
+        840
+      ],
+      "rgba": [
+        255,
+        73,
+        189,
+        255
+      ]
+    },
+    {
+      "xy": [
+        429,
+        990
+      ],
+      "rgba": [
+        240,
+        72,
+        210,
+        255
+      ]
+    },
+    {
+      "xy": [
+        430,
+        990
+      ],
+      "rgba": [
+        213,
+        48,
+        173,
+        255
+      ]
+    }
+  ],
+  "pilotAndAllOtherSourcePaintProtected": true,
+  "applied": true,
+  "classification": "Author inspected all9 native raw/overlay components as magenta background in open cap-strut/hip voids, with no pilot/casing material; root assigned Crapto independent final gate.",
+  "originalUnappliedRecord": "unapplied-proposal-record.json",
+  "originalProposalSHA256": "16712f55864c2f201d0366c596b333fef193588263ad095b99872ab3b28a9365"
+}

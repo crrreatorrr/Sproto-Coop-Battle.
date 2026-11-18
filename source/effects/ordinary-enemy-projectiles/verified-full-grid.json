@@ -1,0 +1,21 @@
+{
+  "expectedSourceSha256": "b5eb2b5552e3343a79ae6c2e212b85c5e23641fae0e135b6d738fb5decdf7152",
+  "grid": {
+    "rows": 4,
+    "columns": 4,
+    "expectedCellSize": [
+      1024,
+      1024
+    ]
+  },
+  "background": {
+    "mode": "edge-connected-key",
+    "rgb": [
+      254,
+      254,
+      254
+    ],
+    "tolerance": 40,
+    "connectivity": 8
+  }
+}

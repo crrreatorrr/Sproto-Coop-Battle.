@@ -1,0 +1,37 @@
+{
+  "provider": "Built-in ImageGen",
+  "layout": "2\u00d72 in reading order",
+  "sourceSHA256": "9573cf76fb0c356a521056b878a4c05eabd7ac70634ce1e60f473219e8f06de0",
+  "cellSize": [
+    627,
+    627
+  ],
+  "boundsAtAlpha128": [
+    [
+      150,
+      271,
+      477,
+      478
+    ],
+    [
+      8,
+      65,
+      588,
+      513
+    ],
+    [
+      87,
+      175,
+      543,
+      485
+    ],
+    [
+      157,
+      270,
+      468,
+      465
+    ]
+  ],
+  "stage": "Raw candidate; game alignment and playback QA pending",
+  "alphaPreservedInExtractedCels": true
+}

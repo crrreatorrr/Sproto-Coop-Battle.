@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "5c17399b23a339bede9c43735b80aeacfcb88aa56aa7dc857abbccf3e73a92b9",
+  "providerSha256": "cf2ed5bee598800e6564d144af3b62b524eb5593f6b5508e4eee4568bc243eaf",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Copper and scarlet crescent wings spread and contract around a gold left-facing nose. Tracker is distinct with a plated gold ember and short engine tail. Amber contact bursts into sharp fragments and fades; silhouettes hold their registration and no solid white appears. Native and dark/light gameplay assets independently reviewed. No lettering, neighboring foreground, or grid material. Preserve existing P2 lane. Authored runtime QA remains separate.",
+  "reviewedPartialAlpha": true
+}

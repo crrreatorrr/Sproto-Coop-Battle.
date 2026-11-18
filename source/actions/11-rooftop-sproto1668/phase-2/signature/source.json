@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "17aefe7ec4dd56c7e632df2b2092009acc87ded0367b59548a6598451f9a6095",
+  "sourceSHA256": "be1fb410aa71be8b53233c7acbf260cc52d7745ddb1c1977196b3bc0574519dc",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    1.0,
+    251.0,
+    253.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1157207,
+  "additionalCyanMatteMixtureSamples": 7964,
+  "additionalMaskScope": "Saturated cyan within four native pixels of the flat matte. Olive and blue body paint are retained.",
+  "retainedRGBUnchanged": true
+}

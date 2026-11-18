@@ -1,0 +1,157 @@
+{
+  "status": "WHOLE_CELL_CONTACT_ORIGIN_CANDIDATE_REQUIRES_REVIEW",
+  "groundedOnly": [
+    "signature"
+  ],
+  "contactEdge": 95,
+  "signatureAnchor": [
+    48,
+    95
+  ],
+  "sourceMaterialSheetSha256": "9df4bf75a2c51cbec5ce466be5c17724e0bf34991e274d722aa4899fd689a25f",
+  "inverseRGBAMismatches": 0,
+  "clippedOpaqueSamples": 0,
+  "includedPurposes": [
+    "signature"
+  ],
+  "frames": [
+    {
+      "tile": 0,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "11ca37613036dd8fae1d96da00a5c91304a5cf530621ff2af5262e4c83063dbd",
+      "alignedDecodedRGBASha256": "fa9cb80f621e9e61cbc50f07084863da9611c1532c93eab2f3883ea479529803",
+      "wholeCellTranslation": [
+        0,
+        27
+      ],
+      "boundsBefore": [
+        33,
+        29,
+        66,
+        68
+      ],
+      "boundsAfter": [
+        33,
+        56,
+        66,
+        95
+      ],
+      "opaqueSamples": 871,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest retained actual source terminal or falling fragment contacts edge95; no replacement foot is painted."
+    },
+    {
+      "tile": 1,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "9e1fe9013b50b359850ebe25e83787b5bbaedbd03ce26aad1b3d2e174ad6e7e5",
+      "alignedDecodedRGBASha256": "1aa8a2124f27fcf7e47c3536cb2a51913bb05d1765220012ea36e40a29f597d9",
+      "wholeCellTranslation": [
+        0,
+        1
+      ],
+      "boundsBefore": [
+        10,
+        20,
+        89,
+        94
+      ],
+      "boundsAfter": [
+        10,
+        21,
+        89,
+        95
+      ],
+      "opaqueSamples": 4388,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest retained actual source terminal or falling fragment contacts edge95; no replacement foot is painted."
+    },
+    {
+      "tile": 2,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "59f5cc47e218b017d08f5b4dcecbda30e69518ab1894ac126495acd878aac1ba",
+      "alignedDecodedRGBASha256": "8dc689c6d64fb9e8c50aae3d7b2938086dafc27a718fc577f06dea4e3e680c90",
+      "wholeCellTranslation": [
+        0,
+        27
+      ],
+      "boundsBefore": [
+        27,
+        22,
+        76,
+        68
+      ],
+      "boundsAfter": [
+        27,
+        49,
+        76,
+        95
+      ],
+      "opaqueSamples": 1693,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest retained actual source terminal or falling fragment contacts edge95; no replacement foot is painted."
+    },
+    {
+      "tile": 3,
+      "purpose": "signature",
+      "sourceDecodedRGBASha256": "e520cece6b7f7f4cd14f74d5bf2ac14ed34bb3d0bb2be9ca93d4dd9019a0136d",
+      "alignedDecodedRGBASha256": "f9493aa9741be5ace6e41a014be19127d5744a0f749ace1dd8e13c5f195d4c03",
+      "wholeCellTranslation": [
+        0,
+        33
+      ],
+      "boundsBefore": [
+        34,
+        33,
+        65,
+        62
+      ],
+      "boundsAfter": [
+        34,
+        66,
+        65,
+        95
+      ],
+      "opaqueSamples": 644,
+      "sourceOpaqueSequenceMismatches": 0,
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "scaleChange": false,
+      "contactEdge95": true,
+      "anchor": [
+        48,
+        95
+      ],
+      "grounded": true,
+      "physicalMeaning": "Lowest retained actual source terminal or falling fragment contacts edge95; no replacement foot is painted."
+    }
+  ],
+  "newArtOrPoses": false,
+  "gameRegistration": false
+}

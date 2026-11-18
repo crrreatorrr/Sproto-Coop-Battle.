@@ -1,0 +1,82 @@
+{
+  "boss": "09-hatchery-highsproto",
+  "phase": 1,
+  "family": "special",
+  "purposes": [
+    "special"
+  ],
+  "asset": "assets/bosses/effects/09-hatchery-highsproto-p2-special-82e9d2ceb636.png",
+  "atlasSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+  "runtimeSha256": "82e9d2ceb6362e72d14f9135201cfc45cda831bd9197c7620d97ee7ab4fabee9",
+  "runtimeDimensions": [
+    384,
+    384
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 0,
+      "frames": 16
+    }
+  ],
+  "clips": {
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        50
+      ],
+      "grounded": false,
+      "frameTicks": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/09-hatchery-highsproto-p2-special-82e9d2ceb636.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 16,
+          "firstCell": 0
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

@@ -49,15 +49,16 @@ async function main() {
       snap.players.forEach((p, i) => { p.x = 80 + i * 60; p.y = 75; p.z = 0; p.st = 'idle'; });
       for (let phase = 0; phase < 2; phase++) {
         const ph = MANIFEST.bosses[12].phases[phase];
-        const actor = Render.img(ph.sheet), fx = Render.img(ph.proj), C = ph.actorCell;
-        if (actor.naturalWidth !== C * 8 || actor.naturalHeight !== C * (phase ? 9 : 10) ||
+        const top = Render.img(ph.sheet), bottom = Render.img(AssetLoader.lowerBossActorPath(ph));
+        const fx = Render.img(ph.proj), C = ph.actorCell;
+        if (top.naturalWidth !== C * 8 || bottom.naturalWidth !== C * 8 || top.naturalHeight !== C * 5 || bottom.naturalHeight !== C * (phase ? 4 : 5) ||
             fx.naturalWidth !== 1024 || fx.naturalHeight !== 64 * (phase ? 4 : 6)) throw new Error('atlas dimensions');
         const boss = { bi: 12, ph: phase, x: 485, y: 60, fc: -1, st: 'idle', t: 0, hp: phase ? 2000 : 4000, mh: 4000, fl: 0, w: phase ? 140 : 90, ar: 0 };
         const pose = (extra, row, col) => {
           calls.length = 0;
           Render.drawWorld(g, { ...snap, boss: { ...boss, ...extra } }, { local: [0], noBanner: true });
-          const hit = calls.find(a => a[0] === actor);
-          if (!hit || hit[1] !== col*C || hit[2] !== row*C) throw new Error('actor playback ' + JSON.stringify({ phase, extra, row, col, got: hit?.slice(1, 5) }));
+          const hit = calls.find(a => a[0] === (row < 5 ? top : bottom));
+          if (!hit || hit[1] !== col*C || hit[2] !== (row % 5)*C) throw new Error('actor playback ' + JSON.stringify({ phase, extra, row, col, got: hit?.slice(1, 5) }));
           seenActor.add(phase+':'+row+':'+col);
         };
         for (let a = 0; a < (phase ? 3 : 5); a++) {

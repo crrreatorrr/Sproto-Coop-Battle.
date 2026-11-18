@@ -1,0 +1,24 @@
+{
+  "status": "PASS_EXACT_RGBA_ROWS_ONLY",
+  "sources": [
+    {
+      "purpose": "signature",
+      "source": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/contact-alignment-96/crapto-p2-signature02-contact95.png",
+      "sourceSHA256": "04ceacf88ecb23e0543f248dfb3dfc99959a0afc15ec720013e25a09f45e079f",
+      "copiedOracleSHA256": "04ceacf88ecb23e0543f248dfb3dfc99959a0afc15ec720013e25a09f45e079f",
+      "sourceClipFragment": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/contact-alignment-96/runtime-shaped-clip-fragment-NOT-REGISTERED.json",
+      "sourceFragmentSHA256": "3f3da164221be0b7d311dda905f60b49cfff6398678a997cca707fc494072830"
+    },
+    {
+      "purpose": "special",
+      "source": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/crapto-p2-blackout-v1/crapto-p2-blackout-v1-96.png",
+      "sourceSHA256": "529e504a15554e59ffd4918d4e79cb7d19470567376aa9638983d44a0527a381",
+      "copiedOracleSHA256": "529e504a15554e59ffd4918d4e79cb7d19470567376aa9638983d44a0527a381",
+      "sourceClipFragment": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/crapto-p2-blackout-v1/clip-fragment-NOT-REGISTERED.json",
+      "sourceFragmentSHA256": "cb4e3b342d30856d43044f283eb9bb4bcf6fdd6523e0b46f1b00ee6201eece47"
+    }
+  ],
+  "stagedBankSHA256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+  "rowRGBAMismatches": 0,
+  "newArtOrAlphaEdits": false
+}

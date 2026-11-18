@@ -1,0 +1,212 @@
+{
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "sourceCellSizes": [
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ]
+  ],
+  "sourceSHA256": "8eea0cf35f7d556e3ec1a8c814b981a1cc52f85fea9a3ba9ee83beea060b55c0",
+  "uniformNearestOutputSizes": [
+    [
+      709,
+      709
+    ],
+    [
+      709,
+      709
+    ],
+    [
+      709,
+      709
+    ],
+    [
+      709,
+      709
+    ]
+  ],
+  "nativePlacements": [
+    [
+      120,
+      143
+    ],
+    [
+      123,
+      155
+    ],
+    [
+      122,
+      171
+    ],
+    [
+      81,
+      171
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "extraLeftPaddingNative": 0,
+  "bootSilhouetteIntersectionOverUnion": 0.7399521292510223,
+  "placementBasis": "One scale with the fixed torso landmark; foot movement remains intact.",
+  "newArtworkOrAlphaEdits": false,
+  "revision": "v1 exact common709scale and whole translations;136source void samples removed only",
+  "cases": [
+    {
+      "cel": 1,
+      "remainingStrongMagentaGameSamples": [],
+      "opaqueLastRow": 262
+    },
+    {
+      "cel": 2,
+      "remainingStrongMagentaGameSamples": [
+        {
+          "xy": [
+            132,
+            179
+          ],
+          "rgba": [
+            199,
+            81,
+            190,
+            255
+          ]
+        },
+        {
+          "xy": [
+            132,
+            180
+          ],
+          "rgba": [
+            169,
+            36,
+            156,
+            255
+          ]
+        },
+        {
+          "xy": [
+            133,
+            180
+          ],
+          "rgba": [
+            200,
+            20,
+            173,
+            255
+          ]
+        }
+      ],
+      "opaqueLastRow": 260
+    },
+    {
+      "cel": 3,
+      "remainingStrongMagentaGameSamples": [
+        {
+          "xy": [
+            205,
+            95
+          ],
+          "rgba": [
+            187,
+            119,
+            167,
+            255
+          ]
+        },
+        {
+          "xy": [
+            136,
+            181
+          ],
+          "rgba": [
+            182,
+            89,
+            169,
+            255
+          ]
+        },
+        {
+          "xy": [
+            136,
+            182
+          ],
+          "rgba": [
+            185,
+            71,
+            165,
+            255
+          ]
+        },
+        {
+          "xy": [
+            135,
+            183
+          ],
+          "rgba": [
+            196,
+            51,
+            170,
+            255
+          ]
+        },
+        {
+          "xy": [
+            136,
+            183
+          ],
+          "rgba": [
+            188,
+            69,
+            161,
+            255
+          ]
+        }
+      ],
+      "opaqueLastRow": 260
+    },
+    {
+      "cel": 4,
+      "remainingStrongMagentaGameSamples": [],
+      "opaqueLastRow": 260
+    }
+  ]
+}

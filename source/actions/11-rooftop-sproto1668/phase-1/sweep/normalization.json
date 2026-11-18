@@ -1,0 +1,34 @@
+{
+  "key": "11-rooftop-sproto1668",
+  "scale": 0.394,
+  "sourceAnchor": [
+    282,
+    523
+  ],
+  "offsets": [
+    [
+      0,
+      0
+    ],
+    [
+      56,
+      0
+    ],
+    [
+      0,
+      -1
+    ],
+    [
+      5,
+      -1
+    ]
+  ],
+  "ticks": [
+    36,
+    6,
+    8,
+    11
+  ],
+  "standingLeadIn": false,
+  "state": "sweep"
+}

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "c74d179d713637361c99ec04c371cdcc59ac5893251d679adda1ddeffc253275",
+  "providerSha256": "b3bc07b9be31eec8cdf5df7516be78628f787f14906bcbcb04830b4e734e6d17",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Ruby crescent noses stay left and cyan/red wakes stay right. Spread fans open and the distinct tracker uses mechanical vents with readable lateral contrast. Four-frame ruby and navy impact breaks into scattered sparks with no jump back. Independently reviewed the native geometry and dark/light gameplay contact. No detached opaque pale islands, text, panel matte or neighbor bleed. Existing authored rows stay protected. This verdict covers only the ordered purposes. Runtime proof is separate.",
+  "reviewedPartialAlpha": true
+}

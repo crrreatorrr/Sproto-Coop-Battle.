@@ -1,0 +1,28 @@
+{
+  "provider": "Higgsfield website",
+  "model": "Nano Banana 2",
+  "quality": "2K",
+  "aspectRatio": "1:1",
+  "mode": "Unlimited",
+  "creditBudget": 0,
+  "creditsBefore": 132.6,
+  "status": "completed_pending_QA",
+  "assetIds": [
+    "7e9a2c1a-fe81-415c-a1da-15faf1c9ac04"
+  ],
+  "referenceAssets": [
+    "29fca183-ea82-4519-a125-61866a4e0368"
+  ],
+  "referenceSha256": "7706adec68e1d02396a022a2ff81f13ea1572fcc01e4489b0c1c6e0b5a8a6021",
+  "requestedFamily": "special",
+  "requestedCels": 4,
+  "localNewArtwork": false,
+  "resultFile": "provider-original.png",
+  "resultSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+  "actualSize": [
+    2048,
+    2048
+  ],
+  "resultUrl": "https://d8j0ntlcm91z4.cloudfront.net/user_3EhTMTxw0fkqxeeNVPZRAKwzj8d/hf_20261118_022237_7e9a2c1a-fe81-415c-a1da-15faf1c9ac04.png",
+  "creditsAfterCompletion": 132.6
+}

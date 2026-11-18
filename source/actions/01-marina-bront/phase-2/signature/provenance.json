@@ -1,0 +1,36 @@
+{
+  "clips": {
+    "signature": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "frameTicks": [
+        30,
+        4,
+        8,
+        13
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/01-marina-bront/phase-2/bront-p2-magnet-crush-5585785e805dbc03.webp",
+          "width": 1320,
+          "height": 330,
+          "frames": 4,
+          "columns": 4,
+          "rows": 1
+        }
+      ]
+    }
+  }
+}

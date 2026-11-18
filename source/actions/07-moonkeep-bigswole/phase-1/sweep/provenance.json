@@ -1,0 +1,50 @@
+{
+  "status": "PRIVATE_CANDIDATE_PENDING_INDEPENDENT_REVIEW_NOT_REGISTERED",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceSha256": "3d5f7d0d00270cde167db6fd551902cf931b5798d1f782fb0ee7c123b734cf78",
+  "extractedSha256": "b25357fec14dcd3133319c71f20084b54e163638c7e4a11bfa1528d819855296",
+  "clips": {
+    "sweep": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        36,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/07-moonkeep-bigswole/phase-1/bigswole-p1-rear-sweep-v2-0c510c33e73339fb.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "0c510c33e73339fb12f41224cbb198ff5e5960fbe3cfba1dff4eec62ba667751",
+  "encodedBytes": 136066,
+  "decodedBytes": 1742400,
+  "noNewLocalPoses": true
+}

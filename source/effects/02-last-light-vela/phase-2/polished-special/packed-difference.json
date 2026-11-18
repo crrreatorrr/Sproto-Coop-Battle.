@@ -1,0 +1,30 @@
+{
+  "fromSha256": "4087ffd1b599b6a991ca61df921c56e62e1b14f3ab475f55e139481341825680",
+  "toSha256": "966924c4febfa7452150fcd2d8f2995a4b6e012437a98c69fa8516dc9e12050c",
+  "nativeSamples": 19777,
+  "celSampleCounts": [
+    8,
+    22,
+    12,
+    19,
+    36,
+    25,
+    32,
+    21,
+    7,
+    3,
+    10,
+    4,
+    17,
+    8,
+    2,
+    0
+  ],
+  "visibleSamples": 226,
+  "allUnmaskedRgbaPreserved": true,
+  "unmaskedRgbaSha256": "b622bdb3415c7b9640b09d789788b3d2c6cf54b47a29b86c215ba81b24b2c112",
+  "retainedNearWhitePixels": 0,
+  "sourceGridAndPlaybackUnchanged": true,
+  "diagnosticContactSheet": "v1-v2-exact-readback.png",
+  "ambiguousDarkBlueVioletAndInteriorColorsPreserved": true
+}

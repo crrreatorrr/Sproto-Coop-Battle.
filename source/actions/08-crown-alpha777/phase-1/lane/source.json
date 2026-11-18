@@ -1,0 +1,69 @@
+{
+  "provider": "Built-in ImageGen",
+  "toolDefaultPath": "/Users/kenhiraoka/.codex/generated_images/01a1eadb-b802-7052-ab81-71c8a3e24d2d/exec-bad496ff-2332-40aa-bf29-d750a6597507.png",
+  "providerSourceSHA256": "ee931782e7d5f204fd4980483f446a1dc889ddd5ed125e3604969e87e40ad09d",
+  "sourceSHA256": "6337afa3fade08f313c957d806f41acba882c51bca5de842c0732fa8cc30dbfc",
+  "size": [
+    1254,
+    1254
+  ],
+  "matteRGB": [
+    249.0,
+    3.0,
+    250.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1137752,
+  "boundedMixtureSamples": 3306,
+  "mixtureRule": "R>180,B>180,G<125 within4nativepixels of flat field",
+  "retainedRGBExact": true,
+  "actualSimMuzzle": {
+    "forwardX": 77.27775,
+    "z": 69.255
+  },
+  "records": [
+    {
+      "cel": 0,
+      "bounds": [
+        92,
+        67,
+        506,
+        530
+      ],
+      "borderSamples": 0
+    },
+    {
+      "cel": 1,
+      "bounds": [
+        41,
+        66,
+        506,
+        530
+      ],
+      "borderSamples": 0
+    },
+    {
+      "cel": 2,
+      "bounds": [
+        102,
+        66,
+        506,
+        530
+      ],
+      "borderSamples": 0
+    },
+    {
+      "cel": 3,
+      "bounds": [
+        90,
+        66,
+        505,
+        530
+      ],
+      "borderSamples": 0
+    }
+  ],
+  "status": "SELF_QA_REAL_SIM_PASS_PARENT_PHYSICAL_QUALIFICATION_APPROVED_PRIVATE_NOT_REGISTERED",
+  "physicalQualification": "Actual bomb starts at prior carried-payload area; now-open clamp travels forward/down during release follow-through. Not current empty-jaw center emission.",
+  "sourceGenerationRegime": "Built-in ImageGen, no local new poses, prior v1geometry hold frozen"
+}

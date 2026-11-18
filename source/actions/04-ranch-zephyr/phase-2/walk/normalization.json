@@ -1,0 +1,91 @@
+{
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "sourceCellSizes": [
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ]
+  ],
+  "sourceSHA256": "31e786d67aea168ae7c0e08a157ae3c34f1c80ba867fedc5a8711f1ac0a51170",
+  "uniformNearestOutputSizes": [
+    [
+      603,
+      603
+    ],
+    [
+      603,
+      603
+    ],
+    [
+      603,
+      603
+    ],
+    [
+      603,
+      603
+    ]
+  ],
+  "nativePlacements": [
+    [
+      168,
+      258
+    ],
+    [
+      168,
+      258
+    ],
+    [
+      168,
+      258
+    ],
+    [
+      168,
+      258
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "extraLeftPaddingNative": 0,
+  "bootSilhouetteIntersectionOverUnion": 0.5960264900662252,
+  "placementBasis": "One scale with the fixed torso landmark; foot movement remains intact.",
+  "newArtworkOrAlphaEdits": false
+}

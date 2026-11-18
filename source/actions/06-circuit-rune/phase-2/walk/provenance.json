@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "rune-p2-walk-v2",
+  "clips": {
+    "walk": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": true,
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/06-circuit-rune/rune-p2-walk-v2-35ac18507e0d547c.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/06-circuit-rune/rune-p2-walk-v2-35ac18507e0d547c.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 179424,
+      "sha256": "35ac18507e0d547c028c450d99d39acd7ce44f167d61619bf036ffc9affc1488"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "walk",
+      "file": "cel-1.png",
+      "sha256": "72fd5d1fed5882d1d3d7d0a29f176cf8828f8d75c93c25d8deba3a753d5d0655",
+      "rgbaSha256": "df1bb6b1b01da3036ce4437ed043ff1c3b0071f18d7a10e451ab07dcbd060e1e",
+      "uniqueCel": 0,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-2.png",
+      "sha256": "f9ddb5b2b4eb358a03ebf5e56d81236a781fc866808929633b139432aa56b848",
+      "rgbaSha256": "d57e1a189ca60b0257ca316e33b55825915923861ae682501ccd8b5285bb3d18",
+      "uniqueCel": 1,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-3.png",
+      "sha256": "a0d2b38e00d3a8630ede679128d3d93dc3126a8ac626ca22695c9e7a12e0b657",
+      "rgbaSha256": "dd08df0e4e29b1626bf33fd7e9ea251ab74bf62f4e8d06a1f86a4c339c4bca6a",
+      "uniqueCel": 2,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-4.png",
+      "sha256": "18ffea6f463740dabf2635b8090631f5bb22fc9b73a203f98fa04aa9262e7428",
+      "rgbaSha256": "65030606ca37513e81b17dc63fd074ecf31050fe5667dd19aca0cf19866e46d5",
+      "uniqueCel": 3,
+      "ticks": 9
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

@@ -50,7 +50,8 @@
         "foot": [
           88,
           165
-        ]
+        ],
+        "pageRows": 5
       },
       "projectiles": {
         "cell": 64,
@@ -106,7 +107,8 @@
         "foot": [
           88,
           165
-        ]
+        ],
+        "pageRows": 5
       },
       "projectiles": {
         "cell": 64,

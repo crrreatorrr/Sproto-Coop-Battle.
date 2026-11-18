@@ -1,0 +1,7 @@
+# Accepted Rune P2 effects
+
+This source packet binds the exact accepted signature, special, hurt and death cels to the existing Rune P2 projectile path. The public384×768PNG is copied byte-exact from the reviewed staged bank; its original top16cels and accepted bottom16cels replay with zeroRGBA mismatch. No extra bank request or new art is introduced.
+
+Signature/special use anchor[48,95] and grounded:true; hurt/death remain centered[48,48]. Event/snapshot ages select finite[6,6,6,6], [9,9,9,9], [2,1,1,2] and[38,38,38,37] timings. Existing ordinary projectile/impact rows remain exact. Root source/matte/fixed128/NN/contact replay passed all16cels; independent actual-Sim proof passed618snapshots with zero fullPNG/RGBA mismatch and654independently verified authored draws.
+
+The source is fifteen complete Rune02Higgsfield drawings plus existing Rune01cel7, not local reconstruction. The accepted native material limitation is a thin connected coral fringe; delivered96cels were separately accepted after exact replay. The saved source atlas and16SHA fixture retain their actual geometry/colors. Source/reference/palette/matte/contact/proof originals remain frozen outside the game workspace. The copied staged pack/registry notes retain their historical pending labels; the later root acceptance and final runtime PASS are bound in provenance.json. No actors, transformations, pinned Sim/manifest, collision, effect lifetime, budget cap or runtime drawing code changes belong to this import.

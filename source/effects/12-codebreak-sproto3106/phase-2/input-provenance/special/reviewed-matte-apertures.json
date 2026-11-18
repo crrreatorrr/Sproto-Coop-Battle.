@@ -1,0 +1,128 @@
+{
+  "sourceSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+  "physicalApertures": 5,
+  "fourConnectedSeedComponents": 6,
+  "totalSamples": 12431,
+  "components": {
+    "0": [
+      {
+        "id": "tile-000-reviewed-pressure-aperture-00",
+        "point": [
+          469,
+          378
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 141,
+        "expectedRemovedBounds": [
+          458,
+          371,
+          480,
+          383
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-000-gap-00.png",
+        "expectedRemovedMaskFileSha256": "8ec7c0f6c48b9769a83602cc01dcf60782a3ba53f0dc625bfddf743b598a7a5d",
+        "seedInteriorDepth4Neighbor": 4,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-000-reviewed-pressure-aperture-01",
+        "point": [
+          555,
+          379
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 126,
+        "expectedRemovedBounds": [
+          544,
+          371,
+          565,
+          383
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-000-gap-01.png",
+        "expectedRemovedMaskFileSha256": "3b019bf1053bda740d46951fa5eabb78d6915b190b98c22650346af2aac88635",
+        "seedInteriorDepth4Neighbor": 4,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      }
+    ],
+    "2": [
+      {
+        "id": "tile-002-reviewed-pressure-aperture-02",
+        "point": [
+          786,
+          295
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 3852,
+        "expectedRemovedBounds": [
+          759,
+          242,
+          845,
+          371
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-002-gap-02.png",
+        "expectedRemovedMaskFileSha256": "ffdcad387df8003d3baeb92d66ff9c18db2d2d9cae94f52b4b0e8d59d02c87d3",
+        "seedInteriorDepth4Neighbor": 26,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-03",
+        "point": [
+          233,
+          299
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 3532,
+        "expectedRemovedBounds": [
+          180,
+          245,
+          260,
+          369
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-002-gap-03.png",
+        "expectedRemovedMaskFileSha256": "960501e9e7a17885cb4ee694198d3efaa7a3fb8624006fc48627b2b032a3aa6e",
+        "seedInteriorDepth4Neighbor": 25,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-04",
+        "point": [
+          178,
+          371
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 13,
+        "expectedRemovedBounds": [
+          176,
+          369,
+          180,
+          374
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-002-gap-04.png",
+        "expectedRemovedMaskFileSha256": "9c24662fb0c23ef359049997fbe6c4f2781254dfabe377bf99468c15615fec48",
+        "seedInteriorDepth4Neighbor": 2,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      },
+      {
+        "id": "tile-002-reviewed-pressure-aperture-05",
+        "point": [
+          816,
+          628
+        ],
+        "reviewedBackground": true,
+        "expectedRemovedPixels": 4767,
+        "expectedRemovedBounds": [
+          783,
+          575,
+          849,
+          697
+        ],
+        "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1/reviewed-matte-masks/tile-002-gap-05.png",
+        "expectedRemovedMaskFileSha256": "3cabb915ec1cbbc7d1db2165de8c1a7e1dc193dcbcf3971c313def888e1b1ba9",
+        "seedInteriorDepth4Neighbor": 33,
+        "semanticScope": "Explicit raw native aperture context reviewed: empty magenta between cyan ring/arc and original gold/graphite case; includes13px4-connected toe of larger physical aperture. No real pressure energy or metal."
+      }
+    ]
+  },
+  "sourceReviewContext": "aperture-native-contexts-NNx2.png",
+  "noWiderMatteThreshold": true
+}

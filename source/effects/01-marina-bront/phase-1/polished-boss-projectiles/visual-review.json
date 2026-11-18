@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "baf7723e8e9d7e049af24cac8b485bfa23533d133e9ec23a2fe2bf507a6cc41a",
+  "providerSha256": "6bfe4f329af1a99427f9e3d0029541b3f62639005313c80e075d3a56fc2a2de7",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Independently reviewed the 16 raw frames and dark/light gameplay contact. The compact, open-fin, and heavy tracker silhouettes stay left-facing with exhaust on the right and holding pivots. Fins and engine arcs visibly cycle within each row. The impact contracts through a bright green star to iron fragments and sparse charged debris. Bright cores and purple/green electrical glints are attached to the effects; no detached pale islands, backdrop, labels, or neighbor bleed. Centered anchor retains source registration. This is visual approval; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

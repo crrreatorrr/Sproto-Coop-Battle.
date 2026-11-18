@@ -1,0 +1,169 @@
+{
+  "boss": "04-ranch-zephyr",
+  "phase": 0,
+  "family": "boss-projectiles",
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "asset": "assets/bosses/effects/04-ranch-zephyr-p1-boss-projectiles-7dcd811193ab.png",
+  "atlasSha256": "7dcd811193ab7e2dbcec424dc56ca82fe2587f560eebd2c99ec4be8626acfd4d",
+  "runtimeSha256": "7dcd811193ab7e2dbcec424dc56ca82fe2587f560eebd2c99ec4be8626acfd4d",
+  "runtimeDimensions": [
+    384,
+    384
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 0,
+      "frames": 4
+    },
+    {
+      "firstCell": 4,
+      "sourceFirstCell": 4,
+      "frames": 4
+    },
+    {
+      "firstCell": 8,
+      "sourceFirstCell": 8,
+      "frames": 4
+    },
+    {
+      "firstCell": 12,
+      "sourceFirstCell": 12,
+      "frames": 4
+    }
+  ],
+  "clips": {
+    "lane": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/04-ranch-zephyr-p1-boss-projectiles-7dcd811193ab.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    },
+    "spread": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/04-ranch-zephyr-p1-boss-projectiles-7dcd811193ab.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    },
+    "homing": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/04-ranch-zephyr-p1-boss-projectiles-7dcd811193ab.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    },
+    "impact": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/04-ranch-zephyr-p1-boss-projectiles-7dcd811193ab.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 12
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      610,
+      627
+    ],
+    [
+      610,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      610,
+      1254
+    ],
+    [
+      610,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "sourceCellSizes": [
+    [
+      610,
+      627
+    ],
+    [
+      644,
+      627
+    ],
+    [
+      610,
+      627
+    ],
+    [
+      644,
+      627
+    ]
+  ],
+  "sourceSHA256": "0c6f526f48ea1faf9d6d8840398eaeff5837a0e62ef897192e235f10cdbadeb7",
+  "referenceSHA256": "b20c8ae6cdd22d04992fbb4c1800bdbcc0d13ece945bcfb03f659953279a7afd",
+  "fixedUniformScale": 0.9591002044989775,
+  "uniformNearestOutputSizes": [
+    [
+      585,
+      601
+    ],
+    [
+      618,
+      601
+    ],
+    [
+      585,
+      601
+    ],
+    [
+      618,
+      601
+    ]
+  ],
+  "nativePlacements": [
+    [
+      141,
+      255
+    ],
+    [
+      125,
+      255
+    ],
+    [
+      141,
+      255
+    ],
+    [
+      125,
+      255
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "gameCell": [
+    330,
+    330
+  ],
+  "coreRect": [
+    55,
+    55,
+    220,
+    220
+  ],
+  "anchor": [
+    165,
+    261
+  ],
+  "placementBasis": "Single common scale and recovery boot-mask IoU horizontal registration, whole-source sole alignment only.",
+  "bootIoU": 0.9052139285052787,
+  "sourceColumnSplit": 610,
+  "sourceOriginalNominalSplit": 627,
+  "columnCoordinateCorrection": 16,
+  "sourceCorridorAlphaZero": true,
+  "newArtworkOrRetainedRGBEdits": false,
+  "cases": [
+    {
+      "cel": 1,
+      "nativeBounds": [
+        204,
+        291,
+        684,
+        760
+      ],
+      "gameBounds": [
+        70,
+        100,
+        235,
+        261
+      ],
+      "wholeSourceFieldExact": true,
+      "opaqueClipped": 0,
+      "bootBandBounds": [
+        73,
+        244,
+        228,
+        261
+      ],
+      "bootBandCentroid": [
+        158.1407574901074,
+        251.93329564725835
+      ]
+    },
+    {
+      "cel": 2,
+      "nativeBounds": [
+        137,
+        291,
+        684,
+        760
+      ],
+      "gameBounds": [
+        47,
+        100,
+        235,
+        261
+      ],
+      "wholeSourceFieldExact": true,
+      "opaqueClipped": 0,
+      "bootBandBounds": [
+        104,
+        244,
+        228,
+        261
+      ],
+      "bootBandCentroid": [
+        164.91253101736973,
+        252.43858560794044
+      ]
+    },
+    {
+      "cel": 3,
+      "nativeBounds": [
+        199,
+        291,
+        684,
+        760
+      ],
+      "gameBounds": [
+        68,
+        100,
+        235,
+        261
+      ],
+      "wholeSourceFieldExact": true,
+      "opaqueClipped": 0,
+      "bootBandBounds": [
+        88,
+        244,
+        228,
+        261
+      ],
+      "bootBandCentroid": [
+        164.2603076923077,
+        252.4
+      ]
+    },
+    {
+      "cel": 4,
+      "nativeBounds": [
+        205,
+        291,
+        684,
+        760
+      ],
+      "gameBounds": [
+        70,
+        100,
+        235,
+        261
+      ],
+      "wholeSourceFieldExact": true,
+      "opaqueClipped": 0,
+      "bootBandBounds": [
+        74,
+        244,
+        228,
+        261
+      ],
+      "bootBandCentroid": [
+        158.38138479001134,
+        251.92849035187288
+      ]
+    }
+  ]
+}

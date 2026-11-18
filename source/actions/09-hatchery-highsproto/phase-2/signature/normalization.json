@@ -1,0 +1,22 @@
+{
+  "sourceCell": [
+    627,
+    627
+  ],
+  "sourceSHA256": "9b2e80a351985bdc51929946434bf054c2d5223266b5a780037b8264c0021b77",
+  "uniformNearestOutputSize": [
+    603,
+    603
+  ],
+  "nativePlacement": [
+    129,
+    235
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "bootSilhouetteIntersectionOverUnion": 0.8503163576832884,
+  "placementBasis": "One horizontal offset maximizing approved boot region overlap in recovery; shared scale and ground across all poses.",
+  "newArtworkOrAlphaEdits": false
+}

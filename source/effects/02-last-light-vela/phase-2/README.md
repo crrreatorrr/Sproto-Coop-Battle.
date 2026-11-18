@@ -1,0 +1,1 @@
+Exact reviewed dedicated phase-two effects. Original ImageGen RGBA is retained; all technical padding/contact metadata and source hashes are recorded. Crapto signature reuses previously source-bound Higgsfield art. No actor, legacy bank, collision, source alpha, new local pose or motion is changed. See provenance.json for complete qualifications and browser proof.

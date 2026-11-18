@@ -1,0 +1,23 @@
+{
+  "raw2x2ReadingOrder": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "proposedLoopOrder": [
+    0,
+    2,
+    1,
+    3
+  ],
+  "frameTicks": [
+    10,
+    10,
+    10,
+    10
+  ],
+  "rationale": "Group actual near-support poses then far-support poses.",
+  "paintOrPoseEdits": false,
+  "allFramesGenuineImageGen": true
+}

@@ -1,0 +1,14 @@
+{
+  "provider": "Built-in ImageGen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eada-6f50-7cf3-938c-c3da8448518d/exec-0e0c0d78-7f33-47ed-a899-32b2d497478b.png",
+  "providerSourceSHA256": "728c2eb41afd2cc9b6b315da3a3446a0515f884d41720bda5762783ec0627424",
+  "reference": "inputs/approved-p2-padded960.png",
+  "referenceSHA256": "0e2140380fd271f285dca9505f9f8171dd244fc69f6250e2d6f460c0ebfd458e",
+  "prompt": "prompt.txt",
+  "genuineSourceDrawings": 4,
+  "localPoseSynthesis": false,
+  "derivedFrom": "../highsproto-p2-walk-v2",
+  "newGeneration": false,
+  "onlyRevision": "35 exact magenta open-gap source samples set transparent; every otherRGBA exact",
+  "newLocalMotion": false
+}

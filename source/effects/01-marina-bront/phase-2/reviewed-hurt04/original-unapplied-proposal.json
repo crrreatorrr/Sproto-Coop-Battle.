@@ -1,0 +1,174 @@
+{
+  "status": "UNAPPLIED_PROPOSAL_ROOT_CLASSIFICATION_REQUIRED",
+  "sourceFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png",
+  "expectedSourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+  "strictPacket": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/bront-p2-four-effects-candidate-v2",
+  "strictPacketFreezeSha256": "a40b3974309c3737745c3987fd80531c168496a6eb058dfbaf8f50e68990ac41",
+  "sourceDimensions": [
+    2048,
+    2048
+  ],
+  "exactCellSize": [
+    1024,
+    1024
+  ],
+  "sourceCelOrder": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "eligibility": "ONLY strict-retained source pixels with R>180,B>180,G<90,within5nativepixel4-neighbor peripheral band and each explicit semanticROI. This creates exact named masks for review, not a global tolerance setting.",
+  "ambiguityPolicy": "Looser high-B mixed-color neighboring pixels are AMBIGUOUS and KEPT; no proposed alpha removal may include them without another exact reviewed mask.",
+  "protectedMaterials": "Explicit masks retain real dark graphite/navy case, true copper/orange and green/cyan/lime energy; proposed intersection0. All sourceRGBA outside proposed mask stays original. No pilot/eye/white removal exists.",
+  "proposalPixels": 13806,
+  "ambiguousPixelsKept": 14175,
+  "records": [
+    {
+      "cel": 0,
+      "combinedV2Tile": 8,
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "sourceCelSha256": "167759b9a91075fa5b143f226bb01fd9f9a2c030ce9c821a226a40869239141a",
+      "strictInputSha256": "9cdd6031a30bc53165030d1fd527e14509068a5fcd3aa84f4bdf0a2fd8998d50",
+      "semanticROI": [
+        140,
+        140,
+        884,
+        884
+      ],
+      "semanticScope": "Cracked-plate outer circumference only; radius345..373 around[512,512].",
+      "proposalPixels": 2367,
+      "ambiguousPixelsExplicitlyKept": 1529,
+      "proposalMask": "proposal-masks/cel-000.png",
+      "proposalMaskSha256": "574a9cdcaff6b16040060c98a78a8cc637e6cb929a919fdcd54f9118f413eac9",
+      "components4": 228,
+      "allHighPinkComponentsCompleteWithinScope": true,
+      "sourceRGBAInMaskOrderSha256": "5a0f0f7373d9461dc90dcc1269208ca29d55d297134830cb1ad4ec716f3ec7e2",
+      "strictRGBAOutsideProposalInRowOrderSha256": "84533383cd341aefdd9080ce6371bfb1f4d38fa5b821c421b6e3aed728d147de",
+      "rawRGBAOutsideProposalInRowOrderSha256": "a41191c8ee2ebd4bcf0af90c891aa25838ad32201e0b2e3cf30fce1879f20f3c",
+      "protectedDarkCasePixels": 294478,
+      "protectedCopperPixels": 79871,
+      "protectedCyanLimePixels": 35245,
+      "proposalProtectedIntersection": 0,
+      "proposalSolidInteriorIntersection": 0,
+      "sourceRGBAChanges": 0,
+      "alphaRemovalApplied": false
+    },
+    {
+      "cel": 1,
+      "combinedV2Tile": 9,
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "sourceCelSha256": "2a16fd2003a32485aa63d0062f18048e6bb7b84fa4d48ed0f9bb5abca25396ef",
+      "strictInputSha256": "9130050380ae19f6ba9e035469e89ac20cf90a1009d2653ceb0ebc3038b55a5c",
+      "semanticROI": [
+        40,
+        20,
+        984,
+        1012
+      ],
+      "semanticScope": "Outer cyan/lime energy perimeter and gaps; radius>=300, protecting central magnetic hardware.",
+      "proposalPixels": 7230,
+      "ambiguousPixelsExplicitlyKept": 10046,
+      "proposalMask": "proposal-masks/cel-001.png",
+      "proposalMaskSha256": "1413b793f12cdd067ac58e8b9d9c77e6a60c99a58053cec3b2874c0bb262293a",
+      "components4": 897,
+      "allHighPinkComponentsCompleteWithinScope": true,
+      "sourceRGBAInMaskOrderSha256": "59132d35c078a05f5abb413cf103f3f7a49d63c69b9b64f8bd0d97ee18cd264c",
+      "strictRGBAOutsideProposalInRowOrderSha256": "b20cf054de2e9b2947fc8ee2db96363618aefdafd69346497f346f3ef551e350",
+      "rawRGBAOutsideProposalInRowOrderSha256": "f93b29311e85a4bdc8ce75b9267db66fc7a4f0a6a1a5f31f7aedcbfca7f0b91f",
+      "protectedDarkCasePixels": 226249,
+      "protectedCopperPixels": 72602,
+      "protectedCyanLimePixels": 234098,
+      "proposalProtectedIntersection": 0,
+      "proposalSolidInteriorIntersection": 0,
+      "sourceRGBAChanges": 0,
+      "alphaRemovalApplied": false
+    },
+    {
+      "cel": 2,
+      "combinedV2Tile": 10,
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "sourceCelSha256": "647c4a2b8cd3e18ea2725293ef5448f440dc0699c40150cc83afb90840c61d1f",
+      "strictInputSha256": "4e1b79f2979b9a4d7c95ddabfa9723f37c133cb04e87856dc3189e3e41eb20ac",
+      "semanticROI": [
+        218,
+        180,
+        834,
+        804
+      ],
+      "semanticScope": "Residual-arc/outer-ring complete peripheral band in its tight source bounds.",
+      "proposalPixels": 2044,
+      "ambiguousPixelsExplicitlyKept": 1568,
+      "proposalMask": "proposal-masks/cel-002.png",
+      "proposalMaskSha256": "b312dce7bcabd4e4d5acf5049840aca86a9d94749aef36a586365083d2a1c67e",
+      "components4": 192,
+      "allHighPinkComponentsCompleteWithinScope": true,
+      "sourceRGBAInMaskOrderSha256": "2222ab33e18d1852d4b1d595511dd93ba0ccb59290b5c32c8b9916cbea6c6c54",
+      "strictRGBAOutsideProposalInRowOrderSha256": "0f2a3b7a54c366132a6216eed3eeff842f6c289a8b25fa966c4880370a5551cf",
+      "rawRGBAOutsideProposalInRowOrderSha256": "4ce7bf18b61591cb0a0e2eb40303ed58a529c7d04c319a6ef77e26c1f0f1efaa",
+      "protectedDarkCasePixels": 181718,
+      "protectedCopperPixels": 44878,
+      "protectedCyanLimePixels": 62530,
+      "proposalProtectedIntersection": 0,
+      "proposalSolidInteriorIntersection": 0,
+      "sourceRGBAChanges": 0,
+      "alphaRemovalApplied": false
+    },
+    {
+      "cel": 3,
+      "combinedV2Tile": 11,
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "sourceCelSha256": "148864c5889acd7769666912267e767a0dc130223d529d2d437f64e1c10f485c",
+      "strictInputSha256": "3617d9700f5235be867bd18a5a6d8c37a5cb1027ad946286e75d71d4f6ff93d9",
+      "semanticROI": [
+        176,
+        176,
+        848,
+        848
+      ],
+      "semanticScope": "Dim-ring complete outer circumference in its tight source bounds.",
+      "proposalPixels": 2165,
+      "ambiguousPixelsExplicitlyKept": 1032,
+      "proposalMask": "proposal-masks/cel-003.png",
+      "proposalMaskSha256": "2059828ef6058f6855856c1c2f9c0600e472e70b219823c2b64256afcc253911",
+      "components4": 223,
+      "allHighPinkComponentsCompleteWithinScope": true,
+      "sourceRGBAInMaskOrderSha256": "531063f0d91a14454324eecc8926c01d4652dd1b0272ffaebfd47cf1a4065e14",
+      "strictRGBAOutsideProposalInRowOrderSha256": "b753d71413c621f88e488eb084de73a5bc630e4cd95ad6f93d1b332b1df0811d",
+      "rawRGBAOutsideProposalInRowOrderSha256": "d0c2fc8aabfd7c98d39ce8264e8d735c7bd535a3e7e8f773ed4550432a95f2cd",
+      "protectedDarkCasePixels": 313158,
+      "protectedCopperPixels": 59404,
+      "protectedCyanLimePixels": 8730,
+      "proposalProtectedIntersection": 0,
+      "proposalSolidInteriorIntersection": 0,
+      "sourceRGBAChanges": 0,
+      "alphaRemovalApplied": false
+    }
+  ],
+  "newRGBOrMotion": false,
+  "globalToleranceChange": false,
+  "alphaRemovalApplied": false,
+  "editedArtworkOrCleanedPreviewExported": false,
+  "gameEdits": false,
+  "providerActions": false
+}

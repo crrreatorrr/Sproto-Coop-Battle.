@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "4715a8bc8d6ae055ca6fd2c5e70829a29e77fe82ab30d487db6f2c43adde80f5",
+  "providerSha256": "1e96ac4852c9d0670330742bc44bacedfd5bbab67ff76bd058a1d4b6eac79a6d",
+  "anchor": [
+    48,
+    68
+  ],
+  "grounded": true,
+  "notes": "A compact purple citadel eruption grows into grounded amethyst spires and violet pressure waves before cooling to sparks. Pale samples are confined to intentional lightning cores, with no detached white specks. Native 4×4 fields have at least 3px actual seam clearance after the measured 1–6/255 alpha background correction. The shared integer pad preserves geometry and all remaining RGBA bytes. Live preview aligns base y=68 to the danger-zone ground center across all 16 frames.",
+  "reviewedPartialAlpha": true
+}

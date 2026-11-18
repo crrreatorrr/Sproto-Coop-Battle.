@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "actualSimSnapshots": 2224,
+  "independentlyCheckedRegisteredDraws": 9770,
+  "allEightPurposesBothFacesAllCels": true,
+  "projectileVelocityFacingBothSigns": true,
+  "originsAnchorsFiniteAgesAndLoopCellsExact": true,
+  "oneReusable96ScratchCanvas": true,
+  "maxScratchBytes": 36864,
+  "groundedDraws": 746,
+  "phase0OwnerFallbackSnapshots": 28,
+  "mixedSpecialHurtHomingDraws": 454,
+  "fullScenePNGsAndDecodedRGBAEqual": true,
+  "noEventOrCollisionMutation": true,
+  "coverage": {
+    "lane/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "impact/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "spread/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "homing/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "signature/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "special/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hurt/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "death/-1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lane/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "impact/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "spread/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "homing/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "signature/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "special/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hurt/1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "death/1": [
+      0,
+      1,
+      2,
+      3
+    ]
+  }
+}
