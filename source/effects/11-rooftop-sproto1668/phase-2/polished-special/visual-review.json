@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "14687cfc6aad10265c03467355e02cef2a3a6ff90c7827079ceb1b807a1d4907",
+  "providerSha256": "97a49394c13452ade605bf197482866473e6390d5a5a2fd229b87db48f99c820",
+  "anchor": [
+    43,
+    65
+  ],
+  "grounded": true,
+  "notes": "Violet chain-shear strokes and gold links fan from a visible ground contact and break into colored fragments. Bright lavender pixels follow the lower slash edges and contact point, with no external white spots. A 2/255 cutoff clears near-invisible backdrop noise and leaves 11px minimum native seam clearance. The lower-left strike root is centered on the locked ground zone at x43 y65 in the packed cel.",
+  "reviewedPartialAlpha": true
+}
