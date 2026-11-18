@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "07-moonkeep-bigswole",
+    "phase": 1,
+    "family": "boss-projectiles",
+    "purposes": [
+      "spread",
+      "homing",
+      "impact"
+    ],
+    "asset": "assets/bosses/effects/07-moonkeep-bigswole-p2-spread-homing-impact-63f21662f7d0.png",
+    "atlasSha256": "ef63472a5a7eef81c0ee3ae2cc3127e5e1a1244b5bd7f4624a34e4096a1669d4",
+    "runtimeSha256": "63f21662f7d0d01f5d1644c704ec8571a1168307682c85c97ead4e65450809c7",
+    "runtimeDimensions": [
+      384,
+      288
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 8,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/07-moonkeep-bigswole-p2-spread-homing-impact-63f21662f7d0.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 0
+          }
+        ]
+      },
+      "homing": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/07-moonkeep-bigswole-p2-spread-homing-impact-63f21662f7d0.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/07-moonkeep-bigswole-p2-spread-homing-impact-63f21662f7d0.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 188,
+  "resumed": 4,
+  "hit": [
+    17,
+    25,
+    17,
+    25
+  ],
+  "frames": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}
