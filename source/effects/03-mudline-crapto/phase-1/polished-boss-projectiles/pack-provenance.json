@@ -1,0 +1,97 @@
+{
+  "status": "Candidate requires visual and in-game QA",
+  "family": "boss-projectiles",
+  "cell": 96,
+  "sourceShape": [
+    331,
+    331
+  ],
+  "sharedSourceField": [
+    0,
+    0,
+    330,
+    330
+  ],
+  "proposedClipTiming": {
+    "lane": {
+      "firstCell": 0,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true
+    },
+    "spread": {
+      "firstCell": 4,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true
+    },
+    "homing": {
+      "firstCell": 8,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true
+    },
+    "impact": {
+      "firstCell": 12,
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false
+    }
+  },
+  "sourceFramesEncodedSha256": [
+    "9a2533872e056b15618ca34f50535c96fd9610f80dbe5df4311d5a92c4c87a58",
+    "310d60be0b399f1e8aefa15d0a72df6a9671418fb3981b7d503f12cc96d03d31",
+    "4219e02baa7a7fd8e0ff9efe6b8c823eff278afb5d639bf708f99a5592c8928b",
+    "62c5899041a319c34d5610b8c0a680f00cdd5af93e223150991480b8a2778f7d",
+    "d858781e334e46042ad40fab1eb03c30336e78ed1d452e1571791382e41b0abb",
+    "3be70e166ce991914faf0848d29f79863bcfd1b91f77beec1e29413f0e79c089",
+    "9738766e0a7c5b94b86044371201474815c520f2bd2437e1521dc19ba615c43e",
+    "9b1bec030b7cdd9b1672250eb40db36ce1848933d02c8b2c9f21c12b0ce12847",
+    "6c1a1f1e7e55b57077ad51ec2a1cd685a4e4d2810770d1de6d7d1f7480c64d53",
+    "30fdf39e798bdeb006bb26b237c5318b27580ec9b525c2c858e749fd954d0f1c",
+    "5cd2ead01092031f8499cbcfd4025736f8237a60785bfc4632510c3308198ab8",
+    "484d2663dc114940b8d43e720889a796bc7c48dc261379aad4a557f3692e5bc4",
+    "511d30ab45b6a76a44cb195caea7976ca7da8c050ffd72de0faa11ca071d0278",
+    "a18585d4d7ad39fed51c15aace121825751ef2e1763e6be82100d4b7dd717cc6",
+    "00ec57e3473586aa948478759ec2c843a9ccbbfa264d4b7f068e1505ab560470",
+    "3573310415cf113361c2be7703c806749521bb80b3cf8f5232cebf21bfd639e8"
+  ],
+  "encodedSha256": "4581a87b8923e9e4c9e0b625922a8d7055069fa44eae6b0d5048548c109f9113",
+  "rgbaSha256": [
+    "3de9a3589f0f9b9c3f59b5cbc15e5a716194b1852c12a57f5d7456fd019689c9",
+    "1a6d94f7de7db5329ab18350a15a83adc7547afb9a87becc9698fb76a1651378",
+    "25320d8d713329d7d5b1374082bc52cf14059e8e9b5737996c789c8636b574c9",
+    "6560173ec7b79e9f40664d81bcb0c05eba736ae6b648b4653b1bcc1e5e12ea50",
+    "f10c44d1f82e998707b9faff55ffb6542904f15b4d1d90c588b7405a9927dedb",
+    "a9a46ef045352c4975c598d4922c42064878df4cb2bdd62e9b91f974bb484e94",
+    "67a644a0682e44bd7352700ec60192e922aa3b47327064059d101647bd9edc8e",
+    "0cb9ffd144ff25f63b8ad9bb2b0eb4d35b6afb1997706e30d94c0ef93bda122c",
+    "98a99db1536c1cf820017233720e9e3e94dff138e214fd2ea363676837e339b2",
+    "3c1e7a7a2819c4ea1deeb9861016696beae3d8729830ac5e3049a3b49ad1ca4c",
+    "3b3f2ec0d98f376664dd9bb846ed47bba7629a3cfc5f9985ad4d001d4d325cfd",
+    "b9c654863d010757636e862bc62647f829dd5d276ee7717018c44ae460d35024",
+    "48cd63189015ef4179bc1e731360ef660c65fcec1579e7977483f79ea9c9a24d",
+    "dcf1acb5c47f73ebfb045138d44052efafdcb5d631b6f86a572dbbbc0ecd1500",
+    "ede6fff6be76e61b5a6c5cc46d7a55367f5c6699afc9dc8bfd65b30477bf21e9",
+    "7276ce240a8de529e2ada54b03e08428ab7530d34c18145c1b76485d54c533fe"
+  ],
+  "providerSha256": "cf4e06d4f90593a16d43c66902a3a63d3b2106b6de9d1c6270b3e921d4b2bcab",
+  "generationBackend": "OpenAI built-in ImageGen",
+  "intakeReportSha256": "bd0a9d341b8341d4dd2226d0ffb92df8a8746d49bcd7f72ccaa625f8639c90c0"
+}
