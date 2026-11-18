@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "rune-p2-twinblade-quake-v2",
+  "clips": {
+    "special": {
+      "cell": [
+        385,
+        330
+      ],
+      "anchor": [
+        220,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        48,
+        13,
+        8,
+        17
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/06-circuit-rune/rune-p2-twinblade-quake-v2-72fabe5fd8f9b6f0.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        110,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/06-circuit-rune/rune-p2-twinblade-quake-v2-72fabe5fd8f9b6f0.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 770,
+      "height": 660,
+      "decodedBytes": 2032800,
+      "encodedBytes": 154850,
+      "sha256": "72fabe5fd8f9b6f0dea6364c86d87c95ecf6592c63d04f57f81dd9c0adc4bdec"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "special",
+      "file": "cel-1.png",
+      "sha256": "732f89aa1072f834144c1b9f6d8897297633ac31e3b07d1ba6aee1be430ee5dc",
+      "rgbaSha256": "c045db9b0f497d1d41b8fbd5a39c49d7912416b975d5c0840d6116be42edc9c5",
+      "uniqueCel": 0,
+      "ticks": 48
+    },
+    {
+      "action": "special",
+      "file": "cel-2.png",
+      "sha256": "a819516d5617153f2a48b8404e295de746cd1206528400e80853c639c0a4e071",
+      "rgbaSha256": "0de19b19a46fe9a1b049ed6ceba9bd6f132c5bdeab13ae6fc26fc06d62283b96",
+      "uniqueCel": 1,
+      "ticks": 13
+    },
+    {
+      "action": "special",
+      "file": "cel-3.png",
+      "sha256": "396137fc3287c63897c9680877c05f9e76e28ae7deb9557e449723c66e67f5bb",
+      "rgbaSha256": "a78c4ab7822b2df508b3fcde8431b424dfa03af02c671dd823aee091e6649c90",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "special",
+      "file": "cel-4.png",
+      "sha256": "fa3e8cab8d570c27c3e4716c4484cb7bac9156439e09736b7816fc62a030f974",
+      "rgbaSha256": "19b1107f25e0bbee5850f1f275ff484c1e4bd59347f9e816a760a2db9c6ed391",
+      "uniqueCel": 3,
+      "ticks": 17
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}
