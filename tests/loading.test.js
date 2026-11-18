@@ -6,8 +6,9 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-function loadApi() {
+function loadApi(registry) {
   const sandbox = { window: {}, URL, performance, setTimeout, clearTimeout };
+  sandbox.window.CoopBossTransformations = registry;
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'asset-loader.js'), 'utf8'), sandbox, { filename: 'asset-loader.js' });
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'manifest.js'), 'utf8'), sandbox, { filename: 'manifest.js' });
   return { AssetLoader: sandbox.window.AssetLoader, manifest: sandbox.window.MANIFEST };
@@ -21,7 +22,7 @@ function sizeFor(src) {
   return [640, 226];
 }
 
-function harness() {
+function harness(registry) {
   const pending = [];
   class FakeImage {
     constructor() {
@@ -49,7 +50,7 @@ function harness() {
     }
   }
   const timers = [];
-  const { AssetLoader, manifest } = loadApi();
+  const { AssetLoader, manifest } = loadApi(registry);
   const loader = AssetLoader.create({
     Image: FakeImage,
     schedule: fn => { timers.push(fn); },
@@ -172,6 +173,35 @@ async function main() {
   assert.ok((stat.resident.shadow || 0) <= 2, 'shadow resident ' + stat.resident.shadow);
   assert.strictEqual(stat.resident.fighter, 4);
   assert.strictEqual(stat.error, 0);
+
+  // A late join gets a separate authored FX bank with its stage; repeated
+  // references to the normal projectile bank do not add requests or residency.
+  const { manifest: fxManifest } = loadApi();
+  const ordinaryBank = fxManifest.bosses[0].phases[0].proj;
+  const extraBank = 'assets/bosses/99-qa-p2-fx.webp';
+  const fxClip = src => ({ pages: [{ src }] });
+  const withFx = harness({ animations: { bosses: { [fxManifest.bosses[0].key]: { phases: [
+    { fx: { lane: fxClip(ordinaryBank), spread: fxClip(ordinaryBank) } },
+    { fx: { signature: fxClip(extraBank), special: fxClip(extraBank),
+      hurt: fxClip('assets/bosses/actions/stream-owned.webp'),
+      death: fxClip('assets/bosses/../wrong-bank.webp'),
+      impact: { pages: [null, {}, { src: 'assets/bosses/./actions/stream-owned.webp' },
+        { src: 'assets/bosses//transformations/stream-owned.webp' }] }, homing: { pages: true } } },
+  ] } } } });
+  const fxGroups = withFx.AssetLoader.groups(withFx.manifest);
+  assert.deepStrictEqual(Array.from(fxGroups.startup), Array.from(plan.startup), 'FX remains deferred from title');
+  assert.strictEqual(fxGroups.firstBoss.filter(src => src === ordinaryBank).length, 1);
+  assert.strictEqual(fxGroups.firstBoss.filter(src => src === extraBank).length, 1);
+  assert.strictEqual(fxGroups.firstBoss.length, plan.firstBoss.length + 1, 'invalid FX sources cannot acquire stage pins');
+  withFx.loader.enterStage(0, withFx.manifest);
+  await withFx.drain();
+  assert.ok(withFx.loader.loaded(extraBank), 'authored effects available on direct stage entry');
+  for (let i = 1; i < 12; i++) {
+    withFx.loader.enterStage(i, withFx.manifest);
+    await withFx.drain();
+  }
+  assert.strictEqual(withFx.loader.loaded(extraBank), null, 'old stage effect bank released');
+  assert.strictEqual(withFx.loader.status().error, 0);
   console.log('loading ok');
 }
 

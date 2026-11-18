@@ -37,6 +37,7 @@ function loadFx() {
     ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
     ['CoopBossActionSelection', 'boss-action-selection.js'],
     ['CoopBossActionPlayer', 'boss-action-player.js'],
+    ['CoopBossFxSelection', 'boss-fx-selection.js'],
     ['CoopBossTransformPlayer', 'boss-transform-player.js'],
     ['CoopBossMorphField', 'boss-morph-field.js'],
     ['CoopBossMorph', 'boss-morph.js'],

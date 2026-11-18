@@ -72,15 +72,33 @@ function create(loader, options) {
     const picture = decoded || held;
     if (!picture) return false;
     const [w, h] = plan.cell, [ax, ay] = plan.anchor;
-    const scale = placement.extent / Math.max(w, h);
+    const [cx, cy, cw, ch] = plan.coreRect;
+    const scale = placement.extent / Math.max(cw, ch);
     g.save();
     g.imageSmoothingEnabled = false;
     g.translate(Math.round(placement.x), Math.round(placement.y));
     if (placement.facing > 0) g.scale(-1, 1);
     if (placement.alpha !== undefined) g.globalAlpha *= placement.alpha;
     if (placement.filter) g.filter = placement.filter;
-    g.drawImage(picture, decoded ? frame.x : 0, decoded ? frame.y : 0, w, h,
-      -Math.round(ax * scale), -Math.round(ay * scale), Math.round(w * scale), Math.round(h * scale));
+    const sx = decoded ? frame.x : 0, sy = decoded ? frame.y : 0;
+    if (!plan.clip.coreRect) {
+      g.drawImage(picture, sx, sy, w, h,
+        -Math.round(ax * scale), -Math.round(ay * scale), Math.round(w * scale), Math.round(h * scale));
+    } else {
+      // Keep the established actor core's exact integer destination rectangle.
+      // Nine adjoining source regions add weapon room without shifting the
+      // nearest-neighbor sampling of that core at a standing/phase handoff.
+      const width = Math.round(cw * scale), height = Math.round(ch * scale);
+      const x = -Math.round((ax - cx) * scale), y = -Math.round((ay - cy) * scale);
+      const xs = [0, cx, cx + cw, w], ys = [0, cy, cy + ch, h];
+      const dx = [x - cx * width / cw, x, x + width, x + width + (w - cx - cw) * width / cw];
+      const dy = [y - cy * height / ch, y, y + height, y + height + (h - cy - ch) * height / ch];
+      for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+        const sw = xs[col + 1] - xs[col], sh = ys[row + 1] - ys[row];
+        if (sw && sh) g.drawImage(picture, sx + xs[col], sy + ys[row], sw, sh,
+          dx[col], dy[row], dx[col + 1] - dx[col], dy[row + 1] - dy[row]);
+      }
+    }
     g.restore();
     return true;
   }

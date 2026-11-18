@@ -68,6 +68,11 @@ def pack(spec_path, output, provenance_path):
         clip_records[action] = {'sequence': sequence, 'ticks': ticks, 'loop': raw.get('loop', False)}
     if len(frames) > 10000:
         raise ValueError('Sprite set exceeds the source cel limit')
+    core = spec.get('coreRect')
+    if core is not None and (not isinstance(core, list) or len(core) != 4 or
+            any(type(n) is not int for n in core) or core[0] < 0 or core[1] < 0 or
+            core[2] <= 0 or core[3] <= 0 or core[0] + core[2] > cell[0] or core[1] + core[3] > cell[1]):
+        raise ValueError('Sprite core rectangle must stay inside the cell')
     # All source/metadata validation finishes before the output directory is changed.
     output.mkdir(parents=True, exist_ok=True)
     physical_pages, locations = [], {}
@@ -111,6 +116,8 @@ def pack(spec_path, output, provenance_path):
                 runs[-1]['cells'].append(local)
             clips[action] = {'cell': cell, 'anchor': anchor, 'loop': raw['loop'],
                              'frameTicks': raw['ticks'], 'pages': runs}
+            if core is not None:
+                clips[action]['coreRect'] = core.copy()
         for image_path in staging.iterdir():
             image_path.replace(output / image_path.name)
     result = {'version': 1, 'id': name, 'clips': clips, 'pages': physical_pages,

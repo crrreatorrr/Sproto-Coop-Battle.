@@ -14,6 +14,12 @@ function plan(clip, options = {}) {
     throw new Error('Invalid sprite timeline metadata');
   }
   const cell = clip.cell.slice(), anchor = clip.anchor.slice();
+  const coreRect = clip.coreRect === undefined ? [0, 0, ...cell] : clip.coreRect;
+  if (!Array.isArray(coreRect) || coreRect.length !== 4 ||
+      !coreRect.slice(0, 2).every(nonnegative) || !coreRect.slice(2).every(positive) ||
+      coreRect[0] + coreRect[2] > cell[0] || coreRect[1] + coreRect[3] > cell[1]) {
+    throw new Error('Sprite core rectangle lies outside its cell');
+  }
   if (options.anchorInside && anchor.some((n, i) => n < 0 || n >= cell[i])) {
     throw new Error('Sprite anchor lies outside its cell');
   }
@@ -79,7 +85,7 @@ function plan(clip, options = {}) {
       x: (sourceCell % page.columns) * cell[0], y: Math.floor(sourceCell / page.columns) * cell[1],
       frameAge: time - (frame ? ends[frame - 1] : 0) };
   }
-  return { clip, cell, anchor, duration, pages, at };
+  return { clip, cell, anchor, coreRect: coreRect.slice(), duration, pages, at };
 }
 
 root.CoopSpriteTimeline = { plan };

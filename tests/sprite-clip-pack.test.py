@@ -23,6 +23,7 @@ with tempfile.TemporaryDirectory(prefix='sprite-packer-check-') as temporary:
         cells.append(cel)
     sequences = {'lane':[0,1,2,0,4,3,0], 'walk':[0,1,0]}
     raw = {'id':'test-sprite-set','assetPrefix':'assets/test/clips','cell':[8,8],'anchor':[4,7],
+           'coreRect':[1,1,6,6],
            'columns':2,'pageFrames':2,'clips':{name:{'loop':name=='walk','frames':[
                {'file':f'cel-{index}.png','ticks':3 if i!=2 else 2}
                for i,index in enumerate(sequence)]} for name,sequence in sequences.items()}}
@@ -30,6 +31,7 @@ with tempfile.TemporaryDirectory(prefix='sprite-packer-check-') as temporary:
     input_file.write_text(json.dumps(raw))
     result = packer.pack(input_file,root/'packed',root/'proof.json')
     assert result['sourceCelCount']==10 and result['uniqueCelCount']==5
+    assert all(clip['coreRect']==[1,1,6,6] for clip in result['clips'].values())
     for name,sequence in sequences.items():
         replay = []
         for page in result['clips'][name]['pages']:
@@ -70,6 +72,16 @@ for(const clip of Object.values(proof.clips)) {
     else:
         raise AssertionError('Accepted a zero-duration frame')
     assert not (root/'invalid').exists() and not (root/'invalid-proof.json').exists()
+    raw['clips']['walk']['frames'][0]['ticks']=3
+    raw['coreRect']=[0,0,9,8]
+    input_file.write_text(json.dumps(raw))
+    try:
+        packer.pack(input_file,root/'invalid-core',root/'invalid-core-proof.json')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Accepted an out-of-cell actor core')
+    assert not (root/'invalid-core').exists() and not (root/'invalid-core-proof.json').exists()
 report={'status':'PASS','authoredCelsReplayed':10,'uniqueCels':5,
         'checks':['exact RGBA including transparent RGB','shared/revisited atlas pages',
                   'irregular duration boundaries','content URLs include layout','reject before install'],

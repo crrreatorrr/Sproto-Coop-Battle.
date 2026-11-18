@@ -65,6 +65,10 @@ for (const [tick,frame] of [[-1,0],[29.99,0],[30,1],[37.99,1],[38,2],[39,3],[62,
 assert.throws(()=>scope.window.CoopSpriteTimeline.plan({...clip,frameTicks:[0]}),/metadata/);
 assert.throws(()=>scope.window.CoopSpriteTimeline.plan(clip,{maxPageBytes:1}),/budget/);
 assert.throws(()=>scope.window.CoopSpriteTimeline.plan({...clip,pages:[{...clip.pages[0],cells:[99,0]}]}),/grid/);
+for(const coreRect of [[-1,0,20,20],[0,0,0,20],[1,0,20,20],[0,0,20],[0,0,NaN,20]]) {
+  assert.throws(()=>scope.window.CoopSpriteTimeline.plan({...clip,coreRect}),/core rectangle/);
+}
+assert.deepEqual(Array.from(scope.window.CoopSpriteTimeline.plan(clip).coreRect),[0,0,20,20]);
 for (const dependency of ['CoopSpriteTimeline','CoopSpriteClipPlayer','CoopBossActionSelection']) {
   const present=scope.window[dependency];
   delete scope.window[dependency];

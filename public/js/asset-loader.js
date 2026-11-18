@@ -48,7 +48,18 @@ function bossPaths(manifest, i) {
   const out = [];
   const phases = manifest.bosses[i].phases;
   for (let p = 0; p < phases.length; p++) out.push(phases[p].sheet, phases[p].proj);
-  return out;
+  // Authored effect clips normally reuse each phase's projectile bank. Optional
+  // separate banks follow the same stage lifetime, including late-join loads.
+  const art = root.CoopBossTransformations?.animations?.bosses?.[manifest.bosses[i].key]?.phases || [];
+  for (const phase of art) for (const clip of Object.values(phase?.fx || {})) {
+    for (const page of Array.isArray(clip?.pages) ? clip.pages : []) {
+      const src = page?.src;
+      if (typeof src === 'string' && /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
+          !src.split('/').some(part => !part || part === '.' || part === '..') &&
+          !/^assets\/bosses\/(actions|transformations)\//.test(src)) out.push(src);
+    }
+  }
+  return unique(out);
 }
 
 function transformPaths(manifest, i) {
@@ -153,7 +164,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
   const firstTransform = transformPaths(manifest, 0).slice(0, 1);
   const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {

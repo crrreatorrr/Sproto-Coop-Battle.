@@ -54,6 +54,55 @@ async function checkPartialActionDependencies(browser, base) {
   }
 }
 
+async function checkPaddedCore(page) {
+  const result=await page.evaluate(async()=>{
+    const source=document.createElement('canvas');source.width=source.height=220;
+    const sourceG=source.getContext('2d'),pixels=sourceG.createImageData(220,220);
+    for(let y=8;y<206;y++)for(let x=12;x<208;x++) {
+      const n=(y*220+x)*4;pixels.data.set([x,y,(x+y)%255,255],n);
+    }
+    sourceG.putImageData(pixels,0,0);
+    const padded=document.createElement('canvas');padded.width=padded.height=330;
+    padded.getContext('2d').drawImage(source,55,55);
+    const picture=new Image();picture.src=padded.toDataURL();await picture.decode();
+    const clip={cell:[330,330],anchor:[165,261],coreRect:[55,55,220,220],frameTicks:[1],
+      pages:[{src:'padded-test',columns:1,frames:1}]};
+    let available=true;
+    const player=CoopSpriteClipPlayer.create({loaded:()=>available?picture:null},{setPages:()=>{}});
+    player.sync({identity:'padded',clip,age:0});
+    const checks=[];
+    for(const [width,height,x,y] of [[640,360,420,260],[640,360,443,259],[256,256,128,240]]) {
+      for(const facing of [-1,1])for(const opaque of [false,true]) {
+        const old=document.createElement('canvas'),now=document.createElement('canvas');
+        old.width=now.width=width;old.height=now.height=height;
+        const a=old.getContext('2d'),b=now.getContext('2d');
+        for(const g of [a,b]){g.imageSmoothingEnabled=false;if(opaque){g.fillStyle='#263141';g.fillRect(0,0,width,height);}}
+        a.save();a.translate(x,y);if(facing>0)a.scale(-1,1);
+        a.drawImage(source,0,0,220,220,-122,-228,243,243);a.restore();
+        player.draw(b,{x,y,facing,extent:243});
+        const before=a.getImageData(0,0,width,height).data,after=b.getImageData(0,0,width,height).data;
+        let differences=0;for(let i=0;i<before.length;i++)if(before[i]!==after[i])differences++;
+        checks.push({width,height,x,y,facing,opaque,differences});
+      }
+    }
+    // The outer padding contains real drawable room, rather than cropping the
+    // larger cell down to its nominal actor core.
+    const g=padded.getContext('2d');g.fillStyle='#ff0000';g.fillRect(10,90,60,5);
+    const armed=new Image();armed.src=padded.toDataURL();await armed.decode();
+    const extra=CoopSpriteClipPlayer.create({loaded:()=>armed},{setPages:()=>{}});
+    extra.sync({identity:'weapon',clip,age:0});
+    const canvas=document.createElement('canvas');canvas.width=640;canvas.height=360;
+    extra.draw(canvas.getContext('2d'),{x:420,y:260,facing:-1,extent:243});
+    const image=canvas.getContext('2d').getImageData(0,0,640,360).data;
+    let outsideWeapon=0;for(let y=0;y<360;y++)for(let x=0;x<298;x++) {
+      const i=(y*640+x)*4;if(image[i]===255&&image[i+1]===0&&image[i+2]===0&&image[i+3]===255)outsideWeapon++;
+    }
+    return {checks,outsideWeapon};
+  });
+  assert.ok(result.checks.every(check=>check.differences===0),'padded core must preserve exact world pixel sampling');
+  assert.ok(result.outsideWeapon>100,'weapon pixels outside the actor core remain visible');
+}
+
 async function main() {
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -96,6 +145,7 @@ async function main() {
       Render.enterStage(0);
     });
     await page.waitForFunction(() => window.RenderFx && window.CoopBossTransformPlayer);
+    await checkPaddedCore(page);
     await page.evaluate(() => {
       window.testBossSnapshot = {
         camX: 0, sk: 0, si: 0, t: 300, items: [], players: [], enemies: [], fx: [], banner: null, projs: [],
