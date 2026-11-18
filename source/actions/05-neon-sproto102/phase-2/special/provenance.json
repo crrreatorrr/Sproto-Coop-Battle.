@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "sproto102-p2-railstorm-v1",
+  "clips": {
+    "special": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        49,
+        12,
+        8,
+        25
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/05-neon-sproto102/sproto102-p2-railstorm-v1-ae8ce10e230e765d.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/05-neon-sproto102/sproto102-p2-railstorm-v1-ae8ce10e230e765d.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 166418,
+      "sha256": "ae8ce10e230e765d219d837f8f6e988b9b73664c6f80712d47c0c3e32a0d76cd"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "special",
+      "file": "cel-1.png",
+      "sha256": "959ccd9925dc4651585735d7609d56d84db7bc038867ecb096a89a63d5180628",
+      "rgbaSha256": "d2fd20b7762de6bd33c06b134e7d7fe8f2b6969927a602ce005c839ea1e4ec5d",
+      "uniqueCel": 0,
+      "ticks": 49
+    },
+    {
+      "action": "special",
+      "file": "cel-2.png",
+      "sha256": "97cec5a4036718093aa4a1503ae26cf22d9aa6969a630ecce825e25243838df3",
+      "rgbaSha256": "d0436906a8fbcd2ae2b392c0a020eef9a449e2fc9a60b9e6de546d835d5db89b",
+      "uniqueCel": 1,
+      "ticks": 12
+    },
+    {
+      "action": "special",
+      "file": "cel-3.png",
+      "sha256": "183ee818d3d01473026c3303abec7479f120d411fd2d93b9eaf7454692b9509b",
+      "rgbaSha256": "bca3a7205474120c726d6bff4b2af08344ae033943ffba0d30b9173fb04440b6",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "special",
+      "file": "cel-4.png",
+      "sha256": "c49bcce2b09860b21d1ae54daf24e685a6fe7ba5ad412f6df496ad5f7da6c5ff",
+      "rgbaSha256": "2ce2bb08080473a0d4aa6650220a215c365065f0ba512fe131c3355b519edd6d",
+      "uniqueCel": 3,
+      "ticks": 25
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}
