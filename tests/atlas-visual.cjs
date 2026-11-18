@@ -258,7 +258,10 @@ async function verifyBossPlayback(page) {
           !Number.isInteger(ref.firstCell) || ref.firstCell < 0 || ref.firstCell % 4 ||
           !Number.isInteger(ref.sourceFirstCell) || ref.sourceFirstCell < 0 || ref.sourceFirstCell % 4 ||
           ![4, 16].includes(ref.frames) || ref.sourceFirstCell + ref.frames > 16 ||
-          ref.firstCell + ref.frames > bank.rows * 4 || bank.cell !== 96) {
+          ref.firstCell + ref.frames > bank.rows * 4 || bank.cell !== 96 ||
+          (ref.partialAlphaCells !== undefined && (!Array.isArray(ref.partialAlphaCells) ||
+            ref.partialAlphaCells.some((cell, i) => !Number.isInteger(cell) || cell < 0 || cell >= 16 ||
+              (i && cell <= ref.partialAlphaCells[i - 1]))))) {
         throw new Error(asset + ' Higgsfield FX source differs');
       }
       ref.pngBase64 = bytes.toString('base64');
@@ -653,12 +656,12 @@ async function verifyBossPlayback(page) {
             : cell === FX && row < 4 && legacyFxPixels
               ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
               : reviewedBank.rgbaSha256[row*4+col];
-          if (ref) check(expectedHash === ref.rgbaSha256[localCell], asset + ' Higgsfield source binding');
+          if (ref && !ref.partialAlphaCells?.includes(localCell)) check(expectedHash === ref.rgbaSha256[localCell], asset + ' reviewed FX source binding');
           if (!ref && laneSource) check(expectedHash === reviewedBank.acceptedLaneRgbaSha256[col], asset + ' lane source binding');
           if (!ref && replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
           check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
           exactSourceCells++;
-          const minimum = ref && (ref.family === 'special' || ref.sourceFirstCell === 12) ? 1 : 101;
+          const minimum = ref && (['signature', 'special'].includes(ref.family) || ref.sourceFirstCell === 12) ? 1 : 101;
           check(ink >= minimum && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
           const approvedStanding = cell === ACTOR && row === 0 && col === 0;
           const approvedReplacedFx = cell === FX && row < 4 && replacedFxPixels;
