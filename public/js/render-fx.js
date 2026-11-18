@@ -274,7 +274,7 @@ function projectile(g, p, sx, sy, shadowSheet) {
   const spin = p.k === 'knife' ? p.t * 0.55 * Math.sign(p.vx) : 0;
   const frame = Math.floor(p.t / 3) % 4;
   const enemyShot = ENEMY_SHOTS.get(p.k);
-  const source = enemyShot && root.AssetLoader.enemyProjectileSheet?.();
+  const source = enemyShot && root.AssetLoader.enemyProjectileSheet?.(enemyShot[0]);
   const sheet = source && img(source);
   g.save(); g.translate(Math.round(sx), Math.round(sy)); g.rotate(Math.atan2(p.vy || 0, p.vx) + spin);
   let drawn;

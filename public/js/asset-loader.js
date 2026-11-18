@@ -113,10 +113,11 @@ const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 
 function fxPath(name) { return 'assets/fx/' + name + '.png'; }
 const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(fxPath);
 
-function enemyProjectileSheet() {
-  return root.CoopBossTransformations?.enemyProjectileSheet === true
-    ? fxPath('enemy-projectiles')
-    : null;
+function enemyProjectileSheet(row) {
+  const selected = root.CoopBossTransformations?.enemyProjectileSheet;
+  const allowed = selected === true || (Array.isArray(selected) &&
+    (row === undefined ? selected.some(i => Number.isInteger(i) && i >= 0 && i < 4) : selected.includes(row)));
+  return allowed ? fxPath('enemy-projectiles') : null;
 }
 
 function unique(list) {

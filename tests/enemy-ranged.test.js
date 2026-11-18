@@ -250,7 +250,10 @@ for (const [weapon, left] of [[3, true], [4, false]]) {
     assert.equal(g.imageSmoothingEnabled, true, 'nearest-neighbor sampling does not leak to other draws');
     return calls[0];
   }
-  assert.ok(!scope.AssetLoader.groups(MANIFEST).fx.includes(pathToAtlas));
+  for (const invalidRows of [undefined, [], ['1', -1, 4, 1.5]]) {
+    scope.CoopBossTransformations.enemyProjectileSheet = invalidRows;
+    assert.ok(!scope.AssetLoader.groups(MANIFEST).fx.includes(pathToAtlas));
+  }
   for (const [row, size] of [41, 41, 53, 59].entries()) {
     const { game, enemy, shot } = arena(row + 3, { left: row % 2 === 0 });
     enemy.sh = 0;
@@ -287,6 +290,15 @@ for (const [weapon, left] of [[3, true], [4, false]]) {
     const playerArrow = draw(snapshot, { ...release, k: 'arrow' });
     assert.equal(playerArrow.tag, 'combat', 'authored enemy sheets never replace player arrows');
     assert.ok(!requests.includes(pathToAtlas), 'a player arrow does not request enemy art');
+    scope.CoopBossTransformations.enemyProjectileSheet = [1, 2, 3];
+    const selected = draw(snapshot, release);
+    if (row === 0) {
+      assert.deepEqual(selected, legacy, 'the unapproved knife row retains its original sprite and spin');
+      assert.ok(!requests.includes(pathToAtlas), 'a deselected row never requests the authored sheet');
+    } else {
+      assert.equal(selected.tag, 'enemy');
+      assert.equal(selected.rect[1], row * 64);
+    }
   }
 }
 
