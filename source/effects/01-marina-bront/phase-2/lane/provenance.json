@@ -1,0 +1,122 @@
+{
+  "boss": "01-marina-bront",
+  "phase": 1,
+  "kind": "lane",
+  "htmlStagePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/bront-p2-lane-projectile-v1/staged/01-marina-bront-p2-lane-76721ac408eb.png",
+  "providerSourceSHA256": "ceb44f68bb4198659da2780d376e661961ddc6fa14accc0a0dec50e374371e06",
+  "sourceSHA256": "ec1cb2636aa7e8b3d3fecbcf5b9c7445e0f37f300f5433c823c30f8a4e81b542",
+  "pageSHA256": "76721ac408ebcac26d6f6b01dfd13978b90f7133d869d2739be1fb5b082ef4e7",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/effects/01-marina-bront-p2-lane-76721ac408eb.png",
+        "columns": 4,
+        "rows": 1,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "flatMatteRGB": [
+    251.0,
+    3.0,
+    251.0
+  ],
+  "flatSamples": 1273325,
+  "boundedMix": 2023,
+  "scale": 0.15384615384615385,
+  "transforms": [
+    {
+      "sourceBox": [
+        133,
+        166,
+        502,
+        452
+      ],
+      "packedBounds": [
+        20,
+        26,
+        77,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "731a49459ee5255500826c447f6529dcb6e8f8beecc4c78631272654d8a74b9d"
+    },
+    {
+      "sourceBox": [
+        133,
+        166,
+        502,
+        452
+      ],
+      "packedBounds": [
+        20,
+        26,
+        77,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "ade21630006c08a36f26de13df77037183973c96ba073fe98e6a09e3fcdd5995"
+    },
+    {
+      "sourceBox": [
+        134,
+        166,
+        502,
+        452
+      ],
+      "packedBounds": [
+        20,
+        26,
+        77,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "916dd24e8314b65ced43e7fdf5e5a599b13890066d56b5e8755b0b27135eac7f"
+    },
+    {
+      "sourceBox": [
+        133,
+        166,
+        502,
+        452
+      ],
+      "packedBounds": [
+        20,
+        26,
+        77,
+        70
+      ],
+      "paste": [
+        20,
+        26
+      ],
+      "sourceRGBAsha256": "1ec2d4eca9d757311dfb0d0625b7e9f0e2e3561e977cec16e6aa763693fa0b24"
+    }
+  ],
+  "purposeReview": "Pending independent source and renderer QA"
+}

@@ -21,8 +21,10 @@ function select(boss, width = 640, screenX = boss?.x) {
   if (['sweep', 'signature', 'special', 'dead'].includes(boss.st)) {
     return { action: boss.st, age };
   }
-  if (boss.st === 'idle' && boss.ar === 2 && boss.su !== undefined) {
-    return { action: 'summon', age: boss.su };
+  if (boss.st === 'idle') {
+    if (boss.ar === 2 && boss.su !== undefined) return { action: 'summon', age: boss.su };
+    // The first idle tick is the transformation and action handoff to the approved standing sprite.
+    if (age === 0) return null;
   }
   return { action: 'walk', age, loop: true };
 }

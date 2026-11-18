@@ -57,6 +57,8 @@ assert.equal(select({...base,st:'charge',t:80,x:85.5}).age,1);
 assert.equal(select({...base,st:'charge',t:80,x:60}).age,4);
 assert.equal(select({...base,st:'charge',t:80,x:554.5,fc:1}).age,1);
 assert.equal(select({...base,st:'idle',ar:2,su:12}).age,12);
+assert.equal(select({...base,st:'idle',t:0}),null,'the transform hands off to the approved standing endpoint');
+assert.equal(select({...base,st:'idle',t:1}).action,'walk');
 assert.equal(select({...base,st:'dead',t:150}).age,150);
 const plan=scope.window.CoopSpriteTimeline.plan(clip,{anchorInside:true});
 for (const [tick,frame] of [[-1,0],[29.99,0],[30,1],[37.99,1],[38,2],[39,3],[62,3],[63,3]]) {

@@ -244,6 +244,14 @@ async function verifyBossPlayback(page) {
       }
       bank.acceptedReplacedSourcePngBase64 = bytes.toString('base64'); // Test-only decoded reference.
     }
+    if (bank.acceptedLaneSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedLaneSourceFile));
+      if (digest(bytes) !== bank.acceptedLaneSourceEncodedSha256 || bank.cell !== 96 ||
+          bank.acceptedLaneRgbaSha256?.length !== 4) {
+        throw new Error(asset + ' accepted lane source differs');
+      }
+      bank.acceptedLaneSourcePngBase64 = bytes.toString('base64');
+    }
     if (bank.acceptedDedicatedSourceFile) {
       const bytes = fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile));
       if (digest(bytes) !== bank.acceptedDedicatedSourceEncodedSha256 || bank.cell !== 96 ||
@@ -560,6 +568,16 @@ async function verifyBossPlayback(page) {
         const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4*FX;
         replacedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); replacedFxPixels.drawImage(reference,0,0);
       }
+      let laneFxPixels;
+      if (cell === FX && reviewedBank.acceptedLaneSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedLaneSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4 * FX && reference.naturalHeight === FX, asset + ' lane source geometry');
+        const sourceCanvas = document.createElement('canvas');
+        sourceCanvas.width = 4 * FX; sourceCanvas.height = FX;
+        laneFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true });
+        laneFxPixels.drawImage(reference, 0, 0);
+      }
       let dedicatedFxPixels;
       if (cell === FX && reviewedBank.acceptedDedicatedSourcePngBase64) {
         const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedDedicatedSourcePngBase64;
@@ -583,13 +601,17 @@ async function verifyBossPlayback(page) {
           const sourceHash = await sha256(rgba);
           // Canvas may round RGB when premultiplying genuine partial alpha. Compare
           // its independently decoded source exactly; raw PNG RGBA hashes stay in the fixture.
-          const expectedHash = dedicatedFxPixels
+          const laneSource = cell === FX && row === 0 && laneFxPixels;
+          const expectedHash = laneSource
+            ? await sha256(laneFxPixels.getImageData(col * FX, 0, FX, FX).data)
+            : dedicatedFxPixels
             ? await sha256(dedicatedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
             : cell === FX && row < 4 && replacedFxPixels
             ? await sha256(replacedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
             : cell === FX && row < 4 && legacyFxPixels
               ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
               : reviewedBank.rgbaSha256[row*4+col];
+          if (laneSource) check(expectedHash === reviewedBank.acceptedLaneRgbaSha256[col], asset + ' lane source binding');
           if (replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
           check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
           exactSourceCells++;
@@ -600,7 +622,7 @@ async function verifyBossPlayback(page) {
           const approvedDedicatedFx = cell === FX && asset.startsWith('assets/bosses/effects/') &&
             reviewedBank.acceptedDedicatedSourceEncodedSha256;
           if (approvedStanding) check(sourceHash === reviewedBank.standingCol0Sha256, asset + ' standing endpoint differs');
-          else if (approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
+          else if (laneSource || approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
           else check(white === 0, asset + ' has pale-neutral highlights in untouched fallback cell ' + row + '/' + col);
           if (cell === FX && row < 4 && col === 0 && !approvedDedicatedFx) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row); projectileArt.add(hash);
@@ -793,7 +815,8 @@ async function verifyBossPlayback(page) {
           check(release.projs.length > 0, label + ' missing projectile at release');
           check(release.projs.every(p => p.k === 'boss' && p.bi === bi && p.ph === ph && p.r === shotRow),
             label + ' snapshot has incorrect projectile provenance');
-          const shots = release.projs.map(p => expected(proj, FX, visualRow, 0, p.vx > 0 ? -1 : 1));
+          const purpose = ['lane', 'spread', 'homing'][visualRow];
+          const shots = release.projs.map(p => expectedFx(bi, ph, purpose, p.t, visualRow, 0, p.vx > 0 ? -1 : 1));
           checkDraw(release, [expected(sheet, ACTOR, row, 1, 1), ...shots], label + ' live projectile row ' + row);
           launched += shots.length;
 
@@ -916,8 +939,8 @@ async function main() {
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
-            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1204 ||
-            bossPlayback.acceptedFxCells !== 92 || bossPlayback.dedicatedFxSheets !== 3 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1244 ||
+            bossPlayback.acceptedFxCells !== 136 || bossPlayback.dedicatedFxSheets !== 13 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {
