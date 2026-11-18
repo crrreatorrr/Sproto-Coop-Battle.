@@ -10,8 +10,9 @@ async function main() {
   const report = assets.inventory();
   assert.strictEqual(report.categories.shadow.count, 12, 'each stage has a Shadow atlas');
   assert.strictEqual(report.preloadCount, 8);
-  assert.strictEqual(report.categories.boss.count, 48 + report.optionalMediaCount,
-    'legacy boss banks and every registered stream page remain inventoried');
+  const prefetchedBossBanks = 11 * 4;
+  assert.strictEqual(report.categories.boss.count, prefetchedBossBanks + report.optionalMediaCount,
+    'prefetched legacy banks, on-entry banks, and registered effect pages remain inventoried');
   assert.ok(report.basePublicBytes <= 10 * 1024 * 1024);
   assert.strictEqual(report.publicBytes, report.basePublicBytes + report.optionalMediaBytes);
   assert.deepStrictEqual(report.streamedMedia.validationErrors, []);
