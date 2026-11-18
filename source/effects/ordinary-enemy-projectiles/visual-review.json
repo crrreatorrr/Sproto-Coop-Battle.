@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "rows": [
+    1,
+    2
+  ],
+  "assetSha256": "e9903da78db26c581b3251cbb2c706e9821dcdc5fa97615315e2711708335758",
+  "notes": "Arrow and bolt source cels have consistent right-facing heads, compact orange propulsion, and distinct green and charcoal silhouettes. Exact unmasked source-derived RGBA survives in both rows. Knife row withheld for baked spin, Twin row for near-white coil highlights. Geometry kept at 4 by 4 with empty unapproved rows."
+}

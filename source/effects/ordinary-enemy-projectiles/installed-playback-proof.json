@@ -1,0 +1,54 @@
+{
+  "candidate": {
+    "layout": [
+      4,
+      4
+    ],
+    "cell": [
+      64,
+      64
+    ],
+    "supportedRows": [
+      1,
+      2
+    ],
+    "parentSha256": "622d719bc0f99c1a80c258724ce87d0920575d0fde8bdb479f90cd664ada411c",
+    "encodedSha256": "e9903da78db26c581b3251cbb2c706e9821dcdc5fa97615315e2711708335758",
+    "rgbaSha256": [
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "66c8c230879fbd26e073a87afdd9ff2e88c7025937457b9d0d0f69560faf9d29",
+      "7b9687bfeae6d0b91d30f8e529f726378629e0b89ea50b029e6bd51b19282c86",
+      "50241cc9c4e27243a7ba13d3ad6789d989347d2cfc1d41d312d5325c106b49ab",
+      "cbbc45c157e04ae134ae84ede2c723cc0ec8cc47edc43e9f1aceb94f1893589e",
+      "2413e3aee798090e6d7c66b99375efb71eacab9def3d184b0b3dde475bb35c21",
+      "b889ad6f9afb3b5ccff2f4ab89e442d540e533117e9cb4f81097002a1ab9d19a",
+      "dffec6bb30a1dab6b8d704309039896dbef67ecb3a3e571571739edfc7665901",
+      "478d85819db8eb92e44f1965bd1ee8308b3982399d7dc8e2581b1d06a21c6fe7",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe"
+    ]
+  },
+  "chromiumVersion": "158.0.8127.18",
+  "coldFallbackComparisons": 120,
+  "requestsHeld": 1,
+  "seen": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "comparisons": 60,
+  "exactMatches": 60,
+  "totalPixelsOff": 0,
+  "issues": [],
+  "matchedFallback": 60
+}
