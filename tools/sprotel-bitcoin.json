@@ -1,0 +1,125 @@
+{
+  "key": "13-last-call-sprotelbitcoin",
+  "stage": "Last Call Bar",
+  "machines": [
+    "Sprotel Bitcoin",
+    "Blue Marlin Mecha"
+  ],
+  "color": "#24d8df",
+  "pilot": "Sprotel Bitcoin",
+  "scenery": 2,
+  "shadowStage": 1,
+  "attacks": "bar",
+  "phases": [
+    {
+      "sheet": "assets/bosses/13-last-call-sprotelbitcoin-p1.webp",
+      "proj": "assets/bosses/13-last-call-sprotelbitcoin-p1-projectiles.png",
+      "body": [
+        78,
+        25,
+        178,
+        240
+      ],
+      "bounds": [
+        6,
+        15,
+        250,
+        240
+      ],
+      "projRows": [
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ]
+      ],
+      "columns": 8,
+      "fxColumns": 16,
+      "fxCell": 64,
+      "impactRow": 5,
+      "actorCell": 176,
+      "actorFoot": 165
+    },
+    {
+      "sheet": "assets/bosses/13-last-call-sprotelbitcoin-p2.webp",
+      "proj": "assets/bosses/13-last-call-sprotelbitcoin-p2-projectiles.png",
+      "body": [
+        35,
+        25,
+        210,
+        240
+      ],
+      "bounds": [
+        6,
+        15,
+        250,
+        240
+      ],
+      "projRows": [
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ],
+        [
+          6,
+          70,
+          250,
+          190
+        ]
+      ],
+      "columns": 8,
+      "fxColumns": 16,
+      "fxCell": 64,
+      "impactRow": 3,
+      "actorCell": 176,
+      "actorFoot": 165
+    }
+  ],
+  "attacksByPhase": [
+    [
+      "Snack Burst: straight",
+      "Beer Lob: ballistic",
+      "Cocktail Fan: spread",
+      "Bouncing Drinks: ricochet",
+      "Blue Marlin: wave"
+    ],
+    [
+      "Bill Laser: fast aimed lance",
+      "Retractable Launcher: rapid missiles",
+      "Deadly Bubbles: drifting fan"
+    ]
+  ]
+}

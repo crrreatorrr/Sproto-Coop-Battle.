@@ -51,20 +51,21 @@ function contentManifest(manifest) {
   const sim = simApi();
   const bosses = manifest && manifest.bosses;
   const fighters = manifest && manifest.fighters;
-  if (!bosses || bosses.length !== 12 || !fighters || !fighters.length) throw new Error('manifest');
+  if (!bosses || !bosses.length || !fighters || !fighters.length) throw new Error('manifest');
   const stages = [];
   for (let i = 0; i < bosses.length; i++) {
     const boss = bosses[i];
-    if (!boss || !boss.key || !boss.stage || !boss.pilot || !boss.machines || boss.machines.length < 2) throw new Error('boss');
-    if (!boss.phases || boss.phases.length !== 2) throw new Error('phases');
+    if (!boss || !boss.key || !boss.stage || !boss.pilot || !boss.machines || !boss.machines.length) throw new Error('boss');
+    if (!boss.phases || !boss.phases.length || boss.phases.length > 2 || boss.machines.length !== boss.phases.length) throw new Error('phases');
     stages.push({
       index: i,
       canonicalBossId: boss.key,
       displayStage: boss.stage,
       pilot: boss.pilot,
-      machines: [boss.machines[0], boss.machines[1]],
-      phaseCount: 2,
-      phase2Attacks: [sim.bossExtraAttack(i, 'signature'), sim.bossExtraAttack(i, 'special')],
+      machines: boss.machines.slice(),
+      phaseCount: boss.phases.length,
+      phase2Attacks: boss.phases.length > 1 && boss.attacks !== 'bar' ? [sim.bossExtraAttack(i, 'signature'), sim.bossExtraAttack(i, 'special')] : [],
+      ...(boss.attacks ? { attacks: boss.attacks, shadowStage: boss.shadowStage, attacksByPhase: boss.attacksByPhase } : {}),
       oneClear: true,
       length: sim.stageLength(i),
       archetype: sim.BOSS_ARCHETYPES[i % sim.BOSS_ARCHETYPES.length],
@@ -494,7 +495,7 @@ function command(session, msg, now) {
       return { ok: true, practice: 1, god: session.state.god ? 1 : 0 };
     }
     if (msg.t === 'stage') {
-      if (!Number.isInteger(msg.index) || msg.index < 0 || msg.index > 11) return fail('stage');
+      if (!Number.isInteger(msg.index) || msg.index < 0 || msg.index >= root.MANIFEST.bosses.length) return fail('stage');
       simApi().startStage(session.state, msg.index);
       return { ok: true, practice: 1, stageIndex: session.state.stageIdx };
     }

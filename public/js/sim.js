@@ -252,6 +252,7 @@ const cpuDmg = state => (humansOf(state) <= 2 ? CPU_DMG_FEW : CPU_DMG);
 const cpuTaken = state => (humansOf(state) <= 2 ? CPU_TAKEN_FEW : CPU_TAKEN);
 const pick = (s, arr) => arr[Math.floor(rng(s) * arr.length)];
 
+function stageCount() { return root.MANIFEST ? root.MANIFEST.bosses.length : 13; }
 function stageLength(i) { return 2200 + i * 80; }
 function makeStage(state, i) {
   const len = stageLength(i);
@@ -304,7 +305,7 @@ function create(slots, seed, firstStage, options) {
     banner: null, events: [], nextId: 1, clearT: 0, totalScore: 0, god: false,
   };
   if (cpuParty) state.cpuParty = true;
-  startStage(state, Math.max(0, Math.min(11, firstStage | 0)));
+  startStage(state, Math.max(0, Math.min(stageCount() - 1, firstStage | 0)));
   return state;
 }
 
@@ -325,7 +326,7 @@ function startStage(state, i) {
     // A player who left gets the same stage recovery, and stays out until they take the seat again.
     if (!seated(p)) { p.awaySt = 'idle'; setState(p, 'out'); }
   });
-  state.banner = { text: 'STAGE ' + (i + 1), sub: (root.MANIFEST ? root.MANIFEST.bosses[i % 12].stage : ''), t: 150 };
+  state.banner = { text: 'STAGE ' + (i + 1), sub: (root.MANIFEST ? root.MANIFEST.bosses[i % stageCount()].stage : ''), t: 150 };
   ev(state, 'stage');
 }
 
@@ -939,7 +940,7 @@ function ejectUfo(state, p) {
 // ---------------- enemies (Shadow Sprotos) ----------------
 function spawnEnemy(state, side, plain) {
   let kind = Math.floor(rng(state) * (KNIFE_THROWER + 1));
-  const roster = root.MANIFEST && root.MANIFEST.shadows && root.MANIFEST.shadows.stages[state.stageIdx];
+  const roster = root.MANIFEST && root.MANIFEST.shadows && root.MANIFEST.shadows.stages[bossInfo(state.stageIdx)?.shadowStage ?? state.stageIdx];
   // Run through a stage's cast before repeating anyone. The roster is authored in mixed order.
   const sh = roster && (state.stage.shadowSpawns || 0) % roster.length;
   const role = roster && roster[sh].role;
@@ -1130,6 +1131,7 @@ function updateEnemy(state, e) {
 // ---------------- bosses ----------------
 const BOSS_SCALE = 0.95;
 const BOSS_TRANSFORM_TICKS = 8 * 60;
+const BAR_BEER_FLIGHT = 54;
 
 // Phase-two attacks lock their danger areas and warning durations at the start.
 // Zone entries: [relative X, relative Y, half width, half depth, delay, rounded].
@@ -1160,7 +1162,7 @@ const PHASE2_ATTACKS = [
    { name: 'Lockdown Shockwave', warning: 55, aim: false, color: '#74d8ff', zones: [[65,0,57,28,0,1],[141,-37,72,12,12,0],[141,37,72,12,12,0],[238,0,60,23,24,1]] }],
 ];
 function bossExtraAttack(index, mode) {
-  return PHASE2_ATTACKS[index][mode === 'special' ? 1 : 0];
+  return PHASE2_ATTACKS[index]?.[mode === 'special' ? 1 : 0] || { name: 'Last Call', color: '#24d8df', warning: 30, aim: false, zones: [] };
 }
 
 function startBossExtra(state, b, target) {
@@ -1212,7 +1214,8 @@ const SWEEP_AFTER = 180, SWEEP_AFTER_ONE = 300, SWEEP_WARN = 36, SWEEP_REACH = 1
 // arena: its volleys then fire both ways, so the floor behind it is never a safe place to stand.
 const MID_ROOM = 60;
 const inMiddle = (state, b) => b.x - (state.camX + 70) > b.w / 2 + MID_ROOM && state.camX + W - 70 - b.x > b.w / 2 + MID_ROOM;
-function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % 12] : null; }
+function bossInfo(i) { return root.MANIFEST ? root.MANIFEST.bosses[i % stageCount()] : null; }
+function isBarBoss(b) { return bossInfo(b.bi)?.attacks === 'bar'; }
 function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
@@ -1222,7 +1225,7 @@ function startBoss(state) {
   // The charger spends much of its fight rushing out of reach, so it has less health to compensate.
   const hp = Math.round((4200 + state.stageIdx * 440) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
   state.boss = {
-    bi: state.stageIdx % 12, phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
+    bi: state.stageIdx % stageCount(), phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
     arch: state.stageIdx % BOSS_ARCHETYPES.length, addT: 0,
   };
@@ -1235,9 +1238,10 @@ function hurtBoss(state, b, dmg, p) {
   if (p) p.score += dmg * 15;
   fx(state, 'bossHit', b.x + (p ? Math.sign(p.x - b.x) * b.w * 0.3 : 0), b.y, 50 + rng(state) * 40, { bi: b.bi });
   ev(state, 'bosshit');
-  if (b.phase === 0 && b.hp <= b.maxHp / 2) {
+  if (b.phase === 0 && b.hp <= b.maxHp / 2 && (!bossInfo(b.bi) || bossInfo(b.bi).phases.length > 1)) {
     b.hp = Math.max(1, b.hp);
     b.phase = 1; b.st = 'transform'; b.t = 0;
+    if (isBarBoss(b)) { b.cycle = 0; delete b.barAttack; b.warn = null; b.marks = null; for (const pr of state.projs) if (pr.bi === b.bi) pr.remove = true; }
     b.transformAt = state.t;
     b.nextExtra = b.cycle + 1;
     const info = bossInfo(b.bi); if (info) b.w = (info.phases[1].body[2] - info.phases[1].body[0]) * BOSS_SCALE * 0.85;
@@ -1318,13 +1322,13 @@ function updateBoss(state) {
     const wait = (arch === 'summoner' ? 50 : 34) * fast;
     if (b.t > wait && ((behind >= 2 && b.rear > SWEEP_AFTER) || b.rear > SWEEP_AFTER_ONE)) {
       b.st = 'sweep'; b.t = 0; b.rear = 0; b.tx = -b.face; ev(state, 'charge');
-    } else if (b.t > wait && b.phase && b.cycle >= (b.nextExtra ?? 2)) {
+    } else if (b.t > wait && b.phase && !isBarBoss(b) && b.cycle >= (b.nextExtra ?? 2)) {
       startBossExtra(state, b, target);
     } else if (b.t > wait) {
       b.cycle++;
       // Charge rushes in both phases (every 4th attack in phase 2, every 5th in phase 1); the
       // charger rushes every third attack, and every second one in phase 2.
-      const charge = arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
+      const charge = isBarBoss(b) ? b.cycle % (b.phase ? 4 : 6) === 0 : arch === 'charger' ? (b.phase ? b.cycle % 2 === 1 : b.cycle % 3 === 2) : b.phase ? b.cycle % 4 === 3 : b.cycle % 5 === 4;
       if (charge) { b.st = 'charge'; b.t = 0; b.tx = b.face; b.cx = b.x; ev(state, 'charge'); }
       else { b.st = 'fire'; b.t = 0; b.row = 1 + (b.cycle % 3); b.missile = b.cycle % 3 === 2; b.tx = target.x; b.ty = target.y;
         b.both = inMiddle(state, b); // decided now, so the floor warning shows both sides
@@ -1333,7 +1337,14 @@ function updateBoss(state) {
         const offs = b.row === 2 ? (b.phase ? [-72, -36, 0, 36, 72] : [-40, 0, 40]) : [0];
         b.warn = b.missile || b.lob ? null : offs.map(o => clamp(Math.round(b.ty + o), 0, DEPTH)).filter((v, i, a) => a.indexOf(v) === i);
         // The bomber marks where its bombs will land: one Sproto each, two bombs (three in phase 2).
-        if (b.lob) {
+        if (isBarBoss(b)) {
+          b.barAttack = (b.cycle - 1) % (b.phase ? 4 : 6);
+          b.row = b.barAttack + 1; b.missile = false; b.lob = false;
+          b.warn = b.barAttack === 2 ? [b.ty - 30, b.ty, b.ty + 30].map(y => clamp(Math.round(y), 0, DEPTH)) : b.barAttack === 1 ? null : [Math.round(b.ty)];
+          b.marks = !b.phase && b.barAttack === 1 ? [[Math.round(target.x), Math.round(target.y)]] : null;
+          if (b.phase) b.warn = b.barAttack === 2 ? [-28, 0, 28].map(off => clamp(Math.round(b.ty + off), 0, DEPTH)) : [Math.round(b.ty)];
+        }
+        if (b.lob || (isBarBoss(b) && !b.phase && b.barAttack === 1)) {
           b.marks = [];
           // In the middle it marks Sprotos on both sides of it in turn, front first.
           let pool = ps;
@@ -1346,7 +1357,7 @@ function updateBoss(state) {
           for (let k = 0; k < Math.min(pool.length, b.phase ? 3 : 2); k++) {
             const q = b.both ? pool[k] : pool[(b.cycle + k) % pool.length];
             b.marks.push([Math.round(q.x), Math.round(q.y)]);
-            fx(state, 'mark', q.x, q.y, 0, { small: 30 + BOMB_FLIGHT });
+            fx(state, 'mark', q.x, q.y, 0, { small: 30 + (isBarBoss(b) ? BAR_BEER_FLIGHT : BOMB_FLIGHT) + (isBarBoss(b) ? 2 : 0) });
           }
         }
       }
@@ -1356,9 +1367,10 @@ function updateBoss(state) {
   } else if (b.st === 'fire') {
     // 4-frame weapon animation: anticipation, locked, muzzle (fire), recoil.
     // Weapons A and C fire bursts (3 shots, 5 in phase 2); weapon B fires one wide volley.
-    const fireAt = 30, burst = b.missile || b.row === 2 || b.lob || arch === 'summoner' ? 1 : (b.phase ? 3 : 2);
-    if (b.t >= fireAt && (b.t - fireAt) % 8 === 0 && (b.t - fireAt) / 6 < burst) { if (b.lob) bossLob(state, b); else bossShoot(state, b); }
-    if (b.t > 54 + (burst - 1) * 8) { b.st = 'idle'; b.t = 0; b.warn = null; }
+    const fireAt = 30, burst = isBarBoss(b) ? (b.phase ? (b.barAttack === 1 ? 5 : b.barAttack === 2 ? 2 : 3) : b.barAttack === 0 ? 3 : 1) : b.missile || b.row === 2 || b.lob || arch === 'summoner' ? 1 : (b.phase ? 3 : 2);
+    const interval = isBarBoss(b) && b.phase ? (b.barAttack === 1 ? 5 : 6) : 8;
+    if (b.t >= fireAt && (b.t - fireAt) % interval === 0 && (b.t - fireAt) / interval < burst) { if (isBarBoss(b)) barThrow(state, b); else if (b.lob) bossLob(state, b); else bossShoot(state, b); }
+    if (b.t > 54 + (burst - 1) * interval) { b.st = 'idle'; b.t = 0; b.warn = null; }
   } else if (b.st === 'sweep') {
     // Rear sweep: the zone behind the machine is marked, then everything standing in it is hit.
     // It is low: a jump clears it, and so does walking round to the front.
@@ -1375,6 +1387,55 @@ function updateBoss(state) {
     else { b.x += b.tx * 8.5; if (b.x < arenaL - 10 || b.x > arenaR + 10) { b.x = clamp(b.x, arenaL - 10, arenaR + 10); b.st = 'idle'; b.t = 0; b.face = -b.face; ev(state, 'boom'); fx(state, 'boom', b.x + b.tx * b.w * 0.4, b.y, 20);
       // The charger's lane keeps burning where it drove (at most two fires at once).
       if (arch === 'charger') { if (!state.hazards) state.hazards = []; const stop = b.x - b.tx * (b.w / 2 + 80); /* the fire ends short of the machine, so the fight at its side goes on */ state.hazards.push({ id: state.nextId++, y: Math.round(b.y), x0: Math.min(b.cx, stop), x1: Math.max(b.cx, stop), t: 0, life: FIRE_LIFE + (b.phase ? 60 : 0), half: b.phase ? 15 : 11 }); if (state.hazards.length > 2) state.hazards.shift(); } } }
+  }
+}
+
+// Last Call: five readable, non-homing trajectories, all available in phase one.
+function barThrow(state, b) {
+  if (b.phase) { marlinShoot(state, b); return; }
+  const a = b.barAttack, mz = a === 1 ? 82 : a === 3 ? 8 : 22;
+  ev(state, 'bossfire');
+  for (const dir of a === 1 ? [b.face] : b.both ? [b.face, -b.face] : [b.face]) {
+    const mx = b.x + dir * b.w * .55;
+    const add = extra => state.projs.push({ id: state.nextId++, kind: 'boss', row: a, bar: a, bi: b.bi, phase: 0,
+      x: mx, y: b.ty, z: mz, vx: dir * 4.2, vy: 0, vz: 0, dmg: 16, t: 0, life: 180, enemy: true, ...extra });
+    if (a === 1) {
+      for (const [tx, ty] of b.marks || [[b.tx, b.ty]]) {
+        // Each marked player gets one mug, even when the target is behind the machine.
+        const n = BAR_BEER_FLIGHT, start = b.x + Math.sign(tx - b.x || b.face) * b.w * .55;
+        add({ x: start, y: b.y, vx: (tx - start) / n, vy: (ty - b.y) / n, vz: .15 * n - mz / n,
+          dmg: 22, life: n + 4, lob: n, tx, ty });
+      }
+    } else if (a === 2) {
+      for (const spread of [-1, 0, 1]) add({ y: b.y, vx: dir * 3.7, vy: spread * .65, dmg: 18 });
+    } else if (a === 3) {
+      add({ vx: dir * 3.3, vz: 4.2, bounce: 0, dmg: 19 });
+      add({ x: mx - dir * 28, vx: dir * 3.3, vz: 5.2, bounce: 0, dmg: 19 });
+    } else if (a === 4) {
+      add({ vx: dir * 4.5, baseY: b.ty, dmg: 23 });
+    } else add({ vx: dir * 5.2, dmg: 14 });
+  }
+}
+
+// The marlin locks aim during its windup. All three weapons stay dodgeable after release.
+function marlinShoot(state, b) {
+  const a = b.barAttack;
+  ev(state, 'bossfire');
+  for (const dir of b.both ? [b.face, -b.face] : [b.face]) {
+    const speed = a === 0 ? 13 : a === 1 ? 8.8 : 1.9;
+    const x = b.x + dir * (a === 0 ? 100 : a === 1 ? 55 : 48);
+    const height = a === 0 ? 174 : a === 1 ? 165 : 126;
+    // Shoot from the drawn bill / extended dorsal pod, descending toward the locked aim.
+    const flight = Math.max(12, Math.abs(b.tx - x) / speed);
+    const add = extra => state.projs.push({ id: state.nextId++, kind: 'boss', row: a, marlin: a,
+      bi: b.bi, phase: 1, x, y: b.y, z: height, vx: dir * speed,
+      vy: (b.ty - b.y) / flight, vz: (22 - height) / flight,
+      dmg: 22, t: 0, life: Math.ceil(flight + 12), enemy: true, ...extra });
+    if (a === 0) add({ dmg: 24 });
+    else if (a === 1) add({ dmg: 20, boom: true });
+    else for (const off of [-1, 0, 1]) add({ y: clamp(b.ty + off * 22, 0, DEPTH),
+      vx: dir * (1.7 + .2 * (off + 1)), vy: off * .24, vz: 0,
+      baseZ: 20 + (off + 1) * 7, dmg: 18, life: 220 });
   }
 }
 
@@ -1453,13 +1514,30 @@ function updateProjs(state) {
     }
     const x0 = pr.x, y0 = pr.y, z0 = pr.z;
     pr.x += pr.vx; pr.y += pr.vy; pr.z += pr.vz;
+    if (pr.bar === 3) {
+      pr.vz -= .24;
+      if (pr.z <= 0) {
+        pr.z = 0; pr.vz = Math.max(2.6, -pr.vz * .82); pr.bounce++;
+        if (pr.bounce >= 4) { pr.remove = true; bossImpact(state, pr); }
+      }
+    } else if (pr.bar === 4) {
+      // Integer-period triangle wave survives export/resume identically in JS and Goja.
+      const wave = 20 - Math.abs((pr.t % 80) - 40);
+      pr.y = clamp(pr.baseY + wave * .85, 0, DEPTH);
+      pr.z = 24 + wave * .45;
+    }
+    if (pr.marlin === 2) {
+      const wave = 12 - Math.abs(pr.t % 48 - 24);
+      pr.z = Math.max(126 - pr.t * 1.8, pr.baseZ + wave * .55);
+    }
+    if (pr.marlin !== undefined && pr.z <= 0) { pr.remove = true; bossImpact(state, pr, pr.x, pr.y, 0); continue; }
     if (pr.kind === 'ball') { pr.vz -= 0.3; if (pr.z <= 0) { pr.z = 0; pr.life = 0; ballBoom(state, pr); } }
     if (pr.t > pr.life || pr.x < state.camX - 80 || pr.x > state.camX + W + 80) { pr.remove = true; continue; }
     if (pr.enemy) {
       const shadowShot = isShadowShot(pr);
-      if (shadowShot && (pr.y < 0 || pr.y > DEPTH)) { pr.remove = true; continue; }
+      if ((shadowShot || pr.bar !== undefined || pr.marlin !== undefined) && (pr.y < 0 || pr.y > DEPTH)) { pr.remove = true; continue; }
       for (const p of ps) {
-        const hit = shadowShot
+        const hit = shadowShot || pr.bar !== undefined || pr.marlin !== undefined
           ? Combat.segmentHitsBox(x0, y0, z0, pr.x, pr.y, pr.z, p.x - 14, p.x + 14, p.y - 9, p.y + 9, p.z - 4, p.z + 54)
           : Math.abs(p.x - pr.x) < 14 && Math.abs(p.y - pr.y) < 9 && pr.z >= p.z - 4 && pr.z <= p.z + 54;
         if (hit) {
@@ -1561,7 +1639,7 @@ function step(state) {
   state.items = state.items.filter(i => !i.taken);
   if (state.mode === 'play') { updateCamera(state); updateWaves(state); }
   if (state.mode === 'clear' && ++state.clearT > 220) {
-    if (state.stageIdx + 1 >= 12) { state.mode = 'victory'; state.banner = { text: 'VICTORY!', sub: 'All twelve machines are scrap', t: 99999 }; ev(state, 'victory'); }
+    if (state.stageIdx + 1 >= stageCount()) { state.mode = 'victory'; state.banner = { text: 'VICTORY!', sub: 'All ' + stageCount() + ' machines are scrap', t: 99999 }; ev(state, 'victory'); }
     else startStage(state, state.stageIdx + 1);
   }
   // Game over when every Sproto on screen is down or dead (nobody is left to revive).
@@ -1634,10 +1712,10 @@ function snapshot(state) {
     banner: state.banner,
     players: state.players.map(p => ({ s: p.slot, f: p.fid, w: p.weapon, c: p.ctrl, n: p.name, x: r1(p.x), y: r1(p.y), z: r1(p.z), fc: p.face, hp: p.hp, l: p.lives, sc: p.score, st: p.st, t: p.t, cb: p.launch ? 2 : Math.min(3, p.combo), kn: p.st === 'grab' && state.t - (p.kneeT || -99) < 8 ? 1 : 0, inv: p.inv, dt: p.downT, rv: p.revive, ut: p.ufoT, us: p.ufoShield, nr: p.npcRevived ? 1 : 0, pw: p.powers.slice(), k: p.kills || 0, rvn: p.revs || 0, pa: p.parries || 0, mh: maxHp(p), cl: p.classId || 'fighter', ac: p.abilityCd || 0, ab: p.ability ? 1 : 0 })),
     enemies: state.enemies.map(e => ({ id: e.id, f: e.fid, w: e.weapon, x: r1(e.x), y: r1(e.y), z: r1(e.z), fc: e.face, st: e.st, t: e.t, hp: e.hp, mh: e.maxHp, d: e.dead ? 1 : 0, el: e.elite ? (e.guard > 0 ? 2 : 1) : 0, ax: e.st === 'ranged' ? r1(e.aimX) : undefined, ay: e.st === 'ranged' ? r1(e.aimY) : undefined, sh: e.sh })),
-    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
+    projs: state.projs.map(p => ({ id: p.id, k: p.kind, r: p.row, ph: p.phase, bi: p.bi, ba: p.bar, ma: p.marlin, vz: p.marlin === undefined ? undefined : r1(p.vz), x: r1(p.x), y: r1(p.y), z: r1(p.z), vx: r1(p.vx), vy: p.vy === undefined ? undefined : r1(p.vy), t: p.t, w: p.weapon, sh: p.sh })),
     items: state.items.map(i => ({ id: i.id, k: i.kind, x: i.x, y: i.y, pt: i.pt })),
     fx: state.fx.map(f => ({ id: f.id, k: f.kind, x: r1(f.x), y: r1(f.y), z: r1(f.z), t: f.t, tx: f.text, sm: f.small, bi: f.bi, ph: f.ph })),
-    boss: b && { bi: b.bi, ph: b.phase, hp: b.hp, mh: b.maxHp, x: r1(b.x), y: r1(b.y), fc: b.face, st: b.st, t: b.t, row: b.row, wl: b.st === 'fire' ? b.warn : null, fl: b.flash, mi: b.missile ? 1 : 0, bo: b.st === 'fire' && b.both ? 1 : 0, w: Math.round(b.w), ar: b.arch || 0, su: summonAge < 27 ? summonAge : undefined, az: b.st === 'signature' || b.st === 'special' ? b.extraZones : undefined },
+    boss: b && { bi: b.bi, ph: b.phase, hp: b.hp, mh: b.maxHp, x: r1(b.x), y: r1(b.y), fc: b.face, st: b.st, t: b.t, row: b.row, wl: b.st === 'fire' ? b.warn : null, fl: b.flash, mi: b.missile ? 1 : 0, ba: b.barAttack, by: b.barAttack === undefined ? undefined : r1(b.ty), bx: b.barAttack === undefined ? undefined : r1(b.tx), bo: b.st === 'fire' && b.both ? 1 : 0, w: Math.round(b.w), ar: b.arch || 0, su: summonAge < 27 ? summonAge : undefined, az: b.st === 'signature' || b.st === 'special' ? b.extraZones : undefined },
     hz: (state.hazards || []).map(h => ({ id: h.id, y: h.y, x0: Math.round(h.x0), x1: Math.round(h.x1), t: h.t, l: h.life, hf: h.half })),
   };
 }

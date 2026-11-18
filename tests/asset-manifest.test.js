@@ -10,7 +10,7 @@ async function main() {
   const report = assets.inventory();
   assert.strictEqual(report.categories.shadow.count, 12, 'each stage has a Shadow atlas');
   assert.strictEqual(report.preloadCount, 8);
-  assert.strictEqual(report.categories.boss.count, 48, 'each boss phase has actor and projectile atlases');
+  assert.strictEqual(report.categories.boss.count, 52, 'each boss phase has actor and projectile atlases');
   assert.ok(report.publicBytes <= 10 * 1024 * 1024);
   assert.deepStrictEqual(report.missingDynamic, []);
   assert.deepStrictEqual(report.missingLiterals, []);

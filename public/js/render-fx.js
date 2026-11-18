@@ -376,7 +376,8 @@ function drawFx(g, f, camX) {
   }
   if (f.k === 'bossImpact') {
     const ph = M.bosses[f.bi]?.phases[f.ph];
-    if (ph && drawBossFx(g, ph, 3, Math.min(3, Math.floor(f.t / 6)), sx, sy, f.sm || 82, false)) return;
+    const frame = ph?.fxColumns ? Math.min(15, Math.floor(f.t * 16 / 24)) : Math.min(3, Math.floor(f.t / 6));
+    if (ph && drawBossFx(g, ph, 3, frame, sx, sy, f.sm || 82, false)) return;
     f = { ...f, k: 'boom' };
   }
   if (HIT_ROWS[f.k] !== undefined) {
@@ -482,6 +483,35 @@ function bossExtraWarnings(g, boss, camX) {
   g.restore();
 }
 
+function barWarnings(g, b, camX) {
+  const names = b.ph ? ['BILL LASER', 'RAPID MISSILES', 'DEADLY BUBBLES'] : ['SNACK BURST', 'BEER LOB', 'COCKTAIL FAN', 'BOUNCING DRINKS', 'BLUE MARLIN'];
+  text(g, names[b.ba], W / 2, FLOOR_TOP - 12, 8, '#68f5ec', 'center');
+  if (!b.ph && b.ba === 1) return; // Landing rings are the host's locked marks.
+  g.save();
+  g.strokeStyle = '#ffe397'; g.lineWidth = 2; g.setLineDash([5, 4]);
+  const dirs = b.bo ? [b.fc, -b.fc] : [b.fc];
+  for (const d of dirs) {
+    const muzzle = b.ph ? (b.ba === 0 ? 100 : b.ba === 1 ? 55 : 48) : b.w * .55;
+    const x0 = b.x - camX + d * muzzle;
+    for (const spread of b.ba === 2 ? [-1, 0, 1] : [0]) {
+      g.beginPath();
+      for (let dist = 0; dist < W; dist += 8) {
+        const x = x0 + d * dist;
+        if (x < 0 || x > W) break;
+        const age = dist / 4.5;
+        const wave = 20 - Math.abs((age % 80) - 40);
+        const speed = b.ba === 0 ? 13 : 8.8;
+        const flight = Math.max(12, Math.abs((b.bx ?? b.x) - (b.x + d * muzzle)) / speed);
+        const y = b.ph ? (b.ba === 2 ? b.by + spread * 22 + spread * dist * .24 / 1.9 : b.y + (b.by - b.y) * dist / speed / flight) : b.ba === 2 ? b.y + spread * dist * .65 / 3.7 : b.ba === 4 ? S.clamp(b.by + wave * .85, 0, S.DEPTH) : b.by;
+        if (y < 0 || y > S.DEPTH) break;
+        if (!dist) g.moveTo(x, FLOOR_TOP + y); else g.lineTo(x, FLOOR_TOP + y);
+      }
+      g.stroke();
+    }
+  }
+  g.restore();
+}
+
 function floor(g, snap, camX, list) {
   // Lock the warning line to the host's actual aim path, with dash marks and a target cap.
   for (const e of snap.enemies) {
@@ -520,7 +550,8 @@ function floor(g, snap, camX, list) {
   // Boss lane warnings: a red stripe along each lane about to be shot.
   const bw = snap.boss;
   if (bw?.az) bossExtraWarnings(g, bw, camX);
-  if (bw && bw.wl && bw.st === 'fire' && bw.t < 30) {
+  if (bw && bw.ba !== undefined && bw.st === 'fire' && bw.t < 30) barWarnings(g, bw, camX);
+  if (bw && bw.ba === undefined && bw.wl && bw.st === 'fire' && bw.t < 30) {
     const k = bw.t / 30, x0 = bw.x - camX;
     // bo: a mid-arena boss fires both ways.
     const dirs = bw.bo ? [bw.fc, -bw.fc] : [bw.fc];
@@ -617,7 +648,7 @@ function floorTile(a, b, pat) {
 }
 function background(si) {
   if (bgCache[si]) return bgCache[si];
-  const th = THEMES[si % THEMES.length];
+  const th = THEMES[((M.bosses[si]?.scenery || si + 1) - 1) % THEMES.length];
   return bgCache[si] = { th, far: layer(th.far[0], th.far[1], FLOOR_TOP, si * 3 + 1), mid: layer(th.mid[0], th.mid[1], FLOOR_TOP, si * 3 + 2), floor: floorTile(...th.floor) };
 }
 function drawFallbackBackground(g, si, camX) {
@@ -782,7 +813,7 @@ function drawSummary(g, sum, info) {
   g.fillStyle = sum.victory ? '#7aff8a' : '#ff5a5a'; g.fillRect(x, y, w, 3);
   text(g, sum.victory ? 'VICTORY!' : 'GAME OVER', W / 2, y + 24, 18, sum.victory ? '#7aff8a' : '#ff5a5a', 'center');
   if (info.why) text(g, info.why, W / 2, y + 44, 6, '#c8c6e0', 'center');
-  text(g, 'STAGE ' + sum.stage + ' OF 12    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
+  text(g, 'STAGE ' + sum.stage + ' OF ' + M.bosses.length + '    TIME ' + root.Progress.clock(sum.ticks) + '    TEAM SCORE ' + sum.score, W / 2, y + 62, 7, '#ffd23d', 'center');
   const cols = [[x + 330, 'SCORE'], [x + 384, 'KOS'], [x + 438, 'REVIVES'], [x + 488, 'PARRIES']];
   for (const c of cols) text(g, c[1], c[0], y + 82, 6, '#c8c6e0', 'right');
   sum.rows.forEach((r, i) => {
@@ -801,6 +832,24 @@ function drawSummary(g, sum, info) {
 
 function bossPose(b, sx) {
   const t = b.t;
+  if (M.bosses[b.bi].attacks === 'bar') {
+    if (b.st === 'dead') return [b.ph, 8, 4 + Math.min(3, Math.floor(t / 14))];
+    if (b.fl > 0 && b.st !== 'fire') return [b.ph, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
+    if (b.st === 'fire') {
+      // Keep the launch pod extended through every missile in the five-shot burst.
+      const age = t - 30;
+      const col = t < 30 ? Math.min(3, Math.floor(t / 7.5)) : b.ph && b.ba === 1
+        ? (age <= 20 ? 4 + Math.floor(age / 5) % 2 : age < 32 ? 6 : 7)
+        : 4 + Math.min(3, Math.floor(age / 7));
+      return [b.ph, 1 + b.ba, col];
+    }
+    if (b.st === 'sweep') return [b.ph, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
+    if (b.st === 'charge') {
+      const remaining = b.fc < 0 ? sx - 60 : W - 60 - sx;
+      return [b.ph, 6, t < 24 ? Math.floor(t / 6) : remaining < 34 ? 6 + Math.floor(t / 5) % 2 : 4 + Math.floor(t / 6) % 2];
+    }
+    return [b.ph, 0, (b.st === 'enter' || t % 72 >= 36 ? 4 : 0) + Math.floor(t / 9) % 4];
+  }
   if (b.st === 'signature' || b.st === 'special') {
     const attack = S.bossExtraAttack(b.bi, b.st);
     const end = attack.warning + attack.zones[attack.zones.length - 1][4] + 6;
@@ -870,19 +919,29 @@ function drawTransformDischarge(g, b, sx, sy, width, color, keys) {
 }
 
 function drawBossCel(g, b, sx, sy, sprite, row, col) {
-  const C = BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const phase = M.bosses[b.bi].phases[b.ph], C = phase.actorCell || BOSS_CELL, size = BOSS_SPRITE_SIZE;
+  const foot = phase.actorFoot ? Math.round(phase.actorFoot * size / C) : BOSS_SPRITE_FOOT;
   g.save();
   g.imageSmoothingEnabled = false;
   if (b.st === 'dead') g.globalAlpha = b.t % 6 < 3 ? 0.5 : 1;
   g.translate(Math.round(sx), Math.round(sy));
   if (b.fc > 0) g.scale(-1, 1);
   if (b.fl > 0 && canFilter()) g.filter = 'brightness(0.92) sepia(0.4) saturate(1.3)';
-  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -BOSS_SPRITE_FOOT, size, size);
+  g.drawImage(sprite, col * C, row * C, C, C, -Math.round(size / 2), -foot, size, size);
   g.restore();
 }
 
 function drawBossTransform(g, b, sx, sy) {
   const phases = M.bosses[b.bi].phases;
+  if (M.bosses[b.bi].attacks === 'bar') {
+    const sheet = img(phases[0].sheet);
+    if (ready(sheet)) {
+      shadow(g, sx, sy, b.w * .45);
+      const col = Math.min(7, Math.floor(b.t * 8 / S.BOSS_TRANSFORM_TICKS));
+      drawBossCel(g, { ...b, ph: 0 }, sx, sy, sheet, 9, col);
+    }
+    return;
+  }
   const morph = root.CoopBossMorph;
   const frame = morph?.pose(b.t);
   const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 258 ? 0 : 1, 0, 0];
@@ -917,12 +976,14 @@ function drawBoss(g, b, camX) {
   }
 }
 
-function drawBossFx(g, ph, row, col, x, y, size, flip) {
-  const sheet = img(ph.proj), C = BOSS_FX_CELL;
+function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
+  const sheet = img(ph.proj), C = ph.fxCell || BOSS_FX_CELL;
+  if (ph.fxColumns && row === 3 && !rawRow) row = ph.impactRow;
   if (!ready(sheet)) return false;
   g.save();
   g.translate(Math.round(x), Math.round(y));
   g.imageSmoothingEnabled = false;
+  if (angle) g.rotate(angle);
   if (flip) g.scale(-1, 1);
   g.drawImage(sheet, col * C, row * C, C, C, -size / 2, -size / 2, size, size);
   g.restore();
@@ -935,6 +996,17 @@ function drawProj(g, p, camX, shadowSheet) {
   if (p.k === 'boss') {
     const ph = M.bosses[p.bi].phases[p.ph];
     shadow(g, sx, FLOOR_TOP + p.y, 7);
+    if (p.ma !== undefined) {
+      const size = [96, 58, 44][p.ma];
+      const angle = p.ma === 2 ? 0 : Math.sign(p.vx) * Math.atan2(-(p.vz || 0), Math.abs(p.vx));
+      drawBossFx(g, ph, p.ma, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0, true, angle);
+      return;
+    }
+    if (p.ba !== undefined) {
+      const size = [28, 38, 36, 34, 78][p.ba];
+      drawBossFx(g, ph, p.ba, Math.floor(p.t / 3) % 16, sx, sy, size, p.vx > 0 && p.ba === 4, true);
+      return;
+    }
     const row = p.r === 3 ? 2 : p.r === 1 ? 1 : 0;
     if (!drawBossFx(g, ph, row, Math.floor(p.t / 4) % 4, sx, sy, row === 2 ? 68 : 60, p.vx > 0)) {
       g.fillStyle = '#ff5'; g.fillRect(sx - 4, sy - 4, 8, 8);
@@ -985,7 +1057,8 @@ function drawWorld(g, snap, opts) {
   const mine = (opts && opts.local) || [];
   const camX = snap.camX;
   const sk = snap.sk || 0;
-  const shadowPath = M.shadows?.sheets[snap.si];
+  const shadowStage = M.bosses[snap.si].shadowStage ?? snap.si;
+  const shadowPath = M.shadows?.sheets[shadowStage];
   const shadowSheet = shadowPath && img(shadowPath);
   g.save();
   if (sk) g.translate(Math.round(Math.sin(snap.t * 1.7) * sk), Math.round(Math.cos(snap.t * 2.3) * sk * 0.6));
@@ -1034,7 +1107,7 @@ function drawWorld(g, snap, opts) {
       }
       if (!e.d && (e.hp < e.mh || e.el)) { g.fillStyle = '#300'; g.fillRect(sx - 10, sy - 68 - e.z, 20, 3); g.fillStyle = e.el ? '#ffd23d' : '#ff4d4d'; g.fillRect(sx - 10, sy - 68 - e.z, 20 * e.hp / e.mh, 3); }
       // Elite: a gold bar, and a shield on the side it guards while the guard is up.
-      const twin = M.shadows?.stages[snap.si]?.[e.sh]?.role === 'twin';
+      const twin = M.shadows?.stages[shadowStage]?.[e.sh]?.role === 'twin';
       if (!e.d && (e.el || twin)) {
         text(g, twin ? 'SHADOW TWINS' : 'ELITE', sx, sy - 76 - e.z, 5, '#ffd23d', 'center');
         if (e.el === 2 && (e.st === 'walk' || e.st === 'idle' || e.st === 'attack')) {
