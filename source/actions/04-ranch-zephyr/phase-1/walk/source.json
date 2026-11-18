@@ -1,0 +1,64 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "36426892f95fbdb9bf9ef64ec9f52d867568993a61b6bfb8a7a3260706c57583",
+  "sourceSHA256": "8b676472164ddb202596d86cc6720160a89dbe6d5610e48bee8a2dde12cb5eb4",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    1.0,
+    251.0,
+    253.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1178075,
+  "additionalCyanMatteMixtureSamples": 6911,
+  "additionalMaskScope": "Saturated cyan within four native pixels of the flat matte. Purple armor and royal-blue pilot paint are retained.",
+  "retainedRGBUnchanged": true,
+  "previousDerivedSourceSHA256": "1777d3968d1500ebc256e01b91c361ab92f64ae08b75f458750e009b153cbd10",
+  "openGapMatteMaskSha256": "b5899ece401990328a2d3381cdacb81e0677038deab1517575ba2f99daa120cd",
+  "additionalSamples": 111,
+  "openGapRegions": [
+    [
+      230,
+      112,
+      254,
+      143
+    ],
+    [
+      840,
+      110,
+      864,
+      135
+    ],
+    [
+      238,
+      734,
+      260,
+      759
+    ],
+    [
+      840,
+      738,
+      865,
+      762
+    ],
+    [
+      189,
+      220,
+      206,
+      240
+    ],
+    [
+      999,
+      316,
+      1014,
+      339
+    ],
+    [
+      990,
+      943,
+      1007,
+      964
+    ]
+  ],
+  "maskReason": "Exact cyan mixture in the open diagonal cockpit gaps, tether edge, and enclosed rear fist apertures. Colors and alpha outside those named regions are byte-identical to the reviewed source."
+}

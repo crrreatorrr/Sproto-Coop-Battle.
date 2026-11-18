@@ -1,0 +1,52 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "9c8576a39f6ab6f2a1e4f1116c90a68624f9d5a66fff0bc0a8ca20bce2dac994",
+  "sourceSHA256": "1d20d5a69ca4e39444412ecfbbb615a27a90d6d1c3956c7999c8f2d9929beffd",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    4.0,
+    248.0,
+    2.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 999506,
+  "additionalGreenMatteMixtureSamples": 8582,
+  "additionalMaskScope": "Saturated green within four native pixels of the flat matte. Neutral steel and blue pilot paint are retained.",
+  "retainedRGBUnchanged": true,
+  "previousDerivedSourceSHA256": "b98ecf8bee94cb921f1f921ef5d94c976f1046ce9b4e155690a0426533c978af",
+  "openGapMatteMaskSha256": "c437689597bf57d5951519fc1c4281be260d4973cee2fdf9ca532b29a373c892",
+  "additionalSamples": 45,
+  "openGapRegions": [
+    [
+      274,
+      378,
+      300,
+      400
+    ],
+    [
+      827,
+      472,
+      849,
+      492
+    ],
+    [
+      406,
+      864,
+      426,
+      882
+    ],
+    [
+      1017,
+      701,
+      1034,
+      720
+    ],
+    [
+      1035,
+      864,
+      1054,
+      883
+    ]
+  ],
+  "maskReason": "Observed green background in five open blade, boot and shoulder gaps. Exact source RGBA retained outside the reviewed positions, including the pilot eye witness."
+}
