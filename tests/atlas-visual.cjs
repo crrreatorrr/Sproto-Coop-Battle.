@@ -547,6 +547,8 @@ async function verifyBossPlayback(page) {
     let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
     let transformRenders = 0, transformMorphs = 0;
     for (const [bi, boss] of MANIFEST.bosses.entries()) {
+      // Single-phase Last Call has separate 8/16-column playback coverage.
+      if (boss.attacks === 'bar') continue;
       Render.enterStage(bi);
       await loader.preload([...plan.boss(bi), ...plan.scenery(bi)]);
       const snap = { si: bi, t: 12, sk: 0, camX: 0, items: [], players: [], enemies: [], fx: [], projs: [] };

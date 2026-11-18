@@ -5,7 +5,7 @@
   'use strict';
   var PROTOCOL = 1;
   var GAME_ID = 'sproto-coop-battle';
-  var FINGERPRINT = '9c1841f69463c17a4fd737787b0be20578020f39d29b7310826f992841d3cb67';
+  var FINGERPRINT = 'f9f112cec535147fd07272270b4c70d36e85dc32f6cd63f9b68c9d0f2d9c7b2d';
   var OP = {
     HELLO: 1, WELCOME: 2, READY: 3, START: 4, INPUT: 10, SNAPSHOT: 11, SEATS: 12,
     REJECT: 13, RESUME: 14, END: 15, RELEASE: 16, PING: 17, PONG: 18, COMMAND: 19,
@@ -945,7 +945,7 @@
         if (root.Render && view.snapshot && view.stageIndex !== lastStage) {
           lastStage = view.stageIndex;
           root.Render.enterStage(view.stageIndex || 0);
-          if ((view.stageIndex || 0) < 11) root.Render.bossImages((view.stageIndex || 0) + 1);
+          if ((view.stageIndex || 0) + 1 < root.MANIFEST.bosses.length) root.Render.bossImages((view.stageIndex || 0) + 1);
         }
       } else if (view.phase === 'lobby' || view.phase === 'queue') app.screen = 'lobby';
     });

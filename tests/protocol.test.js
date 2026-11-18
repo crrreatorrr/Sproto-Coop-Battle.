@@ -24,9 +24,9 @@ assert.strictEqual(CoopProtocol.LIMITS.maxSeats, 4);
 assert.strictEqual(CoopProtocol.LIMITS.reconnectGraceMs, 15000);
 
 const manifest = CoopProtocol.contentManifest(MANIFEST);
-assert.strictEqual(manifest.stages.length, 12);
-assert.ok(manifest.stages.every(stage => stage.oneClear && stage.phaseCount === 2 && stage.canonicalBossId && stage.length > 0));
-assert.deepStrictEqual(manifest.stages.map(stage => stage.canonicalBossId).filter((id, i, all) => all.indexOf(id) === i).length, 12);
+assert.strictEqual(manifest.stages.length, MANIFEST.bosses.length);
+assert.ok(manifest.stages.every(stage => stage.oneClear && stage.phaseCount === MANIFEST.bosses[stage.index].phases.length && stage.canonicalBossId && stage.length > 0));
+assert.deepStrictEqual(manifest.stages.map(stage => stage.canonicalBossId).filter((id, i, all) => all.indexOf(id) === i).length, MANIFEST.bosses.length);
 assert.strictEqual(manifest.gameId, 'sproto-coop-battle');
 
 function banked(seed) {

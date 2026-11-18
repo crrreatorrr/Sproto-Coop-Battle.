@@ -280,7 +280,7 @@ function hostStep() {
   }
   S.step(sim);
   // Preload the next bosses' sheets as the campaign advances.
-  R.bossImages(sim.stageIdx); if (sim.stageIdx < 11) R.bossImages(sim.stageIdx + 1);
+  R.bossImages(sim.stageIdx); if (sim.stageIdx + 1 < M.bosses.length) R.bossImages(sim.stageIdx + 1);
   for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'bossdown') latchKill(sim.stageIdx, sim.players); if (e === 'clear') stageClear(sim.stageIdx, sim.god, sim.players); }
   sim.events.length = 0;
   if (app.role === 'host' && app.net && app.net.open && ++app.sendTick % 2 === 0) {
@@ -478,10 +478,10 @@ function localDevicesInput() {
       }
     } else if (app.screen === 'stages') {
       if (app.role === 'banked') { app.screen = 'lobby'; return; }
-      // Stage select: 4 x 3 grid of the twelve Sproto Arcade stages.
+      // Four columns; every manifest stage is selectable.
       const sel = app.stageSel;
-      if (p.l) app.stageSel = (sel + 11) % 12; if (p.r) app.stageSel = (sel + 1) % 12;
-      if (p.u) app.stageSel = (sel + 8) % 12; if (p.d) app.stageSel = (sel + 4) % 12;
+      if (p.l) app.stageSel = (sel + M.bosses.length - 1) % M.bosses.length; if (p.r) app.stageSel = (sel + 1) % M.bosses.length;
+      if (p.u) app.stageSel = (sel + M.bosses.length - 4) % M.bosses.length; if (p.d) app.stageSel = (sel + 4) % M.bosses.length;
       if (app.stageSel !== sel) { A.play('menu'); app.lobbyDirty = true; }
       // Power toggles free play: every stage open, for groups that just want to pick one.
       if (p.p) { app.settings.freePlay = !app.settings.freePlay; P.saveSettings(app.settings); A.play('menu'); }
@@ -872,11 +872,11 @@ addEventListener('keydown', onKeyDown);
 const T = R.text;
 const padUI = () => I.lastKind() === 'pad'; // the last device used picks the prompts
 function drawTitle() {
-  R.drawBackground(g, Math.floor(app.t / 600) % 12, app.t * 0.6);
+  R.drawBackground(g, Math.floor(app.t / 600) % M.bosses.length, app.t * 0.6);
   g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, S.W, S.H);
   T(g, 'SPROTO', S.W / 2, 56, 34, '#ffd23d', 'center');
   T(g, 'COOP BATTLE', S.W / 2, 96, 22, '#ff5a5a', 'center');
-  T(g, S.SLOTS + ' SPROTOS VS 12 MACHINE BOSSES', S.W / 2, 124, 8, '#fff', 'center');
+  T(g, S.SLOTS + ' SPROTOS VS ' + M.bosses.length + ' MACHINE BOSSES', S.W / 2, 124, 8, '#fff', 'center');
   for (let i = 0; i < S.SLOTS; i++) {
     const o = { f: i % M.fighters.length, st: 'idle', t: app.t + i * 13, z: 0, fc: 1 };
     R.drawFighter(g, o, S.W / 2 - (S.SLOTS - 1) * 40 + i * 80, 214, 0, S.WEAPONS[i].id, S.WEAPONS[i]);
@@ -913,27 +913,27 @@ function drawStages() {
   g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, S.W, S.H);
   T(g, 'CHOOSE A STAGE', 12, 22, 12, '#ffd23d');
   T(g, M.bosses[app.stageSel].stage, S.W / 2 + 40, 22, 8, '#fff', 'center', 250);
-  T(g, 'STAGE ' + (app.stageSel + 1) + ' OF 12', S.W - 12, 22, 8, '#c8c6e0', 'right');
-  const cw = 148, ch = 82;
-  for (let i = 0; i < 12; i++) {
+  T(g, 'STAGE ' + (app.stageSel + 1) + ' OF ' + M.bosses.length, S.W - 12, 22, 8, '#c8c6e0', 'right');
+  const cw = 148, ch = M.bosses.length > 12 ? 60 : 82, picture = ch - 20;
+  for (let i = 0; i < M.bosses.length; i++) {
     const c = i % 4, r = Math.floor(i / 4), x = 8 + c * (cw + 8), y = 34 + r * (ch + 8), on = i === app.stageSel;
-    const back = R.img('assets/stages/' + String(i + 1).padStart(2, '0') + '-back.jpg');
+    const back = R.img('assets/stages/' + String(M.bosses[i].scenery || i + 1).padStart(2, '0') + '-back.jpg');
     g.fillStyle = '#000'; g.fillRect(x, y, cw, ch);
-    if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / 62)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, 62); }
+    if (R.ready(back)) { const sh = back.height, sw = Math.min(back.width, sh * (cw / picture)); g.drawImage(back, 0, 0, sw, sh, x, y, cw, picture); }
     const open = P.isOpen(prog, i, app.settings.freePlay);
     g.fillStyle = !open ? 'rgba(0,0,0,.8)' : on ? 'rgba(0,0,0,.25)' : 'rgba(0,0,0,.55)'; g.fillRect(x, y, cw, ch);
     if (!open) T(g, 'LOCKED', x + cw / 2, y + 32, 8, '#8a88a8', 'center');
-    g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + 62, cw, 20);
+    g.fillStyle = 'rgba(8,6,16,.9)'; g.fillRect(x, y + picture, cw, 20);
     T(g, String(i + 1), x + 6, y + 10, 8, on ? '#ffd23d' : '#fff');
-    T(g, M.bosses[i].stage, x + 6, y + 72, 7, on ? '#ffd23d' : '#fff', 'left', cw - 12);
+    T(g, M.bosses[i].stage, x + 6, y + picture + 10, 7, on ? '#ffd23d' : '#fff', 'left', cw - 12);
     g.strokeStyle = on ? (Math.floor(app.t / 10) % 2 ? '#ffd23d' : '#fff') : 'rgba(255,255,255,.18)'; g.lineWidth = on ? 3 : 1;
     g.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
   }
   const b = M.bosses[app.stageSel];
-  if (P.isOpen(prog, app.stageSel, app.settings.freePlay)) T(g, 'BOSS: ' + b.machines[0].toUpperCase() + '  >  ' + b.machines[1].toUpperCase(), S.W / 2, 316, 8, '#ff8a8a', 'center');
+  if (P.isOpen(prog, app.stageSel, app.settings.freePlay)) T(g, 'BOSS: ' + b.machines.map(name => name.toUpperCase()).join('  >  ') + (b.phases.length === 1 ? '  (PHASE 1)' : ''), S.W / 2, 316, 8, '#ff8a8a', 'center');
   else T(g, 'LOCKED: CLEAR STAGE ' + app.stageSel + ' FIRST, OR TURN ON FREE PLAY', S.W / 2, 316, 7, '#ff8a8a', 'center');
   const fp = app.settings.freePlay;
-  T(g, (fp ? 'ALL STAGES OPEN' : prog.unlocked + ' OF 12 OPEN') + '   ·   ' + (padUI() ? 'Y' : 'POWER') + ' TO TOGGLE FREE PLAY', S.W / 2, 330, 7, fp ? '#7aff8a' : '#ffd23d', 'center');
+  T(g, (fp ? 'ALL STAGES OPEN' : prog.unlocked + ' OF ' + M.bosses.length + ' OPEN') + '   ·   ' + (padUI() ? 'Y' : 'POWER') + ' TO TOGGLE FREE PLAY', S.W / 2, 330, 7, fp ? '#7aff8a' : '#ffd23d', 'center');
   T(g, padUI() ? 'D-PAD CHOOSES   ·   A FIGHTS   ·   B GOES BACK' : 'ARROWS CHOOSE   ·   ATTACK FIGHTS   ·   ESC GOES BACK', S.W / 2, 345, 7, '#eeeaff', 'center');
 }
 function lerpSnap(a, b, k) {
