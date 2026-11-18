@@ -110,7 +110,14 @@ function stagePaths(manifest, i) {
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
 // Combat effects and gear are prefetched with the first stage and stay resident.
-const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(function (name) { return 'assets/fx/' + name + '.png'; });
+function fxPath(name) { return 'assets/fx/' + name + '.png'; }
+const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(fxPath);
+
+function enemyProjectileSheet() {
+  return root.CoopBossTransformations?.enemyProjectileSheet === true
+    ? fxPath('enemy-projectiles')
+    : null;
+}
 
 function unique(list) {
   const seen = new Set();
@@ -138,6 +145,8 @@ function groups(manifest) {
   // The title shows the original first four. All other bodies load when selected.
   const startup = atlas.slice(0, 4).concat(scenery(0, manifest), scenery(4, manifest));
   const firstBoss = bossPaths(manifest, 0);
+  const enemyProjectiles = enemyProjectileSheet();
+  const fx = enemyProjectiles ? FX.concat(enemyProjectiles) : FX.slice();
   return {
     atlas: atlas,
     motion: motion,
@@ -145,12 +154,12 @@ function groups(manifest) {
     firstBoss: firstBoss,
     shadows: shadows.slice(),
     ufo: UFO.slice(),
-    fx: FX.slice(),
+    fx: fx,
     stages: stages,
     bosses: bosses,
     transformations: transformations,
     actions: actions,
-    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, actions, shadows, UFO, FX)),
+    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, actions, shadows, UFO, fx)),
     scenery: function (i) { return scenery(i, manifest); },
     boss: function (i) { return bossPaths(manifest, i); },
   };
@@ -550,6 +559,7 @@ root.AssetLoader = {
   motionPath: motionPath,
   portraits: PORTRAITS,
   groups: groups,
+  enemyProjectileSheet: enemyProjectileSheet,
   stageOnlyBoss: stageOnlyBoss,
   lowerBossActorPath: lowerBossActorPath,
   bossActorFrame: bossActorFrame,

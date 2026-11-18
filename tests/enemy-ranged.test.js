@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 globalThis.window = globalThis;
 require('../public/js/manifest.js');
 const Sim = require('../public/js/sim.js');
@@ -214,4 +215,79 @@ for (const [weapon, left] of [[3, true], [4, false]]) {
   assert.ok(kinds.has('enemyArrow') && kinds.has('knife') && kinds.has('enemyBolt') && kinds.has('enemyTwin'));
 }
 
-console.log('Enemy ranged attacks passed');
+
+{
+  const pathToAtlas = 'assets/fx/enemy-projectiles.png';
+  const images = new Map([['assets/fx/combat.png', { tag: 'combat', naturalWidth: 512, naturalHeight: 1152 }]]);
+  const atlas = { tag: 'enemy', naturalWidth: 256, naturalHeight: 256 };
+  const requests = [], calls = [], stack = [];
+  const g = new Proxy({
+    x: 0, y: 0, angle: 0, imageSmoothingEnabled: true,
+    save() { stack.push({ x: this.x, y: this.y, angle: this.angle, imageSmoothingEnabled: this.imageSmoothingEnabled }); },
+    restore() { Object.assign(this, stack.pop()); },
+    translate(x, y) { this.x += x; this.y += y; },
+    rotate(angle) { this.angle += angle; },
+    drawImage(image, ...rect) {
+      calls.push({ tag: image.tag, rect, x: this.x, y: this.y, angle: this.angle, smooth: this.imageSmoothingEnabled });
+    },
+  }, { get: (target, key) => target[key] ?? (() => {}) });
+  const scope = { Sim, MANIFEST, CoopBossTransformations: {}, Render: {
+    img(src) { requests.push(src); return images.get(src); },
+    ready: image => Boolean(image?.naturalWidth),
+    text() {}, frameCanvas() { return null; }, canFilter() { return false; }, drawFighter() {}, drawBackground() {},
+  } };
+  scope.window = scope;
+  for (const script of ['asset-loader', 'render-fx']) {
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public/js', script + '.js'), 'utf8'), scope);
+  }
+  function draw(snapshot, projectile) {
+    requests.length = calls.length = 0;
+    const scene = { ...snapshot, players: [], enemies: [], projs: [projectile] };
+    const before = JSON.stringify(scene);
+    scope.RenderFx.drawWorld(g, scene, { noBanner: true });
+    assert.equal(JSON.stringify(scene), before, 'render leaves the authoritative shot and age intact');
+    assert.equal(stack.length, 0);
+    assert.equal(g.imageSmoothingEnabled, true, 'nearest-neighbor sampling does not leak to other draws');
+    return calls[0];
+  }
+  assert.ok(!scope.AssetLoader.groups(MANIFEST).fx.includes(pathToAtlas));
+  for (const [row, size] of [41, 41, 53, 59].entries()) {
+    const { game, enemy, shot } = arena(row + 3, { left: row % 2 === 0 });
+    enemy.sh = 0;
+    run(game, shot.startup + 1);
+    const snapshot = Sim.snapshot(game);
+    const shadowSource = MANIFEST.shadows.sheets[MANIFEST.bosses[snapshot.si].shadowStage ?? snapshot.si];
+    images.set(shadowSource, { tag: 'shadow', naturalWidth: 896, naturalHeight: 1408 });
+    const release = snapshot.projs[0];
+    assert.equal(release.k, shot.kind, 'the real release reaches the expected enemy-FX row');
+    scope.CoopBossTransformations.enemyProjectileSheet = false;
+    const legacy = draw(snapshot, release);
+    assert.equal(legacy.tag, row < 2 ? 'combat' : 'shadow');
+    assert.ok(!requests.includes(pathToAtlas), 'the game does not request an unregistered sheet');
+    scope.CoopBossTransformations.enemyProjectileSheet = true;
+    const groups = scope.AssetLoader.groups(MANIFEST);
+    assert.ok(groups.fx.includes(pathToAtlas) && groups.all.includes(pathToAtlas), 'registered atlas is prefetched and inventoried');
+    images.delete(pathToAtlas);
+    assert.deepEqual(draw(snapshot, release), legacy, 'cold sheet keeps the complete legacy projectile');
+    images.set(pathToAtlas, { ...atlas, naturalHeight: 192 });
+    assert.deepEqual(draw(snapshot, release), legacy, 'wrong grid dimensions keep the legacy projectile');
+    images.set(pathToAtlas, atlas);
+    for (let frame = 0; frame <= 4; frame++) {
+      while (game.projs[0].t < 3 * frame) Sim.step(game);
+      const now = Sim.snapshot(game);
+      const p = now.projs[0];
+      const fresh = draw(now, p);
+      assert.equal(fresh.tag, 'enemy');
+      assert.deepEqual(fresh.rect, [(frame % 4) * 64, row * 64, 64, 64, -size / 2, -size / 2, size, size]);
+      assert.equal(fresh.x, Math.round(p.x - now.camX));
+      assert.equal(fresh.y, Math.round(Sim.FLOOR_TOP + p.y - p.z));
+      assert.equal(fresh.angle, Math.atan2(p.vy || 0, p.vx) + (row === 0 ? p.t * 0.55 * Math.sign(p.vx) : 0));
+      assert.equal(fresh.smooth, false);
+    }
+    const playerArrow = draw(snapshot, { ...release, k: 'arrow' });
+    assert.equal(playerArrow.tag, 'combat', 'authored enemy sheets never replace player arrows');
+    assert.ok(!requests.includes(pathToAtlas), 'a player arrow does not request enemy art');
+  }
+}
+
+console.log('Enemy ranged attacks and projectile rendering passed');

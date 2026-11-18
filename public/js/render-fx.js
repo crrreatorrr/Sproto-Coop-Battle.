@@ -26,6 +26,12 @@ const CLASS_ROWS = {
 };
 const WEAPON_ROWS = { bow: 3, scimitar: 4, mace: 5, rapier: 30, greatsword: 31, cudgel: 32, halberd: 33, 'twin-blades': 34 };
 const SHOT_ROWS = { 'mage-bolt': 6, 'healer-bolt': 7, arrow: 8, 'arcane-orb': 9, 'power-arrow': 10, enemyArrow: 11, knife: 12 };
+const ENEMY_SHOTS = new Map([
+  ['knife', [0, 41]],
+  ['enemyArrow', [1, 41]],
+  ['enemyBolt', [2, 53]],
+  ['enemyTwin', [3, 59]],
+]);
 const HIT_ROWS = { 'class-heal': 13, 'mage-hit': 14, 'healer-hit': 15, 'arrow-hit': 16, enemyShotHit: 17, spark: 18 };
 const ROLE_COLORS = { mage: '#e0b0ff', healer: '#81f0b1', ranged: '#83dfff' };
 const CAST_POSES = {
@@ -266,11 +272,20 @@ function projectile(g, p, sx, sy, shadowSheet) {
   if (row === undefined) return false;
   // Screen y changes with belt depth; vx/vy are actual velocity on that plane.
   const spin = p.k === 'knife' ? p.t * 0.55 * Math.sign(p.vx) : 0;
+  const frame = Math.floor(p.t / 3) % 4;
+  const enemyShot = ENEMY_SHOTS.get(p.k);
+  const source = enemyShot && root.AssetLoader.enemyProjectileSheet?.();
+  const sheet = source && img(source);
   g.save(); g.translate(Math.round(sx), Math.round(sy)); g.rotate(Math.atan2(p.vy || 0, p.vx) + spin);
   let drawn;
-  if (imported && Number.isInteger(p.sh) && ready(shadowSheet)) {
+  if (ready(sheet) && sheet.naturalWidth === 4 * CELL && sheet.naturalHeight === ENEMY_SHOTS.size * CELL) {
+    const [enemyRow, size] = enemyShot;
+    g.imageSmoothingEnabled = false;
+    g.drawImage(sheet, frame * CELL, enemyRow * CELL, CELL, CELL, -size / 2, -size / 2, size, size);
+    drawn = true;
+  } else if (imported && Number.isInteger(p.sh) && ready(shadowSheet)) {
     const echo = p.k === 'enemyTwin';
-    const size = (echo ? 59 : 53) + (Math.floor(p.t / 3) % 2) * 3;
+    const size = (echo ? 59 : 53) + (frame % 2) * 3;
     // Warm motion ticks distinguish hostile shots even when the source art is dark.
     g.fillStyle = '#4d2042'; g.fillRect(-17, -2, 10, 4);
     g.fillStyle = echo ? '#fff1bb' : '#ffd395';
@@ -281,7 +296,7 @@ function projectile(g, p, sx, sy, shadowSheet) {
   } else {
     const weapon = S.WEAPONS[p.w];
     const size = p.k === 'arcane-orb' ? 49 : weapon?.gear === 'crossbow' ? 34 : 41;
-    drawn = combatCell(g, row, Math.floor(p.t / 3) % 4, 0, 0, size, weapon?.tint);
+    drawn = combatCell(g, row, frame, 0, 0, size, weapon?.tint);
   }
   g.restore();
   return drawn;
