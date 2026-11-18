@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "09-hatchery-highsproto",
+    "phase": 1,
+    "family": "boss-projectiles",
+    "purposes": [
+      "spread",
+      "homing",
+      "impact"
+    ],
+    "asset": "assets/bosses/effects/09-hatchery-highsproto-p2-spread-homing-impact-2b81ef2b2c64.png",
+    "atlasSha256": "a77e8395bd8fdaa27b5510f766a9520044d5e61a1dc4dd561d237810147c9fb9",
+    "runtimeSha256": "2b81ef2b2c640021f79daf90ee92a6f80e26bd5c1135abda758d66dbbeeea8b8",
+    "runtimeDimensions": [
+      384,
+      288
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 8,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/09-hatchery-highsproto-p2-spread-homing-impact-2b81ef2b2c64.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 0
+          }
+        ]
+      },
+      "homing": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/09-hatchery-highsproto-p2-spread-homing-impact-2b81ef2b2c64.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/09-hatchery-highsproto-p2-spread-homing-impact-2b81ef2b2c64.png",
+            "columns": 4,
+            "rows": 3,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 188,
+  "resumed": 4,
+  "hit": [
+    19,
+    27,
+    19,
+    27
+  ],
+  "frames": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}
