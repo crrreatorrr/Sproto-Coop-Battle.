@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "e554cd05bd1f40bb79cbf02aa1ce7cb04098d74eed37f4d34b452b1a25e3456c",
+  "sourceSHA256": "e7bb767a1ef5aa34d619352b1bdadca8921815fc30c0026e022537d8a73ae51e",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    249.0,
+    3.0,
+    249.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1147631,
+  "additionalMagentaMatteMixtureSamples": 3731,
+  "additionalMaskScope": "High-red/high-blue/low-green samples within four native pixels of flat matte.",
+  "retainedRGBUnchanged": true
+}
