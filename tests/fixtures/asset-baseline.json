@@ -1,20 +1,20 @@
 {
   "description": "Reviewed boss transformations, combat action clips and effects with exact source provenance.",
   "assetCount": 242,
-  "assetBytes": 24827028,
-  "assetMegabytesDecimal": 24.827028,
-  "assetMebibytes": 23.677,
+  "assetBytes": 24960277,
+  "assetMegabytesDecimal": 24.960277,
+  "assetMebibytes": 23.804,
   "publicFileCount": 271,
-  "publicBytes": 25402575,
-  "assetTreeSha256": "c37c680577d5117f56cc467c825bf968c3d8ebd099d5e867a0984f68e40b7e16",
-  "publicTreeSha256": "b98e1985381cd4c5d4fa03669846fbc596d026bb2cca0cc32c040ded9ec1bfe4",
+  "publicBytes": 25536671,
+  "assetTreeSha256": "5073b975da9445e210f7a72bff4467cbe900f88054b66b63acf659fd1c3cbf72",
+  "publicTreeSha256": "726240ab6c9ca1840403b36be5717876c1afd29fd883397172d2b2546339d28d",
   "preloadCount": 8,
   "preloadBytes": 718587,
   "preloadGzipBytes": 717670,
   "preloadDecodedBytes": 12313328,
   "dynamicRefCount": 238,
-  "titleBytes": 1112946,
-  "firstStageBytes": 2330115,
+  "titleBytes": 1113793,
+  "firstStageBytes": 2464211,
   "criticalRequests": 30,
   "staticBudgetBytes": 10485760,
   "titleBudgetBytes": 1572864,
@@ -47,8 +47,8 @@
     },
     "boss": {
       "count": 166,
-      "bytes": 21061741,
-      "gzipBytes": 21007352,
+      "bytes": 21194990,
+      "gzipBytes": 21140147,
       "decodedBytes": 643936896
     },
     "fx": {
@@ -64,7 +64,7 @@
       "decodedBytes": 58261504
     }
   },
-  "basePublicBytes": 10331526,
+  "basePublicBytes": 10465622,
   "optionalMediaCount": 118,
   "optionalMediaBytes": 15071049,
   "optionalMediaTreeSha256": "7894be312d574beeb4b4bb90e7d9d9ee023b00d456f944ebf808fcb9210952db",
