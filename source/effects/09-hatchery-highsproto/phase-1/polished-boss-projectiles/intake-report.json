@@ -1,0 +1,767 @@
+{
+  "status": "CANDIDATE REQUIRES VISUAL REVIEW AND PLAYBACK PROOF",
+  "generationBackend": "OpenAI built-in ImageGen",
+  "providerSha256": "8ff5ee515d4a3c669c6d8f7a463a1eebe3a14acff67e590c538e2a94676bf4b5",
+  "providerBytes": 838611,
+  "sourceShape": [
+    1264,
+    1244
+  ],
+  "decodedSourceRgbaSha256": "6ef47b959a6c4d93880e0905d7ac3ad7fa7b0ef4fb65c3f4b1550f18984d55bf",
+  "grid": {
+    "columns": 4,
+    "rows": 4,
+    "margin": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "gutter": [
+      0,
+      0
+    ],
+    "cellShape": [
+      316,
+      311
+    ],
+    "matteOnlyOmittedPixels": 0,
+    "requiredNativeSeamClearance": 3,
+    "enclosingSquareSize": 334,
+    "enclosingSquareOffset": [
+      9,
+      11
+    ]
+  },
+  "matte": {
+    "mode": "alpha",
+    "clearPerimeterFractions": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "lowAlphaCutoff": 2
+  },
+  "nativeCells": [
+    {
+      "visualRgbaSha256": "4d59ec2f2e3e9896b1245589243c396fbbea536a10c75e21a5fa0a504bc07273",
+      "foregroundBounds": [
+        97,
+        136,
+        265,
+        226
+      ],
+      "foregroundPixels": 9998,
+      "semiTransparentPixels": 9992,
+      "nearWhiteForegroundPixels": 53,
+      "alphaWeightedCentroid": [
+        176.88,
+        182.38
+      ],
+      "cell": 1,
+      "sourceBox": [
+        0,
+        0,
+        316,
+        311
+      ],
+      "nativeSeamClearance": 51,
+      "removedPixelCount": 23778,
+      "removedMaskLumaSha256": "b8cf6c4cf78bb7723fa8b9f05f4d4ab0d12fb036dbf20fd6c67957e4c221561e",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "692c3879fc470f3ec5caf8a1d4ba94f597731e240d5afe5134b37bff7a9f1de1"
+    },
+    {
+      "visualRgbaSha256": "951ade1590c16aa1933724e0586f6a570397ec8ee139bdbc17f1fbdcb707eeeb",
+      "foregroundBounds": [
+        71,
+        138,
+        258,
+        226
+      ],
+      "foregroundPixels": 10765,
+      "semiTransparentPixels": 10758,
+      "nearWhiteForegroundPixels": 143,
+      "alphaWeightedCentroid": [
+        156.3,
+        182.58
+      ],
+      "cell": 2,
+      "sourceBox": [
+        316,
+        0,
+        632,
+        311
+      ],
+      "nativeSeamClearance": 58,
+      "removedPixelCount": 17609,
+      "removedMaskLumaSha256": "6545a613119e90648ab57651f3541a668a99a36207829c962850f8f5c115e54e",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "421bca3f992712f5cb161ad75b6b84f828239502e5ef5ae0334849b2fca8f3ee"
+    },
+    {
+      "visualRgbaSha256": "cd18da452421ba6a8028dd851b7d3ea2f72891156b8084cd1fe60733f81ee3f4",
+      "foregroundBounds": [
+        44,
+        137,
+        250,
+        226
+      ],
+      "foregroundPixels": 11925,
+      "semiTransparentPixels": 11923,
+      "nearWhiteForegroundPixels": 172,
+      "alphaWeightedCentroid": [
+        138.02,
+        182.14
+      ],
+      "cell": 3,
+      "sourceBox": [
+        632,
+        0,
+        948,
+        311
+      ],
+      "nativeSeamClearance": 44,
+      "removedPixelCount": 23823,
+      "removedMaskLumaSha256": "c239b7785a3db423caa95ad29ae19e576a3d824e64dfb7292a33ee0c085ad2bc",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "217e727242b44cd3b12631e718c3aae19389582b9f53ec524f83a4c54d71860b"
+    },
+    {
+      "visualRgbaSha256": "3ff877b47b27a1e68d2065cf8dba893d67cc3dfd01168fcca22fd16d0b92340c",
+      "foregroundBounds": [
+        21,
+        132,
+        251,
+        228
+      ],
+      "foregroundPixels": 14445,
+      "semiTransparentPixels": 14437,
+      "nearWhiteForegroundPixels": 378,
+      "alphaWeightedCentroid": [
+        124.64,
+        182.16
+      ],
+      "cell": 4,
+      "sourceBox": [
+        948,
+        0,
+        1264,
+        311
+      ],
+      "nativeSeamClearance": 21,
+      "removedPixelCount": 17032,
+      "removedMaskLumaSha256": "58f9f1c40c5129d066f85c53e8b6ca9884eab0da0392ad8b2203ee788c468080",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "cdc30d62a099a44d310c70f58012ad8ac69f667170849d6f9ac6903bf0f6d5c5"
+    },
+    {
+      "visualRgbaSha256": "86bf188d41cc217ddb7f836090ab8adf48604870cd1bf2608637f096ce974e36",
+      "foregroundBounds": [
+        98,
+        123,
+        263,
+        222
+      ],
+      "foregroundPixels": 10282,
+      "semiTransparentPixels": 10281,
+      "nearWhiteForegroundPixels": 123,
+      "alphaWeightedCentroid": [
+        175.98,
+        175.28
+      ],
+      "cell": 5,
+      "sourceBox": [
+        0,
+        311,
+        316,
+        622
+      ],
+      "nativeSeamClearance": 53,
+      "removedPixelCount": 24175,
+      "removedMaskLumaSha256": "79623674e5af0de283bc5cb546a40700a2157ee7fa06ee1cabc713d249dd90f7",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "f582aea919dde0c0a152488009a0210da906cee25e450945b0375a881bf9ef29"
+    },
+    {
+      "visualRgbaSha256": "24b57763e7cc2a2664f6c39bed962223a73a5c5f7a050d520adf1e1ef0de7ea6",
+      "foregroundBounds": [
+        70,
+        107,
+        244,
+        240
+      ],
+      "foregroundPixels": 12729,
+      "semiTransparentPixels": 12724,
+      "nearWhiteForegroundPixels": 163,
+      "alphaWeightedCentroid": [
+        156.14,
+        174.95
+      ],
+      "cell": 6,
+      "sourceBox": [
+        316,
+        311,
+        632,
+        622
+      ],
+      "nativeSeamClearance": 70,
+      "removedPixelCount": 21635,
+      "removedMaskLumaSha256": "8c65646df7d7d3f1adcb224733e9a8012bc898282cff3444d0a3459f3d9455f2",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "919681a6dfe0f7b8da84e7fe2b209c4a0c333bf329282bb93b3c3d664766f691"
+    },
+    {
+      "visualRgbaSha256": "e1e7a0f5911fc9d9a6ce022f61ce6802e408304c348eb6ef2d0fa7518b12dde7",
+      "foregroundBounds": [
+        46,
+        91,
+        243,
+        258
+      ],
+      "foregroundPixels": 17309,
+      "semiTransparentPixels": 17291,
+      "nearWhiteForegroundPixels": 168,
+      "alphaWeightedCentroid": [
+        138.73,
+        174.57
+      ],
+      "cell": 7,
+      "sourceBox": [
+        632,
+        311,
+        948,
+        622
+      ],
+      "nativeSeamClearance": 46,
+      "removedPixelCount": 28331,
+      "removedMaskLumaSha256": "76dfdc851fe2bac3e21bbfc414fbab03b02588ee948b0de1843149ce6430ecbc",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "90ce6a67391447978b935a0f345302045795afcba4ff44234b903b88cdf8cb4e"
+    },
+    {
+      "visualRgbaSha256": "7096fe2250511adacf44c3b34f49d886c1bd7c097abe3b2846657ffb06a7c9d7",
+      "foregroundBounds": [
+        20,
+        78,
+        248,
+        265
+      ],
+      "foregroundPixels": 20314,
+      "semiTransparentPixels": 20291,
+      "nearWhiteForegroundPixels": 257,
+      "alphaWeightedCentroid": [
+        122.61,
+        174.44
+      ],
+      "cell": 8,
+      "sourceBox": [
+        948,
+        311,
+        1264,
+        622
+      ],
+      "nativeSeamClearance": 20,
+      "removedPixelCount": 22143,
+      "removedMaskLumaSha256": "5217b72bdc7e420d7c6526ffaf37a6ceb7cf8021d1d6892d6c95889980798fe8",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "212d4742b3673d235fc02f8307c3025456fce0b7fcc0dbcd8adc89a0e7d73ca9"
+    },
+    {
+      "visualRgbaSha256": "b5b0ac3e360d662f32efdffc5e5dbe8ac5dbfa4e796d9ad58875f44789b47e94",
+      "foregroundBounds": [
+        101,
+        117,
+        276,
+        202
+      ],
+      "foregroundPixels": 10010,
+      "semiTransparentPixels": 10004,
+      "nearWhiteForegroundPixels": 78,
+      "alphaWeightedCentroid": [
+        187.11,
+        159.0
+      ],
+      "cell": 9,
+      "sourceBox": [
+        0,
+        622,
+        316,
+        933
+      ],
+      "nativeSeamClearance": 40,
+      "removedPixelCount": 17106,
+      "removedMaskLumaSha256": "de3fa821a52e0888a36a42e41d9e89d4fab035d81da40b2fd6a07be956fc41ec",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "afae39db56a47ed636793aa8911789db5d891d599d78649a82ebe088020df5ed"
+    },
+    {
+      "visualRgbaSha256": "5cd54301b5f33bb169455c4c8fef8ac93bee4b871b721c642843c747275e74c1",
+      "foregroundBounds": [
+        61,
+        117,
+        259,
+        203
+      ],
+      "foregroundPixels": 11021,
+      "semiTransparentPixels": 11009,
+      "nearWhiteForegroundPixels": 117,
+      "alphaWeightedCentroid": [
+        149.55,
+        159.94
+      ],
+      "cell": 10,
+      "sourceBox": [
+        316,
+        622,
+        632,
+        933
+      ],
+      "nativeSeamClearance": 57,
+      "removedPixelCount": 21642,
+      "removedMaskLumaSha256": "ee8a04a23939502026ee80aef8b6deb19b6e1868fab09825cb8b65e14a7dfcd8",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "17fea1de8542d4ab9940c18d3d78b1f448c74adb54f9a832bb57843b9ffbc6eb"
+    },
+    {
+      "visualRgbaSha256": "5654eaf0de94f893c6064b25d2100bb428e8775cc38de61904b3e8e7c05f7c87",
+      "foregroundBounds": [
+        39,
+        108,
+        255,
+        206
+      ],
+      "foregroundPixels": 12957,
+      "semiTransparentPixels": 12957,
+      "nearWhiteForegroundPixels": 294,
+      "alphaWeightedCentroid": [
+        136.86,
+        159.72
+      ],
+      "cell": 11,
+      "sourceBox": [
+        632,
+        622,
+        948,
+        933
+      ],
+      "nativeSeamClearance": 39,
+      "removedPixelCount": 30022,
+      "removedMaskLumaSha256": "57ebcf046dc54fb47607461a13f7be9be5e402628e0518d9d3641291a54dcfe6",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "d627b575012686dcf684b620b1156973322e8429e991b9f0069975b5d6ff7afc"
+    },
+    {
+      "visualRgbaSha256": "4f569f0077e75e36baf66e63562bda137c6e23977fb5f5b7e7051a49cbe3172e",
+      "foregroundBounds": [
+        19,
+        106,
+        240,
+        212
+      ],
+      "foregroundPixels": 13610,
+      "semiTransparentPixels": 13606,
+      "nearWhiteForegroundPixels": 334,
+      "alphaWeightedCentroid": [
+        119.2,
+        159.7
+      ],
+      "cell": 12,
+      "sourceBox": [
+        948,
+        622,
+        1264,
+        933
+      ],
+      "nativeSeamClearance": 19,
+      "removedPixelCount": 18708,
+      "removedMaskLumaSha256": "35211e23ae81252dd282809b15de92956e49c1f0f12a43d88d34e0664e10bfad",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "7cfdc42187135c2cee6343a807af965cf44a946040314c6ae9c34d1bfbe66e6b"
+    },
+    {
+      "visualRgbaSha256": "8f60c0ec224f213f5c422283b567fef0be728b1ccd5c34a2727052ded258637b",
+      "foregroundBounds": [
+        115,
+        86,
+        240,
+        201
+      ],
+      "foregroundPixels": 9908,
+      "semiTransparentPixels": 9908,
+      "nearWhiteForegroundPixels": 388,
+      "alphaWeightedCentroid": [
+        181.28,
+        146.47
+      ],
+      "cell": 13,
+      "sourceBox": [
+        0,
+        933,
+        316,
+        1244
+      ],
+      "nativeSeamClearance": 76,
+      "removedPixelCount": 30450,
+      "removedMaskLumaSha256": "db4d3063295750a0de30827087283056adb39737812caef0023705994f40996d",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "a8a4fa2ab064ff8e8961e2c03900e9f70628d6ea7addfb0117cbbdd36d7d7c68"
+    },
+    {
+      "visualRgbaSha256": "4b6bf77634083a38668a35e6f351d72069a7d18a659b2332751bdc1e675436fa",
+      "foregroundBounds": [
+        67,
+        52,
+        244,
+        217
+      ],
+      "foregroundPixels": 20709,
+      "semiTransparentPixels": 20709,
+      "nearWhiteForegroundPixels": 720,
+      "alphaWeightedCentroid": [
+        154.53,
+        142.61
+      ],
+      "cell": 14,
+      "sourceBox": [
+        316,
+        933,
+        632,
+        1244
+      ],
+      "nativeSeamClearance": 52,
+      "removedPixelCount": 36268,
+      "removedMaskLumaSha256": "066bee47f971fa74ef3daa3f660a8ae5ddb1bac614c466401c4bafd23336f768",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "fda037a124f30419c5710049bc1a714f5e89437caeb7ab5ec840b88a64e8377b"
+    },
+    {
+      "visualRgbaSha256": "debfe995f8c010750ef87ccf340910f4386d7256d559b7746e6382cce53b2184",
+      "foregroundBounds": [
+        41,
+        53,
+        232,
+        214
+      ],
+      "foregroundPixels": 19554,
+      "semiTransparentPixels": 19554,
+      "nearWhiteForegroundPixels": 103,
+      "alphaWeightedCentroid": [
+        133.91,
+        139.47
+      ],
+      "cell": 15,
+      "sourceBox": [
+        632,
+        933,
+        948,
+        1244
+      ],
+      "nativeSeamClearance": 41,
+      "removedPixelCount": 38523,
+      "removedMaskLumaSha256": "ba389bd006963d43ed611edbea147ddb4d7c7d337a0119ff06cdb52a01aa8f05",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "364910ee4a256bcee8325eb22f95c137f8737ae86228d7f1f00c0cf4747ac1cb"
+    },
+    {
+      "visualRgbaSha256": "de2fb1f5b6e6c69f96b60208909c7f6310e38948793ee72e3290f8753de62803",
+      "foregroundBounds": [
+        48,
+        85,
+        204,
+        202
+      ],
+      "foregroundPixels": 8313,
+      "semiTransparentPixels": 8313,
+      "nearWhiteForegroundPixels": 80,
+      "alphaWeightedCentroid": [
+        120.02,
+        143.12
+      ],
+      "cell": 16,
+      "sourceBox": [
+        948,
+        933,
+        1264,
+        1244
+      ],
+      "nativeSeamClearance": 48,
+      "removedPixelCount": 27249,
+      "removedMaskLumaSha256": "0761281a396ac840aeaca740ecf93ada9c6efedffc55b0f9ae2c51e3820d3128",
+      "retainedCandidateKeyPixels": 0,
+      "packerSourceRgbaSha256": "398fb13b10f5265da68e67eabf575083220ccc6d71c6ad4af3a41274c9bda3bb"
+    }
+  ],
+  "packedCells": [
+    {
+      "visualRgbaSha256": "c6295f3d83789623bf59bec28f59803043d3a1bca97997c61627d930d35dc500",
+      "foregroundBounds": [
+        30,
+        42,
+        79,
+        68
+      ],
+      "foregroundPixels": 827,
+      "semiTransparentPixels": 825,
+      "nearWhiteForegroundPixels": 4,
+      "alphaWeightedCentroid": [
+        53.03,
+        55.3
+      ]
+    },
+    {
+      "visualRgbaSha256": "d99572f2b459e72e3386151da827291477794800c5e39a03b81d7cee2706f8a8",
+      "foregroundBounds": [
+        23,
+        43,
+        77,
+        68
+      ],
+      "foregroundPixels": 884,
+      "semiTransparentPixels": 884,
+      "nearWhiteForegroundPixels": 10,
+      "alphaWeightedCentroid": [
+        47.08,
+        55.34
+      ]
+    },
+    {
+      "visualRgbaSha256": "a6b061f6ef9c96a5434a9b7e9f78d9c4f2952e192bc0a0d3a2d61e3484033253",
+      "foregroundBounds": [
+        15,
+        43,
+        74,
+        68
+      ],
+      "foregroundPixels": 974,
+      "semiTransparentPixels": 974,
+      "nearWhiteForegroundPixels": 11,
+      "alphaWeightedCentroid": [
+        42.03,
+        55.18
+      ]
+    },
+    {
+      "visualRgbaSha256": "75d59b2c3d7fc7886fa024cddd8d7d9e461e67dc62d0ac0fa6d042492b8e5796",
+      "foregroundBounds": [
+        9,
+        41,
+        75,
+        68
+      ],
+      "foregroundPixels": 1196,
+      "semiTransparentPixels": 1196,
+      "nearWhiteForegroundPixels": 29,
+      "alphaWeightedCentroid": [
+        38.01,
+        55.15
+      ]
+    },
+    {
+      "visualRgbaSha256": "ebe4e14515c1c3855db800d4f1200b897a35a0d6b0db351d55c5cf55d7f00cb6",
+      "foregroundBounds": [
+        31,
+        39,
+        78,
+        67
+      ],
+      "foregroundPixels": 848,
+      "semiTransparentPixels": 848,
+      "nearWhiteForegroundPixels": 9,
+      "alphaWeightedCentroid": [
+        52.83,
+        53.27
+      ]
+    },
+    {
+      "visualRgbaSha256": "1d5e47ef7ef008f0be3bdef48dde17f863ef223c87261b4a2e3aaf67ad1a9bad",
+      "foregroundBounds": [
+        23,
+        34,
+        73,
+        72
+      ],
+      "foregroundPixels": 1061,
+      "semiTransparentPixels": 1060,
+      "nearWhiteForegroundPixels": 15,
+      "alphaWeightedCentroid": [
+        47.05,
+        53.1
+      ]
+    },
+    {
+      "visualRgbaSha256": "5c4736857fe1043d62ef7b6d911f033c4bd798d6e35ca6690e898a772b4f27ce",
+      "foregroundBounds": [
+        16,
+        29,
+        72,
+        77
+      ],
+      "foregroundPixels": 1435,
+      "semiTransparentPixels": 1435,
+      "nearWhiteForegroundPixels": 15,
+      "alphaWeightedCentroid": [
+        42.14,
+        52.97
+      ]
+    },
+    {
+      "visualRgbaSha256": "4c6734dd9933bd00b3f29eb129ae100d07f2245211077cb847f0fe88dd313a62",
+      "foregroundBounds": [
+        8,
+        26,
+        74,
+        79
+      ],
+      "foregroundPixels": 1703,
+      "semiTransparentPixels": 1701,
+      "nearWhiteForegroundPixels": 21,
+      "alphaWeightedCentroid": [
+        37.44,
+        52.89
+      ]
+    },
+    {
+      "visualRgbaSha256": "fda1af985df979048e6a9aed57f8c9f890fa746e9fef09e9c440b6acbdc72130",
+      "foregroundBounds": [
+        32,
+        37,
+        82,
+        61
+      ],
+      "foregroundPixels": 813,
+      "semiTransparentPixels": 812,
+      "nearWhiteForegroundPixels": 7,
+      "alphaWeightedCentroid": [
+        56.01,
+        48.55
+      ]
+    },
+    {
+      "visualRgbaSha256": "ca870a7c55b991f6f1881508303c8bd6ae03f9049ae99a53cc038d642b51e271",
+      "foregroundBounds": [
+        20,
+        38,
+        77,
+        62
+      ],
+      "foregroundPixels": 911,
+      "semiTransparentPixels": 908,
+      "nearWhiteForegroundPixels": 11,
+      "alphaWeightedCentroid": [
+        45.29,
+        48.78
+      ]
+    },
+    {
+      "visualRgbaSha256": "71385c4239086ae36f2a88a69119d3eccab024ae570ea08454b004da3f338735",
+      "foregroundBounds": [
+        14,
+        34,
+        76,
+        62
+      ],
+      "foregroundPixels": 1056,
+      "semiTransparentPixels": 1056,
+      "nearWhiteForegroundPixels": 28,
+      "alphaWeightedCentroid": [
+        41.6,
+        48.71
+      ]
+    },
+    {
+      "visualRgbaSha256": "debc4e6f5657b925303e83ec70162b130843c5d8723195aecdb6b1a956533921",
+      "foregroundBounds": [
+        8,
+        34,
+        72,
+        64
+      ],
+      "foregroundPixels": 1116,
+      "semiTransparentPixels": 1116,
+      "nearWhiteForegroundPixels": 32,
+      "alphaWeightedCentroid": [
+        36.52,
+        48.66
+      ]
+    },
+    {
+      "visualRgbaSha256": "8e617dbd1d0022ca49c9d390a8204fdfd82c539276342cdbd0aaea914e9c660f",
+      "foregroundBounds": [
+        36,
+        28,
+        71,
+        61
+      ],
+      "foregroundPixels": 810,
+      "semiTransparentPixels": 810,
+      "nearWhiteForegroundPixels": 29,
+      "alphaWeightedCentroid": [
+        54.44,
+        44.83
+      ]
+    },
+    {
+      "visualRgbaSha256": "f3fa968110a1b01a365fecfcf3a34678352fd8a9295b582e98940db3e7cc24e7",
+      "foregroundBounds": [
+        22,
+        18,
+        73,
+        66
+      ],
+      "foregroundPixels": 1713,
+      "semiTransparentPixels": 1713,
+      "nearWhiteForegroundPixels": 56,
+      "alphaWeightedCentroid": [
+        46.52,
+        43.78
+      ]
+    },
+    {
+      "visualRgbaSha256": "dd816e7c23a37920f142df004e0b7b9e6dbfe9a9e65b719a2bf14ecd7082f48c",
+      "foregroundBounds": [
+        14,
+        19,
+        69,
+        65
+      ],
+      "foregroundPixels": 1622,
+      "semiTransparentPixels": 1622,
+      "nearWhiteForegroundPixels": 8,
+      "alphaWeightedCentroid": [
+        40.8,
+        42.88
+      ]
+    },
+    {
+      "visualRgbaSha256": "76c10b6b33d72cd3e30dde37c5d6d7b5ad76ebcb18131d646307c16e2509d97e",
+      "foregroundBounds": [
+        17,
+        28,
+        61,
+        60
+      ],
+      "foregroundPixels": 676,
+      "semiTransparentPixels": 676,
+      "nearWhiteForegroundPixels": 8,
+      "alphaWeightedCentroid": [
+        36.86,
+        43.88
+      ]
+    }
+  ],
+  "atlasSha256": "a880285c01e2373b20613a699d5d8549eb7888e54479c73e3103e84cd063de32"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "a880285c01e2373b20613a699d5d8549eb7888e54479c73e3103e84cd063de32",
+  "providerSha256": "8ff5ee515d4a3c669c6d8f7a463a1eebe3a14acff67e590c538e2a94676bf4b5",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "True-alpha retry frames visually passed at native and in-game size against dark and light. The leftward orange-tipped teal lane, widening teal/gold spread, and teal engine with a rounded amber tracker nose are distinct, attached, and keep their pivot while right-side exhaust animates. Impact visually progresses cyan/amber contact, stronger shard release, breakup, then sparse orange embers. Pale pixels are localized to attached hot cores and highlights. No exterior haze, panel, lettering, or seam bleed. Centered [48,48] anchor. Visual approval only. Runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}
