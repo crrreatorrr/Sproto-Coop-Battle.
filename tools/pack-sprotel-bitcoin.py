@@ -5,6 +5,7 @@
 Actors face left at runtime; source sheets face right. The pilot's red cockpit
 anchors the poses independently of an extended arm, bill, or tail.
 """
+from hashlib import sha256
 from pathlib import Path
 from PIL import Image, ImageOps
 from statistics import median
@@ -15,6 +16,9 @@ RAW = ROOT / 'art/sprotel-bitcoin'
 OUT = ROOT / 'public/assets/bosses'
 CELL, FOOT = 176, 165
 ACTOR_PAGE_ROWS = 5
+FX_CELL = 64
+FX_COLUMNS = 16
+REFRESH = RAW / 'projectile-refresh'
 ACTORS = {
     'p1': [('idle', 'walk')] + [(a+'-a', a+'-b') for a in
         ['snacks', 'beer', 'cocktails', 'drinks', 'marlin', 'charge', 'sweep']]
@@ -54,6 +58,42 @@ def actor_frame(im):
     return ImageOps.mirror(cell)
 
 
+def apply_projectile_refresh(atlas, phase, effects):
+    """Overlay reviewed runtime-resolution cels without requantizing the impact art."""
+    source_layout = REFRESH / 'layout.json'
+    if not source_layout.is_file():
+        return atlas
+    layout = json.loads(source_layout.read_text())
+    if (layout['cell'], layout['columns'], layout['rows']) != (FX_CELL, 4, 4):
+        raise ValueError('Unexpected projectile refresh geometry')
+    updated = atlas.convert('RGBA')
+    seen = set()
+    for name, source in layout['projectiles'].items():
+        if source['phase'] != phase:
+            continue
+        row = source['row']
+        if row not in effects[:-1] or row in seen:
+            raise ValueError(f'Unexpected or duplicate {phase} projectile refresh row: {row}')
+        seen.add(row)
+        raw_path = REFRESH / f'{name}.png'
+        if sha256(raw_path.read_bytes()).hexdigest() != source['candidateEncodedSha256']:
+            raise ValueError(f'Projectile refresh bytes changed: {name}')
+        with Image.open(raw_path) as image:
+            if image.format != 'PNG' or image.size != (4 * FX_CELL, 4 * FX_CELL) or image.n_frames != 1:
+                raise ValueError(f'Unexpected projectile refresh sheet: {name}')
+            sheet = image.convert('RGBA')
+        expected_hashes = source['celRgbaSha256']
+        if len(expected_hashes) != FX_COLUMNS or len(set(expected_hashes)) != FX_COLUMNS:
+            raise ValueError(f'Expected {FX_COLUMNS} distinct projectile frames: {name}')
+        for column, expected_hash in enumerate(expected_hashes):
+            x, y = column % 4 * FX_CELL, column // 4 * FX_CELL
+            frame = sheet.crop((x, y, x + FX_CELL, y + FX_CELL))
+            if not frame.getbbox() or sha256(frame.tobytes()).hexdigest() != expected_hash:
+                raise ValueError(f'Projectile refresh cel {column + 1} changed: {name}')
+            updated.paste(frame, (column * FX_CELL, effects.index(row) * FX_CELL))
+    return updated if seen else atlas
+
+
 layouts = {}
 for phase, rows in ACTORS.items():
     actor = Image.new('RGBA', (CELL*8,CELL*len(rows)))
@@ -86,8 +126,8 @@ for phase, rows in ACTORS.items():
             cell = Image.new('RGBA',(64,64))
             cell.alpha_composite(tile,(round(32-im.width*scale/2),round(32-im.height*scale/2)))
             fx.alpha_composite(cell,(col*64,row*64))
-    fx.quantize(colors=128,method=Image.Quantize.FASTOCTREE,dither=Image.Dither.NONE).save(
-        OUT/(key+'-projectiles.png'),optimize=True)
+    fx = fx.quantize(colors=128,method=Image.Quantize.FASTOCTREE,dither=Image.Dither.NONE)
+    apply_projectile_refresh(fx, phase, effects).save(OUT/(key+'-projectiles.png'),optimize=True)
     layouts[phase] = {'actor':{'cell':CELL,'columns':8,'rows':rows,'frames':count,'foot':[CELL//2,FOOT],'pageRows':ACTOR_PAGE_ROWS},
                       'projectiles':{'cell':64,'columns':16,'rows':effects,'frames':16*len(effects)}}
     for path in [OUT/(key+'.webp'),OUT/(key+'-lower.webp'),OUT/(key+'-projectiles.png')]:

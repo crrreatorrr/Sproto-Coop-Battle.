@@ -1,0 +1,671 @@
+{
+  "cell": 64,
+  "columns": 4,
+  "rows": 4,
+  "projectiles": {
+    "snacks": {
+      "phase": "p1",
+      "row": "snack-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "01b5dbf37197c06f8bfee327170a02d40778dd373a2a909b6cd073e0955125de",
+      "candidateEncodedSha256": "35b1ec24db3794b5bd734440a38bf2b52ee8a0ff77151f9397404c803982df02",
+      "intakeReportSha256": "33b288529b1993e8d5303c6e9eaeac13d3e76329c5b74eaf3a9372e2ddb111c2",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "5da696f8f4ee54e84b2ce28c7dd3aec506bbdbdd7b5b3832b36beb30b02bd6e6",
+        "74ad4188bc65485163e74f5e98e4bfa6612cd4c4b56e1d6dee59bd8394016679",
+        "9a8700345be5844d499d28506416078b722f3f8648160ffde5717bb49930739c",
+        "b12f00a10facf27ef7f482d570ee21b58de9c88208c1deae5064ff8510c9228d",
+        "a7a13bf1c83f2738ec6fe46a22427ac596e045a42e61547b003d07d6efd17418",
+        "872254f3c11602bb817ef3904f031f8405b8a095b40121206d38ba9ef3195589",
+        "f5102487d8e7fff55046c2cc7ecb80408067504c51b047aaefc754a1cf865bb0",
+        "4b1b10a4f6c0a09904e61e73c8aab02a2c1a1aca19656faff3c0fe65370be92d",
+        "97c3fe624da9911a81156f1147f6327042c13ae195c5cf09040a0724c724edee",
+        "20becb7e4848a3266c1bc34a5c3acf81c3482227c3a8a996bb082b48bcb21ad6",
+        "8001e4dae32fddc1f174798e818d04f61bdc0e93adc9110dcee3025f76d338f2",
+        "999b4e45eeb9d0072a58314e5b22c8c49dd2e27f7cd1c2a3906a9ef11a44f637",
+        "e65b0bac15f9db7c0b56d5becdc8c58be8b432bdae0f931f16d8454f6eac6960",
+        "cbc05bb9738875920ff1758b277a8f571603d2d9444b83d55e552b4940c09a52",
+        "3aa73d515c7d58e0b2d6e22087233438ecef9fbf8cb414c0d565b89561e9ccf5",
+        "b565458c1a09462619bc5e8516637efe81f312740134fa548b2ce4abf3bd213f"
+      ]
+    },
+    "beer": {
+      "phase": "p1",
+      "row": "beer-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "30e50a7b9aa3b55ba10ef6e620ac7a37e16cd0d62c3cdb64216c7bbd6a7f5307",
+      "candidateEncodedSha256": "79bce480d66331a76525cb6c10cdb64810f787278a7d326d78dbf83d6588a3b4",
+      "intakeReportSha256": "69dec664f83ba60c056aaa76457bcf6f73f1365f72a3560496991a7bc1de1495",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "0ec99f80efca8540dee03a29e12ab5c33d56b1857ab1a21ceec3b7bfbe1b359c",
+        "6ec0f1ee2f86b3074b18db86b6c5142cde582e3c1af5f86abc50f4f30f85d39e",
+        "da39599a2bfcd539f8ffc0433ccb6f9ff408ffd04940bc6208a1c82b8c25d20d",
+        "e28cc0789e6d90d1a40320eb146f2875f275dd9aff8ced887ecde9dddf88cbc7",
+        "d2217a3d004a0c49e738918c51fdd1b0f92895d64d3c0c65166dceb826aedb61",
+        "3d0f2725201cfbbf2572511881e1182feadcd5c2899fc9c8e0fa8fc44935df6b",
+        "f27f37ae90bd3d18d0503ab903af65acaeb35f8ff91dd86820c8c392136d59f8",
+        "34beeac680c6fe1d8afd5ce8c9f9cd66fe20d0d3f949289e495cae9e4bef65aa",
+        "f1353cbe39142a7ff09c25b80769e6db3804b9c6734ab86c1c1984018f70733f",
+        "e4fc2513f478eba9155f845da304ed998b82965025a07a0389dc1c3bf425916b",
+        "5c035b2c4528c3a9b035776c7b7687926cd0d3d9ad6984d7c9c6847a407de7f2",
+        "b309da1100eb56fa62d64f5e30cb9d4b4333b166a4ef0f300c2546fb14e9691d",
+        "65d2107f636bc2ad3c6be32990143bea778062de6e2ef13ab60fbd6903ae04c9",
+        "5d1b0f0c43df6049e378d57eb3f46434d49b6a6c33222558197299868948f476",
+        "08f0346259c99dea015c15a73f2c550211a3d1dcc2a187103ecb7ce6a52d060d",
+        "faf42fc649797461281a2ca3f69997ae61403c5b5104ad1b45a75c492752c507"
+      ]
+    },
+    "cocktails": {
+      "phase": "p1",
+      "row": "cocktail-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "6c579f8b3f441078e23fdc2f7a058095e6f82ff7eb9c78fe21846282ccde0ce8",
+      "candidateEncodedSha256": "579989b31b0724123565ad945aef2c68ee222e9d00fa322daa6d9769018e12f3",
+      "intakeReportSha256": "8064d8e18d5f8e3f0c9d803a0cb8546af267a05679a86dce5be09b15231a0ec0",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "0e403d62bc6e490ca835ced9a2c925fc6d1d86dc26c715738dcae3ccee58f88d",
+        "e63ee2428b6f4bd050357feadf8fdb2a294c663ee21e3e9484ba444912dffc22",
+        "3bf6bc537108e9c61075de7eaf2a0236af30dc393ccf2a4f50fc95d5a4ebe354",
+        "0e5cc05090c538a8be68a6af6fafc83c6cd67c0cb7bcc72fabab40ed70dd5b58",
+        "011f1ea7430a62905acb8c360bb2797bb836b1348e90c6aba09220987495a075",
+        "88c05a260383e6adcff48292c5d8bdcca6a23673fc603c6023b75f40a5f1409a",
+        "957ae00b53d4a0e283445b0dea48d42b2f561be1c6b28df1a8d134ac706611da",
+        "247d493bf96227d230fc6a0c6eb787cdd8ca734c5ff124dd9b5e2c1dd056e572",
+        "8b69cb2e0a394a6d47e337c08f7cbcddbd4900859cf6f0e0ab4c216535728ea2",
+        "373763ec38180442fecf07b38acfee183110831e2334ddcb42edd9dd2695408e",
+        "e7528839abc8cc7f151d53f114235966c732a857c6e61bdb5d48a95fff803064",
+        "be63324eef71e5c780c162fb29a12255939466102c2fed519fd1ea91d058a788",
+        "1add5a944402eda69a4e28a4b5937066c378a4d0b99616085bc7eb5ea0d7c59e",
+        "dc4c562a3889c47e29672e31c990a78c7fa7fc66d037fbed62d7ff47c0ac291d",
+        "c9b623508c99a27a75af4f6c059124ba5d952aaf4f9e0c81413e1d07031b5357",
+        "2cf305c5d2185f0adda71e15b267b10a0219e22e18bc981e2598ecc00900530c"
+      ]
+    },
+    "soda": {
+      "phase": "p1",
+      "row": "drinks-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "85fdeb81f43e1cf7e1378852bbfbf507fb19488a3a5b13193860816a13b2d6e5",
+      "candidateEncodedSha256": "7081133cac8e74796099701e1c6c8af98feaf5b58814ee1404851b0641bd2eea",
+      "intakeReportSha256": "49f152d388f233dfe55757a7472a13e8145a736f922222451281d5201ee5615a",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "e09a644e53da527098b91ba6a897097022a715c1a5167bf63c331ab5ca843b0c",
+        "9171ea582c1951691fc86339bed9fad3f1c5b2c6711444678f04dd72af5a4af1",
+        "e8967160258dc8275d3dde8d4c7aa818eed1f4b21eb4bafd5d8977b23c6f90b8",
+        "e2347710b17aa2b0f61c3cdffced86469ae1526ffe1ce011963fd206c591b58f",
+        "4b2d2e7330a1d7b80bbb9367ea5ba6424e84aabc9c3e0101b0ede87dfb7da350",
+        "3e7dbba4258c32a6bbf964c462cc9fc0ac51e1a59514dcbf1f001eeac5e604ba",
+        "30983a673c920ec478a5eacfef93d99c7b785e82b458782529d2eb8ac07d0983",
+        "bf9dcecc33aafc1b24fc7956168dad7bda8da3734844aebc93c58160df3e7318",
+        "6e336de8ddc47e9ef515994a37ebd933fbf4696a1fe569a1b823b37823056aea",
+        "810ef31a6cc1dd153b3c7c6c7d41ad1a62e4205a8652fc182a41cd323859a3f9",
+        "a678512f7a3a26ecefa22d421ad67625f6d327f106a03ba2b4f323f548467a11",
+        "445d5d5e1e97a5922131a686ef86602487966a8e42a3386906a5fd90ee616f6a",
+        "b82f642e7e0290c0ab842956b912454dd6f7a9f0836705b1303816e2d344d4a4",
+        "24761e7845ae9e27b7e7e06ecc7ab7b7046de46dfe5ff14fc3319a505919f6b3",
+        "74e4036bb00bba7904d3bb43d4683e8c704c84847efab52ab2de35512a382b0e",
+        "6c3928c5471d1ccf0cf5bfad52e3cf5451e47e6697ed6c67a110064c46514936"
+      ]
+    },
+    "blue-marlin": {
+      "phase": "p1",
+      "row": "marlin-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "be8fd81ca85bdefc2423030e2bfe4696fe4ff582ec0b7ba8ad34a2aa8d593f4b",
+      "candidateEncodedSha256": "0e1041db1513c156054df1f03741fba018ec8ed32a63ce733fa5298965c21b4c",
+      "intakeReportSha256": "1c29f5bd9deaa8b826cd135b461502ff8e573f08893e8ac6051bf0b13a97d46a",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "154d2486ee0d7785fd63d9aea491018f61d9b2bcf47980f0e90d71c422b0b10f",
+        "919d45bf4d5cfa5397d8e268d5847ac70feeda340c9ccee1c40563d96e3c602c",
+        "991fcc1899285727944d532526f7bb724a0ebc6adfe9c387497bc06dcb893cd6",
+        "c24e9755a61026380c37e345798b557bb826826d0987b99aa62dcfd67025da1e",
+        "92c131dabc9e19d567ecb2a344fe8a9844ed726ade3d301cfff0560c47154b2a",
+        "46f65bdf195c1bfc496baabeef2bb5d89b7a7c0a9c49244457415fe0a4072ae0",
+        "5f92a623775f175180f581a55a1c48f144f1882688ef31ecf434b0161c4a646a",
+        "032b011ad97af8ed0a5e5393969fed3c6b7c4d25e4518e02d26d2704b476a0f8",
+        "24dac5c1a5605d7bb5fca9140b21d8c53f4e9dad7bfb559b2edc13374290e215",
+        "86925452294367e798cbe7334435d626d55ebf74af4c5dbdeb2db81ed4804ea8",
+        "4b1f0b2dbe0186ec038e1cc7866fd383cd4cbbf55d5a3163ba37c8b0bf667f04",
+        "5b66b78ab9055e73eb74c5ec1ad9ea910e0d5bbd8767ffbb5fcb874a043d1daf",
+        "548b44c9a2aee0d1a5618c4e1a26d64d92ba063c14fed8e96506c28503242dcb",
+        "cedc69ec83a8654cab93e6b5f86f5e7a9e2516c18fa29bdd4114b7b7a200a1e5",
+        "2540a0b9f4e105903ad175770311fc9726906af692a1551d8c0e20fc72f0d031",
+        "01d54489ea443239b21a7e558a4b6a19f080962ae459239f235103dfd1c667ed"
+      ]
+    },
+    "laser": {
+      "phase": "p2",
+      "row": "laser-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "e55156df0bf01df48d8479f127c2857fe8ae2a7b3b166a55df6914e3e53e8a80",
+      "candidateEncodedSha256": "f4820318dbcf62408b3c8e641495b624dd9dee875a9996f38f29ac1bae41a816",
+      "intakeReportSha256": "baaa7d556d609265f23b369dd6bd48571ce22e50a0ec1f1de3359a7da0722165",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "4d7023be6e099c289fc3c9fa7bac76fb736ecdc989bc9fa782759cbc1eadf27a",
+        "ad25b7bcdf35cdb47c12f12e4a56225228ba934fe72bc4352b99f06811d76b91",
+        "7cc2cff043a1509f8b8d329ef2d1c2e309cb99b47ba0949998f60dfb012e79b7",
+        "712c8cf4eece65962ed02bcf9d292ae51acf8948137f22db532eec132f07f9b5",
+        "1ff9170971f0395b71e00a1f6d505c85de3621197a060b295f4dd14d629f0be6",
+        "ace3b0d76097e8561acfca7fdb5ecb2c82208c1e3b429b8d65b27b57c0ffbbf0",
+        "1d1a58f6808609b69dd973f4ff7e4a600ca14b6910696f94e5d3858996eeee91",
+        "2504d4441b3fbceefc0164324ea49b10c542f283744b74b439c6ea0b1eeb5dfa",
+        "ce6b8af1441d83cd05e774936cf06d0fcbcb2213e39d3a6b59e4a6a71793287c",
+        "f0a1546a84a2660e28f3e45adff25fac0ff1513fee84e863884dbc628de747f9",
+        "c4c0db6aee45ce9e2f6753d5a1001d35681cc7a5e0649d41a7c8fb19d6ef0b45",
+        "85951c97dad64c1d052b1d3e1fe97b412daaf57c177130524f9cec79065da9c9",
+        "ac4f57a8c0302fc2f352cd6869090b6d679366f39d4a99cc264fdf20a7f650d5",
+        "d7723faf1d4d34004f6d807ade6719501c05f4f08b1f378b8e1e14483e739dc6",
+        "aacd68facb2af5b012bb0d94596a75688845325eacd90f5acdc2909b9a20aa0e",
+        "3ac7e02911ac03a23cc56456d5b34f21c01494f4cb857e0d6ba57f21562e9f81"
+      ]
+    },
+    "missiles": {
+      "phase": "p2",
+      "row": "missile-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "8a6c7f030d9a169332b9c4361d8ab37cce47d52bd3ee7ee19c4e786a6799a0d7",
+      "candidateEncodedSha256": "08160ab0bb17d05b3554eae104f236d9627b4ff3b4ca6a51a7f024631bb98ae5",
+      "intakeReportSha256": "cc53d93058244834a77ab0e96fc4cb47214b1a2b821eaf0a73b57cdb87ebb417",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "07695ac7d8694785555e58a2f0d39aa90eb6d156a577e5e81e6eb6bb2fd05d7f",
+        "500cae6844b73089a5a346c866bb3b9a21ca71a9875b6e3c20e6550b67324be2",
+        "1778ea99329a2f65e4817a00f75401c6fbb49f5c107f30e5b0f727a5e55fd89d",
+        "33afd0e23bc0e30c5035db9f6850b8ee5e2a442e5cd86359e58e2ba7f5e14273",
+        "55c78c60019652b80db898ad62675020381bff0e7e309b5dedb378a897cac23d",
+        "d60bb5e56d91a6e4953a80bbf2d3772ce78ec7c6838259b8eaa67ac7ac450b26",
+        "30dea65295240de31581e39be41ee34060c388be258de6ed9cb2a39626373412",
+        "6350755cf8cd51136f9f32b52a79d0fc70b074980206e17ae2d46fa7d82a4ea6",
+        "6ebf3933aa498170abf0679466cd2182ea7d9e03304321047f67392c63ec9fe3",
+        "f53e43e1251631b1387702d16f8ea0b592f7e7edb6edde8adee3180675cf42f7",
+        "5b2571e406db39c459aa9ee485368a43f962245e5871cd17ddb4637d4841c0b4",
+        "de92255b0ab0ecf5eb182ef7d83328afb8dd6489b8ad157781900ace622f8e2d",
+        "a4a6a85d56e681c744b6f29b4dbb4298043adbd7352fad4e263f5c95c5cdb162",
+        "ec2b11aaeb91f671ef1065dbe3a02e692ed33f01403990c0223850e5c2a3538a",
+        "b2f99c76add4e9ca7831c34dd08371d2ca415a50a63daf763f5fd00a50d581bb",
+        "9b9b6ca211f48378dc26a04b067347f28c261e9e00ee5cec01cdf47d1249bb7b"
+      ]
+    },
+    "bubbles": {
+      "phase": "p2",
+      "row": "bubble-fx",
+      "generationBackend": "OpenAI built-in ImageGen",
+      "providerSha256": "1931c9700237a5b33fb6fef5777f79382a65c9c03d69b38cb5b633e19c626c9e",
+      "candidateEncodedSha256": "010f29871da70d254437005b56f6907df9d87b1c113f7c8614fc20b16aedab29",
+      "intakeReportSha256": "b66381ff3d6fbd47a00ff9b4445c4853ba09654928747a9de9a08fd74e0cf87c",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceGrid": {
+        "columns": 4,
+        "rows": 4,
+        "margin": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gutter": [
+          0,
+          0
+        ],
+        "cellShape": [
+          313,
+          313
+        ],
+        "matteOnlyOmittedPixels": 5012,
+        "requiredNativeSeamClearance": 3,
+        "enclosingSquareSize": 331,
+        "enclosingSquareOffset": [
+          9,
+          9
+        ]
+      },
+      "matte": {
+        "mode": "alpha",
+        "clearPerimeterFractions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "lowAlphaCutoff": 2
+      },
+      "sharedSourceField": [
+        0,
+        0,
+        330,
+        330
+      ],
+      "celRgbaSha256": [
+        "c595b174b1d0a4fc9b246d1eb4e8b8c41539ff734eca78e921c8aa40e353d5e3",
+        "a496bc977e97e1067e9afb2074d544e456787f8cd95adb307bb67039a61d0bb7",
+        "b3fceeab0498f665bedfb7478267ea889f613255f01dadbab9eecc343dbd952a",
+        "01ef2acac005675d135b0dadb1b3e472bff7c1b9d7970c1b7c87eace333cd33b",
+        "522b85d92fa225464da9968a4467f85489278f63b543a0a1affb25faa655032f",
+        "e4eae9e22aa91a6875915fca66c55136c5a34f4dc95ab8a7f31b2da6a7dcc0ce",
+        "ff03ff08035594af391440fe18834ef716779548bd315332ac27a0d69ca770e5",
+        "7d566ccaf09d7b6ed8da64b5a0942635f7704874d7dcfb06cbbe8d0d4a99495f",
+        "df488074d326a0708c14ef6b38f58d70af3f3ea0044bd4dad8513e106b77e4ed",
+        "18bf92ca151d38e4585704dc8f2b3edeaf8ade94afc7fdcb9b5973419a215556",
+        "2c2b50c9987daf2d47d39d80e05eb5fa95f456a890f5d44c0048829bbb9364dc",
+        "a139207cc7140df226352136ac68a39d8d9b6f4f2a8888040eee8419ddf3c333",
+        "ac882d686f21ae4d2147b499c5d0877cd8bc5b667d57380650b1cf6fced2a347",
+        "2092db2fe746646a9cfff114dfcb0a1e43af3f897588429f8eef1cb40eedb5ce",
+        "9249192d8242b1193c74746348a27e1283e410372c2cead87492a434095827ed",
+        "5612aba8c8a54132ab76e85891d291e0d80d509ec12ce09963031fbddb5d6bf9"
+      ]
+    }
+  }
+}
