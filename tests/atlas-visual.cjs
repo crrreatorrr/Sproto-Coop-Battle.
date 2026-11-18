@@ -252,6 +252,17 @@ async function verifyBossPlayback(page) {
       }
       bank.acceptedLaneSourcePngBase64 = bytes.toString('base64');
     }
+    for (const ref of bank.higgsfieldSources || []) {
+      const bytes = fs.readFileSync(path.join(root, ref.file));
+      if (digest(bytes) !== ref.encodedSha256 || ref.rgbaSha256.length !== 16 ||
+          !Number.isInteger(ref.firstCell) || ref.firstCell < 0 || ref.firstCell % 4 ||
+          !Number.isInteger(ref.sourceFirstCell) || ref.sourceFirstCell < 0 || ref.sourceFirstCell % 4 ||
+          ![4, 16].includes(ref.frames) || ref.sourceFirstCell + ref.frames > 16 ||
+          ref.firstCell + ref.frames > bank.rows * 4 || bank.cell !== 96) {
+        throw new Error(asset + ' Higgsfield FX source differs');
+      }
+      ref.pngBase64 = bytes.toString('base64');
+    }
     if (bank.acceptedDedicatedSourceFile) {
       const bytes = fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile));
       if (digest(bytes) !== bank.acceptedDedicatedSourceEncodedSha256 || bank.cell !== 96 ||
@@ -261,7 +272,22 @@ async function verifyBossPlayback(page) {
       bank.acceptedDedicatedSourcePngBase64 = bytes.toString('base64'); // Test-only independent decode preserves partial-alpha semantics.
     }
   }
-  return page.evaluate(async reviewed => {
+  const banks = Object.values(reviewed.banks);
+  const expected = {
+    exactSourceCells: banks.reduce((sum, bank) => sum + bank.rows * 4, 0),
+    acceptedFxCells: banks.reduce((total, bank) => {
+      if (bank.kind !== 'fx') return total;
+      for (let i = 0; i < bank.rows * 4; i++) {
+        if (bank.acceptedDedicatedSourceFile || (i < 4 && bank.acceptedLaneSourceFile) ||
+            (i < 16 && bank.acceptedReplacedSourceFile) ||
+            (i >= 16 && bank.acceptedAppendedSourceEncodedSha256) ||
+            (bank.higgsfieldSources || []).some(ref => i >= ref.firstCell && i < ref.firstCell + ref.frames)) total++;
+      }
+      return total;
+    }, 0),
+    dedicatedFxSheets: banks.filter(bank => bank.acceptedDedicatedSourceFile).length,
+  };
+  const result = await page.evaluate(async reviewed => {
     const ACTOR = 220, FX = 96;
     const transformKeys = [28, 96, 174, 258, 342, 442];
     const reviewTicks = [0, 62, 96, 134, 174, 216, 258, 300, 342, 392, 442, 480];
@@ -586,6 +612,17 @@ async function verifyBossPlayback(page) {
         const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = reference.naturalWidth; sourceCanvas.height = reference.naturalHeight;
         dedicatedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); dedicatedFxPixels.drawImage(reference, 0, 0);
       }
+      const higgsfield = [];
+      for (const ref of reviewedBank.higgsfieldSources || []) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + ref.pngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4 * FX && reference.naturalHeight === 4 * FX,
+          asset + ' Higgsfield source geometry');
+        const sheet = document.createElement('canvas');
+        sheet.width = sheet.height = 4 * FX;
+        const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(reference, 0, 0);
+        higgsfield.push({ ...ref, pixels });
+      }
       const sheet = document.createElement('canvas');
       sheet.width = image.naturalWidth; sheet.height = image.naturalHeight;
       const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(image, 0, 0);
@@ -602,7 +639,12 @@ async function verifyBossPlayback(page) {
           // Canvas may round RGB when premultiplying genuine partial alpha. Compare
           // its independently decoded source exactly; raw PNG RGBA hashes stay in the fixture.
           const laneSource = cell === FX && row === 0 && laneFxPixels;
-          const expectedHash = laneSource
+          const ref = higgsfield.find(entry => row * 4 + col >= entry.firstCell &&
+            row * 4 + col < entry.firstCell + entry.frames);
+          const localCell = ref ? ref.sourceFirstCell + row * 4 + col - ref.firstCell : 0;
+          const expectedHash = ref
+            ? await sha256(ref.pixels.getImageData(localCell % 4 * FX, Math.floor(localCell / 4) * FX, FX, FX).data)
+            : laneSource
             ? await sha256(laneFxPixels.getImageData(col * FX, 0, FX, FX).data)
             : dedicatedFxPixels
             ? await sha256(dedicatedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
@@ -611,18 +653,20 @@ async function verifyBossPlayback(page) {
             : cell === FX && row < 4 && legacyFxPixels
               ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
               : reviewedBank.rgbaSha256[row*4+col];
-          if (laneSource) check(expectedHash === reviewedBank.acceptedLaneRgbaSha256[col], asset + ' lane source binding');
-          if (replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
+          if (ref) check(expectedHash === ref.rgbaSha256[localCell], asset + ' Higgsfield source binding');
+          if (!ref && laneSource) check(expectedHash === reviewedBank.acceptedLaneRgbaSha256[col], asset + ' lane source binding');
+          if (!ref && replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
           check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
           exactSourceCells++;
-          check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
+          const minimum = ref && (ref.family === 'special' || ref.sourceFirstCell === 12) ? 1 : 101;
+          check(ink >= minimum && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
           const approvedStanding = cell === ACTOR && row === 0 && col === 0;
           const approvedReplacedFx = cell === FX && row < 4 && replacedFxPixels;
           const approvedAppendedFx = cell === FX && row >= 4 && reviewedBank.acceptedAppendedSourceEncodedSha256;
           const approvedDedicatedFx = cell === FX && asset.startsWith('assets/bosses/effects/') &&
             reviewedBank.acceptedDedicatedSourceEncodedSha256;
           if (approvedStanding) check(sourceHash === reviewedBank.standingCol0Sha256, asset + ' standing endpoint differs');
-          else if (laneSource || approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
+          else if (ref || laneSource || approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
           else check(white === 0, asset + ' has pale-neutral highlights in untouched fallback cell ' + row + '/' + col);
           if (cell === FX && row < 4 && col === 0 && !approvedDedicatedFx) {
             check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row); projectileArt.add(hash);
@@ -903,6 +947,10 @@ async function verifyBossPlayback(page) {
       projectileDesigns: projectileArt.size, dedicatedFxSheets: checkedDedicatedFx.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
     };
   }, reviewed);
+  for (const [key, count] of Object.entries(expected)) {
+    if (result[key] !== count) throw new Error(key + ' ' + result[key] + ', expected ' + count);
+  }
+  return result;
 }
 
 async function main() {
@@ -941,8 +989,7 @@ async function main() {
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
             bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
-            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.exactSourceCells !== 1244 ||
-            bossPlayback.acceptedFxCells !== 136 || bossPlayback.dedicatedFxSheets !== 13 || bossPlayback.registeredFxDraws < 1) {
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {
