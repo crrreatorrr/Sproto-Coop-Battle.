@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "alpha777-p1-relay-bomb-lane-v2",
+  "clips": {
+    "lane": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        30,
+        8,
+        8,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/08-crown-alpha777/alpha777-p1-relay-bomb-lane-v2-a7eed19417c0cf81.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/08-crown-alpha777/alpha777-p1-relay-bomb-lane-v2-a7eed19417c0cf81.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 164414,
+      "sha256": "a7eed19417c0cf810c2fe31289270ff70139f13597d3bed0d5e62905041c7bbf"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "lane",
+      "file": "cel-1.png",
+      "sha256": "a5323acc3975ab50cdc5c34b3178b3e384834f690ae9f44fabf73bf784c6babb",
+      "rgbaSha256": "349fa9d75a2cdbaf846d567859285474bbc39665987ee30f68806c0f9bee9d36",
+      "uniqueCel": 0,
+      "ticks": 30
+    },
+    {
+      "action": "lane",
+      "file": "cel-2.png",
+      "sha256": "b4ae63996793f2e45bbda4b159811cb0e2e98203814b7bb027ed56b525a16d42",
+      "rgbaSha256": "87c011eb138a873c59157388e644b2ca890342aff3028cc8a26c177778b48ae2",
+      "uniqueCel": 1,
+      "ticks": 8
+    },
+    {
+      "action": "lane",
+      "file": "cel-3.png",
+      "sha256": "27c5e19d6c999e9438c7e72b2c1e0de20d75e3a3e8b11c3fd5aa7b1ad6ddeeef",
+      "rgbaSha256": "e87fdcd2c033765c94de3378bb22c9bdef1ee4c0bd8766349f06dcc4ec6334cb",
+      "uniqueCel": 2,
+      "ticks": 8
+    },
+    {
+      "action": "lane",
+      "file": "cel-4.png",
+      "sha256": "e24a7020ca92d8e187857e2664407f879d1abebcc95a4dc952423e6f863c76f7",
+      "rgbaSha256": "85cf92a9580046384712c4d65df6826d0ea2513bbd5ae2eeb196ea25ed6750c9",
+      "uniqueCel": 3,
+      "ticks": 9
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}
