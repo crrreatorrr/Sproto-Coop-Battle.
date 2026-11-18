@@ -1,0 +1,403 @@
+{
+  "sources": {
+    "new02": {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "sha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058"
+    },
+    "old01": {
+      "path": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-01/provider-original.png",
+      "sha256": "d2f8ea6da6143171290bde924be4d5ab93486f3e3d03febd33d4b5158aecd35f"
+    }
+  },
+  "packedSourceSha256": "de187fc25217e9dff2a9d114ac5aa581e5a6790108cf1213ac07c38e8d10a360",
+  "exactRGBAReplayAll16": true,
+  "sourceCels": [
+    {
+      "tile": 0,
+      "role": "signature",
+      "stage": 1,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        8,
+        8,
+        504,
+        504
+      ],
+      "packedBox": [
+        0,
+        0,
+        496,
+        496
+      ],
+      "selectedCelDecodedRGBASha256": "ee36924c5f089692cce914c5075478e7fc2ba5aa9b966908bf2757bd6e9613d7",
+      "selectedCelFileSha256": "e5169f128776a0ac7fa5325e779100aa4ae1997cef84db583b18ba6e1c07d8c8",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 1,
+      "role": "signature",
+      "stage": 2,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        520,
+        8,
+        1016,
+        504
+      ],
+      "packedBox": [
+        496,
+        0,
+        992,
+        496
+      ],
+      "selectedCelDecodedRGBASha256": "2c525a15874318d934c5b1f27c17b6e69d0041fe8966467400510453a9066d94",
+      "selectedCelFileSha256": "01b4a79820026c20801d758aecde7017b3d40434a8fb6f5ee6c579527169630b",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 2,
+      "role": "signature",
+      "stage": 3,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1032,
+        8,
+        1528,
+        504
+      ],
+      "packedBox": [
+        992,
+        0,
+        1488,
+        496
+      ],
+      "selectedCelDecodedRGBASha256": "2f7b2a9469c26d8b68fb5e1de8e651d46100b9fc0df8c2aad51d427ed8d9a193",
+      "selectedCelFileSha256": "7dc4bbfab11f2f7718db5cf8eb9763419fce78cdb39ad1cdd778762cb064e5f3",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 3,
+      "role": "signature",
+      "stage": 4,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1544,
+        8,
+        2040,
+        504
+      ],
+      "packedBox": [
+        1488,
+        0,
+        1984,
+        496
+      ],
+      "selectedCelDecodedRGBASha256": "fead014dd917c48d882ddb35158c157f2de4239b356281203c77d7755603b14e",
+      "selectedCelFileSha256": "7cbed53a80f898652e4ac9599bdb4535da2f4d02e5cb21cb3f72c7bfbd3119cb",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 4,
+      "role": "special",
+      "stage": 1,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        8,
+        520,
+        504,
+        1016
+      ],
+      "packedBox": [
+        0,
+        496,
+        496,
+        992
+      ],
+      "selectedCelDecodedRGBASha256": "a1a4cff276187dbac0569a0f91d1740a8593b0a916ecbf03a44ba152bf7c8db7",
+      "selectedCelFileSha256": "60b56cdb69ba0f60d87605f50a4ae6b3d3c21489a9957b4ba1ad1fc553aa1944",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 5,
+      "role": "special",
+      "stage": 2,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        520,
+        520,
+        1016,
+        1016
+      ],
+      "packedBox": [
+        496,
+        496,
+        992,
+        992
+      ],
+      "selectedCelDecodedRGBASha256": "81f6ab7235e70b58f9e07bb529983d394af7a0e8a092f0e5c4a96c973c613b7a",
+      "selectedCelFileSha256": "f1f7a3f49ddb3904faa6ba1ce57d56d738aed9d3901f6b8aaee35dff13dc148a",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 6,
+      "role": "special",
+      "stage": 3,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1032,
+        520,
+        1528,
+        1016
+      ],
+      "packedBox": [
+        992,
+        496,
+        1488,
+        992
+      ],
+      "selectedCelDecodedRGBASha256": "0af6fcca484915f20c0e819c3e0478e51eefdd2fb1a01b841b6e6c049b5b3e90",
+      "selectedCelFileSha256": "9762850fcfd81a13e691248bdac5fc20422b4c7f5773e14e032ee8f5767d8e70",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 7,
+      "role": "special",
+      "stage": 4,
+      "source": "old01",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-01/provider-original.png",
+      "originalSourceSha256": "d2f8ea6da6143171290bde924be4d5ab93486f3e3d03febd33d4b5158aecd35f",
+      "sourceBox": [
+        1544,
+        520,
+        2040,
+        1016
+      ],
+      "packedBox": [
+        1488,
+        496,
+        1984,
+        992
+      ],
+      "selectedCelDecodedRGBASha256": "da7a1065740f63ad2ffa813c4ca8cbdc8f78d770538b6be458972b550c3ff922",
+      "selectedCelFileSha256": "9fc452884cb6de6495a69a9805be73b32ece197a40676ef1c8831cf6a54abca9",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 8,
+      "role": "hurt",
+      "stage": 1,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        8,
+        1032,
+        504,
+        1528
+      ],
+      "packedBox": [
+        0,
+        992,
+        496,
+        1488
+      ],
+      "selectedCelDecodedRGBASha256": "8790f7f6ace080baacbb8d777bbb30760ccea9d1720f1c694aa3cc90c627d217",
+      "selectedCelFileSha256": "8a5b9fd8692ed934876e73e0494038d4afe17720fb6703be31fc1d2e29e878e7",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 9,
+      "role": "hurt",
+      "stage": 2,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        520,
+        1032,
+        1016,
+        1528
+      ],
+      "packedBox": [
+        496,
+        992,
+        992,
+        1488
+      ],
+      "selectedCelDecodedRGBASha256": "bebe86f56f4528017383cc1d4df9eaff7f7f95daaec9d2839f9ef6f148674c4a",
+      "selectedCelFileSha256": "1f8605041fb064b052c898f5debbe90046ba7723cc62ad8479f69c780fd7f7ed",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 10,
+      "role": "hurt",
+      "stage": 3,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1032,
+        1032,
+        1528,
+        1528
+      ],
+      "packedBox": [
+        992,
+        992,
+        1488,
+        1488
+      ],
+      "selectedCelDecodedRGBASha256": "394c2f804bc109f99d8e5ac0a13e21d3b0f4a98941acb915d103ff8612fb8633",
+      "selectedCelFileSha256": "77876b227b7523375c461524a110a51018394bd202fa52e391650355713dac4a",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 11,
+      "role": "hurt",
+      "stage": 4,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1544,
+        1032,
+        2040,
+        1528
+      ],
+      "packedBox": [
+        1488,
+        992,
+        1984,
+        1488
+      ],
+      "selectedCelDecodedRGBASha256": "83b0c9e1a3a7f56a6f6bb9a7a07b48ee0747550ca0d9bb4793dc134fff4679f0",
+      "selectedCelFileSha256": "ff51c45f6e4847b65c77d9e9cff068c30f480d13bac1dc29b4b38e5a1b049690",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 12,
+      "role": "death",
+      "stage": 1,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        8,
+        1544,
+        504,
+        2040
+      ],
+      "packedBox": [
+        0,
+        1488,
+        496,
+        1984
+      ],
+      "selectedCelDecodedRGBASha256": "2274b03f62b05808e3a3169d027a4120c8024d90f821d741c1c74772bd3e2e7c",
+      "selectedCelFileSha256": "f562d899eae2e481eea5734dad44ca1e8cf5c3dc922de0e03b8c6cab47b50687",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 13,
+      "role": "death",
+      "stage": 2,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        520,
+        1544,
+        1016,
+        2040
+      ],
+      "packedBox": [
+        496,
+        1488,
+        992,
+        1984
+      ],
+      "selectedCelDecodedRGBASha256": "d414f17f8c80d1d73392f204cbfeda8867ae44e3caf1bf26ad428d74cc4bf682",
+      "selectedCelFileSha256": "24b54f4a10ab2fb7f97ea989799802bb9bb2713b2484dbe1babc7a32fe1f748a",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 14,
+      "role": "death",
+      "stage": 3,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1032,
+        1544,
+        1528,
+        2040
+      ],
+      "packedBox": [
+        992,
+        1488,
+        1488,
+        1984
+      ],
+      "selectedCelDecodedRGBASha256": "48b1f97736a62724bb76bb0773db6393a570c47d263b11f164472840dcffcb5a",
+      "selectedCelFileSha256": "8286368b943e4381da9751eb508a78171667ff3c28f0e99ae63275b7ab4059cc",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    },
+    {
+      "tile": 15,
+      "role": "death",
+      "stage": 4,
+      "source": "new02",
+      "originalSourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/rune-p2-fx-02/provider-original.png",
+      "originalSourceSha256": "62878aa05ce193ee3be055de9b0703fd392ba6b6b54ee9eee0ed1131e8385058",
+      "sourceBox": [
+        1544,
+        1544,
+        2040,
+        2040
+      ],
+      "packedBox": [
+        1488,
+        1488,
+        1984,
+        1984
+      ],
+      "selectedCelDecodedRGBASha256": "f307c31ae35aace4521c6eeeb7a5afc0ebcf35d81b1db2657acabaa0a2305953",
+      "selectedCelFileSha256": "ec318cbeeb2954456818d0e9371105b91f2f7a738644001e4b641b6708d6d164",
+      "retainedRGBAMismatches": 0,
+      "exactSourceCelSelectionOnly": true
+    }
+  ],
+  "noNewLocalPaintPoseOrMotion": true,
+  "new7GenuinePaleSparksErased": false,
+  "selectionExplicitlyAuthorized": true
+}
