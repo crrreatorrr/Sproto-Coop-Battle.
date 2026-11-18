@@ -1,0 +1,23 @@
+{
+  "raw2x2ReadingOrder": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "proposedLoopOrder": [
+    2,
+    0,
+    1,
+    3
+  ],
+  "frameTicks": [
+    10,
+    10,
+    10,
+    10
+  ],
+  "rationale": "Diagonal source2, transitional0, opposite diagonal1, transitional3. Exact support/planting qualification remains independent review.",
+  "paintOrPoseEdits": false,
+  "allFramesGenuineImageGen": true
+}
