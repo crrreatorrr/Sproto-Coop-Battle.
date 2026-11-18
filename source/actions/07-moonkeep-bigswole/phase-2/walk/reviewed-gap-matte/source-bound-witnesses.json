@@ -1,0 +1,3755 @@
+{
+  "sourceSHA256": "01a097c6ac20e69ff3b9d606d65a4f5c1e6568ae865934430a35cef8b040a050",
+  "priorExtractedSHA256": "777e4cdf0b7e27af612b665ba78093aed932fe887e6df74200d2e9ad19602720",
+  "newExtractedSHA256": "6722e1a5bffea989fc3f97b4e37c00ee8bd8a607db604920409ec7db59272078",
+  "nativeROI": [
+    394,
+    306,
+    417,
+    340
+  ],
+  "selection": "Within explicit elbow-gap ROI only, retained G>R+8 and G>B+8; reviewed known background AA. No global tolerance change. Pure black and violet case protected.",
+  "nativeSamplesRemoved": 175,
+  "nativeBounds": [
+    394,
+    307,
+    417,
+    338
+  ],
+  "sheetBounds": [
+    1021,
+    934,
+    1044,
+    965
+  ],
+  "nativeComponentsC4": [
+    {
+      "pixels": 137,
+      "bounds": [
+        397,
+        307,
+        416,
+        338
+      ]
+    },
+    {
+      "pixels": 7,
+      "bounds": [
+        394,
+        323,
+        396,
+        328
+      ]
+    },
+    {
+      "pixels": 6,
+      "bounds": [
+        400,
+        317,
+        404,
+        320
+      ]
+    },
+    {
+      "pixels": 4,
+      "bounds": [
+        412,
+        332,
+        416,
+        333
+      ]
+    },
+    {
+      "pixels": 3,
+      "bounds": [
+        396,
+        321,
+        398,
+        323
+      ]
+    },
+    {
+      "pixels": 3,
+      "bounds": [
+        409,
+        332,
+        411,
+        334
+      ]
+    },
+    {
+      "pixels": 2,
+      "bounds": [
+        408,
+        311,
+        409,
+        313
+      ]
+    },
+    {
+      "pixels": 2,
+      "bounds": [
+        398,
+        320,
+        400,
+        321
+      ]
+    },
+    {
+      "pixels": 2,
+      "bounds": [
+        416,
+        330,
+        417,
+        332
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        405,
+        318,
+        406,
+        319
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        416,
+        321,
+        417,
+        322
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        415,
+        323,
+        416,
+        324
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        414,
+        325,
+        415,
+        326
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        413,
+        326,
+        414,
+        327
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        396,
+        328,
+        397,
+        329
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        412,
+        328,
+        413,
+        329
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        411,
+        329,
+        412,
+        330
+      ]
+    },
+    {
+      "pixels": 1,
+      "bounds": [
+        410,
+        331,
+        411,
+        332
+      ]
+    }
+  ],
+  "mask627SHA256": "2e9b10f89cff5537c19e9c911582aba07fdb94ffc7ea3d9ff7f108d3208c9c74",
+  "mask1254SHA256": "7e4b546bb818a6ebe31136b137f19e67b005d4defbf1da53334f9c1dace028d3",
+  "retainedNativeRGBAMismatches": 0,
+  "deliveryCells": [
+    {
+      "index": 0,
+      "changedRGBApixels": 0,
+      "unchangedOutsideReviewedMask": true,
+      "RGBASHA256": "8a01aab60a467eee405b5cb9c20559ca852dd9cc5f3d96529cf2c97049219e5a"
+    },
+    {
+      "index": 1,
+      "changedRGBApixels": 0,
+      "unchangedOutsideReviewedMask": true,
+      "RGBASHA256": "7a5912ff125fcbc63dc2de4bec25ed1b094235f0c09a5d5da11f0acfdc7b28c3"
+    },
+    {
+      "index": 2,
+      "changedRGBApixels": 0,
+      "unchangedOutsideReviewedMask": true,
+      "RGBASHA256": "96e302e4be78d4abaa0ebef3319e48e61fe4b88623043f81a18b3991d1738722"
+    },
+    {
+      "index": 3,
+      "changedRGBApixels": 26,
+      "unchangedOutsideReviewedMask": true,
+      "RGBASHA256": "2b42f3869f0ea87deba8d05308463715d50a226a150d5d7fe137a4a6544a4fc9"
+    }
+  ],
+  "deliveryWitnesses": [
+    {
+      "delivery": [
+        211,
+        172
+      ],
+      "nativeCel": [
+        412,
+        309
+      ],
+      "beforeRGBA": [
+        45,
+        66,
+        44,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        211,
+        173
+      ],
+      "nativeCel": [
+        412,
+        312
+      ],
+      "beforeRGBA": [
+        37,
+        135,
+        25,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        208,
+        174
+      ],
+      "nativeCel": [
+        404,
+        315
+      ],
+      "beforeRGBA": [
+        4,
+        19,
+        9,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        209,
+        174
+      ],
+      "nativeCel": [
+        407,
+        315
+      ],
+      "beforeRGBA": [
+        14,
+        81,
+        16,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        210,
+        174
+      ],
+      "nativeCel": [
+        409,
+        315
+      ],
+      "beforeRGBA": [
+        48,
+        219,
+        18,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        211,
+        174
+      ],
+      "nativeCel": [
+        412,
+        315
+      ],
+      "beforeRGBA": [
+        34,
+        183,
+        26,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        212,
+        174
+      ],
+      "nativeCel": [
+        415,
+        315
+      ],
+      "beforeRGBA": [
+        11,
+        35,
+        20,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        209,
+        175
+      ],
+      "nativeCel": [
+        407,
+        317
+      ],
+      "beforeRGBA": [
+        40,
+        221,
+        19,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        210,
+        175
+      ],
+      "nativeCel": [
+        409,
+        317
+      ],
+      "beforeRGBA": [
+        22,
+        182,
+        5,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        211,
+        175
+      ],
+      "nativeCel": [
+        412,
+        317
+      ],
+      "beforeRGBA": [
+        25,
+        154,
+        32,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        206,
+        176
+      ],
+      "nativeCel": [
+        399,
+        320
+      ],
+      "beforeRGBA": [
+        8,
+        96,
+        5,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        209,
+        176
+      ],
+      "nativeCel": [
+        407,
+        320
+      ],
+      "beforeRGBA": [
+        0,
+        79,
+        7,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        210,
+        176
+      ],
+      "nativeCel": [
+        409,
+        320
+      ],
+      "beforeRGBA": [
+        22,
+        138,
+        21,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        205,
+        177
+      ],
+      "nativeCel": [
+        396,
+        322
+      ],
+      "beforeRGBA": [
+        10,
+        105,
+        21,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        207,
+        177
+      ],
+      "nativeCel": [
+        401,
+        322
+      ],
+      "beforeRGBA": [
+        0,
+        87,
+        1,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        208,
+        177
+      ],
+      "nativeCel": [
+        404,
+        322
+      ],
+      "beforeRGBA": [
+        3,
+        49,
+        11,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        204,
+        178
+      ],
+      "nativeCel": [
+        394,
+        325
+      ],
+      "beforeRGBA": [
+        27,
+        108,
+        29,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        207,
+        178
+      ],
+      "nativeCel": [
+        401,
+        325
+      ],
+      "beforeRGBA": [
+        0,
+        83,
+        10,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        205,
+        179
+      ],
+      "nativeCel": [
+        396,
+        328
+      ],
+      "beforeRGBA": [
+        6,
+        67,
+        16,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        207,
+        179
+      ],
+      "nativeCel": [
+        401,
+        328
+      ],
+      "beforeRGBA": [
+        0,
+        76,
+        6,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        211,
+        179
+      ],
+      "nativeCel": [
+        412,
+        328
+      ],
+      "beforeRGBA": [
+        0,
+        79,
+        3,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        206,
+        180
+      ],
+      "nativeCel": [
+        399,
+        330
+      ],
+      "beforeRGBA": [
+        4,
+        111,
+        6,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        207,
+        180
+      ],
+      "nativeCel": [
+        401,
+        330
+      ],
+      "beforeRGBA": [
+        2,
+        58,
+        4,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        207,
+        181
+      ],
+      "nativeCel": [
+        401,
+        333
+      ],
+      "beforeRGBA": [
+        6,
+        25,
+        13,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        208,
+        181
+      ],
+      "nativeCel": [
+        404,
+        333
+      ],
+      "beforeRGBA": [
+        0,
+        30,
+        0,
+        255
+      ]
+    },
+    {
+      "delivery": [
+        210,
+        181
+      ],
+      "nativeCel": [
+        409,
+        333
+      ],
+      "beforeRGBA": [
+        13,
+        56,
+        11,
+        255
+      ]
+    }
+  ],
+  "nativeWitnesses": [
+    {
+      "nativeCel": [
+        413,
+        307
+      ],
+      "sheet": [
+        1040,
+        934
+      ],
+      "beforeRGBA": [
+        48,
+        67,
+        53,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        308
+      ],
+      "sheet": [
+        1040,
+        935
+      ],
+      "beforeRGBA": [
+        48,
+        70,
+        46,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        309
+      ],
+      "sheet": [
+        1039,
+        936
+      ],
+      "beforeRGBA": [
+        45,
+        66,
+        44,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        309
+      ],
+      "sheet": [
+        1040,
+        936
+      ],
+      "beforeRGBA": [
+        41,
+        76,
+        41,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        310
+      ],
+      "sheet": [
+        1039,
+        937
+      ],
+      "beforeRGBA": [
+        41,
+        82,
+        39,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        310
+      ],
+      "sheet": [
+        1040,
+        937
+      ],
+      "beforeRGBA": [
+        35,
+        82,
+        35,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        310
+      ],
+      "sheet": [
+        1041,
+        937
+      ],
+      "beforeRGBA": [
+        7,
+        27,
+        15,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        311
+      ],
+      "sheet": [
+        1035,
+        938
+      ],
+      "beforeRGBA": [
+        57,
+        67,
+        56,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        311
+      ],
+      "sheet": [
+        1038,
+        938
+      ],
+      "beforeRGBA": [
+        27,
+        62,
+        32,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        311
+      ],
+      "sheet": [
+        1039,
+        938
+      ],
+      "beforeRGBA": [
+        44,
+        119,
+        38,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        311
+      ],
+      "sheet": [
+        1040,
+        938
+      ],
+      "beforeRGBA": [
+        23,
+        83,
+        19,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        311
+      ],
+      "sheet": [
+        1041,
+        938
+      ],
+      "beforeRGBA": [
+        17,
+        54,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        312
+      ],
+      "sheet": [
+        1035,
+        939
+      ],
+      "beforeRGBA": [
+        32,
+        43,
+        34,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        312
+      ],
+      "sheet": [
+        1037,
+        939
+      ],
+      "beforeRGBA": [
+        16,
+        53,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        312
+      ],
+      "sheet": [
+        1038,
+        939
+      ],
+      "beforeRGBA": [
+        40,
+        118,
+        33,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        312
+      ],
+      "sheet": [
+        1039,
+        939
+      ],
+      "beforeRGBA": [
+        37,
+        135,
+        25,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        312
+      ],
+      "sheet": [
+        1040,
+        939
+      ],
+      "beforeRGBA": [
+        27,
+        108,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        312
+      ],
+      "sheet": [
+        1041,
+        939
+      ],
+      "beforeRGBA": [
+        14,
+        57,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        313
+      ],
+      "sheet": [
+        1036,
+        940
+      ],
+      "beforeRGBA": [
+        14,
+        64,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        313
+      ],
+      "sheet": [
+        1037,
+        940
+      ],
+      "beforeRGBA": [
+        47,
+        161,
+        35,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        313
+      ],
+      "sheet": [
+        1038,
+        940
+      ],
+      "beforeRGBA": [
+        37,
+        150,
+        25,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        313
+      ],
+      "sheet": [
+        1039,
+        940
+      ],
+      "beforeRGBA": [
+        26,
+        135,
+        16,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        313
+      ],
+      "sheet": [
+        1040,
+        940
+      ],
+      "beforeRGBA": [
+        30,
+        128,
+        30,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        313
+      ],
+      "sheet": [
+        1041,
+        940
+      ],
+      "beforeRGBA": [
+        2,
+        36,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        415,
+        313
+      ],
+      "sheet": [
+        1042,
+        940
+      ],
+      "beforeRGBA": [
+        9,
+        31,
+        17,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        314
+      ],
+      "sheet": [
+        1035,
+        941
+      ],
+      "beforeRGBA": [
+        24,
+        98,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        314
+      ],
+      "sheet": [
+        1036,
+        941
+      ],
+      "beforeRGBA": [
+        44,
+        169,
+        23,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        314
+      ],
+      "sheet": [
+        1037,
+        941
+      ],
+      "beforeRGBA": [
+        45,
+        190,
+        24,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        314
+      ],
+      "sheet": [
+        1038,
+        941
+      ],
+      "beforeRGBA": [
+        26,
+        163,
+        16,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        314
+      ],
+      "sheet": [
+        1039,
+        941
+      ],
+      "beforeRGBA": [
+        33,
+        171,
+        25,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        314
+      ],
+      "sheet": [
+        1040,
+        941
+      ],
+      "beforeRGBA": [
+        15,
+        109,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        314
+      ],
+      "sheet": [
+        1041,
+        941
+      ],
+      "beforeRGBA": [
+        0,
+        21,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        415,
+        314
+      ],
+      "sheet": [
+        1042,
+        941
+      ],
+      "beforeRGBA": [
+        12,
+        45,
+        23,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        315
+      ],
+      "sheet": [
+        1031,
+        942
+      ],
+      "beforeRGBA": [
+        4,
+        19,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        315
+      ],
+      "sheet": [
+        1032,
+        942
+      ],
+      "beforeRGBA": [
+        25,
+        74,
+        29,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        406,
+        315
+      ],
+      "sheet": [
+        1033,
+        942
+      ],
+      "beforeRGBA": [
+        13,
+        62,
+        19,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        315
+      ],
+      "sheet": [
+        1034,
+        942
+      ],
+      "beforeRGBA": [
+        14,
+        81,
+        16,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        315
+      ],
+      "sheet": [
+        1035,
+        942
+      ],
+      "beforeRGBA": [
+        50,
+        205,
+        27,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        315
+      ],
+      "sheet": [
+        1036,
+        942
+      ],
+      "beforeRGBA": [
+        48,
+        219,
+        18,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        315
+      ],
+      "sheet": [
+        1037,
+        942
+      ],
+      "beforeRGBA": [
+        30,
+        184,
+        14,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        315
+      ],
+      "sheet": [
+        1038,
+        942
+      ],
+      "beforeRGBA": [
+        23,
+        175,
+        12,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        315
+      ],
+      "sheet": [
+        1039,
+        942
+      ],
+      "beforeRGBA": [
+        34,
+        183,
+        26,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        315
+      ],
+      "sheet": [
+        1040,
+        942
+      ],
+      "beforeRGBA": [
+        3,
+        79,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        315
+      ],
+      "sheet": [
+        1041,
+        942
+      ],
+      "beforeRGBA": [
+        7,
+        47,
+        18,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        415,
+        315
+      ],
+      "sheet": [
+        1042,
+        942
+      ],
+      "beforeRGBA": [
+        11,
+        35,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        316
+      ],
+      "sheet": [
+        1031,
+        943
+      ],
+      "beforeRGBA": [
+        17,
+        83,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        406,
+        316
+      ],
+      "sheet": [
+        1033,
+        943
+      ],
+      "beforeRGBA": [
+        15,
+        125,
+        18,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        316
+      ],
+      "sheet": [
+        1034,
+        943
+      ],
+      "beforeRGBA": [
+        26,
+        167,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        316
+      ],
+      "sheet": [
+        1035,
+        943
+      ],
+      "beforeRGBA": [
+        42,
+        227,
+        13,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        316
+      ],
+      "sheet": [
+        1036,
+        943
+      ],
+      "beforeRGBA": [
+        35,
+        208,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        316
+      ],
+      "sheet": [
+        1037,
+        943
+      ],
+      "beforeRGBA": [
+        28,
+        194,
+        13,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        316
+      ],
+      "sheet": [
+        1038,
+        943
+      ],
+      "beforeRGBA": [
+        31,
+        198,
+        18,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        316
+      ],
+      "sheet": [
+        1039,
+        943
+      ],
+      "beforeRGBA": [
+        26,
+        165,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        316
+      ],
+      "sheet": [
+        1040,
+        943
+      ],
+      "beforeRGBA": [
+        6,
+        77,
+        12,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        316
+      ],
+      "sheet": [
+        1041,
+        943
+      ],
+      "beforeRGBA": [
+        25,
+        89,
+        35,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        317
+      ],
+      "sheet": [
+        1029,
+        944
+      ],
+      "beforeRGBA": [
+        4,
+        22,
+        12,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        317
+      ],
+      "sheet": [
+        1030,
+        944
+      ],
+      "beforeRGBA": [
+        7,
+        55,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        406,
+        317
+      ],
+      "sheet": [
+        1033,
+        944
+      ],
+      "beforeRGBA": [
+        6,
+        130,
+        8,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        317
+      ],
+      "sheet": [
+        1034,
+        944
+      ],
+      "beforeRGBA": [
+        40,
+        221,
+        19,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        317
+      ],
+      "sheet": [
+        1035,
+        944
+      ],
+      "beforeRGBA": [
+        40,
+        234,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        317
+      ],
+      "sheet": [
+        1036,
+        944
+      ],
+      "beforeRGBA": [
+        22,
+        182,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        317
+      ],
+      "sheet": [
+        1037,
+        944
+      ],
+      "beforeRGBA": [
+        24,
+        186,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        317
+      ],
+      "sheet": [
+        1038,
+        944
+      ],
+      "beforeRGBA": [
+        43,
+        220,
+        27,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        317
+      ],
+      "sheet": [
+        1039,
+        944
+      ],
+      "beforeRGBA": [
+        25,
+        154,
+        32,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        317
+      ],
+      "sheet": [
+        1040,
+        944
+      ],
+      "beforeRGBA": [
+        11,
+        66,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        317
+      ],
+      "sheet": [
+        1041,
+        944
+      ],
+      "beforeRGBA": [
+        21,
+        60,
+        29,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        318
+      ],
+      "sheet": [
+        1028,
+        945
+      ],
+      "beforeRGBA": [
+        0,
+        21,
+        8,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        318
+      ],
+      "sheet": [
+        1029,
+        945
+      ],
+      "beforeRGBA": [
+        16,
+        125,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        318
+      ],
+      "sheet": [
+        1032,
+        945
+      ],
+      "beforeRGBA": [
+        1,
+        125,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        318
+      ],
+      "sheet": [
+        1034,
+        945
+      ],
+      "beforeRGBA": [
+        42,
+        229,
+        15,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        318
+      ],
+      "sheet": [
+        1035,
+        945
+      ],
+      "beforeRGBA": [
+        45,
+        236,
+        8,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        318
+      ],
+      "sheet": [
+        1036,
+        945
+      ],
+      "beforeRGBA": [
+        25,
+        195,
+        3,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        318
+      ],
+      "sheet": [
+        1037,
+        945
+      ],
+      "beforeRGBA": [
+        40,
+        217,
+        26,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        318
+      ],
+      "sheet": [
+        1038,
+        945
+      ],
+      "beforeRGBA": [
+        42,
+        198,
+        33,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        318
+      ],
+      "sheet": [
+        1039,
+        945
+      ],
+      "beforeRGBA": [
+        16,
+        91,
+        27,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        318
+      ],
+      "sheet": [
+        1040,
+        945
+      ],
+      "beforeRGBA": [
+        9,
+        40,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        400,
+        319
+      ],
+      "sheet": [
+        1027,
+        946
+      ],
+      "beforeRGBA": [
+        8,
+        65,
+        14,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        319
+      ],
+      "sheet": [
+        1028,
+        946
+      ],
+      "beforeRGBA": [
+        12,
+        126,
+        14,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        319
+      ],
+      "sheet": [
+        1034,
+        946
+      ],
+      "beforeRGBA": [
+        15,
+        160,
+        8,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        319
+      ],
+      "sheet": [
+        1035,
+        946
+      ],
+      "beforeRGBA": [
+        27,
+        190,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        319
+      ],
+      "sheet": [
+        1036,
+        946
+      ],
+      "beforeRGBA": [
+        37,
+        216,
+        15,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        319
+      ],
+      "sheet": [
+        1037,
+        946
+      ],
+      "beforeRGBA": [
+        46,
+        211,
+        36,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        319
+      ],
+      "sheet": [
+        1038,
+        946
+      ],
+      "beforeRGBA": [
+        18,
+        100,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        319
+      ],
+      "sheet": [
+        1039,
+        946
+      ],
+      "beforeRGBA": [
+        2,
+        20,
+        7,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        398,
+        320
+      ],
+      "sheet": [
+        1025,
+        947
+      ],
+      "beforeRGBA": [
+        5,
+        54,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        399,
+        320
+      ],
+      "sheet": [
+        1026,
+        947
+      ],
+      "beforeRGBA": [
+        8,
+        96,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        320
+      ],
+      "sheet": [
+        1034,
+        947
+      ],
+      "beforeRGBA": [
+        0,
+        79,
+        7,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        320
+      ],
+      "sheet": [
+        1035,
+        947
+      ],
+      "beforeRGBA": [
+        6,
+        104,
+        13,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        320
+      ],
+      "sheet": [
+        1036,
+        947
+      ],
+      "beforeRGBA": [
+        22,
+        138,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        320
+      ],
+      "sheet": [
+        1037,
+        947
+      ],
+      "beforeRGBA": [
+        16,
+        103,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        320
+      ],
+      "sheet": [
+        1038,
+        947
+      ],
+      "beforeRGBA": [
+        0,
+        19,
+        7,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        396,
+        321
+      ],
+      "sheet": [
+        1023,
+        948
+      ],
+      "beforeRGBA": [
+        0,
+        17,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        397,
+        321
+      ],
+      "sheet": [
+        1024,
+        948
+      ],
+      "beforeRGBA": [
+        13,
+        127,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        321
+      ],
+      "sheet": [
+        1031,
+        948
+      ],
+      "beforeRGBA": [
+        11,
+        130,
+        14,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        321
+      ],
+      "sheet": [
+        1032,
+        948
+      ],
+      "beforeRGBA": [
+        5,
+        73,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        406,
+        321
+      ],
+      "sheet": [
+        1033,
+        948
+      ],
+      "beforeRGBA": [
+        15,
+        72,
+        17,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        407,
+        321
+      ],
+      "sheet": [
+        1034,
+        948
+      ],
+      "beforeRGBA": [
+        8,
+        35,
+        12,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        408,
+        321
+      ],
+      "sheet": [
+        1035,
+        948
+      ],
+      "beforeRGBA": [
+        11,
+        45,
+        16,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        321
+      ],
+      "sheet": [
+        1036,
+        948
+      ],
+      "beforeRGBA": [
+        6,
+        35,
+        14,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        321
+      ],
+      "sheet": [
+        1037,
+        948
+      ],
+      "beforeRGBA": [
+        1,
+        23,
+        12,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        416,
+        321
+      ],
+      "sheet": [
+        1043,
+        948
+      ],
+      "beforeRGBA": [
+        0,
+        47,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        396,
+        322
+      ],
+      "sheet": [
+        1023,
+        949
+      ],
+      "beforeRGBA": [
+        10,
+        105,
+        21,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        322
+      ],
+      "sheet": [
+        1028,
+        949
+      ],
+      "beforeRGBA": [
+        0,
+        87,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        322
+      ],
+      "sheet": [
+        1030,
+        949
+      ],
+      "beforeRGBA": [
+        2,
+        90,
+        3,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        322
+      ],
+      "sheet": [
+        1031,
+        949
+      ],
+      "beforeRGBA": [
+        3,
+        49,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        322
+      ],
+      "sheet": [
+        1032,
+        949
+      ],
+      "beforeRGBA": [
+        16,
+        52,
+        23,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        406,
+        322
+      ],
+      "sheet": [
+        1033,
+        949
+      ],
+      "beforeRGBA": [
+        19,
+        32,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        395,
+        323
+      ],
+      "sheet": [
+        1022,
+        950
+      ],
+      "beforeRGBA": [
+        2,
+        30,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        323
+      ],
+      "sheet": [
+        1028,
+        950
+      ],
+      "beforeRGBA": [
+        0,
+        74,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        323
+      ],
+      "sheet": [
+        1029,
+        950
+      ],
+      "beforeRGBA": [
+        9,
+        135,
+        19,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        323
+      ],
+      "sheet": [
+        1030,
+        950
+      ],
+      "beforeRGBA": [
+        3,
+        79,
+        8,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        323
+      ],
+      "sheet": [
+        1031,
+        950
+      ],
+      "beforeRGBA": [
+        6,
+        38,
+        17,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        323
+      ],
+      "sheet": [
+        1032,
+        950
+      ],
+      "beforeRGBA": [
+        21,
+        42,
+        28,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        415,
+        323
+      ],
+      "sheet": [
+        1042,
+        950
+      ],
+      "beforeRGBA": [
+        2,
+        47,
+        7,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        394,
+        324
+      ],
+      "sheet": [
+        1021,
+        951
+      ],
+      "beforeRGBA": [
+        3,
+        13,
+        2,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        395,
+        324
+      ],
+      "sheet": [
+        1022,
+        951
+      ],
+      "beforeRGBA": [
+        9,
+        105,
+        19,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        324
+      ],
+      "sheet": [
+        1028,
+        951
+      ],
+      "beforeRGBA": [
+        0,
+        91,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        324
+      ],
+      "sheet": [
+        1029,
+        951
+      ],
+      "beforeRGBA": [
+        9,
+        89,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        324
+      ],
+      "sheet": [
+        1030,
+        951
+      ],
+      "beforeRGBA": [
+        17,
+        89,
+        24,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        324
+      ],
+      "sheet": [
+        1031,
+        951
+      ],
+      "beforeRGBA": [
+        6,
+        27,
+        15,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        394,
+        325
+      ],
+      "sheet": [
+        1021,
+        952
+      ],
+      "beforeRGBA": [
+        27,
+        108,
+        29,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        325
+      ],
+      "sheet": [
+        1028,
+        952
+      ],
+      "beforeRGBA": [
+        0,
+        83,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        325
+      ],
+      "sheet": [
+        1029,
+        952
+      ],
+      "beforeRGBA": [
+        6,
+        36,
+        15,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        325
+      ],
+      "sheet": [
+        1030,
+        952
+      ],
+      "beforeRGBA": [
+        29,
+        72,
+        33,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        325
+      ],
+      "sheet": [
+        1041,
+        952
+      ],
+      "beforeRGBA": [
+        1,
+        69,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        394,
+        326
+      ],
+      "sheet": [
+        1021,
+        953
+      ],
+      "beforeRGBA": [
+        26,
+        120,
+        34,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        326
+      ],
+      "sheet": [
+        1028,
+        953
+      ],
+      "beforeRGBA": [
+        1,
+        89,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        326
+      ],
+      "sheet": [
+        1030,
+        953
+      ],
+      "beforeRGBA": [
+        19,
+        31,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        326
+      ],
+      "sheet": [
+        1040,
+        953
+      ],
+      "beforeRGBA": [
+        0,
+        26,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        394,
+        327
+      ],
+      "sheet": [
+        1021,
+        954
+      ],
+      "beforeRGBA": [
+        1,
+        16,
+        3,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        395,
+        327
+      ],
+      "sheet": [
+        1022,
+        954
+      ],
+      "beforeRGBA": [
+        3,
+        62,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        327
+      ],
+      "sheet": [
+        1028,
+        954
+      ],
+      "beforeRGBA": [
+        1,
+        91,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        396,
+        328
+      ],
+      "sheet": [
+        1023,
+        955
+      ],
+      "beforeRGBA": [
+        6,
+        67,
+        16,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        328
+      ],
+      "sheet": [
+        1028,
+        955
+      ],
+      "beforeRGBA": [
+        0,
+        76,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        328
+      ],
+      "sheet": [
+        1039,
+        955
+      ],
+      "beforeRGBA": [
+        0,
+        79,
+        3,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        397,
+        329
+      ],
+      "sheet": [
+        1024,
+        956
+      ],
+      "beforeRGBA": [
+        3,
+        64,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        398,
+        329
+      ],
+      "sheet": [
+        1025,
+        956
+      ],
+      "beforeRGBA": [
+        9,
+        177,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        399,
+        329
+      ],
+      "sheet": [
+        1026,
+        956
+      ],
+      "beforeRGBA": [
+        2,
+        169,
+        2,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        400,
+        329
+      ],
+      "sheet": [
+        1027,
+        956
+      ],
+      "beforeRGBA": [
+        4,
+        176,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        329
+      ],
+      "sheet": [
+        1028,
+        956
+      ],
+      "beforeRGBA": [
+        1,
+        64,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        411,
+        329
+      ],
+      "sheet": [
+        1038,
+        956
+      ],
+      "beforeRGBA": [
+        0,
+        36,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        398,
+        330
+      ],
+      "sheet": [
+        1025,
+        957
+      ],
+      "beforeRGBA": [
+        3,
+        49,
+        2,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        399,
+        330
+      ],
+      "sheet": [
+        1026,
+        957
+      ],
+      "beforeRGBA": [
+        4,
+        111,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        400,
+        330
+      ],
+      "sheet": [
+        1027,
+        957
+      ],
+      "beforeRGBA": [
+        13,
+        176,
+        22,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        330
+      ],
+      "sheet": [
+        1028,
+        957
+      ],
+      "beforeRGBA": [
+        2,
+        58,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        416,
+        330
+      ],
+      "sheet": [
+        1043,
+        957
+      ],
+      "beforeRGBA": [
+        6,
+        106,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        399,
+        331
+      ],
+      "sheet": [
+        1026,
+        958
+      ],
+      "beforeRGBA": [
+        2,
+        25,
+        2,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        400,
+        331
+      ],
+      "sheet": [
+        1027,
+        958
+      ],
+      "beforeRGBA": [
+        9,
+        80,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        331
+      ],
+      "sheet": [
+        1028,
+        958
+      ],
+      "beforeRGBA": [
+        2,
+        35,
+        6,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        331
+      ],
+      "sheet": [
+        1037,
+        958
+      ],
+      "beforeRGBA": [
+        4,
+        113,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        416,
+        331
+      ],
+      "sheet": [
+        1043,
+        958
+      ],
+      "beforeRGBA": [
+        1,
+        10,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        332
+      ],
+      "sheet": [
+        1028,
+        959
+      ],
+      "beforeRGBA": [
+        6,
+        38,
+        20,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        332
+      ],
+      "sheet": [
+        1029,
+        959
+      ],
+      "beforeRGBA": [
+        5,
+        21,
+        10,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        332
+      ],
+      "sheet": [
+        1036,
+        959
+      ],
+      "beforeRGBA": [
+        8,
+        55,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        412,
+        332
+      ],
+      "sheet": [
+        1039,
+        959
+      ],
+      "beforeRGBA": [
+        3,
+        127,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        413,
+        332
+      ],
+      "sheet": [
+        1040,
+        959
+      ],
+      "beforeRGBA": [
+        4,
+        102,
+        3,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        414,
+        332
+      ],
+      "sheet": [
+        1041,
+        959
+      ],
+      "beforeRGBA": [
+        10,
+        96,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        415,
+        332
+      ],
+      "sheet": [
+        1042,
+        959
+      ],
+      "beforeRGBA": [
+        2,
+        13,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        401,
+        333
+      ],
+      "sheet": [
+        1028,
+        960
+      ],
+      "beforeRGBA": [
+        6,
+        25,
+        13,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        333
+      ],
+      "sheet": [
+        1029,
+        960
+      ],
+      "beforeRGBA": [
+        0,
+        10,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        333
+      ],
+      "sheet": [
+        1030,
+        960
+      ],
+      "beforeRGBA": [
+        0,
+        17,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        333
+      ],
+      "sheet": [
+        1031,
+        960
+      ],
+      "beforeRGBA": [
+        0,
+        30,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        409,
+        333
+      ],
+      "sheet": [
+        1036,
+        960
+      ],
+      "beforeRGBA": [
+        13,
+        56,
+        11,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        410,
+        333
+      ],
+      "sheet": [
+        1037,
+        960
+      ],
+      "beforeRGBA": [
+        13,
+        87,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        334
+      ],
+      "sheet": [
+        1029,
+        961
+      ],
+      "beforeRGBA": [
+        0,
+        27,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        334
+      ],
+      "sheet": [
+        1030,
+        961
+      ],
+      "beforeRGBA": [
+        0,
+        109,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        334
+      ],
+      "sheet": [
+        1031,
+        961
+      ],
+      "beforeRGBA": [
+        0,
+        138,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        334
+      ],
+      "sheet": [
+        1032,
+        961
+      ],
+      "beforeRGBA": [
+        2,
+        80,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        335
+      ],
+      "sheet": [
+        1029,
+        962
+      ],
+      "beforeRGBA": [
+        0,
+        42,
+        1,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        335
+      ],
+      "sheet": [
+        1032,
+        962
+      ],
+      "beforeRGBA": [
+        3,
+        130,
+        9,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        402,
+        336
+      ],
+      "sheet": [
+        1029,
+        963
+      ],
+      "beforeRGBA": [
+        1,
+        19,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        336
+      ],
+      "sheet": [
+        1030,
+        963
+      ],
+      "beforeRGBA": [
+        3,
+        138,
+        5,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        405,
+        336
+      ],
+      "sheet": [
+        1032,
+        963
+      ],
+      "beforeRGBA": [
+        0,
+        42,
+        0,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        403,
+        337
+      ],
+      "sheet": [
+        1030,
+        964
+      ],
+      "beforeRGBA": [
+        3,
+        38,
+        4,
+        255
+      ]
+    },
+    {
+      "nativeCel": [
+        404,
+        337
+      ],
+      "sheet": [
+        1031,
+        964
+      ],
+      "beforeRGBA": [
+        2,
+        44,
+        4,
+        255
+      ]
+    }
+  ],
+  "maskRLE": [
+    [
+      307,
+      413,
+      414
+    ],
+    [
+      308,
+      413,
+      414
+    ],
+    [
+      309,
+      412,
+      414
+    ],
+    [
+      310,
+      412,
+      415
+    ],
+    [
+      311,
+      408,
+      409
+    ],
+    [
+      311,
+      411,
+      415
+    ],
+    [
+      312,
+      408,
+      409
+    ],
+    [
+      312,
+      410,
+      415
+    ],
+    [
+      313,
+      409,
+      416
+    ],
+    [
+      314,
+      408,
+      416
+    ],
+    [
+      315,
+      404,
+      416
+    ],
+    [
+      316,
+      404,
+      405
+    ],
+    [
+      316,
+      406,
+      415
+    ],
+    [
+      317,
+      402,
+      404
+    ],
+    [
+      317,
+      406,
+      415
+    ],
+    [
+      318,
+      401,
+      403
+    ],
+    [
+      318,
+      405,
+      406
+    ],
+    [
+      318,
+      407,
+      414
+    ],
+    [
+      319,
+      400,
+      402
+    ],
+    [
+      319,
+      407,
+      413
+    ],
+    [
+      320,
+      398,
+      400
+    ],
+    [
+      320,
+      407,
+      412
+    ],
+    [
+      321,
+      396,
+      398
+    ],
+    [
+      321,
+      404,
+      411
+    ],
+    [
+      321,
+      416,
+      417
+    ],
+    [
+      322,
+      396,
+      397
+    ],
+    [
+      322,
+      401,
+      402
+    ],
+    [
+      322,
+      403,
+      407
+    ],
+    [
+      323,
+      395,
+      396
+    ],
+    [
+      323,
+      401,
+      406
+    ],
+    [
+      323,
+      415,
+      416
+    ],
+    [
+      324,
+      394,
+      396
+    ],
+    [
+      324,
+      401,
+      405
+    ],
+    [
+      325,
+      394,
+      395
+    ],
+    [
+      325,
+      401,
+      404
+    ],
+    [
+      325,
+      414,
+      415
+    ],
+    [
+      326,
+      394,
+      395
+    ],
+    [
+      326,
+      401,
+      402
+    ],
+    [
+      326,
+      403,
+      404
+    ],
+    [
+      326,
+      413,
+      414
+    ],
+    [
+      327,
+      394,
+      396
+    ],
+    [
+      327,
+      401,
+      402
+    ],
+    [
+      328,
+      396,
+      397
+    ],
+    [
+      328,
+      401,
+      402
+    ],
+    [
+      328,
+      412,
+      413
+    ],
+    [
+      329,
+      397,
+      402
+    ],
+    [
+      329,
+      411,
+      412
+    ],
+    [
+      330,
+      398,
+      402
+    ],
+    [
+      330,
+      416,
+      417
+    ],
+    [
+      331,
+      399,
+      402
+    ],
+    [
+      331,
+      410,
+      411
+    ],
+    [
+      331,
+      416,
+      417
+    ],
+    [
+      332,
+      401,
+      403
+    ],
+    [
+      332,
+      409,
+      410
+    ],
+    [
+      332,
+      412,
+      416
+    ],
+    [
+      333,
+      401,
+      405
+    ],
+    [
+      333,
+      409,
+      411
+    ],
+    [
+      334,
+      402,
+      406
+    ],
+    [
+      335,
+      402,
+      403
+    ],
+    [
+      335,
+      405,
+      406
+    ],
+    [
+      336,
+      402,
+      404
+    ],
+    [
+      336,
+      405,
+      406
+    ],
+    [
+      337,
+      403,
+      405
+    ]
+  ]
+}
