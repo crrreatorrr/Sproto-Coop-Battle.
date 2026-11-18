@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "7dcd811193ab7e2dbcec424dc56ca82fe2587f560eebd2c99ec4be8626acfd4d",
+  "providerSha256": "f52cc4ec1d0d6bb84e744dcde07579c89e16f4c399309e0515eb364fa51ad8c8",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Independently reviewed the native current-frame sequences and dark/light gameplay contact. All three flight rows keep a carved amber pumpkin head to the left with purple ribbons and energy exhaust trailing on the right. Compact body, opening wide bat fins, and separately vented tracker remain distinguishable through the loops. Impact disperses into mechanical fragments, purple ribbons, and a sparse ember tail. No visible white islands, seam material, text, backdrop, or neighboring bleed. Centered [48,48] anchor. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}
