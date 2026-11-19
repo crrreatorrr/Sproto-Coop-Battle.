@@ -19,10 +19,7 @@ async function main() {
   assert.deepStrictEqual(report.streamedMedia.limitErrors, []);
   assert.deepStrictEqual(report.missingDynamic, []);
   assert.deepStrictEqual(report.missingLiterals, []);
-  assert.ok(report.unused.includes('assets/ufo/red-laser.png'));
-  assert.ok(report.unused.includes('assets/ufo/thrust.png'));
-  assert.ok(report.unused.includes('assets/ufo/idle.png'));
-  assert.ok(report.unused.includes('assets/ufo/muzzle.png'));
+  assert.deepStrictEqual(report.unused, [], 'every shipped asset is requested by the game (unused art lives in art/)');
   assert.ok(!report.files.some(file => /assets\/fighters\/[^/]+\/(?:\d\d|w0\d)\.png$/.test(file)), 'development poses stay out of the web tree');
   assert.ok(!report.unused.some(file => /\/atlas\.(png|webp)$/.test(file)));
   assert.ok(!report.unused.some(file => file.startsWith('assets/fx/')), 'boss effect sheets are in the load plan');
