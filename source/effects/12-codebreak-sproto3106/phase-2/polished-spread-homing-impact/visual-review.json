@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "9714f818642201a5f26c458516633ee56d99805d2dd05c5987a248e5ab73c4ec",
+  "providerSha256": "e0e1a1d259eab7d88abadee05d6d4ac302001ff07d3a888c2b06a44b61b7e15a",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Navy plated crescent spread fins widen around cyan tips that point left; the clearly heavier tracker has a stable blue housing, orange fasteners and short right-facing exhaust. The cyan impact breaks into purple-blue mechanical shards and fades to a last electric curl. Source review found the only seam obstruction at alpha 3/255; the explicit faint-background cutoff preserves all stronger-alpha pixels. In native and dark/light gameplay contact, pale highlights are attached to cyan electrical emission and neither opaque backdrop nor bleed is present. Preserve existing lane. Runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

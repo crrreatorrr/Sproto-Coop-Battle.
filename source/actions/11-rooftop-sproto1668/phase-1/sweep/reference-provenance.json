@@ -1,0 +1,20 @@
+{
+  "key": "11-rooftop-sproto1668",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceStanding": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/mechanical-sproto1668-v2/frames/frame-000.png",
+  "sourceStandingSHA": "5e99919f5380c93e82bcc6d9c8b799fc3d66432cf622b017f02fe421794871f5",
+  "pilot": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/outputs/mecha-complete-movesets/portraits/sproto1668.webp",
+  "pilotSHA": "dd465ec922ae4c00020a4192bc54cf98e27716cd69ebc82e8dc341356378955f",
+  "padding": [
+    320,
+    320
+  ],
+  "scale": 1,
+  "sourceRGBAChanges": 0,
+  "anchor": [
+    640,
+    920
+  ],
+  "floorRow": 919
+}

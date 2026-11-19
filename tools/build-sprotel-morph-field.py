@@ -22,7 +22,23 @@ base.CELL, base.MAX_SHIFT = CELL, 28
 base.GRID_AXIS = np.linspace(0, CELL - 1, GRID, dtype=np.float32)
 base.GRID_X, base.GRID_Y = np.meshgrid(base.GRID_AXIS, base.GRID_AXIS)
 POSES = [[0, 0, 0]] + [[0, 9 + i // 8, i % 8] for i in range(16)] + [[1, 0, 0]]
-SHEETS = [Image.open(ROOT / f'public/assets/bosses/13-last-call-sprotelbitcoin-p{p}.webp').convert('RGBA') for p in (1, 2)]
+PAGE_ROWS = 5
+
+
+def load_phase(number):
+    # pack-sprotel-bitcoin.py writes the first five rows and the rest as separate pages.
+    stem = ROOT / f'public/assets/bosses/13-last-call-sprotelbitcoin-p{number}'
+    top = Image.open(stem.with_suffix('.webp')).convert('RGBA')
+    lower = Image.open(stem.with_name(stem.name + '-lower.webp')).convert('RGBA')
+    if top.size[1] != PAGE_ROWS * CELL or lower.size[0] != top.size[0]:
+        raise ValueError(f'unexpected Sprotel page geometry for phase {number}')
+    full = Image.new('RGBA', (top.size[0], top.size[1] + lower.size[1]))
+    full.paste(top, (0, 0))
+    full.paste(lower, (0, top.size[1]))
+    return full
+
+
+SHEETS = [load_phase(p) for p in (1, 2)]
 CELS = [SHEETS[p].crop((col * CELL, row * CELL, (col + 1) * CELL, (row + 1) * CELL)) for p, row, col in POSES]
 
 

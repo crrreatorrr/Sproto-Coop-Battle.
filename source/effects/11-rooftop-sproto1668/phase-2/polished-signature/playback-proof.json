@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "11-rooftop-sproto1668",
+    "phase": 1,
+    "family": "signature",
+    "purposes": [
+      "signature"
+    ],
+    "asset": "assets/bosses/effects/11-rooftop-sproto1668-p2-signature-dcdb5c5c67fb.png",
+    "atlasSha256": "dcdb5c5c67fb43a742cf63a63f611d69f35ba88c8cc6dec200621b8fbafd4310",
+    "runtimeSha256": "dcdb5c5c67fb43a742cf63a63f611d69f35ba88c8cc6dec200621b8fbafd4310",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "signature": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          62
+        ],
+        "grounded": true,
+        "frameTicks": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/11-rooftop-sproto1668-p2-signature-dcdb5c5c67fb.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 124,
+  "animatedDraws": 92,
+  "resumed": 2,
+  "hit": [
+    16,
+    16
+  ],
+  "warnings": 29,
+  "lastWave": 8,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    3
+  ]
+}

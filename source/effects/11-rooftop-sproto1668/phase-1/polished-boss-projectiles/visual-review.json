@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "13d57843d689b20f2ada7ace58d3d4a89c5a0a77699a9ee80f80adafe976ed72",
+  "providerSha256": "c88a1ae72a1c348f0504b64cc36011f63799e2d21a6b0799b2fdb9c4937b376c",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Recognizable purple/gold crescent nose with fixed leftward orientation and consistently right-trailing expanding material. Split spread tips and heavy tracker remain separate; impact flashes then breaks into gold and purple atoms. Near-white points are in the attached violet arcs or cores. The only original border omissions were alpha 3/255 or below; the documented background-only cutoff of 3 preserves all stronger-alpha artwork. Native source and dark/light gameplay contact independently reviewed. No visible backdrop, typography, or neighbor bleed. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

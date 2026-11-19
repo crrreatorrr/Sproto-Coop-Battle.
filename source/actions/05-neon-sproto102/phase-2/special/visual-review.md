@@ -1,0 +1,11 @@
+# Sproto102 Railstorm independent review
+
+PASS for the P2Railstorm special source/normalization/actual-stage candidate. All inputs remain unchanged; no game writes.
+
+Independent exact magenta extraction reproduces provideredbe29c954e83a35c61e62b3d61d4bf88aa5e432017a13b2b048018196e135ef, derived41e160aef5210c54f1039cc6a86abc6736f32772f6820b24f2461cd056ee9122, measured[248,4,249],882,609flat32 +5,554mixed samples within4native of flat, exact explicit mask and unchanged retainedRGB. All four genuine627²quadrants, common608NN size/constant[172,259]placement, full native fields,330NN and losslesspage RGBA replay exactly. No pose, paint, thinning, clipping or frame interpolation was added.
+
+All20reference/new pale/dark/both-facing game views and actual49/69release screenshots were inspected. Four complete heavy supports stay planted with the same body scale, two connected broad cannons stay full-sized and the red/cream/charcoal armor/amber indicators remain coherent. Blue/yellow original pilot, round eyes/red nose/grin and yellow clothes/hands remain recognizable. Both cannons pulse at49, lower/upper recoil-light state alternates61/69, and the state stays stable instead of whole-body sliding. Rear-foot lower-band bounds are identical in all four, centroid variation0.039gamepxx /0.004y. No blocking white/pink speck or exterior halo was seen at actual game size; original connected cream and LED highlights are intentional. Fine native edge texture remains disclosed, not claimed halo-free.
+
+Canonical660²page ae8ce10e230e765d219d837f8f6e988b9b73664c6f80712d47c0c3e32a0d76cd is166,418encoded/1,742,400decoded bytes;330cell/core[55,55,220,220]/anchor[165,261]. Ticks[49,12,8,25] give94live ticks, phase1special impacts2@49/1@61/1@69, idle94. Independent190pinned-Sim/action-selector/planner cases pass all three birth positions/counts, both facings and export/import at each release. Root’s separate190actual-browser cases/cold-late/reconnect screenshots were reviewed and remain author browser evidence, not claimed as another independent browser replay. Existing pressure/rail impact FX are kept distinct from permanent cannon hardware.
+
+Admission is this descriptor/page and state only; all remaining movement/other fire/body completeness is not implied.

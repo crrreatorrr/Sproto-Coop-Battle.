@@ -1,0 +1,77 @@
+{
+  "status": "EXACT_MASKS_ROOT_CLASSIFIED_BACKGROUND_AND_INDEPENDENTLY_ACCEPTED",
+  "providerSourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+  "sourceDimensions": [
+    2048,
+    2048
+  ],
+  "nativeCell": [
+    1024,
+    1024
+  ],
+  "removedNativeSamples": 13806,
+  "game96RemovedSamples": 176,
+  "ambiguousNativeSamplesKept": 14175,
+  "retainedRGBAExact": true,
+  "paletteUnchanged": true,
+  "newPaintOrMotion": false,
+  "records": [
+    {
+      "cel": 0,
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "mask": "reviewed-hurt04/proposal-masks/cel-000.png",
+      "sha256": "574a9cdcaff6b16040060c98a78a8cc637e6cb929a919fdcd54f9118f413eac9",
+      "nativeSamples": 2367,
+      "components4": 228,
+      "ambiguousSamplesKept": 1529
+    },
+    {
+      "cel": 1,
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "mask": "reviewed-hurt04/proposal-masks/cel-001.png",
+      "sha256": "1413b793f12cdd067ac58e8b9d9c77e6a60c99a58053cec3b2874c0bb262293a",
+      "nativeSamples": 7230,
+      "components4": 897,
+      "ambiguousSamplesKept": 10046
+    },
+    {
+      "cel": 2,
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "mask": "reviewed-hurt04/proposal-masks/cel-002.png",
+      "sha256": "b312dce7bcabd4e4d5acf5049840aca86a9d94749aef36a586365083d2a1c67e",
+      "nativeSamples": 2044,
+      "components4": 192,
+      "ambiguousSamplesKept": 1568
+    },
+    {
+      "cel": 3,
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "mask": "reviewed-hurt04/proposal-masks/cel-003.png",
+      "sha256": "2059828ef6058f6855856c1c2f9c0600e472e70b219823c2b64256afcc253911",
+      "nativeSamples": 2165,
+      "components4": 223,
+      "ambiguousSamplesKept": 1032
+    }
+  ],
+  "historicalProposalQualification": "Original proposal retains its prior UNAPPLIED label; application and independent reports record later exact-mask acceptance."
+}

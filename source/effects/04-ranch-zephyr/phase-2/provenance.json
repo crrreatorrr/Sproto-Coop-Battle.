@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "status": "Accepted four effect families only; complete combat art remains pending",
+  "providerJob": "8259ec7a-56d9-4136-8719-7c64075c6320",
+  "providerOriginalSha256": "c3dade5b2876f1a2cb5e1e4d02a3cfc3c7938c74826d0e37100134f01d453246",
+  "public": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+  "publicEncodedSha256": "13acc4990e93d439150588946121a39bde578bb49fd61bbbbe43797de1f01043",
+  "originalTopRowsRgbaSha256": "5b88c70f0fd32d4ea8969753074f062dafbf13e47b932b7b290c7880c703dd3f",
+  "acceptedBottomRowsRgbaSha256": "5b2eef0de05530a223bf69f96491e355e1bd56da9684b9a655725f6370b5fbe3",
+  "oldTopRGBAMismatches": 0,
+  "acceptedBottomRGBAMismatches": 0,
+  "independentReportSha256": "297b447e2c042c51ac2974661afc26e02d02b4ffd1568074dfb4cc9b20888025",
+  "independentVerdictSha256": "4fb38b463fabc4c95d4f9e051535885419093b9770abb34393d94cd9c9a40b73",
+  "acceptedEffectsCatalogSha256": "5010733a9ff4e64a818778104055e66f7ca8be0a2ba840b84efee19d3478374b",
+  "registry": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 16
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 20
+        }
+      ],
+      "grounded": true
+    },
+    "hurt": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 24
+        }
+      ]
+    },
+    "death": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        38,
+        38,
+        38,
+        37
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 28
+        }
+      ]
+    }
+  },
+  "newLocalArtOrMotion": false
+}

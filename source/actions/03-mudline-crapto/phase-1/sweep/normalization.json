@@ -1,0 +1,141 @@
+{
+  "fixedSheetScale": 0.38,
+  "sourceAnchorAfterOriginRegistration": [
+    328,
+    493
+  ],
+  "deliveryAnchor": [
+    165,
+    261
+  ],
+  "sourceSlotSize": [
+    627,
+    627
+  ],
+  "sourceMatteRGB": [
+    5.0,
+    248.0,
+    4.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1030959,
+  "boundedMixtureSamples": 5411,
+  "mixtureRule": "G>R+35 and G>B+35 and G>138 within4nativepx of measured flat key",
+  "realGreenMaterialsInApprovedRefs": false,
+  "retainedRGBChanges": 0,
+  "alphaOnRetainedPaint": 255,
+  "paletteFinish": false,
+  "frameRegistration": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ],
+  "registrationNote": "No per-frame origin change; source slots share the same fixed fit.",
+  "cells": [
+    {
+      "index": 0,
+      "sourceBounds": [
+        54,
+        88,
+        540,
+        494
+      ],
+      "sourcePositiveAlpha": 130353,
+      "deliveryBounds": [
+        61,
+        107,
+        246,
+        261
+      ],
+      "integerOriginRegistration": [
+        0,
+        0
+      ],
+      "sourceRGBASha256": "c7c75f63ad0ad103b4235f634891fbc916ca2bf3d756d261f9607350126fb0b7",
+      "deliveryRGBASha256": "e635df4a565c96958e7c42c0cca4009a7255a84b5a54a87d32181ae5c12646bf",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 1,
+      "sourceBounds": [
+        54,
+        88,
+        587,
+        494
+      ],
+      "sourcePositiveAlpha": 135962,
+      "deliveryBounds": [
+        61,
+        107,
+        263,
+        261
+      ],
+      "integerOriginRegistration": [
+        0,
+        0
+      ],
+      "sourceRGBASha256": "4bbf28acfdcd6eef3bed8050e04001a30d583925a20a440e24dfa5febde269e3",
+      "deliveryRGBASha256": "e5a1190185ee7d5b0c31baba2e2372de0a5052a64caabb9d9c25ff0429dba3ce",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 2,
+      "sourceBounds": [
+        54,
+        88,
+        615,
+        498
+      ],
+      "sourcePositiveAlpha": 136182,
+      "deliveryBounds": [
+        61,
+        107,
+        274,
+        263
+      ],
+      "integerOriginRegistration": [
+        0,
+        0
+      ],
+      "sourceRGBASha256": "56c2813d0955454e1f0a830ef396dbc3095a828ce3a5c696aa29244fc1c945df",
+      "deliveryRGBASha256": "e9a837354aee2bb5989e963a3f54638529260d28252ff2f64f8f9cc601efc9ab",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 3,
+      "sourceBounds": [
+        54,
+        88,
+        561,
+        493
+      ],
+      "sourcePositiveAlpha": 133649,
+      "deliveryBounds": [
+        61,
+        107,
+        254,
+        261
+      ],
+      "integerOriginRegistration": [
+        0,
+        0
+      ],
+      "sourceRGBASha256": "61454a748c340d693b5df18ae2f19adbcfbabc85c929fec786f2e336a7c0a107",
+      "deliveryRGBASha256": "fdde9f03c5056090ec089510b48a4566ad9d74ebdaa4b658684daca820fda12c",
+      "allTransformedSourcePaintInsideField": true
+    }
+  ]
+}

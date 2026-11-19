@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "fffb4310dbe294b1142bc145cc641eb3b8175e4df0a88ecaacce3c6a7abefa29",
+  "providerSha256": "1637411853d3228834b557923e8dc22739f855cf199aa0e2fa00bc478f35db39",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Gold-caged violet nose stays left. Spread opens pinions with visible purple exhaust to the right; tracker engine parts retain a solid housing. The pink-violet impact breaks open a recognizable claw rim and releases colored fragments. White highlights are physically attached to vivid violet plasma and glints. Native and dark/light gameplay assets independently reviewed. No lettering, neighboring foreground, or grid material. Preserve existing P2 lane. Authored runtime QA remains separate.",
+  "reviewedPartialAlpha": true
+}

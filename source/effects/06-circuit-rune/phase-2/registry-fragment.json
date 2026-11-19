@@ -1,0 +1,109 @@
+{
+  "bossKey": "06-circuit-rune",
+  "phase": 1,
+  "fx": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/06-circuit-rune-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 16
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/06-circuit-rune-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 20
+        }
+      ],
+      "grounded": true
+    },
+    "hurt": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/06-circuit-rune-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 24
+        }
+      ]
+    },
+    "death": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        38,
+        38,
+        38,
+        37
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/06-circuit-rune-p2-projectiles.png",
+          "columns": 4,
+          "rows": 8,
+          "frames": 4,
+          "firstCell": 28
+        }
+      ]
+    }
+  },
+  "status": "CANDIDATE_STAGED_REAL_SIM_REVIEW_PENDING"
+}

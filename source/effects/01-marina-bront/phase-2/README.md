@@ -1,0 +1,7 @@
+# Accepted Bront P2 effects
+
+The existing384×768projectile PNG keeps its original top16cels exact and appends the16reviewed signature03/special03/hurt04/death02 Higgsfield cels. No new bank URL or locally authored pose is introduced. Signature/special are grounded with[48,95], while hurt/death remain centered[48,48]; exact finite timings and row offsets are in registry-fragment.json.
+
+Special cel2 is the genuine **peak plateau**, not a contraction. Hurt04 uses only the13,806native samples in the exact reviewed background masks; all14,175ambiguous samples and real material paint stay unchanged. The four source-bound masks, original proposal, later root classification/application and independent source/runtime reports are copied here. Their historical pending labels are superseded by the later accepted provenance, not edited. No palette relearning, local recolor, face repaint, new motion or broad tolerance change occurred.
+
+Independent source replay and actual-Sim proof passed:624full-scene PNG comparisons,624source-lineage draws, all16cels in both facing cases,288grounded projections ending floor−1, finite ends and phase-safe legacy fallback. The original source/reference/material/contact evidence and full runtime snapshots remain frozen outside the game; manifest hashes bind them in provenance.json. Native halo-free art is not claimed. Actual body/walk/attack replacements remain pending. This import changes no renderer/loader/Sim/pinned source, collision, event lifetime or budget cap.

@@ -1,0 +1,14 @@
+{
+  "tool": "built-in image_gen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eaeb-c583-7933-b73a-04bcfe0d7384/exec-d981dde2-1337-4b57-8ec5-202ff0bd359a.png",
+  "sourceSHA256": "c257ff3d649168f2048d17065b93fbd1826a8f8bbd39d4d8e46426543fe95d06",
+  "sourceCopiedExact": true,
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGB",
+  "promptSHA256": "7545489cc6c1e8ffcac1eb5a7c2ed9e817cae8aef6d73401d03ce8899509a000",
+  "sourceArtLocalEdits": false,
+  "status": "NATIVE_QA_PENDING"
+}

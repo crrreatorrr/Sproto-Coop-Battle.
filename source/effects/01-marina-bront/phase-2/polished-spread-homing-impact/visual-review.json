@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "b8efb55eb0ab927dd31f4923517c1ca84c1b278eea04ab0f800ab2c4447e8b68",
+  "providerSha256": "c28e04440b97aebc884f7b299dadfd8b4a8444d7bb34eaa0a1cd40f5fc4d2454",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Spread claw/engine clusters open with electrical arcs and right green exhaust, tracker puts a readable glowing green cap on the left, and the impact shifts from lime contact through orange and iron fragments to sparse fading sparks. White samples cluster within intentional green-violet electrical emission or the central release, not separate white specks. Raw native cut audit verified every seam obstruction had alpha <=7/255. The explicit faint-background cutoff removes it without modifying stronger-alpha art. Both gameplay contacts have no backdrop or bleed. Retain reviewed lane. Runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

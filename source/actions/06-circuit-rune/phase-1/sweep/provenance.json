@@ -1,0 +1,50 @@
+{
+  "status": "PRIVATE_CANDIDATE_PENDING_INDEPENDENT_REVIEW_NOT_REGISTERED",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceSha256": "8c4fc00337fb9fd88da37d3e4b079c1ca666afd8af15a6be8fa3e230ecddee6b",
+  "extractedSha256": "851760cbf35b8f880b03b3edabb6ba928341e912373ef8cd03ab547832004614",
+  "clips": {
+    "sweep": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        36,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/06-circuit-rune/phase-1/rune-p1-rear-sweep-v1-29595cc0ed787b7b.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "29595cc0ed787b7b948d9c32f322c969e2d8151956aad6d1f211b25d6558f083",
+  "encodedBytes": 146948,
+  "decodedBytes": 1742400,
+  "noNewLocalPoses": true
+}

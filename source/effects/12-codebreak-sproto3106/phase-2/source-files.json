@@ -1,0 +1,281 @@
+{
+  "version": 1,
+  "count": 55,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1396,
+      "sha256": "de4a0e55eaa9023524e11aa8e929662338b20cad19ac148f6d121cfee8ffa6ed"
+    },
+    {
+      "path": "accepted-cell-checks.json",
+      "bytes": 1274,
+      "sha256": "bb88f157f9dc6ceb66a8fb3e6c921028c707707905785d693d86c3b583c08606"
+    },
+    {
+      "path": "accepted-effects-atlas96.png",
+      "bytes": 76661,
+      "sha256": "367aedae1b936cc4fe2012d2146098cb18b4338db96d97de7fabb8336c96b50e"
+    },
+    {
+      "path": "combined-palette.json",
+      "bytes": 9945,
+      "sha256": "29bc06561dd3d06abc6cc2eadaadda4c559b24dbee16f95b925576b673316e42"
+    },
+    {
+      "path": "contact-alignment-report.json",
+      "bytes": 14226,
+      "sha256": "eb34d5cc8ede11663bb7ad6672c99022cd44be7cfe79787caca669632528a972"
+    },
+    {
+      "path": "exact-source-rgb-to-fixed128.npz",
+      "bytes": 577791,
+      "sha256": "f17549884af260a0e493e6cd090a690f75da63a0585a7126e2edeb8faa8c7e09"
+    },
+    {
+      "path": "independent-runtime-REPORT.md",
+      "bytes": 4983,
+      "sha256": "b980bcd332e8dd5924f182dd84b5ad9f493666efb1e5ff8b60279860c6316753"
+    },
+    {
+      "path": "independent-runtime-draw-proof.json",
+      "bytes": 810,
+      "sha256": "05c2bad91ec9fe80f49bf79c398bbd69e8baba2352b6d41edf5306177ba1c57c"
+    },
+    {
+      "path": "independent-runtime-handoff.json",
+      "bytes": 976,
+      "sha256": "136e9f38f0539885c4be25d7b0ff99e66f8bfc08f0e4de0b6e2853b65d9e5645"
+    },
+    {
+      "path": "independent-runtime-summary.json",
+      "bytes": 16593,
+      "sha256": "404944433ed66722496da9f580e9675f8882162f3eae635396144675dce3c9b1"
+    },
+    {
+      "path": "independent-source-REPORT.md",
+      "bytes": 4935,
+      "sha256": "4cf3a140232efc150225b181e81d9af953ff1b772eac01565eeee832d460abde"
+    },
+    {
+      "path": "independent-source-checks.json",
+      "bytes": 14252,
+      "sha256": "f433d7b1be8f3fc7de1fcad5c04ae7ec9985ce8f48544b12c794a9d05925bd31"
+    },
+    {
+      "path": "independent-source-handoff.json",
+      "bytes": 939,
+      "sha256": "be834e48ead2c37d2c49afa65228ae04500e8943104ad0ea9b987a3f9aa9a7a5"
+    },
+    {
+      "path": "input-provenance/death/central-rule-exact-mask.png",
+      "bytes": 9206,
+      "sha256": "ae2f912cc940e6f3486c8904aa98ec42cd73c95c4a63dfb91e1d666a28dd8429"
+    },
+    {
+      "path": "input-provenance/death/reviewed-extraction-config.json",
+      "bytes": 3840,
+      "sha256": "fd1c17dd5c6adf8557867e516c0115eba46ec28d2adc3b6c9dde7889795a5955"
+    },
+    {
+      "path": "input-provenance/death/reviewed-matte-apertures.json",
+      "bytes": 2347,
+      "sha256": "7a4f3b004b9604e64ad8bf42189b3817a5cd2a2ea4a7e6e645a393952406c45c"
+    },
+    {
+      "path": "input-provenance/hurt/reviewed-extraction-config.json",
+      "bytes": 9651,
+      "sha256": "f95c3cb2d55d69d422ac3ac2a0cbb3ad8804955a5235d12092dba00ab964c8b3"
+    },
+    {
+      "path": "input-provenance/hurt/reviewed-matte-apertures.json",
+      "bytes": 8052,
+      "sha256": "172b23bbaeed93989027539d3a8f5df8ebb4e4fdda3232c0babfdd24c293034c"
+    },
+    {
+      "path": "input-provenance/signature/reviewed-extraction-config.json",
+      "bytes": 13733,
+      "sha256": "7f96e7c2717f024d8973a9c76131fe5328a4232aabfc8cf63712482403f95e2b"
+    },
+    {
+      "path": "input-provenance/signature/reviewed-matte-apertures.json",
+      "bytes": 11227,
+      "sha256": "e609853f8a1605fdcda409ac9dcab9adca59cfd59eb8e426c4956c24ebc0fb7a"
+    },
+    {
+      "path": "input-provenance/special/reviewed-extraction-config.json",
+      "bytes": 7354,
+      "sha256": "ba285af780705bcd8d9f66a86d8ddc8bb20745165920d902f4ad10033236caa3"
+    },
+    {
+      "path": "input-provenance/special/reviewed-matte-apertures.json",
+      "bytes": 5996,
+      "sha256": "fe0d3e981d9551a8bd3b8da9a8d7f16fdaefdc10a620645ab8f4383aa5884fec"
+    },
+    {
+      "path": "original-legacy-projectile-bank.png",
+      "bytes": 18948,
+      "sha256": "bd87732e6863a9b7ee581ffa969f752a6c89444674d4ff04efdfbeaf75fe831d"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 14045,
+      "sha256": "73a38b6a08e9bd9e32d1cccc36482b5f3fc44d972c00619671a7899170241d45"
+    },
+    {
+      "path": "registry-fragment.json",
+      "bytes": 2100,
+      "sha256": "f09c03e5ba1ae1d5c9a4fff245d523ead5e0280595237e232fed475476057cba"
+    },
+    {
+      "path": "reviewed-matte-component-bindings.json",
+      "bytes": 17618,
+      "sha256": "31eb1ad75223a84c098a6f60cffefc7bfe6e3555496a5d7372b96541abcad65e"
+    },
+    {
+      "path": "reviewed-matte-masks/death/tile-002-gap-00.png",
+      "bytes": 3928,
+      "sha256": "f7a0bbe3bad47f3a18694b768220acd3213a9f88d096de2c7db7e975d18522dd"
+    },
+    {
+      "path": "reviewed-matte-masks/death/tile-002-gap-01.png",
+      "bytes": 2634,
+      "sha256": "4571b93f910b6b71fa2dd0e1d299d3cb8885ca9cdfb47efaebd935248c0c0a85"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-001-gap-00.png",
+      "bytes": 1103,
+      "sha256": "a0008e98e2150814e855ede6f63e844e8d15ba309efbd8423b490a62ddf52ba5"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-00.png",
+      "bytes": 1166,
+      "sha256": "58ef835ea811c0be81d20176f1dd8a516fac1d24eca0f0044670c8757a02ebea"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-01.png",
+      "bytes": 1113,
+      "sha256": "7cae17817c8a81cd600b86139e197c27925ab876df6ffe3bd1f86fe6f362a2f9"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-02.png",
+      "bytes": 1112,
+      "sha256": "d15f44364a4829b87bdb9306c8d75b5eb8381bb6f55e4791f4321dcab08c6477"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-03.png",
+      "bytes": 1112,
+      "sha256": "ba6b950ab5f13fa61974d492b04d02e9e2968755e1f82aa069cf7c9422b52dff"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-04.png",
+      "bytes": 1104,
+      "sha256": "d7d69ce2b90f7008104b8dfaea81d2cbcb90010aff9ac1de692c58931ab0d0dc"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-05.png",
+      "bytes": 1108,
+      "sha256": "1d69235cd21952a0e20f3f6e4fd6b77281b642e4759ab65bf5f487ca3ee591e1"
+    },
+    {
+      "path": "reviewed-matte-masks/hurt/tile-002-gap-06.png",
+      "bytes": 1104,
+      "sha256": "372343264220f87c45acb1277274c87e6f93ee33fa272ec24014ef68a4e1c078"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-001-gap-00.png",
+      "bytes": 379,
+      "sha256": "78f1ade063ff49fc6ee48c94edc80f3f3601f0ffed3593f2251f195ecc4f5d36"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-001-gap-01.png",
+      "bytes": 382,
+      "sha256": "3a961fa10c9bca64dbeba402a15c256a4aca5352c0d09877199e3b3ae0f03010"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-00.png",
+      "bytes": 924,
+      "sha256": "ebe90396688eb5166f066153d92fc5e5cbe2780df86cf316e53ba6a2d77f9ea2"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-01.png",
+      "bytes": 361,
+      "sha256": "9cbfbcb2a866b5a9ca35c5a90f2ac6e1398145941309ec57cdc2f4ed3ffb4f82"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-02.png",
+      "bytes": 340,
+      "sha256": "d9fb5dce69291d11e25d0ff154a684c31b7d740534584406257a869276fbd2d0"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-03.png",
+      "bytes": 359,
+      "sha256": "d7ce25d3a6fe2d6ff8a1257491e2b1689b78c74cbd7b13f7366c3674e78f330c"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-04.png",
+      "bytes": 341,
+      "sha256": "fe5e1002dfccdbacdff308bb98c9cc314fe6e1f3aa390d2b7e002a520105db58"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-05.png",
+      "bytes": 354,
+      "sha256": "60089cdb83a013ceb4e838c1a79dc56c8997236406e0f1f83e3c65e91204428d"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-06.png",
+      "bytes": 356,
+      "sha256": "8ff7d3a14463c3f12b729974aed8195c8a4d493ae042a528fa382769816ea90b"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-002-gap-07.png",
+      "bytes": 346,
+      "sha256": "18bf410b1e4eebedfda0324b95a4ecdb096041ad5e7c4a36e11ad6961e7e9fdb"
+    },
+    {
+      "path": "reviewed-matte-masks/signature/tile-003-gap-00.png",
+      "bytes": 370,
+      "sha256": "89058a6f0708514506d21924a0b9c4f1605c53dc854576ef12040bc1b06b970d"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-000-gap-00.png",
+      "bytes": 1187,
+      "sha256": "8ec7c0f6c48b9769a83602cc01dcf60782a3ba53f0dc625bfddf743b598a7a5d"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-000-gap-01.png",
+      "bytes": 1182,
+      "sha256": "3b019bf1053bda740d46951fa5eabb78d6915b190b98c22650346af2aac88635"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-002-gap-00.png",
+      "bytes": 1682,
+      "sha256": "ffdcad387df8003d3baeb92d66ff9c18db2d2d9cae94f52b4b0e8d59d02c87d3"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-002-gap-01.png",
+      "bytes": 1615,
+      "sha256": "960501e9e7a17885cb4ee694198d3efaa7a3fb8624006fc48627b2b032a3aa6e"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-002-gap-02.png",
+      "bytes": 1129,
+      "sha256": "9c24662fb0c23ef359049997fbe6c4f2781254dfabe377bf99468c15615fec48"
+    },
+    {
+      "path": "reviewed-matte-masks/special/tile-002-gap-03.png",
+      "bytes": 1571,
+      "sha256": "3cabb915ec1cbbc7d1db2165de8c1a7e1dc193dcbcf3971c313def888e1b1ba9"
+    },
+    {
+      "path": "source-selection-provenance.json",
+      "bytes": 20595,
+      "sha256": "102bcbb7c507842103ff990bdc6bc9df69daaf08250d54979e32ca1717c14265"
+    },
+    {
+      "path": "staged-resource-replay.json",
+      "bytes": 6289,
+      "sha256": "6f9925427506e84793c4db527d70b626682c1f113b0757b2e41eccdc59d005b8"
+    }
+  ]
+}

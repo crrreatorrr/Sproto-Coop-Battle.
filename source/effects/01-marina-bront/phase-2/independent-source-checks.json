@@ -1,0 +1,618 @@
+{
+  "status": "PASS_EXACT_REVIEWED_BACKGROUND_MASK_REPLAY",
+  "packets": [
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-spread-03-background-proposal-v1",
+      "manifest": "delivery-manifest.json",
+      "manifestSha256": "f8d944e1cb81f323ee83971af7961defc6eb2775b61d87b8279987ad326d54c4",
+      "filesVerified": 30
+    },
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-spread-03-independent-v1",
+      "manifest": "delivery-manifest.json",
+      "manifestSha256": "53a7f9d18969ba370aed6a2540b88096a9e50b20df1f4e70aa619b7a9f68de32",
+      "filesVerified": 98
+    },
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-spread-03-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "2da9160e9b3ef337b70598c05ae5be748b47706c8b0c20961245daaa36e9e973",
+      "filesVerified": 19
+    },
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/bront-p2-hurt-04-fringe-mask-proposal-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "94c490e1d79614d2872d6d03d4e754a369f5abbbda2a4731eea1d6b321b8348d",
+      "filesVerified": 53
+    },
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/bront-p2-four-effects-candidate-v2",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "a40b3974309c3737745c3987fd80531c168496a6eb058dfbaf8f50e68990ac41",
+      "filesVerified": 185
+    },
+    {
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/bront-p2-hurt-04-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "ac511ffef6887f372e1b8973f33e0ffccc947487a11ce51f2f311fbaef552814",
+      "filesVerified": 21
+    }
+  ],
+  "records": [
+    {
+      "family": "spread",
+      "cel": 0,
+      "nativeRemoved": 0,
+      "gameRemoved": 0,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 62337,
+            "bounds": [
+              63,
+              121,
+              445,
+              390
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2181,
+            "bounds": [
+              12,
+              23,
+              83,
+              73
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "spread",
+      "cel": 1,
+      "nativeRemoved": 0,
+      "gameRemoved": 0,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 67777,
+            "bounds": [
+              61,
+              121,
+              489,
+              389
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2378,
+            "bounds": [
+              11,
+              23,
+              92,
+              73
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "spread",
+      "cel": 2,
+      "nativeRemoved": 13,
+      "gameRemoved": 3,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 64751,
+            "bounds": [
+              61,
+              120,
+              462,
+              392
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2281,
+            "bounds": [
+              11,
+              23,
+              87,
+              74
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "spread",
+      "cel": 3,
+      "nativeRemoved": 14,
+      "gameRemoved": 3,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 68113,
+            "bounds": [
+              60,
+              120,
+              487,
+              392
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2395,
+            "bounds": [
+              11,
+              23,
+              91,
+              74
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "hurt",
+      "cel": 0,
+      "originalCombinedTile": 8,
+      "nativeRemoved": 2367,
+      "gameRemoved": 19,
+      "ambiguousKept": 1529,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 406537,
+            "bounds": [
+              149,
+              149,
+              875,
+              875
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 3572,
+            "bounds": [
+              14,
+              14,
+              82,
+              82
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "hurt",
+      "cel": 1,
+      "originalCombinedTile": 9,
+      "nativeRemoved": 7230,
+      "gameRemoved": 129,
+      "ambiguousKept": 10046,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 540199,
+            "bounds": [
+              49,
+              27,
+              975,
+              1004
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 3,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 4695,
+            "bounds": [
+              5,
+              4,
+              91,
+              94
+            ]
+          },
+          {
+            "id": 2,
+            "pixels": 1,
+            "bounds": [
+              14,
+              32,
+              15,
+              33
+            ]
+          },
+          {
+            "id": 3,
+            "pixels": 1,
+            "bounds": [
+              83,
+              84,
+              84,
+              85
+            ]
+          }
+        ],
+        "newSplits": [
+          {
+            "originalId": 1,
+            "afterComponents": [
+              {
+                "id": 1,
+                "pixels": 4695,
+                "bounds": [
+                  5,
+                  4,
+                  91,
+                  94
+                ]
+              },
+              {
+                "id": 2,
+                "pixels": 1,
+                "bounds": [
+                  14,
+                  32,
+                  15,
+                  33
+                ]
+              },
+              {
+                "id": 3,
+                "pixels": 1,
+                "bounds": [
+                  83,
+                  84,
+                  84,
+                  85
+                ]
+              }
+            ]
+          }
+        ],
+        "afterOnePixelComponents": [
+          {
+            "id": 2,
+            "pixels": 1,
+            "bounds": [
+              14,
+              32,
+              15,
+              33
+            ]
+          },
+          {
+            "id": 3,
+            "pixels": 1,
+            "bounds": [
+              83,
+              84,
+              84,
+              85
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "family": "hurt",
+      "cel": 2,
+      "originalCombinedTile": 10,
+      "nativeRemoved": 2044,
+      "gameRemoved": 22,
+      "ambiguousKept": 1568,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 288340,
+            "bounds": [
+              226,
+              192,
+              825,
+              791
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2522,
+            "bounds": [
+              21,
+              18,
+              77,
+              74
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    },
+    {
+      "family": "hurt",
+      "cel": 3,
+      "originalCombinedTile": 11,
+      "nativeRemoved": 2165,
+      "gameRemoved": 6,
+      "ambiguousKept": 1032,
+      "retainedStrictMaterialRGBAMismatches": 0,
+      "paletteNewColors": 0,
+      "wholeNNMismatch": 0,
+      "nativeComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 331079,
+            "bounds": [
+              184,
+              185,
+              840,
+              840
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      },
+      "gameComponents": {
+        "beforeComponents4": 1,
+        "afterComponents4": 1,
+        "afterComponents": [
+          {
+            "id": 1,
+            "pixels": 2916,
+            "bounds": [
+              17,
+              17,
+              79,
+              79
+            ]
+          }
+        ],
+        "newSplits": [],
+        "afterOnePixelComponents": []
+      }
+    }
+  ],
+  "spread": {
+    "nativeRemoved": 27,
+    "gameRemoved": 6,
+    "protectedRimSamplesKept": 405,
+    "atlasSha256": "289468f2b19c27a4512a2575a98b699a32f3e52e4e201ab804670709e0128bee",
+    "boards": [
+      {
+        "theme": "dark",
+        "bothFacingsActual96NN4RGBMismatches": 0
+      },
+      {
+        "theme": "pale",
+        "bothFacingsActual96NN4RGBMismatches": 0
+      }
+    ]
+  },
+  "hurt": {
+    "nativeRemoved": 13806,
+    "gameRemoved": 176,
+    "oldCoralWitnessesRemoved": 147,
+    "maskComponents4": 1540,
+    "ambiguousSamplesKept": 14175,
+    "protectedMaterialSamplesKept": {
+      "protected-dark-case": 1015603,
+      "protected-copper": 256755,
+      "protected-cyan-lime": 340603,
+      "ambiguous-KEEP-masks": 14175
+    },
+    "atlasSha256": "400596d17d09084e73b954e17177b1b294750c8433c91932b5c0eb23a5ba8f09",
+    "boards": [
+      {
+        "theme": "dark",
+        "bothFacingsActual96NN4RGBMismatches": 0
+      },
+      {
+        "theme": "pale",
+        "bothFacingsActual96NN4RGBMismatches": 0
+      }
+    ],
+    "all16Contact": [
+      {
+        "tile": 0,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 1,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 2,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 3,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 4,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 5,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 6,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 7,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 8,
+        "source": "reviewedHurt",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 9,
+        "source": "reviewedHurt",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 10,
+        "source": "reviewedHurt",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 11,
+        "source": "reviewedHurt",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 12,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 13,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 14,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      },
+      {
+        "tile": 15,
+        "source": "untouchedOriginalContact95",
+        "contactRGBAMismatch": 0
+      }
+    ]
+  },
+  "retainedRGBAChanges": 0,
+  "paletteRelearningOrRecolor": false,
+  "perFrameTransformsOrNewPoses": false,
+  "wholeCellNNExact": true,
+  "allSourcesProposalsOutputsUnchanged": true,
+  "gameWrites": false,
+  "providerActions": false,
+  "nativeHaloFreeClaimed": false
+}

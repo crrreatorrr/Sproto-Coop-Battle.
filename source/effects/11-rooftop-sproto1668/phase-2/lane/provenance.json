@@ -1,0 +1,122 @@
+{
+  "boss": "11-rooftop-sproto1668",
+  "phase": 1,
+  "kind": "lane",
+  "htmlStagePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/sproto1668-p2-lane-projectile-v1/staged/11-rooftop-sproto1668-p2-lane-8633e81c4411.png",
+  "providerSourceSHA256": "ddf583fea0d6183dd2e004fa995e40a8c079b6e97d4abec6af894802509c2710",
+  "sourceSHA256": "fa946450000abaa8fe0b5a4c652eb91fb45acc1fcab220b34ffb3bed4b955c02",
+  "pageSHA256": "8633e81c4411f7d608d6d28c0a86f3424543fa12717fed5a9472e2ec59589654",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/effects/11-rooftop-sproto1668-p2-lane-8633e81c4411.png",
+        "columns": 4,
+        "rows": 1,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "flatMatteRGB": [
+    1.0,
+    252.0,
+    253.0
+  ],
+  "flatSamples": 1369958,
+  "boundedMix": 3581,
+  "scale": 0.14882506527415143,
+  "transforms": [
+    {
+      "sourceBox": [
+        149,
+        203,
+        529,
+        438
+      ],
+      "packedBounds": [
+        20,
+        31,
+        77,
+        66
+      ],
+      "paste": [
+        20,
+        31
+      ],
+      "sourceRGBAsha256": "d6248eb0dd9a7655529f68033318ad8489df7943a189ed85d1fd93d4ddd97c7d"
+    },
+    {
+      "sourceBox": [
+        105,
+        221,
+        481,
+        423
+      ],
+      "packedBounds": [
+        20,
+        33,
+        76,
+        63
+      ],
+      "paste": [
+        20,
+        33
+      ],
+      "sourceRGBAsha256": "8593d66d09b7fbe799acaafa663c4c38955c1e2fe4976068de6f1f4a088a4c4d"
+    },
+    {
+      "sourceBox": [
+        149,
+        221,
+        532,
+        407
+      ],
+      "packedBounds": [
+        20,
+        34,
+        77,
+        62
+      ],
+      "paste": [
+        20,
+        34
+      ],
+      "sourceRGBAsha256": "5a0538362939c83b787706981a52647fad7aee2f2dec05e7c6d09973c82cb628"
+    },
+    {
+      "sourceBox": [
+        105,
+        208,
+        480,
+        422
+      ],
+      "packedBounds": [
+        20,
+        32,
+        76,
+        64
+      ],
+      "paste": [
+        20,
+        32
+      ],
+      "sourceRGBAsha256": "e5add873a8753ab09a5f4f4bd5bd74b67a5010e3d38132b260fd4b9321bbc394"
+    }
+  ],
+  "purposeReview": "Pending independent source and renderer QA"
+}

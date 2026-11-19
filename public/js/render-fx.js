@@ -9,7 +9,8 @@ const { frameCanvas, canFilter, drawFighter, drawBackground, weapon } = R;
 const fxImg = k => img('assets/fx/' + k + '.png');
 
 // Actor rows: walk, lane/lob, spread, homing, charge, sweep, transform keys, summon.
-// Projectile rows: lane/lob, spread, homing, impact. The art faces screen-left.
+// Legacy FX rows: lane/lob, spread, homing, impact. Optional phase.fx clips
+// add signature/special impacts and snapshot-aged hurt/death overlays.
 const BOSS_CELL = 220, BOSS_FX_CELL = 96, BOSS_FOOT = 206;
 const BOSS_WALK = [0, 1, 2, 1];
 const BOSS_SPRITE_SIZE = Math.round(BS * 256);
@@ -25,6 +26,12 @@ const CLASS_ROWS = {
 };
 const WEAPON_ROWS = { bow: 3, scimitar: 4, mace: 5, rapier: 30, greatsword: 31, cudgel: 32, halberd: 33, 'twin-blades': 34 };
 const SHOT_ROWS = { 'mage-bolt': 6, 'healer-bolt': 7, arrow: 8, 'arcane-orb': 9, 'power-arrow': 10, enemyArrow: 11, knife: 12 };
+const ENEMY_SHOTS = new Map([
+  ['knife', [0, 41]],
+  ['enemyArrow', [1, 41]],
+  ['enemyBolt', [2, 53]],
+  ['enemyTwin', [3, 59]],
+]);
 const HIT_ROWS = { 'class-heal': 13, 'mage-hit': 14, 'healer-hit': 15, 'arrow-hit': 16, enemyShotHit: 17, spark: 18 };
 const ROLE_COLORS = { mage: '#e0b0ff', healer: '#81f0b1', ranged: '#83dfff' };
 const CAST_POSES = {
@@ -265,11 +272,20 @@ function projectile(g, p, sx, sy, shadowSheet) {
   if (row === undefined) return false;
   // Screen y changes with belt depth; vx/vy are actual velocity on that plane.
   const spin = p.k === 'knife' ? p.t * 0.55 * Math.sign(p.vx) : 0;
+  const frame = Math.floor(p.t / 3) % 4;
+  const enemyShot = ENEMY_SHOTS.get(p.k);
+  const source = enemyShot && root.AssetLoader.enemyProjectileSheet?.(enemyShot[0]);
+  const sheet = source && img(source);
   g.save(); g.translate(Math.round(sx), Math.round(sy)); g.rotate(Math.atan2(p.vy || 0, p.vx) + spin);
   let drawn;
-  if (imported && Number.isInteger(p.sh) && ready(shadowSheet)) {
+  if (ready(sheet) && sheet.naturalWidth === 4 * CELL && sheet.naturalHeight === ENEMY_SHOTS.size * CELL) {
+    const [enemyRow, size] = enemyShot;
+    g.imageSmoothingEnabled = false;
+    g.drawImage(sheet, frame * CELL, enemyRow * CELL, CELL, CELL, -size / 2, -size / 2, size, size);
+    drawn = true;
+  } else if (imported && Number.isInteger(p.sh) && ready(shadowSheet)) {
     const echo = p.k === 'enemyTwin';
-    const size = (echo ? 59 : 53) + (Math.floor(p.t / 3) % 2) * 3;
+    const size = (echo ? 59 : 53) + (frame % 2) * 3;
     // Warm motion ticks distinguish hostile shots even when the source art is dark.
     g.fillStyle = '#4d2042'; g.fillRect(-17, -2, 10, 4);
     g.fillStyle = echo ? '#fff1bb' : '#ffd395';
@@ -280,7 +296,7 @@ function projectile(g, p, sx, sy, shadowSheet) {
   } else {
     const weapon = S.WEAPONS[p.w];
     const size = p.k === 'arcane-orb' ? 49 : weapon?.gear === 'crossbow' ? 34 : 41;
-    drawn = combatCell(g, row, Math.floor(p.t / 3) % 4, 0, 0, size, weapon?.tint);
+    drawn = combatCell(g, row, frame, 0, 0, size, weapon?.tint);
   }
   g.restore();
   return drawn;
@@ -320,6 +336,10 @@ function sweepSpikes(g, bw, camX, list, lx, lw) {
 
 function drawFx(g, f, camX) {
   const sx = f.x - camX, sy = FLOOR_TOP + f.y - f.z;
+  const authored = root.CoopBossFxSelection?.effect(f);
+  if (authored?.ended) return;
+  if (authored && drawRegisteredBossFx(g, authored, sx, sy,
+    f.k === 'bossSpecialImpact' ? f.sm + 25 : f.sm || 82, false, FLOOR_TOP + f.y)) return;
   if (f.k === 'bossSpecialImpact') {
     const ph = M.bosses[f.bi].phases[f.ph], color = S.bossExtraAttack(f.bi, 'special').color;
     const size = f.sm, age = f.t / 36, alpha = Math.max(0, 1 - age);
@@ -720,11 +740,7 @@ function bossPose(b, sx) {
     if (b.st === 'dead') return [b.ph, 8, 4 + Math.min(3, Math.floor(t / 14))];
     if (b.fl > 0 && b.st !== 'fire') return [b.ph, 8, Math.min(3, Math.floor((6 - b.fl) * 4 / 6))];
     if (b.st === 'fire') {
-      // Keep the launch pod extended through every missile in the five-shot burst.
-      const age = t - 30;
-      const col = t < 30 ? Math.min(3, Math.floor(t / 7.5)) : b.ph && b.ba === 1
-        ? (age <= 20 ? 4 + Math.floor(age / 5) % 2 : age < 32 ? 6 : 7)
-        : 4 + Math.min(3, Math.floor(age / 7));
+      const col = root.CoopBossFxSelection.barFireColumn(b.ph, b.ba, t);
       return [b.ph, 1 + b.ba, col];
     }
     if (b.st === 'sweep') return [b.ph, 7, t < S.SWEEP_WARN ? Math.min(3, Math.floor(t * 4 / S.SWEEP_WARN)) : 4 + Math.min(3, Math.floor((t - S.SWEEP_WARN) / 6))];
@@ -816,20 +832,32 @@ function drawBossCel(g, b, sx, sy, sprite, row, col) {
 }
 
 function drawBossTransform(g, b, sx, sy) {
-  const phases = M.bosses[b.bi].phases;
-  if (M.bosses[b.bi].attacks === 'bar') {
+  const boss = M.bosses[b.bi], phases = boss.phases;
+  if (boss.attacks === 'bar') {
     const morph = root.CoopBossMorph?.sprotel;
     const frame = morph?.pose(b.t);
     const [phase, row, col] = frame ? morph.poses[frame.key] : [b.t < 240 ? 0 : 1, 0, 0];
-    const sheets = phases.map(p => img(p.sheet));
-    if (!ready(sheets[phase])) return;
+    const placed = root.AssetLoader.bossActorFrame(M, b.bi, phase, row);
+    const sheet = img(placed.src);
+    if (!ready(sheet)) return;
+    const sheets = phases.map(p => [img(p.sheet), img(root.AssetLoader.lowerBossActorPath(p))]);
     const folded = morph?.generate(0, frame, sheets);
     const progress = ease(S.clamp((b.t - 28) / 414, 0, 1));
     const width = (phases[0].body[2] - phases[0].body[0]) * (1 - progress) +
       (phases[1].body[2] - phases[1].body[0]) * progress;
     shadow(g, sx, sy, width * BS * .45);
     drawTransformDischarge(g, b, sx, sy, width, '#24d8df');
-    drawBossCel(g, { ...b, ph: phase }, sx, sy, folded || sheets[phase], folded ? 0 : row, folded ? 0 : col);
+    if (folded) drawBossCel(g, { ...b, ph: phase }, sx, sy, folded, 0, 0);
+    else drawBossCel(g, { ...b, ph: phase }, sx, sy, sheet, placed.row, col);
+    return;
+  }
+  const authored = root.CoopBossTransformPlayer?.shared();
+  if (root.CoopBossTransformations?.clips?.[boss.key]) {
+    shadow(g, sx, sy, (phases[1].body[2] - phases[1].body[0]) * BS * 0.45);
+    if (!authored?.draw(g, boss.key, b.t, sx, sy, b.fc, BOSS_SPRITE_SIZE)) {
+      const sheet = img(phases[0].sheet);
+      if (ready(sheet)) drawBossCel(g, b, sx, sy, sheet, 0, 0);
+    }
     return;
   }
   const morph = root.CoopBossMorph;
@@ -852,17 +880,87 @@ function drawBoss(g, b, camX) {
   const sx = b.x - camX, sy = FLOOR_TOP + b.y;
   if (b.st === 'transform') return drawBossTransform(g, b, sx, sy);
   const [phase, row, col] = bossPose(b, sx);
-  const ph = M.bosses[b.bi].phases[phase], sheet = img(ph.sheet);
+  const boss = M.bosses[b.bi], ph = boss.phases[phase];
+  const frame = boss.attacks === 'bar' ? root.AssetLoader.bossActorFrame(M, b.bi, phase, row) : null;
+  const sheet = img(frame ? frame.src : ph.sheet);
   shadow(g, sx, sy, (ph.body[2] - ph.body[0]) * BS * 0.45);
-  if (!ready(sheet)) return;
   const shake = (b.st === 'charge' && col === 0) || (b.st === 'sweep' && col === 0) ? (b.t % 4 < 2 ? 2 : -2) : 0;
-  drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, row, col);
+  const played = root.CoopBossActionPlayer?.shared()?.draw(g, M.bosses[b.bi].key, phase, {
+    x: sx, y: sy, facing: b.fc, extent: BOSS_SPRITE_SIZE,
+    filter: b.fl > 0 && canFilter() ? 'brightness(0.92) sepia(0.4) saturate(1.3)' : undefined,
+  });
+  if (!played) {
+    if (!ready(sheet)) return;
+    drawBossCel(g, b, sx + shake, sy + (b.st === 'dead' ? b.t * 0.15 : 0), sheet, frame ? frame.row : row, col);
+  }
+  for (const choice of root.CoopBossFxSelection?.overlays(b) || []) {
+    // bossHit has no phase, and generic death booms have no boss identity.
+    // Keep those events unchanged; these optional attached overlays instead
+    // use the explicit boss phase/flash/death ages from the same snapshot.
+    const z = (ph.body[3] - ph.body[1]) * BS * 0.45;
+    drawRegisteredBossFx(g, choice, sx, sy - z, choice.purpose === 'death' ? 120 : 82, false);
+  }
   if (b.su !== undefined && b.st !== 'idle' && b.st !== 'dead') {
     g.save();
     g.globalAlpha = (27 - b.su) / 27;
     drawBossFx(g, ph, 3, Math.min(3, Math.floor(b.su / 7)), sx - b.fc * 62, sy - 74, 42, false);
     g.restore();
   }
+}
+
+// FX clips share the actor timeline math, but never retain another event's
+// image or run a client-side clock. A late/malformed atlas keeps legacy art.
+const bossFxPlans = new WeakMap(), invalidBossFxClips = new WeakSet();
+let bossFxCellCanvas;
+function bossFxCell(sheet, frame) {
+  if (!bossFxCellCanvas) bossFxCellCanvas = document.createElement('canvas');
+  if (bossFxCellCanvas.width !== BOSS_FX_CELL || bossFxCellCanvas.height !== BOSS_FX_CELL) {
+    bossFxCellCanvas.width = bossFxCellCanvas.height = BOSS_FX_CELL;
+  }
+  const cell = bossFxCellCanvas.getContext('2d');
+  cell.clearRect(0, 0, BOSS_FX_CELL, BOSS_FX_CELL);
+  cell.imageSmoothingEnabled = false;
+  cell.drawImage(sheet, frame.x, frame.y, BOSS_FX_CELL, BOSS_FX_CELL,
+    0, 0, BOSS_FX_CELL, BOSS_FX_CELL);
+  return bossFxCellCanvas;
+}
+
+function drawRegisteredBossFx(g, choice, x, y, size, flip, groundY) {
+  const clip = root.CoopBossFxSelection?.clipFor(root.CoopBossTransformations?.animations, M, choice);
+  if (!clip || typeof clip !== 'object' || !root.CoopSpriteTimeline?.plan || invalidBossFxClips.has(clip)) return false;
+  let plan = bossFxPlans.get(clip);
+  if (!plan) {
+    try {
+      plan = root.CoopSpriteTimeline.plan(clip, { anchorInside: true,
+        maxTextureSide: 2048, maxPageBytes: 8 * 1024 * 1024, allowRepeatedSources: true,
+        validateSource: src => /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
+          src.split('/').every(segment => segment && segment !== '.' && segment !== '..') &&
+          !/^assets\/bosses\/(actions|transformations)\//.test(src) });
+      if (plan.cell.some(n => n !== BOSS_FX_CELL) || clip.frameTicks.length > 64 ||
+          plan.coreRect.some((n, i) => n !== [0, 0, BOSS_FX_CELL, BOSS_FX_CELL][i])) {
+        invalidBossFxClips.add(clip); return false;
+      }
+      bossFxPlans.set(clip, plan);
+    } catch (_) { invalidBossFxClips.add(clip); return false; }
+  }
+  const frame = plan.at(choice.age, choice.loop), sheet = img(frame.page.src);
+  if (!ready(sheet) || sheet.naturalWidth !== frame.page.width || sheet.naturalHeight !== frame.page.height) return false;
+  // Fractional world extents must sample the same cel regardless of its atlas
+  // row. One reusable 96x96 RGBA scratch (36,864 bytes) also clears transparent
+  // regions before the next cel; destination placement stays unchanged.
+  const picture = bossFxCell(sheet, frame);
+  // Ground-contact cels opt in explicitly. The event's z remains serialized
+  // and authoritative; only these two visual origins use the belt floor.
+  if (clip.grounded === true && (choice.purpose === 'signature' || choice.purpose === 'special') &&
+      Number.isFinite(groundY)) y = groundY;
+  g.save();
+  g.translate(Math.round(x), Math.round(y));
+  g.imageSmoothingEnabled = false;
+  if (flip) g.scale(-1, 1);
+  g.drawImage(picture, 0, 0, ...plan.cell,
+    -plan.anchor[0] * size / BOSS_FX_CELL, -plan.anchor[1] * size / BOSS_FX_CELL, size, size);
+  g.restore();
+  return true;
 }
 
 function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
@@ -879,12 +977,12 @@ function drawBossFx(g, ph, row, col, x, y, size, flip, rawRow, angle = 0) {
   return true;
 }
 
-function drawProj(g, p, camX, shadowSheet) {
-  const sx = p.x - camX, sy = FLOOR_TOP + p.y - p.z;
+function drawProj(g, p, camX, shadowSheet, position) {
+  const sx = position.x - camX, sy = FLOOR_TOP + position.y - position.z;
   if (projectile(g, p, sx, sy, shadowSheet)) return;
   if (p.k === 'boss') {
     const ph = M.bosses[p.bi].phases[p.ph];
-    shadow(g, sx, FLOOR_TOP + p.y, 7);
+    shadow(g, sx, FLOOR_TOP + position.y, 7);
     if (p.ma !== undefined) {
       const size = [96, 58, 44][p.ma];
       const angle = p.ma === 2 ? 0 : Math.sign(p.vx) * Math.atan2(-(p.vz || 0), Math.abs(p.vx));
@@ -897,7 +995,9 @@ function drawProj(g, p, camX, shadowSheet) {
       return;
     }
     const row = p.r === 3 ? 2 : p.r === 1 ? 1 : 0;
-    if (!drawBossFx(g, ph, row, Math.floor(p.t / 4) % 4, sx, sy, row === 2 ? 68 : 60, p.vx > 0)) {
+    const choice = root.CoopBossFxSelection?.projectile(p);
+    if (!drawRegisteredBossFx(g, choice, sx, sy, row === 2 ? 68 : 60, p.vx > 0) &&
+        !drawBossFx(g, ph, row, Math.floor(p.t / 4) % 4, sx, sy, row === 2 ? 68 : 60, p.vx > 0)) {
       g.fillStyle = '#ff5'; g.fillRect(sx - 4, sy - 4, 8, 8);
     }
   } else if (p.k === 'laser') {
@@ -943,6 +1043,8 @@ function drawBanner(g, snap) {
 // opts.local: slots played on this device (they get a marker). opts.noBanner: the caller draws
 // its own end-of-run panel instead of the banner.
 function drawWorld(g, snap, opts) {
+  root.CoopBossActionPlayer?.shared()?.sync(snap);
+  root.CoopBossTransformPlayer?.shared().sync(snap);
   const mine = (opts && opts.local) || [];
   const camX = snap.camX;
   const sk = snap.sk || 0;
@@ -1008,8 +1110,13 @@ function drawWorld(g, snap, opts) {
     } });
   }
   floor(g, snap, camX, list); // active fire lanes and sweep impacts
-  if (snap.boss) list.push({ y: snap.boss.y, d: () => drawBoss(g, snap.boss, camX) });
-  for (const p of snap.projs) list.push({ y: p.y + 0.1, d: () => drawProj(g, p, camX, shadowSheet) });
+  const boss = snap.boss;
+  if (boss) list.push({ y: boss.y, d: () => drawBoss(g, boss, camX) });
+  for (const p of snap.projs) {
+    const origin = root.CoopBossFxSelection?.projectileOrigin(boss, p, M, BOSS_SPRITE_SIZE, snap.players);
+    const depth = origin ? Math.max(boss.y, origin.y) : p.y;
+    list.push({ y: depth + 0.1, d: () => drawProj(g, p, camX, shadowSheet, origin || p) });
+  }
   list.sort((a, b) => a.y - b.y);
   for (const o of list) o.d();
   for (const f of snap.fx) drawFx(g, f, camX);
@@ -1034,16 +1141,31 @@ function interpolateSnapshot(a, b, k) {
       boss.t = L(previousBoss.t, nextBoss.t);
     }
   }
+  const sameBarAttack = boss?.st === 'fire' && previousBoss?.st === 'fire' &&
+    boss.bi === previousBoss.bi && boss.ph === previousBoss.ph && boss.ba === previousBoss.ba &&
+    boss.t < nextBoss.t && M.bosses[boss.bi]?.attacks === 'bar' && a.si === b.si;
+  const projs = [];
+  for (const shot of b.projs || []) {
+    const prev = ra.get(shot.id);
+    const blended = mix(shot, prev);
+    if (prev && shot.k === 'boss' && prev.k === shot.k && a.si === b.si) {
+      blended.t = L(prev.t, shot.t);
+    } else if (!prev && sameBarAttack && shot.k === 'boss' && shot.bi === boss.bi &&
+               shot.ph === boss.ph && (shot.ma ?? shot.ba) === boss.ba) {
+      // A new packet may already contain a shot the interpolated actor hasn't
+      // fired yet. Advance its visual age with the same clock as the pose.
+      const age = shot.t - (nextBoss.t - boss.t);
+      if (age < 1) continue;
+      projs.push({ ...shot, t: age });
+      continue;
+    }
+    projs.push(blended);
+  }
   return Object.assign({}, b, {
     camX: a.si === b.si ? L(a.camX, b.camX) : b.camX,
     players: (b.players || []).map(o => mix(o, pa.get(o.s))),
     enemies: (b.enemies || []).map(o => mix(o, ea.get(o.id))),
-    projs: (b.projs || []).map(o => {
-      const prev = ra.get(o.id);
-      const projectile = mix(o, prev);
-      if (prev && o.k === 'boss' && prev.k === o.k && a.si === b.si) projectile.t = L(prev.t, o.t);
-      return projectile;
-    }),
+    projs,
     boss,
   });
 }

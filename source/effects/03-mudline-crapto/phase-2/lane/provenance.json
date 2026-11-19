@@ -1,0 +1,122 @@
+{
+  "boss": "03-mudline-crapto",
+  "phase": 1,
+  "kind": "lane",
+  "htmlStagePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/crapto-p2-lane-projectile-v1/staged/03-mudline-crapto-p2-lane-c481fff9bfdd.png",
+  "providerSourceSHA256": "41eaa08a6759e7ca00b4243130e993854c8949a2e8862eb8368e6235c97008fd",
+  "sourceSHA256": "c4c6f18de6d6672eb8ce2bae9f9f1e6176b78dd29057765086486c4ca6bc3004",
+  "pageSHA256": "c481fff9bfdd34d005c0cec93312266521c4af8bead67ef19c792137f11ea266",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/effects/03-mudline-crapto-p2-lane-c481fff9bfdd.png",
+        "columns": 4,
+        "rows": 1,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "flatMatteRGB": [
+    1.0,
+    251.0,
+    253.0
+  ],
+  "flatSamples": 1245025,
+  "boundedMix": 2298,
+  "scale": 0.1417910447761194,
+  "transforms": [
+    {
+      "sourceBox": [
+        114,
+        194,
+        516,
+        440
+      ],
+      "packedBounds": [
+        20,
+        31,
+        77,
+        66
+      ],
+      "paste": [
+        20,
+        31
+      ],
+      "sourceRGBAsha256": "49851d66a96410090dd14d1314f935bfd1371df1d9cc7fa1dcd548e5fb782e89"
+    },
+    {
+      "sourceBox": [
+        114,
+        194,
+        516,
+        440
+      ],
+      "packedBounds": [
+        20,
+        31,
+        77,
+        66
+      ],
+      "paste": [
+        20,
+        31
+      ],
+      "sourceRGBAsha256": "e11e59e313a803ed652334fc39c13135968aa25eae6f4de5cefb96f5533f0c48"
+    },
+    {
+      "sourceBox": [
+        114,
+        194,
+        516,
+        440
+      ],
+      "packedBounds": [
+        20,
+        31,
+        77,
+        66
+      ],
+      "paste": [
+        20,
+        31
+      ],
+      "sourceRGBAsha256": "2507a2a0a452caebd13ac2f486cc79088788309c837302724c155ff3c92b1eca"
+    },
+    {
+      "sourceBox": [
+        114,
+        194,
+        516,
+        440
+      ],
+      "packedBounds": [
+        20,
+        31,
+        77,
+        66
+      ],
+      "paste": [
+        20,
+        31
+      ],
+      "sourceRGBAsha256": "4d3fe46192c999fc3237759793256d14d5cd7bf3884286c2c6702286637a7b08"
+    }
+  ],
+  "purposeReview": "Pending independent source and renderer QA"
+}

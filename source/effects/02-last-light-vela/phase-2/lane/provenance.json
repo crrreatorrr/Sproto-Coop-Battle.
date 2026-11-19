@@ -1,0 +1,122 @@
+{
+  "boss": "02-last-light-vela",
+  "phase": 1,
+  "kind": "lane",
+  "htmlStagePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/vela-p2-lane-projectile-v1/staged/02-last-light-vela-p2-lane-e90be2918ceb.png",
+  "providerSourceSHA256": "951f4b7b078350ca8d778c647d285e1006c0a3eeb605a7354df26f69eb891c35",
+  "sourceSHA256": "95954013a608094b82b6f3d9be63233ddca78a9637516707350f91ff6c12fe92",
+  "pageSHA256": "e90be2918cebc8b88816bc1175ff686b0fc4ba703f1cd19c311ca81bde79bd67",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/effects/02-last-light-vela-p2-lane-e90be2918ceb.png",
+        "columns": 4,
+        "rows": 1,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "flatMatteRGB": [
+    249.0,
+    4.0,
+    249.0
+  ],
+  "flatSamples": 1300856,
+  "boundedMix": 3960,
+  "scale": 0.1325581395348837,
+  "transforms": [
+    {
+      "sourceBox": [
+        106,
+        162,
+        531,
+        470
+      ],
+      "packedBounds": [
+        20,
+        28,
+        76,
+        69
+      ],
+      "paste": [
+        20,
+        28
+      ],
+      "sourceRGBAsha256": "4bc32d662552851e725a1cd107e9138a7ac9c2158f6982a90d5ae5bc4625ee6f"
+    },
+    {
+      "sourceBox": [
+        103,
+        161,
+        531,
+        474
+      ],
+      "packedBounds": [
+        20,
+        28,
+        77,
+        69
+      ],
+      "paste": [
+        20,
+        28
+      ],
+      "sourceRGBAsha256": "265b1ec329499fcc01fc9ef9ee3879534b5591703e34877f8b0a2aaa098ee35e"
+    },
+    {
+      "sourceBox": [
+        103,
+        156,
+        531,
+        473
+      ],
+      "packedBounds": [
+        20,
+        27,
+        77,
+        69
+      ],
+      "paste": [
+        20,
+        27
+      ],
+      "sourceRGBAsha256": "94f24d9408511cfd2d4b0876bf0559598fc9d5ac028f5053be98f3efd99c2adb"
+    },
+    {
+      "sourceBox": [
+        101,
+        153,
+        531,
+        474
+      ],
+      "packedBounds": [
+        20,
+        27,
+        77,
+        70
+      ],
+      "paste": [
+        20,
+        27
+      ],
+      "sourceRGBAsha256": "7d9d7308cdadb84a8008ea6c943c6a70dbdd1b44d62be1b32c988cf95044a5f1"
+    }
+  ],
+  "purposeReview": "Pending independent source and renderer QA"
+}

@@ -1,0 +1,203 @@
+{
+  "expectedSourceSha256": "875d7ef490288f4aa482494794d41908c0f8bc3c1ba1f5b9bdc4f6c7f8a583fb",
+  "providerProvenance": {
+    "actualOriginalSHA256": "d1433df30a41c8fbd58fc4feb543b7f18fb3d21ed25e65ce6d31ef3faaffdf71",
+    "actualOriginalProvenance": {
+      "jobIds": [
+        "6b6e88d1-5433-478d-8ef6-8b1b09538d3e"
+      ],
+      "referenceAssetId": "3885e423-cc95-4099-9f47-a4a8c6373d39",
+      "model": "Seedream 5.0 lite",
+      "quality": "4K",
+      "aspectRatio": "1:1",
+      "route": "website Unlimited",
+      "creditsAuthorized": 0,
+      "purpose": "Crapto P2 signature four genuine FX stages from clean static canister only; actualmagenta paint on HOTGREENmatte",
+      "submittedAt": "2026-11-18T05:14:49.811Z"
+    },
+    "sourceCommonEmptyPaddingCrop": [
+      512,
+      512,
+      1536,
+      1536
+    ],
+    "actualOriginalFieldSize": [
+      2048,
+      2048
+    ],
+    "actualOriginalCells": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "selectedRGBAExact": true,
+    "sourcePaintLoss": 0,
+    "magentaIsActualPaintProtected": true
+  },
+  "grid": {
+    "rows": 2,
+    "columns": 2,
+    "expectedImageSize": [
+      2048,
+      2048
+    ],
+    "expectedCellSize": [
+      1024,
+      1024
+    ]
+  },
+  "background": {
+    "mode": "edge-connected-key",
+    "rgb": [
+      22,
+      210,
+      19
+    ],
+    "tolerance": 32,
+    "connectivity": 4,
+    "seedsByTile": {
+      "1": [
+        {
+          "id": "tile-001-reviewed-signature-empty-space-00",
+          "point": [
+            427,
+            640
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 824,
+          "expectedRemovedBounds": [
+            412,
+            624,
+            444,
+            654
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/reviewed-matte-masks/tile-001-gap-00.png",
+          "expectedRemovedMaskFileSha256": "3e5d8e62562aa55ef5eecaa7e82d2e7c2b58c669aa7aeeb4f4cf28db0758c6c1",
+          "seedInteriorDepth4Neighbor": 14,
+          "semanticScope": "Native raw contexts reviewed: actual empty green gap between sealed canister/cobalt collar and magenta slurry, or tiny real green negative spaces in black-ink slurry contour. Actual magenta/violet/yellow/dark-cap paint is protected and not key candidates."
+        },
+        {
+          "id": "tile-001-reviewed-signature-empty-space-01",
+          "point": [
+            415,
+            625
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 2,
+          "expectedRemovedBounds": [
+            414,
+            625,
+            416,
+            626
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/reviewed-matte-masks/tile-001-gap-01.png",
+          "expectedRemovedMaskFileSha256": "bb8a16d30ad55ebec7c8de2ccf34927ad97bf3982c203e43739737caeb02924b",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native raw contexts reviewed: actual empty green gap between sealed canister/cobalt collar and magenta slurry, or tiny real green negative spaces in black-ink slurry contour. Actual magenta/violet/yellow/dark-cap paint is protected and not key candidates."
+        },
+        {
+          "id": "tile-001-reviewed-signature-empty-space-02",
+          "point": [
+            241,
+            827
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 1,
+          "expectedRemovedBounds": [
+            241,
+            827,
+            242,
+            828
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/reviewed-matte-masks/tile-001-gap-02.png",
+          "expectedRemovedMaskFileSha256": "462b96c6c808ab710d49cc598f51c9b06c28e6331456acecd90c1f5beed81291",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native raw contexts reviewed: actual empty green gap between sealed canister/cobalt collar and magenta slurry, or tiny real green negative spaces in black-ink slurry contour. Actual magenta/violet/yellow/dark-cap paint is protected and not key candidates."
+        }
+      ],
+      "2": [
+        {
+          "id": "tile-002-reviewed-signature-empty-space-03",
+          "point": [
+            804,
+            404
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 1,
+          "expectedRemovedBounds": [
+            804,
+            404,
+            805,
+            405
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/reviewed-matte-masks/tile-002-gap-03.png",
+          "expectedRemovedMaskFileSha256": "3dbea06dc4a44caf8dab4a01057874680e94490fd636d3aaea055a85cb03ab9b",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native raw contexts reviewed: actual empty green gap between sealed canister/cobalt collar and magenta slurry, or tiny real green negative spaces in black-ink slurry contour. Actual magenta/violet/yellow/dark-cap paint is protected and not key candidates."
+        },
+        {
+          "id": "tile-002-reviewed-signature-empty-space-04",
+          "point": [
+            496,
+            709
+          ],
+          "reviewedBackground": true,
+          "expectedRemovedPixels": 1,
+          "expectedRemovedBounds": [
+            496,
+            709,
+            497,
+            710
+          ],
+          "expectedRemovedMaskFile": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/reviewed-matte-masks/tile-002-gap-04.png",
+          "expectedRemovedMaskFileSha256": "beb1d9a7f44ecd75ce075206e94c223fc586c45515210fc22ef8ae68e6200a2f",
+          "seedInteriorDepth4Neighbor": 1,
+          "semanticScope": "Native raw contexts reviewed: actual empty green gap between sealed canister/cobalt collar and magenta slurry, or tiny real green negative spaces in black-ink slurry contour. Actual magenta/violet/yellow/dark-cap paint is protected and not key candidates."
+        }
+      ]
+    }
+  },
+  "protection": {
+    "tileMasks": {
+      "0": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/protected-source-paint/protected-000.png",
+      "1": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/protected-source-paint/protected-001.png",
+      "2": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/protected-source-paint/protected-002.png",
+      "3": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/crapto-p2-signature-02-seedream5-independent-v1/protected-source-paint/protected-003.png"
+    }
+  },
+  "sequence": [
+    {
+      "tile": 0,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 1,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 2,
+      "ticks": 6,
+      "segment": "signature"
+    },
+    {
+      "tile": 3,
+      "ticks": 6,
+      "segment": "signature"
+    }
+  ],
+  "tickHz": 60,
+  "loop": false,
+  "diagnostics": {
+    "minimumEdgeClearance": 1,
+    "rejectEdgeTouch": true
+  },
+  "previews": {
+    "contactMaxExtent": 512,
+    "contactColumns": 4,
+    "contactPageFrames": 4,
+    "gifMaxExtent": 192
+  }
+}

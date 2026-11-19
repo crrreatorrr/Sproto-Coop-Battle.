@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "dcdb5c5c67fb43a742cf63a63f611d69f35ba88c8cc6dec200621b8fbafd4310",
+  "providerSha256": "3c92045475669905df0558091e634382efa272c3471ea2f1f05e0a0bfc18d937",
+  "anchor": [
+    48,
+    62
+  ],
+  "grounded": true,
+  "reviewedPartialAlpha": true,
+  "notes": "Magenta impact spikes drive out of the contact point as gold chain links separate and the marks expire. Light pixels stay in the illuminated magenta core with no unrelated white flecks. The 3/255 cutoff is measured against the native seams. Whole-cell placement preserves modest authored lateral flicker and grounds it at the target center."
+}

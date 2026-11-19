@@ -1,0 +1,39 @@
+{
+  "sourceRowSha256": "76721ac408ebcac26d6f6b01dfd13978b90f7133d869d2739be1fb5b082ef4e7",
+  "runtimeEncodedSha256": "58258bfbfbf99d2b89de9e66dfaa06a0583ea8d1b1f9dbcd5441a605401e09c1",
+  "clip": {
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "frameTicks": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "loop": true,
+    "pages": [
+      {
+        "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+        "columns": 4,
+        "rows": 8,
+        "frames": 4,
+        "firstCell": 0
+      }
+    ]
+  },
+  "preservedRows": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ]
+}

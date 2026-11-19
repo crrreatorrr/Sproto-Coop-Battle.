@@ -3,6 +3,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from './check-assets.mjs';
 
@@ -13,6 +14,17 @@ const SDK_IIFE_SHA256 = '833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b6
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
 const dist = path.join(root, 'dist');
+
+// Every release requests matching scripts and image bytes, including legacy
+// manifest filenames. A cached old atlas cannot accompany a new transformation.
+export function runtimeIndex(report, sdkHash = SDK_IIFE_SHA256) {
+  const version = crypto.createHash('sha256').update(report.publicTreeSha256 + ':' + sdkHash).digest('hex').slice(0, 24);
+  let html = fs.readFileSync(path.join(pub, 'index.html'), 'utf8');
+  html = html.replace(/<script src="((?:js|vendor)\/[^"]+\.js)"/g,
+    (_, source) => `<script src="${source}?v=${version}"`);
+  html = html.replace('<script src=', `<script>globalThis.CoopAssetVersion="${version}";</script>\n<script src=`);
+  return { version, html, bytes: Buffer.byteLength(html), sha256: crypto.createHash('sha256').update(html).digest('hex') };
+}
 
 export function assertSdkPin() {
   const pin = JSON.parse(fs.readFileSync(path.join(root, SDK_PIN), 'utf8'));
@@ -52,6 +64,8 @@ export function buildDist() {
   fs.writeFileSync(sdkTarget, sdk.bytes);
   copied.push(SDK_REL);
   const report = inventory();
+  const index = runtimeIndex(report, sdk.hash);
+  fs.writeFileSync(path.join(dist, 'index.html'), index.html);
   const manifestFiles = report.files.map(file => {
     const row = { path: file.path, bytes: file.bytes, sha256: file.sha256 };
     if (file.gzipBytes != null) row.gzipBytes = file.gzipBytes;
@@ -60,6 +74,13 @@ export function buildDist() {
       row.height = file.height;
       row.decodedBytes = file.decodedBytes;
     }
+    if (file.path === 'index.html') {
+      row.sourceBytes = row.bytes;
+      row.sourceSha256 = row.sha256;
+      row.bytes = index.bytes;
+      row.sha256 = index.sha256;
+      row.gzipBytes = zlib.gzipSync(index.html).length;
+    }
     return row;
   });
   const manifest = {
@@ -67,10 +88,22 @@ export function buildDist() {
     practiceRelay: true,
     economy: 'none',
     algorithm: 'sha256',
+    releaseVersion: index.version,
+    runtimePublicBytes: report.publicBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
+    runtimeIndexSha256: index.sha256,
     assetCount: report.assetCount,
     assetBytes: report.assetBytes,
     publicFileCount: report.publicFileCount,
     publicBytes: report.publicBytes,
+    basePublicBytes: report.basePublicBytes,
+    runtimeBasePublicBytes: report.basePublicBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
+    optionalMediaCount: report.optionalMediaCount,
+    optionalMediaBytes: report.optionalMediaBytes,
+    optionalMediaTreeSha256: report.optionalMediaTreeSha256,
+    optionalMediaPaths: report.streamedMedia.optionalPaths,
+    presentationDecodedBytesMax: report.streamedMedia.maxPresentationDecodedBytes,
+    fxScratchDecodedBytes: report.fxScratchDecodedBytes,
+    mediaBudgetLimits: report.streamedMedia.limits,
     assetTreeSha256: report.assetTreeSha256,
     publicTreeSha256: report.publicTreeSha256,
     preloadCount: report.preloadCount,

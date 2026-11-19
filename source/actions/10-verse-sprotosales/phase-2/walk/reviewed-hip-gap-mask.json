@@ -1,0 +1,205 @@
+{
+  "authorization": "Root explicitly requested separate bounded matte-only v4, same exact provider, only transparent hip-gap pixels; protect pilot highlights.",
+  "providerSHA256": "27f87ff345deeef6adbda8c1422b62f8b9fe5f0be89f5edd7c72d97f94b453a9",
+  "sourceV3SHA256": "ef6320ea8700b709b05af9a7fa130af07e8c9d8fca4ed9e0f3e771b459c2b4fa",
+  "sourceV3ManifestSHA256": "e791b784b462c93d6b3a355b106b5f4bf3b6fded93de5f7cbebfd2a9319bb3e3",
+  "maskSHA256": "0e4025629f205dfda1c9e79181197479a00c610f49bf45538d79f1d7eb0cfed5",
+  "semanticROI": [
+    860,
+    890,
+    936,
+    925
+  ],
+  "maskBounds": [
+    904,
+    912,
+    913,
+    915
+  ],
+  "count": 10,
+  "eligibility": "Previously retained alpha255 source samples; R>G+38,B>G+38,R>150,B>150 in manually reviewed open gap above foreground thigh; all10 form the complete retained saturated component in this tiny ROI.",
+  "protected": "All pilot/lips/controller/casing RGB outside exact mask including original3 true-paint hue witnesses.",
+  "removed": [
+    {
+      "xy": [
+        904,
+        912
+      ],
+      "oldRGBA": [
+        204,
+        23,
+        163,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        905,
+        912
+      ],
+      "oldRGBA": [
+        215,
+        7,
+        172,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        906,
+        912
+      ],
+      "oldRGBA": [
+        200,
+        24,
+        168,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        907,
+        913
+      ],
+      "oldRGBA": [
+        166,
+        8,
+        152,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        908,
+        913
+      ],
+      "oldRGBA": [
+        238,
+        33,
+        181,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        909,
+        913
+      ],
+      "oldRGBA": [
+        206,
+        15,
+        151,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        910,
+        913
+      ],
+      "oldRGBA": [
+        206,
+        38,
+        167,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        911,
+        913
+      ],
+      "oldRGBA": [
+        207,
+        99,
+        189,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        911,
+        914
+      ],
+      "oldRGBA": [
+        244,
+        92,
+        205,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "xy": [
+        912,
+        914
+      ],
+      "oldRGBA": [
+        255,
+        90,
+        212,
+        255
+      ],
+      "newRGBA": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "outsideMaskAllRGBAExact": true
+}

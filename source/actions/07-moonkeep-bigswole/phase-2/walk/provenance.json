@@ -1,0 +1,196 @@
+{
+  "status": "PRIVATE_CANDIDATE_NOT_REGISTERED_PENDING_INDEPENDENT_QA",
+  "version": 2,
+  "id": "bigswole-p2-walk-v2",
+  "phaseIndex": 1,
+  "state": "walk",
+  "clips": {
+    "walk": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": true,
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/07-moonkeep-bigswole/phase-2/bigswole-p2-walk-v2-734bc4256cb6727b.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "734bc4256cb6727b6d140c165e553034f7a8a2da68462cb1e4c7b56600ba0abe",
+  "pageSize": [
+    660,
+    660
+  ],
+  "encodedBytes": 155320,
+  "decodedBytes": 1742400,
+  "sourceOriginalSHA256": "01a097c6ac20e69ff3b9d606d65a4f5c1e6568ae865934430a35cef8b040a050",
+  "extractedSHA256": "6722e1a5bffea989fc3f97b4e37c00ee8bd8a607db604920409ec7db59272078",
+  "sourceLineage": [
+    {
+      "index": 0,
+      "generatedIndex": 0,
+      "role": "actual walk sourcecel0",
+      "sourceFile": "generated-cel-0.png",
+      "sourcePngSHA256": "ac36ceea0846948544ced264b48f9ff9602b1aedf12d519d00a9fd3c5da01945",
+      "sourceRGBASHA256": "000639265b6cb7ca87c4d14240796b7823cfd407e508b2696b883de1c12ea3b0",
+      "sourceBounds": [
+        119,
+        41,
+        514,
+        541
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.383,
+      "sourceAnchor": [
+        311,
+        541
+      ],
+      "deliveryBounds": [
+        91,
+        69,
+        243,
+        261
+      ],
+      "deliveryRGBASHA256": "8a01aab60a467eee405b5cb9c20559ca852dd9cc5f3d96529cf2c97049219e5a",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 1,
+      "generatedIndex": 2,
+      "role": "actual walk sourcecel2",
+      "sourceFile": "generated-cel-2.png",
+      "sourcePngSHA256": "7513f95557983934dd96dff5c8b537525cd36d003a97f988d1dc504f8bc2b95b",
+      "sourceRGBASHA256": "116ae0efde9e8e3d5e43caa83362a331c1def6c80ee884949f33768df9280168",
+      "sourceBounds": [
+        119,
+        41,
+        514,
+        541
+      ],
+      "originRegistration": [
+        0,
+        0
+      ],
+      "sharedScale": 0.383,
+      "sourceAnchor": [
+        311,
+        541
+      ],
+      "deliveryBounds": [
+        91,
+        69,
+        243,
+        261
+      ],
+      "deliveryRGBASHA256": "7a5912ff125fcbc63dc2de4bec25ed1b094235f0c09a5d5da11f0acfdc7b28c3",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 2,
+      "generatedIndex": 1,
+      "role": "actual walk sourcecel1",
+      "sourceFile": "generated-cel-1.png",
+      "sourcePngSHA256": "20fec49c1feb4b657df9199ea3d23f4cb11d81583b309e5d3072cf8417b717c7",
+      "sourceRGBASHA256": "ff986bb5f726148f327397a4d5f7ef5baf2738dc39ea8ff887442e3b0236254e",
+      "sourceBounds": [
+        99,
+        41,
+        495,
+        541
+      ],
+      "originRegistration": [
+        20,
+        0
+      ],
+      "sharedScale": 0.383,
+      "sourceAnchor": [
+        311,
+        541
+      ],
+      "deliveryBounds": [
+        91,
+        69,
+        243,
+        261
+      ],
+      "deliveryRGBASHA256": "96e302e4be78d4abaa0ebef3319e48e61fe4b88623043f81a18b3991d1738722",
+      "completeTransformedSourceExtentInsideField": true
+    },
+    {
+      "index": 3,
+      "generatedIndex": 3,
+      "role": "actual walk sourcecel3",
+      "sourceFile": "generated-cel-3.png",
+      "sourcePngSHA256": "acd74a7f18b8da279cc3a21478119d6d6318fae111ec2b56018227086b532166",
+      "sourceRGBASHA256": "8949091089974c37f03b848068fa992236e6c6456a2314b9029ac6a2c81aa1bc",
+      "sourceBounds": [
+        99,
+        41,
+        495,
+        541
+      ],
+      "originRegistration": [
+        20,
+        0
+      ],
+      "sharedScale": 0.383,
+      "sourceAnchor": [
+        311,
+        541
+      ],
+      "deliveryBounds": [
+        91,
+        69,
+        243,
+        261
+      ],
+      "deliveryRGBASHA256": "2b42f3869f0ea87deba8d05308463715d50a226a150d5d7fe137a4a6544a4fc9",
+      "completeTransformedSourceExtentInsideField": true
+    }
+  ],
+  "newProviderDrawings": 0,
+  "localNewPoses": 0,
+  "noPerPartPatch": true,
+  "canonicalStandingLeadIn": false,
+  "inheritedSourceDrawings": 4,
+  "sourceDrawings": 4,
+  "technicalRevision": {
+    "priorVersion": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/bigswole-p2-walk-v1",
+    "priorPageSha256": "9407e7bff36e57d7e7315c4abab398af66bd19df8144fadabb13a7d32f36074c",
+    "sourceSHA256": "01a097c6ac20e69ff3b9d606d65a4f5c1e6568ae865934430a35cef8b040a050",
+    "maskFile": "reviewed-gap-matte/elbow-gap-mask-sheet1254.png",
+    "maskSHA256": "7e4b546bb818a6ebe31136b137f19e67b005d4defbf1da53334f9c1dace028d3",
+    "removedNativeSamples": 175,
+    "scope": "Only demonstrated green matte in original cel3 elbow gap; source RGB/alpha outside exact mask unchanged; all rigid art/ordering/registration unchanged."
+  }
+}

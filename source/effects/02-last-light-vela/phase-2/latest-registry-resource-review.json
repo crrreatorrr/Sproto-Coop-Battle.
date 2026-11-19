@@ -1,0 +1,279 @@
+{
+  "status": "PASS_VIRTUAL_ONLY_NOT_REGISTERED",
+  "reviewedHead": "f538aaa7df11daf7ed5d4a6f4179e555555b7780",
+  "originalPublicTreeSHA256": "f2c731dece227b6c8d6b169f0c531d4c2e419a2dff759f227d5442493ada6307",
+  "originalRegistrySHA256": "a7e17014e7cc5e87874a73d6719884318e3bfe9e043aae3ce788d36772c3ff4d",
+  "optionalCount": 61,
+  "optionalBytes": 7677234,
+  "maxPresentationDecodedBytes": 30357824,
+  "fxScratchDecodedBytes": 36864,
+  "addedEncodedBytes": 53379,
+  "addedDecodedBytes": 442368,
+  "validationErrors": [],
+  "limitErrors": [],
+  "startupAndFirstBossPathsUnchanged": true,
+  "oneDedicatedBankPerOwningBoss": true,
+  "checks": [
+    {
+      "bossKey": "02-last-light-vela",
+      "runtimePath": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+      "oneOwningStagePath": true,
+      "noOtherBossStageOwnership": true,
+      "allPathDeduplicated": true,
+      "plans": {
+        "signature": {
+          "clip": {
+            "cell": [
+              96,
+              96
+            ],
+            "anchor": [
+              48,
+              63
+            ],
+            "frameTicks": [
+              6,
+              6,
+              6,
+              6
+            ],
+            "grounded": true,
+            "pages": [
+              {
+                "src": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+                "columns": 4,
+                "rows": 1,
+                "frames": 4,
+                "firstCell": 0
+              }
+            ]
+          },
+          "cell": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            63
+          ],
+          "coreRect": [
+            0,
+            0,
+            96,
+            96
+          ],
+          "duration": 24,
+          "pages": [
+            {
+              "src": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+              "columns": 4,
+              "rows": 1,
+              "frames": 4,
+              "firstCell": 0,
+              "first": 0,
+              "width": 384,
+              "height": 96,
+              "decodedBytes": 147456
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bossKey": "03-mudline-crapto",
+      "runtimePath": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+      "oneOwningStagePath": true,
+      "noOtherBossStageOwnership": true,
+      "allPathDeduplicated": true,
+      "plans": {
+        "signature": {
+          "clip": {
+            "cell": [
+              96,
+              96
+            ],
+            "anchor": [
+              48,
+              95
+            ],
+            "frameTicks": [
+              6,
+              6,
+              6,
+              6
+            ],
+            "pages": [
+              {
+                "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+                "columns": 4,
+                "rows": 2,
+                "frames": 4,
+                "firstCell": 0
+              }
+            ],
+            "grounded": true
+          },
+          "cell": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            95
+          ],
+          "coreRect": [
+            0,
+            0,
+            96,
+            96
+          ],
+          "duration": 24,
+          "pages": [
+            {
+              "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+              "columns": 4,
+              "rows": 2,
+              "frames": 4,
+              "firstCell": 0,
+              "first": 0,
+              "width": 384,
+              "height": 192,
+              "decodedBytes": 294912
+            }
+          ]
+        },
+        "special": {
+          "clip": {
+            "cell": [
+              96,
+              96
+            ],
+            "anchor": [
+              48,
+              72
+            ],
+            "frameTicks": [
+              9,
+              9,
+              9,
+              9
+            ],
+            "grounded": true,
+            "pages": [
+              {
+                "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+                "columns": 4,
+                "rows": 2,
+                "frames": 4,
+                "firstCell": 4
+              }
+            ]
+          },
+          "cell": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            72
+          ],
+          "coreRect": [
+            0,
+            0,
+            96,
+            96
+          ],
+          "duration": 36,
+          "pages": [
+            {
+              "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+              "columns": 4,
+              "rows": 2,
+              "frames": 4,
+              "firstCell": 4,
+              "first": 0,
+              "width": 384,
+              "height": 192,
+              "decodedBytes": 294912
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "sourceEqualityAgainstBrowserReplay": {
+    "public/js/manifest.js": {
+      "expected": "8a792b7ebcc8e16894c87ba1c0dd21f6382256dc401333e5a73cfa224caaff83",
+      "actual": "8a792b7ebcc8e16894c87ba1c0dd21f6382256dc401333e5a73cfa224caaff83",
+      "equal": true
+    },
+    "public/js/combat.js": {
+      "expected": "2a28b6791593e90c95df2d030865f24bbd538ce7a9e2c36485de81a3a0fe9add",
+      "actual": "2a28b6791593e90c95df2d030865f24bbd538ce7a9e2c36485de81a3a0fe9add",
+      "equal": true
+    },
+    "public/js/sim.js": {
+      "expected": "07e5b9128e9dbb51ba9c50af045dfe3bbfd51e9fa33e42154433cac1c18c667a",
+      "actual": "07e5b9128e9dbb51ba9c50af045dfe3bbfd51e9fa33e42154433cac1c18c667a",
+      "equal": true
+    },
+    "public/js/asset-loader.js": {
+      "expected": "45d7814f5cd9fd6feef4752c41788e27db70a269113e9eca7117971b19253e1c",
+      "actual": "45d7814f5cd9fd6feef4752c41788e27db70a269113e9eca7117971b19253e1c",
+      "equal": true
+    },
+    "public/js/render.js": {
+      "expected": "90a5d69a8f25195b59d7a64d3ee6f8d4e3c6e27f72bcb33ecec3646c28003319",
+      "actual": "90a5d69a8f25195b59d7a64d3ee6f8d4e3c6e27f72bcb33ecec3646c28003319",
+      "equal": true
+    },
+    "public/js/sprite-timeline.js": {
+      "expected": "93cee89d02b25006906ac3662ef1c6d513b20ce16353cecf42f496a6e70e631c",
+      "actual": "93cee89d02b25006906ac3662ef1c6d513b20ce16353cecf42f496a6e70e631c",
+      "equal": true
+    },
+    "public/js/sprite-clip-player.js": {
+      "expected": "12438f090f25754aec67a2cb2934f9477d0faaa406160a7cc19654210e5e6fd2",
+      "actual": "12438f090f25754aec67a2cb2934f9477d0faaa406160a7cc19654210e5e6fd2",
+      "equal": true
+    },
+    "public/js/boss-action-selection.js": {
+      "expected": "75fc496688fe364bb6d80b483ddc339de7ebc105a6e886ade25843accbdc0626",
+      "actual": "75fc496688fe364bb6d80b483ddc339de7ebc105a6e886ade25843accbdc0626",
+      "equal": true
+    },
+    "public/js/boss-action-player.js": {
+      "expected": "895a04f43955447749a769ac7a6e7dc15b16ac85dd2df3dfcc5811b922f8acd4",
+      "actual": "895a04f43955447749a769ac7a6e7dc15b16ac85dd2df3dfcc5811b922f8acd4",
+      "equal": true
+    },
+    "public/js/boss-fx-selection.js": {
+      "expected": "6d5a5d423482137600bd8130158437e8be9542a857c163a2db9703dfc63faac6",
+      "actual": "6d5a5d423482137600bd8130158437e8be9542a857c163a2db9703dfc63faac6",
+      "equal": true
+    },
+    "public/js/boss-transform-player.js": {
+      "expected": "dbf5b345c1150a325762c1c84f6ee873eaca2ce472b55ab096084d469120baaa",
+      "actual": "dbf5b345c1150a325762c1c84f6ee873eaca2ce472b55ab096084d469120baaa",
+      "equal": true
+    },
+    "public/js/boss-morph-field.js": {
+      "expected": "592cdd55a2f9007ec0bc9828e45ec57cf55df9a5fcd0970d38ecae8f0512e4b1",
+      "actual": "592cdd55a2f9007ec0bc9828e45ec57cf55df9a5fcd0970d38ecae8f0512e4b1",
+      "equal": true
+    },
+    "public/js/boss-morph.js": {
+      "expected": "76102a92dfe2e61d439340bb24939a9e9b1c9f7ac33ed0542b8c4809ad7aaf2f",
+      "actual": "76102a92dfe2e61d439340bb24939a9e9b1c9f7ac33ed0542b8c4809ad7aaf2f",
+      "equal": true
+    },
+    "public/js/render-fx.js": {
+      "expected": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+      "actual": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+      "equal": true
+    }
+  },
+  "registrySerializationNotIncluded": true,
+  "gameWrites": false,
+  "browserRerunNotRequiredForPathRename": "All page bytes and metadata except canonical source names are exact; pinned Sim/render/loader/selector/timeline source is unchanged."
+}

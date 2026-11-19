@@ -1,0 +1,562 @@
+[
+  {
+    "purpose": "signature",
+    "cel": 0,
+    "face": -1,
+    "actualScene": "signature-left-000.png",
+    "crop": [
+      117,
+      129,
+      437,
+      329
+    ],
+    "sourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      277,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 1,
+    "face": -1,
+    "actualScene": "signature-left-005.png",
+    "crop": [
+      119,
+      129,
+      439,
+      329
+    ],
+    "sourceRect": [
+      96,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      279,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 2,
+    "face": -1,
+    "actualScene": "signature-left-011.png",
+    "crop": [
+      117,
+      129,
+      437,
+      329
+    ],
+    "sourceRect": [
+      192,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      277,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 3,
+    "face": -1,
+    "actualScene": "signature-left-017.png",
+    "crop": [
+      118,
+      128,
+      438,
+      328
+    ],
+    "sourceRect": [
+      288,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      278,
+      278
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 0,
+    "face": 1,
+    "actualScene": "signature-right-000.png",
+    "crop": [
+      41,
+      129,
+      361,
+      329
+    ],
+    "sourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      201,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 1,
+    "face": 1,
+    "actualScene": "signature-right-005.png",
+    "crop": [
+      43,
+      129,
+      363,
+      329
+    ],
+    "sourceRect": [
+      96,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      203,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 2,
+    "face": 1,
+    "actualScene": "signature-right-011.png",
+    "crop": [
+      41,
+      129,
+      361,
+      329
+    ],
+    "sourceRect": [
+      192,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      201,
+      279
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 3,
+    "face": 1,
+    "actualScene": "signature-right-017.png",
+    "crop": [
+      42,
+      128,
+      362,
+      328
+    ],
+    "sourceRect": [
+      288,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -69.27083333333333,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      202,
+      278
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 0,
+    "face": -1,
+    "actualScene": "special-left-000.png",
+    "crop": [
+      166,
+      158,
+      486,
+      358
+    ],
+    "sourceRect": [
+      0,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      326,
+      308
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 1,
+    "face": -1,
+    "actualScene": "special-left-008.png",
+    "crop": [
+      163,
+      157,
+      483,
+      357
+    ],
+    "sourceRect": [
+      96,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      323,
+      307
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 2,
+    "face": -1,
+    "actualScene": "special-left-017.png",
+    "crop": [
+      176,
+      160,
+      496,
+      360
+    ],
+    "sourceRect": [
+      192,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      336,
+      311
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 3,
+    "face": -1,
+    "actualScene": "special-left-026.png",
+    "crop": [
+      166,
+      157,
+      486,
+      357
+    ],
+    "sourceRect": [
+      288,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      326,
+      307
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 0,
+    "face": 1,
+    "actualScene": "special-right-000.png",
+    "crop": [
+      0,
+      158,
+      320,
+      358
+    ],
+    "sourceRect": [
+      0,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      146,
+      308
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 1,
+    "face": 1,
+    "actualScene": "special-right-008.png",
+    "crop": [
+      0,
+      157,
+      320,
+      357
+    ],
+    "sourceRect": [
+      96,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      143,
+      307
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 2,
+    "face": 1,
+    "actualScene": "special-right-017.png",
+    "crop": [
+      0,
+      160,
+      320,
+      360
+    ],
+    "sourceRect": [
+      192,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      156,
+      311
+    ]
+  },
+  {
+    "purpose": "special",
+    "cel": 3,
+    "face": 1,
+    "actualScene": "special-right-026.png",
+    "crop": [
+      0,
+      157,
+      320,
+      357
+    ],
+    "sourceRect": [
+      288,
+      96,
+      96,
+      96
+    ],
+    "destRect": [
+      -58.79999999999999,
+      -88.19999999999999,
+      117.6,
+      117.6
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-crapto-attacks.png",
+    "groundPoint": [
+      146,
+      307
+    ]
+  }
+]

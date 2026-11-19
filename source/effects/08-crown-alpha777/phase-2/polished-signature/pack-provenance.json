@@ -1,0 +1,79 @@
+{
+  "status": "Candidate requires visual and in-game QA",
+  "family": "signature",
+  "cell": 96,
+  "sourceShape": [
+    335,
+    335
+  ],
+  "sharedSourceField": [
+    0,
+    0,
+    334,
+    334
+  ],
+  "proposedClipTiming": {
+    "signature": {
+      "firstCell": 0,
+      "frameTicks": [
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1
+      ],
+      "loop": false
+    }
+  },
+  "sourceFramesEncodedSha256": [
+    "f1839bbe04729f6b38a5ded2575997db7536b4e7a5beb3923e28cb2b80257c9c",
+    "4116ea85085d3b467e8a38ed20de64824b3a56bc40e32eb51ded6f962928b13f",
+    "afabb489f317616ce09f16ac709f3c06583d25f736fa67c8781d168b9ce6dd61",
+    "6061c3aa1472e1733e18f82a513b17d83b31dc6109f22b90f055332e22e159eb",
+    "7b8acabd3f4e89a3642eaff854be6449661ef579760d0938f88f04587d9eec97",
+    "08f35e07b5585dc6d31b679cfdc4629e3dd8a3c3662438d25a124e3e63144c44",
+    "13b32b3773f99283e82db036b1db3b57773cef1d513c2f47713afe64eed23bbc",
+    "7133e47e6fb6b766c456adbe1d0a4039319c4b4c71bbb5647f5411b2ae992762",
+    "a6c6b33b6c42c1f0e072486be28712a73e37ceb3d3595275b193f2c5efef7cd6",
+    "acffb89a38e4953ee6dc089e1f6dd01597a8732702aac9330a20108318d06b1f",
+    "9cdd05d8ccbfb2cee2ff04313719da7fe45dfc79576b0e111cf17d96cc5193f3",
+    "794886e76578f31ba93b82a33b06764a4a6ff9429620582acdcb0e6e18ee85bb",
+    "157d3918f524a2caf0b5e481048edaae2160b9b7a3575e76e6afbf6ddf077968",
+    "a1c0ee51cd1c2c2644afbab9d0759fb37e7c54c8558046cc3f44c17b20cf47be",
+    "bdfe64f08d59dd3099db7151d0543ffbeb28b513bbabb76eeeef3866d09004f6",
+    "ab41d6b7917daa54a391ab8de882fa9a4d3dae3138a7e8bd689f817def9ff528"
+  ],
+  "encodedSha256": "2e8215582f237e291d233f6b9e1b61495fba36aa5f74b717e9963d3afc943f76",
+  "rgbaSha256": [
+    "8b2d7a718312f1e100059bc20ec68cf157ad5d8ad6baed0f44ac043703a4e5dd",
+    "f232c7491ef836eeba911fc17d63d7257bbc8c4d287228b02e94ed98d20a5f3c",
+    "0f41b3d3df4d26a70572e75b3bd6b08f48c440cc55cb306eef9031231b360e2f",
+    "6ace8e292f63fe3e5ac29e82cadc4a0278bbad109e9b941fa8c213d30a7aad3f",
+    "7905973a05c60e7c7a65f4cec12dbf1713773fdc23a9e796caa8d4a1d7f28453",
+    "cd825c3e0a3ab66f081ffd5f7820fe963f5be9ecda8ab63ecdfc78c45b9a5f25",
+    "7bb89c45fab87dd6b5073d36803df240a86263c0041961787a5b381773407fd4",
+    "c085feee768791db988d76a1b79c2558d59063b9d10fac8359ad3c9402c49019",
+    "c93af1485a7d016107d406e16bd2da3d6c3ecf309ba7dc5dd91969a12377fc18",
+    "8b6bcaf73654ac20e4c6ec5e52e269c6c413ad2b9020204d1a1a78c01c6bd5eb",
+    "6f143f6e86ae132a236d0e192cd85ad59e83d073c22334e7946cbfaab121f805",
+    "b2806f92c946f860485d59761d7e372332272cd1fd6f7445c4febb6edb31e2fd",
+    "ad4796b7e7b8652c56662d461b0063b91718ccc16e183b63ca69e556548dd1f5",
+    "2badac925e93a041aa636c3d756f18359ca59b42c06fadf03088f01db05cb151",
+    "05804427f6de79ad7d54ddf4be86b30e164193710ec87b55b4c7ee7411c28d38",
+    "fba89a6dfdba1cd31b82dd3953c3962ec8ea0d204894eb6d60af2a5b319c96d7"
+  ],
+  "providerSha256": "4f0c739b791bd982155013124be827e66264b3b35d8952b06cc4976c6aa9b5df",
+  "generationBackend": "OpenAI built-in ImageGen",
+  "intakeReportSha256": "3913c08348819df9a07340dadd45ad676661fdcffda7c997c0d39393ef6a4801"
+}

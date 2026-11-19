@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "340bedd4d9e850637d6a701fa1b31e0c6774df7c4a083c406356ea3cd347863b",
+  "providerSha256": "134df5612f1a06d1f5a59d93042465ba84117ec237b989537d035fc0d3e6fa66",
+  "anchor": [
+    46,
+    49
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "A compact scarlet and amber rail-flash blossoms in the first several frames, breaks into red rays, and collapses to golden sparks. The first equal-quarter geometry clipped the flash of cel eight. Measured x seams at 323, 628, and 933 provide four complete native equal-width fields, with only 0–1/255 alpha in discarded perimeter and seams. All motifs and retained alpha stay pixel-exact. The red contact remains readable over the neon arena in both facings."
+}

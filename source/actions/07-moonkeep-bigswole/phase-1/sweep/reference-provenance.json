@@ -1,0 +1,35 @@
+{
+  "bossId": "07-moonkeep-bigswole",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceStanding": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/mechanical-bigswole/frames/frame-000.png",
+  "sourceStandingSha256": "279f7ec3f1cb9c0896201f9de9d12622e90f200a1903ca7a6af6f24f02e6628c",
+  "portrait": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/outputs/mecha-complete-movesets/portraits/bigswole.webp",
+  "portraitSha256": "fd243192b846d4bc009d624acbebf9d7e10be9eddf8f65a07baf94e8577c5cdb",
+  "technicalPadding": [
+    320,
+    320
+  ],
+  "scale": 1,
+  "sourceRGBAChanges": 0,
+  "anchor": [
+    640,
+    920
+  ],
+  "groundRow": 919,
+  "requestedTicks": [
+    36,
+    6,
+    8,
+    11
+  ],
+  "releaseTick": 36,
+  "simDamageReach": "rear dx>0 and dx<bodyWidth/2+170; playerz<20",
+  "novaspawn": "boss.x+rear*(bodyWidth/2+40), boss.y, z0",
+  "referenceRoles": [
+    "approved full Phase1 model/mechanics/camera/colors",
+    "canonical original pilot identity only"
+  ],
+  "retrySource": "provider re-drew existing4pose guide; no local shadow deletion",
+  "priorSourceSHA": "2f81f6312d6480ef3821af1d3dd7749c8f92fd95bd0488422cd775cbc6ed6db0"
+}

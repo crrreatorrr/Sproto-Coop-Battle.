@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "2e8215582f237e291d233f6b9e1b61495fba36aa5f74b717e9963d3afc943f76",
+  "providerSha256": "4f0c739b791bd982155013124be827e66264b3b35d8952b06cc4976c6aa9b5df",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Jousting Thrust reads as a lime contact spark and angular amber shrapnel edged in indigo. The asymmetric fragments represent a world-anchored contact, with the damage position readable under the enemy in both facing proofs. The colored wedge splits cleanly into individually diminishing sparks and no near-white sample lies farther than two pixels from chromatic material. All 16 unique source-derived cels were checked at gameplay scale on light and dark backgrounds. Actual Chromium proof verifies real release damage, 24-tick lifetime, both facings, all source cels and reconnects."
+}

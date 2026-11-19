@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "runtimeCommit": "5c15f30462dd485e3a304449b73073e0d7e8184a",
+  "sourceOnlyOverrideSHA256": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+  "rows": [
+    {
+      "boss": "Rune",
+      "finalAttempt": "rune-attempt-4",
+      "status": "PASS",
+      "snapshots": 618,
+      "fullPNGAndRGBAMismatches": 0,
+      "independentAuthoredDraws": 654,
+      "groundedDraws": 334,
+      "fractionalExtentDraws": 70,
+      "worldExtents": [
+        70,
+        82,
+        120,
+        149.60000000000002,
+        157
+      ],
+      "activeAndTotalBankRequests": 1,
+      "extraFXBankRequests": 0,
+      "sourceOnlyOverride": [
+        "public/js/render-fx.js"
+      ],
+      "archivePublicFilesVerified": 152
+    },
+    {
+      "boss": "Zephyr",
+      "finalAttempt": "zephyr-attempt-3",
+      "status": "PASS",
+      "snapshots": 624,
+      "fullPNGAndRGBAMismatches": 0,
+      "independentAuthoredDraws": 794,
+      "groundedDraws": 474,
+      "fractionalExtentDraws": 210,
+      "worldExtents": [
+        70,
+        82,
+        120,
+        127.2,
+        132,
+        146.4
+      ],
+      "activeAndTotalBankRequests": 1,
+      "extraFXBankRequests": 0,
+      "sourceOnlyOverride": [
+        "public/js/render-fx.js"
+      ],
+      "archivePublicFilesVerified": 152
+    }
+  ],
+  "canvasLineageSelfChecks": "lineage-self-check.json",
+  "priorFreezeReadback": "prior-freezes-readback.json",
+  "fullEqualityNeverMaskedOrRelaxed": true,
+  "noGameOrProviderWrites": true,
+  "globalBudgetNotCertifiedHere": true
+}

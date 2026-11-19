@@ -1,0 +1,385 @@
+{
+  "status": "EXACT_STAGED_BANK_NOT_INSTALLED_SOURCE_ADMITTED_SIM_PENDING",
+  "baselineCommit": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "bankPath": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+  "stagedBank": "zephyr-p2-all-eight-families-staged.png",
+  "stagedBankSha256": "18bb09542471ce39c57a6b9e32501452689dc9615e063b19c30743129a4ebc8a",
+  "stagedBytes": 166780,
+  "baselineBankSha256": "13acc4990e93d439150588946121a39bde578bb49fd61bbbbe43797de1f01043",
+  "baselineBytes": 150215,
+  "encodedDeltaBytes": 16565,
+  "dimensions": [
+    384,
+    768
+  ],
+  "decodedBytes": 1179648,
+  "decodedDeltaBytes": 0,
+  "newPreloadURLsOrRequests": 0,
+  "topSourcePages": [
+    {
+      "purpose": "lane",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-lane-03-reviewed-flame-matte-v2",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "8be6340a08399ee9b91c56d8b557bac93f797381188fd18255d8db048f795727",
+      "verifiedFiles": 37,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "56414fe8d59e48070dd397a04e7fe33da391470045c261897f73b00c157cc402",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/lane.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-lane-03-reviewed-flame-matte-v2-independent-v1/REPORT.md",
+      "sourceReviewSha256": "05f5d63864d51bff1436ff1821388d03b38e22a2218dc2d0e8557a293a1f25ac",
+      "firstCell": 0,
+      "anchor": [
+        47,
+        51
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "spread",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-spread-03-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "2da9160e9b3ef337b70598c05ae5be748b47706c8b0c20961245daaa36e9e973",
+      "verifiedFiles": 19,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "289468f2b19c27a4512a2575a98b699a32f3e52e4e201ab804670709e0128bee",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/spread.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/reviewed-background-mattes-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "2514c7489e090558232ebe969f03e5061c4306654c30b1db16e5da03870d0578",
+      "firstCell": 4,
+      "anchor": [
+        43,
+        48
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "homing",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-homing-03-independent-v1",
+      "manifest": "delivery-manifest.json",
+      "manifestSha256": "4bfc522072b0755a09b63ac1df27d03cb4bca9faf10d8b8c5e8bd5f939d9e280",
+      "verifiedFiles": 138,
+      "page": "material-finish-128-v2/zephyr-p2-homing03-fixed128-4x1.png",
+      "pageSha256": "c13af1e07579ae01d14288e3dafd5726c38ed4cc18757ceaf0c6fed370d180ef",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/homing.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-homing-03-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "7559f32047ee40f69e858e007906ebbcf071b556fba2675866a613a6306bef7e",
+      "firstCell": 8,
+      "anchor": [
+        42,
+        48
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "impact",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-impact-04-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "a44ea9b4ecb67d2de1c10c3acbe1da034acb1a728a88e4a0e2f6ee41189bb61c",
+      "verifiedFiles": 40,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "9fa944aac96d2aa63612c2d336dfcf5ae1e4f75e0aa6b3ec3cee2a9457cf4853",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/impact.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-lane03-impact04-derived-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "b024a0be4f9d2077cff7acf2e414d3f15bd454aee75b57f76a88404c21c26292",
+      "firstCell": 12,
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "grounded": false
+    }
+  ],
+  "acceptedBottom16Sha256": "eafbbeae223b377afc28ddb1a321e86f0d87bebf2aef64ff916c58d36ec2dea1",
+  "bottom16RGBAOrMetadataMismatches": 0,
+  "all32CellProof": [
+    {
+      "cell": 0,
+      "purpose": "lane",
+      "frame": 0,
+      "decodedRGBASha256": "b9879a6401c34e344e38194fcf5dd60891cbf9a34a894adb85cc9dd3758a454f",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 1,
+      "purpose": "lane",
+      "frame": 1,
+      "decodedRGBASha256": "2ad64accf98779f095a8e16845d853733622b93e1a1d1ecae23cecbadc2ba827",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 2,
+      "purpose": "lane",
+      "frame": 2,
+      "decodedRGBASha256": "228efecd0cd49ec5c5f6ac0fd122bfc5733166fd7181264515d5cb852b5ea0c2",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 3,
+      "purpose": "lane",
+      "frame": 3,
+      "decodedRGBASha256": "7ee111a47ff21620f4257f38e121eb1ca427f8d88cff03dde23d6ec03c23f747",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 4,
+      "purpose": "spread",
+      "frame": 0,
+      "decodedRGBASha256": "3c34603a1434dd67d79e3c7c808049b49872cd79614d12df8738c23dd8f9f30c",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 5,
+      "purpose": "spread",
+      "frame": 1,
+      "decodedRGBASha256": "142b64579c38c3792482aecbeae4232520068329f94a5facd10d07aa4de282db",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 6,
+      "purpose": "spread",
+      "frame": 2,
+      "decodedRGBASha256": "28f1e646f003e7212360ed5f8cdae919a05ee92810f362e59c55d3316ac56d71",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 7,
+      "purpose": "spread",
+      "frame": 3,
+      "decodedRGBASha256": "7b8294224ce5e57f460b8623558d25d78704f6e897987d073dad63c11f167741",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 8,
+      "purpose": "homing",
+      "frame": 0,
+      "decodedRGBASha256": "fad38bfacdfa5cfc6291f163cb3dcf623519004bf098d6638ea5c35fa133d001",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 9,
+      "purpose": "homing",
+      "frame": 1,
+      "decodedRGBASha256": "007526fcaa66700489fd2de4f3fcf7a06cd8155c91595b4aff65e51939ca96a7",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 10,
+      "purpose": "homing",
+      "frame": 2,
+      "decodedRGBASha256": "2bf3199a2976e8b454306e2f451c4e8b3ff54540e8cb351803962b60ced05c5e",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 11,
+      "purpose": "homing",
+      "frame": 3,
+      "decodedRGBASha256": "8ae59a07b8ccda513d65884132a3bacc1abfbb0f136421f50464f5032bbaf8c8",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 12,
+      "purpose": "impact",
+      "frame": 0,
+      "decodedRGBASha256": "fed5f0291fa01d30cac671deaf85ed3e4525b1d4a79f1399ae52d8049c26f91c",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 13,
+      "purpose": "impact",
+      "frame": 1,
+      "decodedRGBASha256": "253b1629832082352dcc7092f3606b7cc12cf62a2599cde5ccb1b97b8089d6d8",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 14,
+      "purpose": "impact",
+      "frame": 2,
+      "decodedRGBASha256": "b0e37979b25d60d3876b2815935d192bc517f843045b628d87e51c8bb5a9e4ca",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 15,
+      "purpose": "impact",
+      "frame": 3,
+      "decodedRGBASha256": "b7f42cd0f18d5dbe9734cb846deb60d69952533d92f6996273d3511ace8af4b6",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": null
+    },
+    {
+      "cell": 16,
+      "purpose": "signature",
+      "frame": 0,
+      "decodedRGBASha256": "417141b4054e7fe05f2df179f33b9040863e9b85d3ce1a64834e2a72370ecf92",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 17,
+      "purpose": "signature",
+      "frame": 1,
+      "decodedRGBASha256": "e52658bbe4a7cbe652e268c0b5719833870c3cfd6f584749f1c9a16dc806776f",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 18,
+      "purpose": "signature",
+      "frame": 2,
+      "decodedRGBASha256": "206ff995bfd12ebf4fd1b0128dc92f9de386fae56a6f8f1a41be5f49b1b8c3bb",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 19,
+      "purpose": "signature",
+      "frame": 3,
+      "decodedRGBASha256": "3742aa8575c3850042f8684707566738a0a9bf1d8a3c6beca873babecc86bd0d",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 20,
+      "purpose": "special",
+      "frame": 0,
+      "decodedRGBASha256": "a69c5145efc238f042b56bc3b96430d07f160c6ed3be554fe076a96a7536d0de",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 21,
+      "purpose": "special",
+      "frame": 1,
+      "decodedRGBASha256": "7d22c54173084969bc18e3a0cdff8d6d6c9cf3f534f9e05ceac1a9628941b1d3",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 22,
+      "purpose": "special",
+      "frame": 2,
+      "decodedRGBASha256": "3b83d63e96fe7320a137f64159335028830e738e33114088dc6fdc002f9a74a4",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 23,
+      "purpose": "special",
+      "frame": 3,
+      "decodedRGBASha256": "93825eb94c137d78c708e8121010a99325279cd41ad58cf5c5cd7a15e229a960",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 24,
+      "purpose": "hurt",
+      "frame": 0,
+      "decodedRGBASha256": "99075163afdeaf414479554f721c5cdc81c1d2a39fa47d74b69419dbf8ff4846",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 25,
+      "purpose": "hurt",
+      "frame": 1,
+      "decodedRGBASha256": "97b4de3b012c87eb0ba2430562cf78a7cf73dabd98b23acdd6c79d7b5528cd9e",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 26,
+      "purpose": "hurt",
+      "frame": 2,
+      "decodedRGBASha256": "cf6657ac28d64f605fdc25e026e241b16106c70f14d34706700ebe27793ac528",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 27,
+      "purpose": "hurt",
+      "frame": 3,
+      "decodedRGBASha256": "962784ceb88f0b9a23b35f9e8da8e7ed41264d57b239783e2a9762b0e9e87ab2",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 28,
+      "purpose": "death",
+      "frame": 0,
+      "decodedRGBASha256": "335b5b49787923009fbb4a3224986a5e8a3d705b26d5c508f23193d8f299c34e",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 29,
+      "purpose": "death",
+      "frame": 1,
+      "decodedRGBASha256": "96cb5b78f64240444891c7db21b56d9f7d482896fa90c5de767f4d6646b045bd",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 30,
+      "purpose": "death",
+      "frame": 2,
+      "decodedRGBASha256": "36349e20dd809a3695dd638ccbb03c22a800eaeef52231224058c4e2cc459272",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    },
+    {
+      "cell": 31,
+      "purpose": "death",
+      "frame": 3,
+      "decodedRGBASha256": "de193680d01695c8694a468eb94405631908cb7f0ed3aacfa2681968bf664743",
+      "sourceRGBAMismatches": 0,
+      "bottomBaselineRGBAMismatches": 0
+    }
+  ],
+  "paletteRelearning": false,
+  "resizeOrRegistration": false,
+  "localNewArtOrMotion": false,
+  "gameWrites": false,
+  "providerActions": false
+}

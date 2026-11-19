@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN_AUTHOR_PROOF_PASS_ROOT_REVIEW",
+  "main": "zephyr-attempt-3/runtime-checks.json",
+  "independentDrawMath": "zephyr-attempt-3/independent-draw-proof.json",
+  "lateEight": "zephyr-late-eight-attempt-1/late-all-eight-purposes.json",
+  "resources": "resource-replay.json",
+  "criticalContacts": "critical-contacts/",
+  "v2PreservedFiles": 4697,
+  "stagedBankSha256": "18bb09542471ce39c57a6b9e32501452689dc9615e063b19c30743129a4ebc8a",
+  "gameWrites": false,
+  "sourceProofBaseline": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "targetImportBaseline": "b16e01fda1881f313e40587e7bfef1920c266d00"
+}

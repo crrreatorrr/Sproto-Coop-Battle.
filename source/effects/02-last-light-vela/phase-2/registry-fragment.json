@@ -1,0 +1,33 @@
+{
+  "bossKey": "02-last-light-vela",
+  "phase": 1,
+  "fx": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        63
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "grounded": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+          "columns": 4,
+          "rows": 1,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    }
+  },
+  "registered": false
+}

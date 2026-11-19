@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "d986a3cd6853387b123f5371c69456ebea9708bf7a2cc4769c090dc76c2afad1",
+  "providerSha256": "97fe8d812e3f922a5a20b60a1a36a39fa8b20632f1c94f7caef7d869e076ed5d",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "impact"
+  ],
+  "notes": "Independently reviewed the raw sheet and dark/light gameplay contact. All retained flight frames face left, with recognizable ruby crescent core and right trailing ruby-blue exhaust. The spread fins visibly open and the separate impact row breaks apart to sparse ruby and blue fragments. Intentional pale highlights remain attached to incandescent cyan bands or ruby cores; no detached pale matte islands, dividers, or bleed. Homing is unreachable in Rune phase one and is intentionally excluded from installation. Centered anchor retains source registration. This is visual approval; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

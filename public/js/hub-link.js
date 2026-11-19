@@ -123,7 +123,7 @@
     if (!root.document) return Promise.resolve(null);
     return new Promise(function (resolve) {
       var script = root.document.createElement('script');
-      script.src = 'vendor/hub-sdk/dist/hub-sdk.iife.js';
+      script.src = root.AssetLoader ? root.AssetLoader.resolve('vendor/hub-sdk/dist/hub-sdk.iife.js', root.document.baseURI) : 'vendor/hub-sdk/dist/hub-sdk.iife.js';
       script.async = false;
       script.onload = function () { resolve(root.HubSDK && root.HubSDK.createHubSdk ? root.HubSDK : null); };
       script.onerror = function () { resolve(null); };

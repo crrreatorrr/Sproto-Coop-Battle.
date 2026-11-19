@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "e9ddd7025105cbab089f5fdfc659982ed543e16e5c3e0dd2bec683e92108cefe",
+  "providerSha256": "44ffec29e002e748a0c4fd1af2a6fc08e8b71fe1a0d5a705a3837e5b617c466d",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Consistent left-facing acid tip and yellow/navy actuator body. Spread adds separated thin sweeps and the tracker retains a sturdy flared chassis with visibly cycling blue-yellow exhaust. Lime impact opens and the purple-rock/amber material disperses; tiny surviving fragments read as debris. No white matte, cell borders, or lettering. Independently reviewed the raw sprites, foreground validation and dark/light game-size contact. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

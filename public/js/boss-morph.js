@@ -71,11 +71,22 @@ function contour(data) {
   return distance;
 }
 
-function readCell(key, sheet) {
+function sourceImage(sheets, phase, row) {
+  const entry = sheets[phase];
+  // Last Call stores later actor rows on a second page. Other bosses pass one sheet.
+  if (options.pageRows && Array.isArray(entry)) {
+    const page = Math.floor(row / options.pageRows);
+    return { image: entry[page], row: row - page * options.pageRows };
+  }
+  return { image: entry, row };
+}
+
+function readCell(key, sheets) {
   if (!cells.has(key)) {
-    const [, row, col] = POSES[key];
+    const [phase, row, col] = POSES[key];
+    const placed = sourceImage(sheets, phase, row);
     source.clearRect(0, 0, CELL, CELL);
-    source.drawImage(sheet, col * CELL, row * CELL, CELL, CELL, 0, 0, CELL, CELL);
+    source.drawImage(placed.image, col * CELL, placed.row * CELL, CELL, CELL, 0, 0, CELL, CELL);
     const rgba = new Uint32Array(source.getImageData(0, 0, CELL, CELL).data.buffer);
     cells.set(key, { rgba, contour: contour(rgba) });
   }
@@ -96,8 +107,9 @@ function generate(index, frame, sheets) {
   const offset = (index * (KEYS.length - 1) + frame.gap) * FIELD_SIZE * 2;
   if (offset + FIELD_SIZE * 2 > field.length) return null;
   const at = frame.gap;
-  const fromSheet = sheets[POSES[at][0]], toSheet = sheets[POSES[at + 1][0]];
-  if (!fromSheet.naturalWidth || !toSheet.naturalWidth) return null;
+  const fromSheet = sourceImage(sheets, POSES[at][0], POSES[at][1]).image;
+  const toSheet = sourceImage(sheets, POSES[at + 1][0], POSES[at + 1][1]).image;
+  if (!fromSheet?.naturalWidth || !toSheet?.naturalWidth) return null;
   if (!output) {
     source = context(true);
     output = context(false);
@@ -111,7 +123,7 @@ function generate(index, frame, sheets) {
   }
   if (lastTick === frame.tick) return output.canvas;
 
-  const a = readCell(at, fromSheet), b = readCell(at + 1, toSheet);
+  const a = readCell(at, sheets), b = readCell(at + 1, sheets);
   const fieldAnchors = (options.guidesSource ? options.guidesSource() : root.CoopBossMorphGuides)?.[index];
   const [[ax, ay], [hx, hy]] = fieldAnchors?.[at] || [[112, 118], [60, 134]];
   const [[bx, by], [jx, jy]] = fieldAnchors?.[at + 1] || [[ax, ay], [hx, hy]];
@@ -165,7 +177,7 @@ function generate(index, frame, sheets) {
 return { pose, generate, poses: POSES, keyTicks: KEYS };
 }
 const sprotel = create({
-  cell: 176, frameTicks: 1,
+  cell: 176, frameTicks: 1, pageRows: 5,
   keys: Array.from({ length: 18 }, (_, i) => Math.round(28 + i * 414 / 17)),
   poses: [[0, 0, 0], ...Array.from({ length: 16 }, (_, i) => [0, 9 + Math.floor(i / 8), i % 8]), [1, 0, 0]],
   fieldSource: () => root.CoopSprotelMorphField,

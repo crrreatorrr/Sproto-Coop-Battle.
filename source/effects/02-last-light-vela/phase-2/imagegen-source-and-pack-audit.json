@@ -1,0 +1,91 @@
+{
+  "status": "LOSSLESS_ALPHA_PRESERVED_STAGING_PROPOSAL",
+  "source": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/vela-p2-signature/source.png",
+  "sourceSHA256": "9e892c7871e3324ed94a9c17b2a661b6eaa6baf018a172c2b5f45942bedf1d9a",
+  "sourceReviewManifest": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/qa/vela-p2-signature-independent-v1/delivery-manifest.json",
+  "sourceReviewManifestSHA256": "1b1503b79679226f146e26052733bfd1701ee4b5291a03da7897eb370d9f4103",
+  "canvas": [
+    672,
+    672
+  ],
+  "sourceAlphaOrColorEdits": false,
+  "thresholdAppliedToAlpha": false,
+  "alpha128UsedOnlyForMeasuredGroundSupport": true,
+  "backgroundResidueRemoved": 0,
+  "reasonNoResidueRemoval": "No blocking ghost/pale residue observed at delivered size. Raw low-alpha tails retained transparently; no global deletion/hardening. Independent/real-Sim review remains required.",
+  "records": [
+    {
+      "tile": 0,
+      "wholeNativeFieldOffset": [
+        22,
+        15
+      ],
+      "nativeSourceRGBAMismatches": 0,
+      "sourceAlphaChanged": false,
+      "sourceClipping": 0,
+      "game96MainAlpha128Bounds": [
+        32,
+        41,
+        62,
+        63
+      ],
+      "game96Alpha1Samples": 690
+    },
+    {
+      "tile": 1,
+      "wholeNativeFieldOffset": [
+        22,
+        4
+      ],
+      "nativeSourceRGBAMismatches": 0,
+      "sourceAlphaChanged": false,
+      "sourceClipping": 0,
+      "game96MainAlpha128Bounds": [
+        11,
+        31,
+        80,
+        63
+      ],
+      "game96Alpha1Samples": 1066
+    },
+    {
+      "tile": 2,
+      "wholeNativeFieldOffset": [
+        22,
+        28
+      ],
+      "nativeSourceRGBAMismatches": 0,
+      "sourceAlphaChanged": false,
+      "sourceClipping": 0,
+      "game96MainAlpha128Bounds": [
+        26,
+        38,
+        64,
+        63
+      ],
+      "game96Alpha1Samples": 915
+    },
+    {
+      "tile": 3,
+      "wholeNativeFieldOffset": [
+        22,
+        40
+      ],
+      "nativeSourceRGBAMismatches": 0,
+      "sourceAlphaChanged": false,
+      "sourceClipping": 0,
+      "game96MainAlpha128Bounds": [
+        37,
+        45,
+        59,
+        63
+      ],
+      "game96Alpha1Samples": 596
+    }
+  ],
+  "atlasEncodedBytes": 12927,
+  "atlasDecodedBytes": 147456,
+  "atlasSHA256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+  "sourceAlphaTailCaveat": "Faint source alpha extends below visible ground support. Custom anchor preserves all samples; standard95 would need separate demonstrable exterior-mask review.",
+  "gameAndRuntimeEdits": false
+}

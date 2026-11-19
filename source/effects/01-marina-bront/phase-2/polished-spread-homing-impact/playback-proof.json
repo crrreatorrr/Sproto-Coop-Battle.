@@ -1,0 +1,164 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "01-marina-bront",
+    "phase": 1,
+    "family": "boss-projectiles",
+    "purposes": [
+      "spread",
+      "homing",
+      "impact"
+    ],
+    "asset": "assets/bosses/01-marina-bront-p2-projectiles.png",
+    "atlasSha256": "b8efb55eb0ab927dd31f4923517c1ca84c1b278eea04ab0f800ab2c4447e8b68",
+    "runtimeSha256": "88a1c9518328f8376d7ef3cb754638c5f7470b88fdcad0cbfad81374660fe254",
+    "runtimeDimensions": [
+      384,
+      768
+    ],
+    "sourceFirstCell": 4,
+    "references": [
+      {
+        "firstCell": 4,
+        "sourceFirstCell": 4,
+        "frames": 4
+      },
+      {
+        "firstCell": 8,
+        "sourceFirstCell": 8,
+        "frames": 4
+      },
+      {
+        "firstCell": 12,
+        "sourceFirstCell": 12,
+        "frames": 4
+      }
+    ],
+    "clips": {
+      "spread": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+            "columns": 4,
+            "rows": 8,
+            "frames": 4,
+            "firstCell": 4
+          }
+        ]
+      },
+      "homing": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": true,
+        "pages": [
+          {
+            "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+            "columns": 4,
+            "rows": 8,
+            "frames": 4,
+            "firstCell": 8
+          }
+        ]
+      },
+      "impact": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/01-marina-bront-p2-projectiles.png",
+            "columns": 4,
+            "rows": 8,
+            "frames": 4,
+            "firstCell": 12
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 160,
+  "animatedDraws": 188,
+  "resumed": 4,
+  "hit": [
+    11,
+    19,
+    11,
+    19
+  ],
+  "frames": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

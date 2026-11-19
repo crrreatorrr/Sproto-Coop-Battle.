@@ -1,0 +1,16 @@
+{
+  "provider": "Built-in ImageGen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eada-6f50-7cf3-938c-c3da8448518d/exec-da6bab02-f93d-4af4-b85a-6abc36599a22.png",
+  "toolOriginalSHA256": "27f87ff345deeef6adbda8c1422b62f8b9fe5f0be89f5edd7c72d97f94b453a9",
+  "workspaceOriginalSHA256": "27f87ff345deeef6adbda8c1422b62f8b9fe5f0be89f5edd7c72d97f94b453a9",
+  "editTarget": "../sprotosales-p2-walk-v2/provider-original.png",
+  "editTargetSHA256": "3d3b27d79a8f5cb31e850daf08334dd7293bc079475a773f32eb23a3ac9d597a",
+  "identityReference": "inputs/approved-p2-padded960.png",
+  "prompt": "prompt.txt",
+  "genuineProviderDrawings": 4,
+  "newLocalPoseSynthesis": false,
+  "status": "candidate, independent review pending",
+  "derivedFrom": "../sprotosales-p2-walk-v3",
+  "newGeneration": false,
+  "onlyRevision": "10 original background samples set transparent, no retained paint edits"
+}

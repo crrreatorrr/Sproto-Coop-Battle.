@@ -1,0 +1,74 @@
+{
+  "measuredMatte": [
+    4.0,
+    248.0,
+    3.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1031449,
+  "mixedSamples": 6056,
+  "mixtureRule": "G>R+35 and G>B+35 and G>138 within4px of measured flat key; no real green material in references",
+  "retainedRGBChanges": 0,
+  "cells": [
+    {
+      "i": 0,
+      "bounds": [
+        64,
+        66,
+        499,
+        549
+      ],
+      "blueBounds": [
+        174,
+        120,
+        473,
+        330
+      ]
+    },
+    {
+      "i": 1,
+      "bounds": [
+        64,
+        66,
+        605,
+        549
+      ],
+      "blueBounds": [
+        174,
+        120,
+        475,
+        330
+      ]
+    },
+    {
+      "i": 2,
+      "bounds": [
+        64,
+        66,
+        595,
+        549
+      ],
+      "blueBounds": [
+        173,
+        120,
+        466,
+        330
+      ]
+    },
+    {
+      "i": 3,
+      "bounds": [
+        64,
+        66,
+        499,
+        549
+      ],
+      "blueBounds": [
+        173,
+        120,
+        473,
+        330
+      ]
+    }
+  ]
+}

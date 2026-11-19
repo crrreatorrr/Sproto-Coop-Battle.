@@ -1,0 +1,64 @@
+{
+  "sourceCellSizes": [
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ],
+    [
+      627,
+      627
+    ]
+  ],
+  "sourceSHA256": "e7bb767a1ef5aa34d619352b1bdadca8921815fc30c0026e022537d8a73ae51e",
+  "uniformNearestOutputSizes": [
+    [
+      783,
+      783
+    ],
+    [
+      783,
+      783
+    ],
+    [
+      783,
+      783
+    ],
+    [
+      783,
+      783
+    ]
+  ],
+  "nativePlacements": [
+    [
+      92,
+      126
+    ],
+    [
+      140,
+      126
+    ],
+    [
+      92,
+      153
+    ],
+    [
+      140,
+      153
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "bootSilhouetteIntersectionOverUnion": 0.8779232460523686,
+  "placementBasis": "One common scale. Corrected the sheet\u2019s column placement using both pairs of matching boot silhouettes.",
+  "newArtworkOrAlphaEdits": false
+}

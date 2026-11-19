@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "id": "zephyr-p2-walk-v3",
+  "clips": {
+    "walk": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": true,
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/04-ranch-zephyr/zephyr-p2-walk-v3-df0457fdaabbe557.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/04-ranch-zephyr/zephyr-p2-walk-v3-df0457fdaabbe557.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 117448,
+      "sha256": "df0457fdaabbe55756010e95c4eb21b2f61a7ea678e8fcdc6a0dd9fa85518ca0"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "walk",
+      "file": "cel-1.png",
+      "sha256": "1982d4f8a68d489bcea351a2157439278e7a03c020cc865344eeb544ff4f6c7e",
+      "rgbaSha256": "cf9fcf9d62306d4d37e1bd59908d0531c5778957bfeab72ed74e4baf65305c77",
+      "uniqueCel": 0,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-2.png",
+      "sha256": "f0b370b96acdfd62546bebffe31490ccec0bd43704b5e7d6b50d755e4f7cdc95",
+      "rgbaSha256": "48f569070545c3edd2d2bb21f5e1c4bf83d7b13be7a23f372c34baa727cca783",
+      "uniqueCel": 1,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-3.png",
+      "sha256": "94bd1ac7df0a8e21aeed2c46189e2d3f904274270574149f4e2381e8ed4f940f",
+      "rgbaSha256": "f93b42a3242cd0cd1841ef748f53099041d952f3cc4b03f0c2d6d62eaf5c5e9a",
+      "uniqueCel": 2,
+      "ticks": 9
+    },
+    {
+      "action": "walk",
+      "file": "cel-4.png",
+      "sha256": "adeb876cad687b94e01e9fed1ef172b0ef450aa6892a2409c6fa94c0a20e3217",
+      "rgbaSha256": "77c59f258407828ca1cb4027fc32184bc84d8cfd7042e4a2a46172789b3ccb87",
+      "uniqueCel": 3,
+      "ticks": 9
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

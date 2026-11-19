@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "4581a87b8923e9e4c9e0b625922a8d7055069fa44eae6b0d5048548c109f9113",
+  "providerSha256": "cf4e06d4f90593a16d43c66902a3a63d3b2106b6de9d1c6270b3e921d4b2bcab",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Mudline canisters keep one left-facing orientation and stable lime-accented dark plum housing. Animated fluid drips in the lane, opening lime-bladed spread, and heavy tracker remain readable. Distinct magenta-lime impact breaks into droplets and canister shards. The reduced lime core as fluid envelops the lane is deliberate phase design. No white, panel matte, adjacent sprites or lettering. Independently reviewed the raw sprites, foreground validation and dark/light game-size contact. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

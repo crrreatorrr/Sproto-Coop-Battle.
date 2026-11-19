@@ -1,0 +1,160 @@
+{
+  "count": 31,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 367,
+      "sha256": "961a0e3545ae6aee51c6522bbb4fb6bb4eb0cae36695ae4f1ad39b1f6f2e26d7"
+    },
+    {
+      "path": "accepted-effects-atlas96.png",
+      "bytes": 40452,
+      "sha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2"
+    },
+    {
+      "path": "browser-REPORT.md",
+      "bytes": 4480,
+      "sha256": "0cedf9bce849574c6601f5341c5ddb6efb0e6bf8ef9ddfd0b502831f8bb16126"
+    },
+    {
+      "path": "browser-final-summary.json",
+      "bytes": 2550,
+      "sha256": "12a00cbe135138c546f98fb92f5825f832e4a52bf9555f426361749e1c0b5396"
+    },
+    {
+      "path": "browser-independent-draw-proof.json",
+      "bytes": 843,
+      "sha256": "90c9afe9672778cd662492eff40396b6d7d647ee1e3a45dc50abeb341f073f29"
+    },
+    {
+      "path": "browser-runtime-checks.json",
+      "bytes": 16332,
+      "sha256": "21a310da91cb4b6f52ca3b1c37c128ed4841cead7f4a32d1ae4d35650717bf09"
+    },
+    {
+      "path": "browser-selected-scene-proof.json",
+      "bytes": 8715,
+      "sha256": "d20263583dd2974ed293e7db75a8c7067432f7920ead1ad0c739e2d10cc6b503"
+    },
+    {
+      "path": "browser-source-readback.json",
+      "bytes": 2611,
+      "sha256": "58b81bb010e8c70d48c3de891b0ac268bc4d763ba3319016ae6e3fe82359a182"
+    },
+    {
+      "path": "higgsfield-signature/contact-alignment-report.json",
+      "bytes": 4008,
+      "sha256": "641400dbff65f8c4dd97a808b4471fda94d6369b4bb3cdaf2973c3d02198ba97"
+    },
+    {
+      "path": "higgsfield-signature/exact-source-rgb-to-fixed128.npz",
+      "bytes": 307405,
+      "sha256": "b214b8154d3f4a592acbd7737914613c01e9060caa76cd6e21de165baf895c2a"
+    },
+    {
+      "path": "higgsfield-signature/palette.json",
+      "bytes": 6943,
+      "sha256": "57caaa33007c02d721d296841b9a5f4b6d3b07b07cbeaf72b1954a9d36e4fe43"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-extraction-config.json",
+      "bytes": 8201,
+      "sha256": "f2a5bf2885a116605ef5e856e69d8ac0c61fecdfe1cb0651c03184136fa178a9"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-apertures.json",
+      "bytes": 5431,
+      "sha256": "ce578140b40c960aa1805d2cbb8be1d88cc24fdefb28f364589f941e090dd264"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-masks/tile-001-gap-00.png",
+      "bytes": 1260,
+      "sha256": "3e5d8e62562aa55ef5eecaa7e82d2e7c2b58c669aa7aeeb4f4cf28db0758c6c1"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-masks/tile-001-gap-01.png",
+      "bytes": 1105,
+      "sha256": "bb8a16d30ad55ebec7c8de2ccf34927ad97bf3982c203e43739737caeb02924b"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-masks/tile-001-gap-02.png",
+      "bytes": 1103,
+      "sha256": "462b96c6c808ab710d49cc598f51c9b06c28e6331456acecd90c1f5beed81291"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-masks/tile-002-gap-03.png",
+      "bytes": 1102,
+      "sha256": "3dbea06dc4a44caf8dab4a01057874680e94490fd636d3aaea055a85cb03ab9b"
+    },
+    {
+      "path": "higgsfield-signature/reviewed-matte-masks/tile-002-gap-04.png",
+      "bytes": 1104,
+      "sha256": "beb1d9a7f44ecd75ce075206e94c223fc586c45515210fc22ef8ae68e6200a2f"
+    },
+    {
+      "path": "higgsfield-signature/source-crop-paint-and-rule-preflight.json",
+      "bytes": 4982,
+      "sha256": "5436e2f1046197d7e3f52ccb48f057d37fe9cddab143f50b6b60ba656c64fcd1"
+    },
+    {
+      "path": "higgsfield-signature/source-hashes.json",
+      "bytes": 1032,
+      "sha256": "cf0d3e0dc5bcd49422d986a5d828b89f550f5d5be20c097e116fbe28f6037847"
+    },
+    {
+      "path": "higgsfield-signature/source-preservation-audit.json",
+      "bytes": 8869,
+      "sha256": "4c56bed7027e68983a1fd4d33323293a3e200616d954a4ab4ec27436b1863ba6"
+    },
+    {
+      "path": "imagegen-original-source.png",
+      "bytes": 711470,
+      "sha256": "9573cf76fb0c356a521056b878a4c05eabd7ac70634ce1e60f473219e8f06de0"
+    },
+    {
+      "path": "imagegen-prompt.txt",
+      "bytes": 1291,
+      "sha256": "2c5d14892bdb5210007ed3a0b5c1b64f04d5c701b426407816c324b347b6bb72"
+    },
+    {
+      "path": "imagegen-source-and-pack-audit.json",
+      "bytes": 2685,
+      "sha256": "4e0099c52ccc22e2823051aefae34d98355872599a11cefc4e4b24e7b8512d61"
+    },
+    {
+      "path": "imagegen-source.json",
+      "bytes": 560,
+      "sha256": "9e6930daf48cf56eb9daab1d5e19e8632ecb9df8cfdf5cc6de1d802b14a6a858"
+    },
+    {
+      "path": "import-source-manifest.json",
+      "bytes": 5566,
+      "sha256": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6"
+    },
+    {
+      "path": "latest-registry-resource-review.json",
+      "bytes": 8563,
+      "sha256": "18d9231db05c9fdc14e6490fae31f054fbf0da147a8a60e4dda6539720123b8a"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 6105,
+      "sha256": "2d92c98190949ab8fb913d4a35f3c64b617a70b0c584a7d703db9f5102f3ebfc"
+    },
+    {
+      "path": "registry-fragment.json",
+      "bytes": 982,
+      "sha256": "38302c79b726f1abe682a4eb93c03dc47bb8e80d122058b67a81b62af6f61e87"
+    },
+    {
+      "path": "source-row-packing-proof.json",
+      "bytes": 1794,
+      "sha256": "052c17c4579d0128a5d5e455bbbdaa7801aadf3f944907f4b0a56353f929a8ab"
+    },
+    {
+      "path": "staging-freeze-manifest.json",
+      "bytes": 2569,
+      "sha256": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146"
+    }
+  ]
+}

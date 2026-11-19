@@ -1,0 +1,33 @@
+{
+  "bossId": "06-circuit-rune",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceStanding": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/mechanical-rune/frames/frame-000.png",
+  "sourceStandingSha256": "ba10bfe8a911dc2f6ec0921c416fea1eef72501e798436abdec685b6f08f7a98",
+  "portrait": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/outputs/mecha-complete-movesets/portraits/rune.webp",
+  "portraitSha256": "8ae9fd3c2fecbe3991b8fabd4b9e2392a84aca837378dff1c12884ff010f82cf",
+  "technicalPadding": [
+    320,
+    320
+  ],
+  "scale": 1,
+  "sourceRGBAChanges": 0,
+  "anchor": [
+    640,
+    920
+  ],
+  "groundRow": 919,
+  "requestedTicks": [
+    36,
+    6,
+    8,
+    11
+  ],
+  "releaseTick": 36,
+  "simDamageReach": "rear dx>0 and dx<bodyWidth/2+170; playerz<20",
+  "novaspawn": "boss.x+rear*(bodyWidth/2+40), boss.y, z0",
+  "referenceRoles": [
+    "approved full Phase1 model/mechanics/camera/colors",
+    "canonical original pilot identity only"
+  ]
+}

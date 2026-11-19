@@ -1,0 +1,33 @@
+{
+  "bossId": "03-mudline-crapto",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceStanding": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/mechanical-crapto/frames/frame-000.png",
+  "sourceStandingSha256": "3388bf7167bfd7684fa2631048a08166f2b467ff012e6d162454ed357fa2abcc",
+  "portrait": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/outputs/mecha-complete-movesets/portraits/crapto.webp",
+  "portraitSha256": "6cf0c8894213c51455cc2d514d667e57bdd7492507438f11a7d6eff4896b509e",
+  "technicalPadding": [
+    320,
+    320
+  ],
+  "scale": 1,
+  "sourceRGBAChanges": 0,
+  "anchor": [
+    640,
+    920
+  ],
+  "groundRow": 919,
+  "requestedTicks": [
+    36,
+    6,
+    8,
+    11
+  ],
+  "releaseTick": 36,
+  "simDamageReach": "rear dx>0 and dx<bodyWidth/2+170; playerz<20",
+  "novaspawn": "boss.x+rear*(bodyWidth/2+40), boss.y, z0",
+  "referenceRoles": [
+    "approved full Phase1 model/mechanics/camera/colors",
+    "canonical original pilot identity only"
+  ]
+}

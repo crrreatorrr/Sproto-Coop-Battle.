@@ -1,0 +1,372 @@
+{
+  "sourceCels": [
+    {
+      "tile": 0,
+      "family": "signature",
+      "sourceCel": 0,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-signature-03/provider-original.png",
+      "sourceSha256": "afaa25a7ad4bb57c72203512e0826d4796639d4480d9da8d38f4cdfbf57d880f",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "packedBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-0"
+    },
+    {
+      "tile": 1,
+      "family": "signature",
+      "sourceCel": 1,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-signature-03/provider-original.png",
+      "sourceSha256": "afaa25a7ad4bb57c72203512e0826d4796639d4480d9da8d38f4cdfbf57d880f",
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "packedBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-1"
+    },
+    {
+      "tile": 2,
+      "family": "signature",
+      "sourceCel": 2,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-signature-03/provider-original.png",
+      "sourceSha256": "afaa25a7ad4bb57c72203512e0826d4796639d4480d9da8d38f4cdfbf57d880f",
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "packedBox": [
+        2048,
+        0,
+        3072,
+        1024
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-2"
+    },
+    {
+      "tile": 3,
+      "family": "signature",
+      "sourceCel": 3,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-signature-03/provider-original.png",
+      "sourceSha256": "afaa25a7ad4bb57c72203512e0826d4796639d4480d9da8d38f4cdfbf57d880f",
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "packedBox": [
+        3072,
+        0,
+        4096,
+        1024
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-3"
+    },
+    {
+      "tile": 4,
+      "family": "special",
+      "sourceCel": 0,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-special-03/provider-original.png",
+      "sourceSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "packedBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-0"
+    },
+    {
+      "tile": 5,
+      "family": "special",
+      "sourceCel": 1,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-special-03/provider-original.png",
+      "sourceSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "packedBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-1"
+    },
+    {
+      "tile": 6,
+      "family": "special",
+      "sourceCel": 2,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-special-03/provider-original.png",
+      "sourceSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "packedBox": [
+        2048,
+        1024,
+        3072,
+        2048
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "PEAK-PLATEAU"
+    },
+    {
+      "tile": 7,
+      "family": "special",
+      "sourceCel": 3,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-special-03/provider-original.png",
+      "sourceSha256": "53d2f6e6b272f506b5e0977976920deb521a47e3bbd192a37a5bc51046884ac5",
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "packedBox": [
+        3072,
+        1024,
+        4096,
+        2048
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-3"
+    },
+    {
+      "tile": 8,
+      "family": "hurt",
+      "sourceCel": 0,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png",
+      "sourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "packedBox": [
+        0,
+        2048,
+        1024,
+        3072
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-0",
+      "sourceVersion": "hurt04"
+    },
+    {
+      "tile": 9,
+      "family": "hurt",
+      "sourceCel": 1,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png",
+      "sourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "packedBox": [
+        1024,
+        2048,
+        2048,
+        3072
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-1",
+      "sourceVersion": "hurt04"
+    },
+    {
+      "tile": 10,
+      "family": "hurt",
+      "sourceCel": 2,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png",
+      "sourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "packedBox": [
+        2048,
+        2048,
+        3072,
+        3072
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-2",
+      "sourceVersion": "hurt04"
+    },
+    {
+      "tile": 11,
+      "family": "hurt",
+      "sourceCel": 3,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-hurt-04/provider-original.png",
+      "sourceSha256": "3380b0c2d6f065d8fdcc06f160c04c5c949d40561204bc92eeca96d1868727f3",
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "packedBox": [
+        3072,
+        2048,
+        4096,
+        3072
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-3",
+      "sourceVersion": "hurt04"
+    },
+    {
+      "tile": 12,
+      "family": "death",
+      "sourceCel": 0,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-death-02/provider-original.png",
+      "sourceSha256": "4b54b69d0895592aa0ae9b74be5deb398c02a0dbcb60220f88b062269d68ee37",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "packedBox": [
+        0,
+        3072,
+        1024,
+        4096
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-0"
+    },
+    {
+      "tile": 13,
+      "family": "death",
+      "sourceCel": 1,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-death-02/provider-original.png",
+      "sourceSha256": "4b54b69d0895592aa0ae9b74be5deb398c02a0dbcb60220f88b062269d68ee37",
+      "sourceBox": [
+        1024,
+        0,
+        2048,
+        1024
+      ],
+      "packedBox": [
+        1024,
+        3072,
+        2048,
+        4096
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-1"
+    },
+    {
+      "tile": 14,
+      "family": "death",
+      "sourceCel": 2,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-death-02/provider-original.png",
+      "sourceSha256": "4b54b69d0895592aa0ae9b74be5deb398c02a0dbcb60220f88b062269d68ee37",
+      "sourceBox": [
+        0,
+        1024,
+        1024,
+        2048
+      ],
+      "packedBox": [
+        2048,
+        3072,
+        3072,
+        4096
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-2"
+    },
+    {
+      "tile": 15,
+      "family": "death",
+      "sourceCel": 3,
+      "sourcePath": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/bront-p2-death-02/provider-original.png",
+      "sourceSha256": "4b54b69d0895592aa0ae9b74be5deb398c02a0dbcb60220f88b062269d68ee37",
+      "sourceBox": [
+        1024,
+        1024,
+        2048,
+        2048
+      ],
+      "packedBox": [
+        3072,
+        3072,
+        4096,
+        4096
+      ],
+      "sourceRGBAReplayMismatches": 0,
+      "sourceScaleChanged": false,
+      "temporalName": "actual-source-3"
+    }
+  ],
+  "packedSourceSha256": "541bce170032fbc8e529809d9cdce4ff358d4adb8b41a668ef98131d55ceebef",
+  "all16SourceRGBAExact": true,
+  "originalSpecial2TemporalName": "PEAK-PLATEAU",
+  "newLocalPoses": false,
+  "replacedTilesOnly": [
+    8,
+    9,
+    10,
+    11
+  ],
+  "allOther12StagesExact": true,
+  "basePacketSha256": "ea76d9c65e4f746eb6e39909d2806323c2039d0d2717d3685552d7a612b36590"
+}

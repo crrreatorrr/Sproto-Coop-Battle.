@@ -1,0 +1,17 @@
+{
+  "tool": "Built-in image_gen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eaeb-c583-7933-b73a-04bcfe0d7384/exec-d0205e55-1179-4bb3-886b-98be6e38dfe6.png",
+  "workspaceOriginal": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/crapto-p1-rear-sweep-v1/provider-original.png",
+  "originalBytesUnchanged": true,
+  "sourceSha256": "43d9560a90e3e9a827b927e5e71380faad840c18ad78c6203bb414c6f2009e5a",
+  "mode": "RGB",
+  "size": [
+    1254,
+    1254
+  ],
+  "promptSha256": "b5fe513fd39b7331bbc628f955accd8603b4b830b2c1f86778b0952fdf9a44b6",
+  "transparentBackgroundRequested": false,
+  "matteRequested": "#00FF00",
+  "gameWrites": false,
+  "status": "NATIVE_QA_PENDING"
+}

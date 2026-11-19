@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "12e877948b264a0e1a99a04faa35cef1187948cb18efdcd38c34572c51809f71",
+  "providerSha256": "78b6c46b6e0b72ec5f278c6c23fc5c0278c02456187fab369303ddddd19dbedf",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Spread has an angled metallic upper/lower teal fin spread with a consistent left nose and short green tail. Substantial fin changes and distinct tracker vent shapes remain legible at game size. The impact separates crest shells into progressively smaller emerald fragments. Pale teal is attached blade illumination rather than transparent residue. Raw native cut audit verified every seam obstruction had alpha <=7/255. The explicit faint-background cutoff removes it without modifying stronger-alpha art. Both gameplay contacts have no backdrop or bleed. Retain reviewed lane. Runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

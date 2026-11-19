@@ -1,0 +1,16 @@
+{
+  "status": "PASS_EXACT_RGBA_ROWS_ONLY",
+  "sources": [
+    {
+      "purpose": "signature",
+      "source": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-p2-signature-v1/vela-p2-signature-v1-96.png",
+      "sourceSHA256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+      "copiedOracleSHA256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+      "sourceClipFragment": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/imagegen-boss-combat/staged-effects/vela-p2-signature-v1/clip-fragment-NOT-REGISTERED.json",
+      "sourceFragmentSHA256": "4bb8c5b410d69df6d238d27e6aa80336cdd6270a1dda5cde152f78c7ab0ff311"
+    }
+  ],
+  "stagedBankSHA256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+  "rowRGBAMismatches": 0,
+  "newArtOrAlphaEdits": false
+}

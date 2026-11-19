@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "1b435dbfecb39dc8eeab3a487d521b81a579d941721d29a260479622e1a56df6",
+  "providerSha256": "6033b37f19760dff540d81903b8f1c23fc3248d527aa06b6ba556339b50b7905",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "impact"
+  ],
+  "notes": "Lane and spread have stable emerald noses with cyan blades and right-trailing energy. The wider rows visibly extend the blade tips and the four-frame impact fragments disperse from a central green contact. Bright attached blades and emission are deliberate. Homing is unreachable in this charger phase and that spare source row is excluded. Independently reviewed the native geometry and dark/light gameplay contact. No detached opaque pale islands, text, panel matte or neighbor bleed. Existing authored rows stay protected. This verdict covers only the ordered purposes. Runtime proof is separate.",
+  "reviewedPartialAlpha": true
+}

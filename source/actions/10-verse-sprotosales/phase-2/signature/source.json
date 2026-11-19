@@ -1,0 +1,31 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "d466915de86bf0f444089e193081196d7d38759a01528183f6b30d9c40030b86",
+  "sourceSHA256": "88e8f463a055c8198bdda644f6ab3129c783e01a7462cfcbb69b89eb865a9c98",
+  "sourceType": "Derived RGBA sheet for review; provider RGB original is preserved.",
+  "measuredMatteRGB": [
+    4.0,
+    249.0,
+    4.0
+  ],
+  "flatMatteThreshold": 32,
+  "observedFlatMatteSamples": 1031651,
+  "additionalGreenMatteMixtureSamples": 15423,
+  "additionalMaskScope": "Green-dominant samples within 4 native pixels of the flat matte. No green material in approved Sproto Sales.",
+  "retainedRGBUnchanged": true,
+  "derivedFrom": "485b6085c371c58fc0444e29b8ec24ee1ca15b156263dc71984a81d6c9893e67",
+  "archApertureMaskSha256": "e39389a67ace3e7e541c907917fbb97e3f673854e708344abe52beda4501d393",
+  "archApertureLocalRegion": [
+    323,
+    154,
+    332,
+    171
+  ],
+  "archApertureBackgroundSamplesByCel": [
+    4,
+    0,
+    36,
+    5
+  ],
+  "otherSamplesExact": true
+}

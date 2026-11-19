@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "id": "highsproto-p1-charge-v2",
+  "clips": {
+    "charge-windup": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        24
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/09-hatchery-highsproto/highsproto-p1-charge-v2-c24d10768885cc15.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 1,
+          "cells": [
+            0
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    },
+    "charge-rush": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": true,
+      "frameTicks": [
+        7,
+        7
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/09-hatchery-highsproto/highsproto-p1-charge-v2-c24d10768885cc15.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 2,
+          "cells": [
+            1,
+            2
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    },
+    "charge-brake": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "loop": false,
+      "frameTicks": [
+        5
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/09-hatchery-highsproto/highsproto-p1-charge-v2-c24d10768885cc15.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 1,
+          "cells": [
+            3
+          ]
+        }
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ]
+    }
+  },
+  "pages": [
+    {
+      "src": "assets/bosses/actions/09-hatchery-highsproto/highsproto-p1-charge-v2-c24d10768885cc15.webp",
+      "columns": 2,
+      "rows": 2,
+      "width": 660,
+      "height": 660,
+      "decodedBytes": 1742400,
+      "encodedBytes": 191216,
+      "sha256": "c24d10768885cc157dbc0a5792df5278d140f23de1a23bca5797a800d07f455c"
+    }
+  ],
+  "sourceCelCount": 4,
+  "uniqueCelCount": 4,
+  "sources": [
+    {
+      "action": "charge-windup",
+      "file": "cel-1.png",
+      "sha256": "09b3e958a8340b068972cae6f0e6d55979c0f82737ddd4053cd2443524472b6a",
+      "rgbaSha256": "e386ad06cdcdd4d70c3de07ae74cae03d7e19556955a38f3524365e7584f2349",
+      "uniqueCel": 0,
+      "ticks": 24
+    },
+    {
+      "action": "charge-rush",
+      "file": "cel-2.png",
+      "sha256": "1498046dc7b52b7ad509a44492e95403e274e1e3c6e41073588dd679f6670489",
+      "rgbaSha256": "0f0fa880a8a656d76d9241c550202150470109fc38dff5ac28c95e6be662915c",
+      "uniqueCel": 1,
+      "ticks": 7
+    },
+    {
+      "action": "charge-rush",
+      "file": "cel-3.png",
+      "sha256": "ef0d7e83c6cd902421664a0e9e32ba23e394bf7aa6124729d62f34b76eed3661",
+      "rgbaSha256": "9a48b08db7b1d9bcedf8a56ae67e3d7170209aecc5eaa5a2a350a29ef34fa3df",
+      "uniqueCel": 2,
+      "ticks": 7
+    },
+    {
+      "action": "charge-brake",
+      "file": "cel-4.png",
+      "sha256": "f7ab7a8dee84a41dde7f5b795871b22ad231376d36931550e2b5a57bf8d36f44",
+      "rgbaSha256": "39759db59ff89b2bf9bb326f7287408db912a1a7dcdacf7cb0f1f0f70ff422a9",
+      "uniqueCel": 3,
+      "ticks": 5
+    }
+  ],
+  "authoredCelsUnchanged": true,
+  "synthesizedFrames": 0
+}

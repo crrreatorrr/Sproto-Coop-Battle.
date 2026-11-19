@@ -6,7 +6,8 @@ import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, loadAssetLoader, loadManifest } from './check-assets.mjs';
-import { buildDist } from './build.mjs';
+import { buildDist, runtimeIndex } from './build.mjs';
+import { MEDIA_LIMITS } from './streamed-media-budget.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const fixturePath = path.join(root, 'tests', 'fixtures', 'asset-baseline.json');
@@ -34,6 +35,13 @@ const SYNTAX = [
   'public/js/feedback-link.js',
   'public/js/render.js',
   'public/js/render-fx.js',
+  'public/js/boss-transform-player.js',
+  'public/js/boss-transformations.js',
+  'public/js/boss-action-player.js',
+  'public/js/boss-action-selection.js',
+  'public/js/boss-fx-selection.js',
+  'public/js/sprite-timeline.js',
+  'public/js/sprite-clip-player.js',
   'public/js/boss-morph.js',
   'public/js/boss-morph-field.js',
   'public/js/sim.js',
@@ -41,8 +49,16 @@ const SYNTAX = [
   'tests/browser-online.cjs',
   'tests/relay-security.test.js',
   'tests/asset-manifest.test.js',
+  'tests/asset-version.test.js',
+  'tests/asset-version-browser.cjs',
   'tests/atlas.test.js',
   'tests/loading.test.js',
+  'tests/boss-transform.test.js',
+  'tests/boss-actions.test.js',
+  'tests/boss-fx.test.js',
+  'tests/browser-boss-fx-cell.cjs',
+  'tests/boss-transform-loading.test.js',
+  'tests/boss-transform-browser.cjs',
   'tests/budgets.test.js',
   'tests/crash-guard.test.js',
   'tests/gamepad.test.js',
@@ -55,6 +71,8 @@ const SYNTAX = [
   'scripts/build.mjs',
   'scripts/check-assets.mjs',
   'scripts/check-budgets.mjs',
+  'scripts/streamed-media-budget.mjs',
+  'tests/streamed-media-budget.test.js',
 ];
 
 export function checkSyntax() {
@@ -80,20 +98,26 @@ export function fighterMetaSha256() {
 export function runtimeBudget(report) {
   const loader = loadAssetLoader();
   const manifest = loadManifest();
-  const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+  const index = runtimeIndex(report);
+  const html = index.html;
   const scripts = loader.pageScripts(html);
   const bytes = new Map(report.files.map(file => [file.path, file.bytes]));
   const budget = loader.budgetOf(manifest, rel => {
     if (!bytes.has(rel)) throw new Error('budget missing ' + rel);
     return bytes.get(rel);
-  }, scripts, bytes.get('index.html'));
+  }, scripts, index.bytes);
   const atlasFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/atlas\.(png|webp)$/.test(file.path));
   const poses = path.join(root, 'art', 'fighter-poses');
   const poseCount = fs.readdirSync(poses, { withFileTypes: true })
     .filter(dir => dir.isDirectory())
     .reduce((count, dir) => count + fs.readdirSync(path.join(poses, dir.name)).filter(name => /^(?:\d\d|w0\d)\.png$/.test(name)).length, 0);
   return Object.assign(budget, {
-    staticBytes: report.publicBytes,
+    staticBytes: report.publicBytes + index.bytes - bytes.get('index.html'),
+    baseStaticBytes: report.basePublicBytes + index.bytes - bytes.get('index.html'),
+    optionalMediaBytes: report.optionalMediaBytes,
+    optionalMediaCount: report.optionalMediaCount,
+    maxPresentationDecodedBytes: report.streamedMedia.maxPresentationDecodedBytes,
+    fxScratchDecodedBytes: report.fxScratchDecodedBytes,
     atlasCount: atlasFiles.length,
     atlasEdge: atlasFiles.reduce((max, file) => Math.max(max, file.width || 0, file.height || 0), 0),
     poseCount,
@@ -109,6 +133,19 @@ export function assertBudgets(report, built) {
   eq('assetBytes', report.assetBytes, expected.assetBytes);
   eq('publicFileCount', report.publicFileCount, expected.publicFileCount);
   eq('publicBytes', report.publicBytes, expected.publicBytes);
+  eq('basePublicBytes', report.basePublicBytes, expected.basePublicBytes);
+  eq('optionalMediaCount', report.optionalMediaCount, expected.optionalMediaCount);
+  eq('optionalMediaBytes', report.optionalMediaBytes, expected.optionalMediaBytes);
+  eq('optionalMediaTreeSha256', report.optionalMediaTreeSha256, expected.optionalMediaTreeSha256);
+  eq('presentationDecodedBytesMax', report.streamedMedia.maxPresentationDecodedBytes, expected.presentationDecodedBytesMax);
+  eq('fxScratchDecodedBytes', report.fxScratchDecodedBytes, expected.fxScratchDecodedBytes);
+  eq('optionalMediaBudgetBytes', expected.optionalMediaBudgetBytes, MEDIA_LIMITS.optionalBytes);
+  eq('optionalMediaPageBudgetBytes', expected.optionalMediaPageBudgetBytes, MEDIA_LIMITS.encodedPageBytes);
+  eq('presentationBudgetBytes', expected.presentationBudgetBytes, MEDIA_LIMITS.presentationBytes);
+  eq('staticBudgetBytes', expected.staticBudgetBytes, STATIC_BUDGET_BYTES);
+  eq('titleBudgetBytes', expected.titleBudgetBytes, TITLE_BUDGET_BYTES);
+  eq('firstStageBudgetBytes', expected.firstStageBudgetBytes, FIRST_STAGE_BUDGET_BYTES);
+  eq('criticalRequestBudget', expected.criticalRequestBudget, CRITICAL_REQUESTS);
   eq('assetTreeSha256', report.assetTreeSha256, expected.assetTreeSha256);
   eq('publicTreeSha256', report.publicTreeSha256, expected.publicTreeSha256);
   eq('preloadCount', report.preloadCount, expected.preloadCount);
@@ -127,7 +164,7 @@ export function assertBudgets(report, built) {
     if (budget.titleBytes > TITLE_BUDGET_BYTES) problems.push(`title bytes ${budget.titleBytes} exceed ${TITLE_BUDGET_BYTES}`);
     if (budget.firstStageBytes > FIRST_STAGE_BUDGET_BYTES) problems.push(`first stage bytes ${budget.firstStageBytes} exceed ${FIRST_STAGE_BUDGET_BYTES}`);
     if (budget.criticalRequests > CRITICAL_REQUESTS) problems.push(`critical requests ${budget.criticalRequests} exceed ${CRITICAL_REQUESTS}`);
-    if (budget.staticBytes > STATIC_BUDGET_BYTES) problems.push(`public bytes ${budget.staticBytes} exceed ${STATIC_BUDGET_BYTES}`);
+    if (budget.baseStaticBytes > STATIC_BUDGET_BYTES) problems.push(`base public bytes ${budget.baseStaticBytes} exceed ${STATIC_BUDGET_BYTES}`);
     if (budget.atlasCount !== 16) problems.push('expected 16 fighter atlases, got ' + budget.atlasCount);
     if (budget.atlasEdge > 1024) problems.push('atlas edge ' + budget.atlasEdge);
     if (budget.poseCount !== 240) problems.push('source poses changed: ' + budget.poseCount);
@@ -136,7 +173,9 @@ export function assertBudgets(report, built) {
     eq('firstStageBytes', budget.firstStageBytes, expected.firstStageBytes);
     eq('criticalRequests', budget.criticalRequests, expected.criticalRequests);
   }
-  if (report.publicBytes > STATIC_BUDGET_BYTES) problems.push(`public bytes ${report.publicBytes} exceed ${STATIC_BUDGET_BYTES}`);
+  if (report.basePublicBytes > STATIC_BUDGET_BYTES) problems.push(`source base public bytes ${report.basePublicBytes} exceed ${STATIC_BUDGET_BYTES}`);
+  for (const issue of report.streamedMedia.validationErrors) problems.push(issue.owner + ': ' + issue.message);
+  problems.push(...report.streamedMedia.limitErrors);
   const provenance = JSON.parse(fs.readFileSync(provenancePath, 'utf8'));
   if (provenance.shipped !== 'webp' || provenance.webp.shipped !== true || provenance.webp.exact !== true) {
     problems.push('classic atlas provenance is not exact lossless WebP');
@@ -172,5 +211,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     process.exit(1);
   }
   const live = runtimeBudget(report);
-  console.log(`budgets ok: assets ${report.assetCount} (${report.assetBytes} bytes), startup images ${report.preloadCount}, title ${live.titleBytes}, first stage ${live.firstStageBytes}, critical requests ${live.criticalRequests}, static ${report.publicBytes} <= ${STATIC_BUDGET_BYTES}`);
+  console.log(`budgets ok: assets ${report.assetCount} (${report.assetBytes} bytes), startup images ${report.preloadCount}, title ${live.titleBytes}, first stage ${live.firstStageBytes}, critical requests ${live.criticalRequests}, total public ${live.staticBytes}, base ${live.baseStaticBytes} <= ${STATIC_BUDGET_BYTES}, optional ${live.optionalMediaBytes} <= ${MEDIA_LIMITS.optionalBytes}, presentation decoded ${live.maxPresentationDecodedBytes} <= ${MEDIA_LIMITS.presentationBytes}, FX scratch ${live.fxScratchDecodedBytes}`);
 }

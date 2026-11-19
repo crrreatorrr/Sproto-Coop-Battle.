@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "04439650e77edba684b035c5831c4560c1fd631dc354b87267cfeb4bcdde0f3b",
+  "providerSha256": "c5bfc83c4ffd12098af7cd24d245a7279cf8c5897c734f13fae91ba74f7b7d1c",
+  "anchor": [
+    47,
+    50
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Each completed crown-and-lightning flash remains isolated in the actual four by four source, with at least 32 native seam pixels of clearance after removing 0–2/255 backdrop alpha. Green and amber sparks stay separated from the environment in both facings. The few pale pixels sit inside the illuminated center and crown highlights, with no unrelated white flecks. The first crisp yellow contact grows until the arc disperses into sparks at all five locked target zones."
+}

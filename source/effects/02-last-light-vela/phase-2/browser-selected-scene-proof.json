@@ -1,0 +1,282 @@
+[
+  {
+    "purpose": "signature",
+    "cel": 0,
+    "face": -1,
+    "actualScene": "signature-left-000.png",
+    "crop": [
+      193,
+      105,
+      513,
+      305
+    ],
+    "sourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      353,
+      255
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 1,
+    "face": -1,
+    "actualScene": "signature-left-005.png",
+    "crop": [
+      190,
+      106,
+      510,
+      306
+    ],
+    "sourceRect": [
+      96,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      350,
+      256
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 2,
+    "face": -1,
+    "actualScene": "signature-left-011.png",
+    "crop": [
+      192,
+      105,
+      512,
+      305
+    ],
+    "sourceRect": [
+      192,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      352,
+      255
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 3,
+    "face": -1,
+    "actualScene": "signature-left-017.png",
+    "crop": [
+      191,
+      106,
+      511,
+      306
+    ],
+    "sourceRect": [
+      288,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      351,
+      256
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 0,
+    "face": 1,
+    "actualScene": "signature-right-000.png",
+    "crop": [
+      320,
+      105,
+      640,
+      305
+    ],
+    "sourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      491,
+      255
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 1,
+    "face": 1,
+    "actualScene": "signature-right-005.png",
+    "crop": [
+      320,
+      106,
+      640,
+      306
+    ],
+    "sourceRect": [
+      96,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      488,
+      256
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 2,
+    "face": 1,
+    "actualScene": "signature-right-011.png",
+    "crop": [
+      320,
+      105,
+      640,
+      305
+    ],
+    "sourceRect": [
+      192,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      490,
+      255
+    ]
+  },
+  {
+    "purpose": "signature",
+    "cel": 3,
+    "face": 1,
+    "actualScene": "signature-right-017.png",
+    "crop": [
+      320,
+      106,
+      640,
+      306
+    ],
+    "sourceRect": [
+      288,
+      0,
+      96,
+      96
+    ],
+    "destRect": [
+      -35,
+      -45.9375,
+      70,
+      70
+    ],
+    "actualWorldSourceRect": [
+      0,
+      0,
+      96,
+      96
+    ],
+    "observedOriginalSource": "/single/assets/bosses/effects/replayv3-vela-attacks.png",
+    "groundPoint": [
+      489,
+      256
+    ]
+  }
+]

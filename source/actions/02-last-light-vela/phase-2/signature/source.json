@@ -1,0 +1,37 @@
+{
+  "provider": "Built-in ImageGen",
+  "layout": "2\u00d72 in reading order",
+  "sourceSHA256": "dc65490159abee02ad010e9d3ff2bb14198c4c60c50bd92c967138ad144d76b9",
+  "cellSize": [
+    627,
+    627
+  ],
+  "boundsAtAlpha128": [
+    [
+      90,
+      34,
+      589,
+      542
+    ],
+    [
+      19,
+      91,
+      589,
+      543
+    ],
+    [
+      33,
+      138,
+      595,
+      543
+    ],
+    [
+      50,
+      42,
+      590,
+      543
+    ]
+  ],
+  "stage": "Raw candidate; rig identity, edge and playback QA pending",
+  "alphaPreservedInExtractedCels": true
+}

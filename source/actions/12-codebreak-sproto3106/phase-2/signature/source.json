@@ -1,0 +1,7 @@
+{
+  "provider": "Built-in ImageGen",
+  "layout": "2\u00d72; release pose extends across its nominal seam; exact disjoint source extraction preserved the whole weapon and neighboring actors",
+  "sourceSHA256": "b50a8091b9664e024ad7f5a3ddbb71451ec46697264659acc9ed787c813f8855",
+  "sourceManifestSha256": "d6e555ecd582825729e267f69a5e9326700d050af7f26724ac58783a28d98593",
+  "verifiedNativeSupport": "Two feet, connected fist, two separate rear towers"
+}

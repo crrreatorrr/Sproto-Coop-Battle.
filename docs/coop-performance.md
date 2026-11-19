@@ -39,7 +39,7 @@ The renderer copies each cell with `getImageData` into a 128 canvas, then draws 
 
 ## Budgets
 
-Caps are 1.5 MiB title, 3 MiB first stage, 30 critical requests, 10 MiB static (`10,485,760`). All four hold.
+Caps are 1.5 MiB title, 3 MiB first stage, 30 critical requests and 10 MiB base/static (`10,485,760`). Total public bytes remain fully inventoried. Valid registered optional boss streams have separate encoded and retained-residency limits; see [streamed-media-budgets.md](streamed-media-budgets.md).
 
 | Gate | Measured | Cap |
 |---|---:|---:|

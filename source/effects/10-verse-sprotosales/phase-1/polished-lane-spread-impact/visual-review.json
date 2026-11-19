@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "atlasSha256": "619cd523bafaac782b2e32e62792051350cdd4c7ecb41fb3b799eb34b448fb92",
+  "providerSha256": "ab41e999f5443426ab3b2bb696769976be1ddcb97f87e1ff0e0d057ed699c54c",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "impact"
+  ],
+  "notes": "Amber and crimson crescent nose stays on the left; material trails to the right, with coiled and split tails adding energy without moving the center. Spread distinct from compact lane. The yellow-amber impact resolves by fragmenting into a small ember. All near-white samples are attached incandescent pixels. Rune-style homing is unreachable on this charger in P1 and that row is excluded. The original intake rejected seam alpha of 3/255, so the documented background-only cutoff is raised from 2 to 3, preserving all stronger-alpha artwork. Native source and dark/light gameplay contact independently reviewed. No visible backdrop, typography, or neighbor bleed. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

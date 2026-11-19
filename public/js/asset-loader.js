@@ -47,8 +47,61 @@ function scenery(i, manifest) {
 function bossPaths(manifest, i) {
   const out = [];
   const phases = manifest.bosses[i].phases;
-  for (let p = 0; p < phases.length; p++) out.push(phases[p].sheet, phases[p].proj);
-  return out;
+  for (const phase of phases) {
+    out.push(phase.sheet, phase.proj);
+    if (stageOnlyBoss(manifest, i)) out.push(lowerBossActorPath(phase));
+  }
+  // Authored effect clips normally reuse each phase's projectile bank. Optional
+  // separate banks follow the same stage lifetime, including late-join loads.
+  const art = root.CoopBossTransformations?.animations?.bosses?.[manifest.bosses[i].key]?.phases || [];
+  for (const phase of art) for (const clip of Object.values(phase?.fx || {})) {
+    for (const page of Array.isArray(clip?.pages) ? clip.pages : []) {
+      const src = page?.src;
+      if (typeof src === 'string' && /^assets\/bosses\/[a-z0-9/._-]+\.(png|webp)$/.test(src) &&
+          !src.split('/').some(part => !part || part === '.' || part === '..') &&
+          !/^assets\/bosses\/(actions|transformations)\//.test(src)) out.push(src);
+    }
+  }
+  return unique(out);
+}
+
+function transformPaths(manifest, i) {
+  const clip = root.CoopBossTransformations?.clips?.[manifest.bosses[i].key];
+  return clip ? clip.pages.map(page => page.src) : [];
+}
+
+function actionPaths(manifest, i) {
+  const phases = root.CoopBossTransformations?.animations?.bosses?.[manifest.bosses[i].key]?.phases || [];
+  return unique(phases.flatMap(phase => Object.values(phase.actions || {})
+    .flatMap(clip => clip.pages.map(page => page.src))));
+}
+
+// Only the bespoke Last Call actor atlases are split across two pages.
+function stageOnlyBoss(manifest, i) {
+  return i > 0 && manifest.bosses[i]?.attacks === 'bar';
+}
+
+// Load the late-stage boss banks on entry instead of keeping them alongside
+// the previous stage. The ordinary Codebreak atlases use their usual layout.
+function deferBossBanks(manifest, i) {
+  return stageOnlyBoss(manifest, i) || (i > 0 && manifest.bosses[i]?.key === '12-codebreak-sproto3106');
+}
+
+const BAR_ACTOR_PAGE_ROWS = 5;
+
+function lowerBossActorPath(phase) {
+  return typeof phase.sheet === 'string' ? phase.sheet.replace(/\.webp$/, '-lower.webp') : null;
+}
+
+function bossActorFrame(manifest, i, phaseIndex, row) {
+  const phase = manifest.bosses[i].phases[phaseIndex];
+  return stageOnlyBoss(manifest, i) && row >= BAR_ACTOR_PAGE_ROWS
+    ? { src: lowerBossActorPath(phase), row: row - BAR_ACTOR_PAGE_ROWS }
+    : { src: phase.sheet, row };
+}
+
+function canPrefetchNext(manifest, i) {
+  return i + 1 < manifest.bosses.length && !deferBossBanks(manifest, i + 1);
 }
 
 function stagePaths(manifest, i) {
@@ -62,7 +115,15 @@ function stagePaths(manifest, i) {
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
 // Combat effects and gear are prefetched with the first stage and stay resident.
-const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(function (name) { return 'assets/fx/' + name + '.png'; });
+function fxPath(name) { return 'assets/fx/' + name + '.png'; }
+const FX = ['spikes', 'flame', 'lights', 'burst', 'combat'].map(fxPath);
+
+function enemyProjectileSheet(row) {
+  const selected = root.CoopBossTransformations?.enemyProjectileSheet;
+  const allowed = selected === true || (Array.isArray(selected) &&
+    (row === undefined ? selected.some(i => Number.isInteger(i) && i >= 0 && i < 4) : selected.includes(row)));
+  return allowed ? fxPath('enemy-projectiles') : null;
+}
 
 function unique(list) {
   const seen = new Set();
@@ -80,14 +141,18 @@ function groups(manifest) {
   const motion = manifest.fighters.map(motionPath).filter(Boolean);
   const shadows = manifest.shadows?.sheets || [];
   const stages = [];
-  const bosses = [];
+  const bosses = [], transformations = [], actions = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
     stages.push.apply(stages, scenery(i, manifest));
     bosses.push.apply(bosses, bossPaths(manifest, i));
+    transformations.push.apply(transformations, transformPaths(manifest, i));
+    actions.push.apply(actions, actionPaths(manifest, i));
   }
   // The title shows the original first four. All other bodies load when selected.
   const startup = atlas.slice(0, 4).concat(scenery(0, manifest), scenery(4, manifest));
   const firstBoss = bossPaths(manifest, 0);
+  const enemyProjectiles = enemyProjectileSheet();
+  const fx = enemyProjectiles ? FX.concat(enemyProjectiles) : FX.slice();
   return {
     atlas: atlas,
     motion: motion,
@@ -95,18 +160,25 @@ function groups(manifest) {
     firstBoss: firstBoss,
     shadows: shadows.slice(),
     ufo: UFO.slice(),
-    fx: FX.slice(),
+    fx: fx,
     stages: stages,
     bosses: bosses,
-    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, shadows, UFO, FX)),
+    transformations: transformations,
+    actions: actions,
+    all: unique(atlas.concat(motion, [PORTRAITS], stages, bosses, transformations, actions, shadows, UFO, fx)),
     scenery: function (i) { return scenery(i, manifest); },
     boss: function (i) { return bossPaths(manifest, i); },
   };
 }
 
-function resolve(rel, base) {
-  if (!base) return rel;
-  try { return new URL(rel, base).href; }
+function resolve(rel, base, version = root.CoopAssetVersion) {
+  try {
+    if (!base && !version) return rel;
+    const url = new URL(rel, base || 'https://sproto.invalid/');
+    if (version && /^(?:assets|js|vendor)\//.test(rel)) url.searchParams.set('v', version);
+    if (base || /^[a-z][a-z0-9+.-]*:|^\/\//i.test(rel)) return url.href;
+    return (rel.startsWith('/') ? url.pathname : url.pathname.slice(1)) + url.search + url.hash;
+  }
   catch (err) { return rel; }
 }
 
@@ -114,7 +186,7 @@ function pageScripts(html) {
   const out = [];
   const re = /<script\s+src="([^"]+)"/g;
   let match;
-  while ((match = re.exec(html))) out.push(match[1]);
+  while ((match = re.exec(html))) out.push(match[1].replace(/[?#].*$/, ''));
   return out;
 }
 
@@ -133,12 +205,13 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
-  const firstStageBytes = titleBytes + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
+  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const firstTransform = transformPaths(manifest, 0).slice(0, 1);
+  const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
     titleBytes: titleBytes,
     firstStageBytes: firstStageBytes,
-    criticalRequests: 1 + scriptPaths.length + g.startup.length + g.firstBoss.length,
+    criticalRequests: 1 + scriptPaths.length + g.startup.length + g.firstBoss.length + firstTransform.length,
     startupImages: g.startup.length,
     firstBossImages: g.firstBoss.length,
     ufoImages: g.ufo.length,
@@ -170,6 +243,8 @@ function lru(cap) {
 }
 
 function groupOf(src) {
+  if (src.indexOf('/bosses/transformations/') >= 0) return 'transform';
+  if (src.indexOf('/bosses/actions/') >= 0) return 'action';
   if (src.indexOf('/fighters/') >= 0) return 'fighter';
   if (src.indexOf('/bosses/') >= 0) return 'boss';
   if (src.indexOf('/stages/') >= 0) return 'stage';
@@ -195,7 +270,8 @@ function create(opts) {
   let peakLoad = 0;
   let peakDecode = 0;
   let clock = 0;
-  let stagePins = new Set();
+  let stagePins = new Set(), transformPins = new Set(), actionPins = new Set();
+  let stageIndex = -1, stageManifest;
   const timings = [];
 
   function newImage() {
@@ -255,11 +331,7 @@ function create(opts) {
     if (decodeSlots > peakDecode) peakDecode = decodeSlots;
     const token = rec.token;
     const finish = function () {
-      if (rec.token !== token || rec.state !== 'decoding') {
-        decodeSlots = Math.max(0, decodeSlots - 1);
-        pump();
-        return;
-      }
+      if (rec.token !== token || rec.state !== 'decoding') return;
       rec.state = 'ready';
       rec.decoded = rec.img.naturalWidth * rec.img.naturalHeight * 4;
       rec.ms = now() - rec.t0;
@@ -270,11 +342,7 @@ function create(opts) {
       pump();
     };
     const bad = function () {
-      if (rec.token !== token || rec.state !== 'decoding') {
-        decodeSlots = Math.max(0, decodeSlots - 1);
-        pump();
-        return;
-      }
+      if (rec.token !== token || rec.state !== 'decoding') return;
       decodeSlots = Math.max(0, decodeSlots - 1);
       retry(rec);
       pump();
@@ -389,6 +457,11 @@ function create(opts) {
   }
 
   function evict() {
+    records.forEach(function (rec) {
+      if ((rec.group === 'transform' && !transformPins.has(rec.src)) ||
+          (rec.group === 'action' && !actionPins.has(rec.src)) ||
+          ((transformPins.size || actionPins.size) && rec.group === 'boss' && rec.pin === 'stage' && !stagePins.has(rec.src))) drop(rec);
+    });
     const extra = { boss: 0, shadow: 0, stage: STAGE_EXTRA, ufo: UFO_EXTRA };
     Object.keys(extra).forEach(function (group) {
       const loose = [];
@@ -407,17 +480,47 @@ function create(opts) {
 
   function enterStage(index, manifest) {
     if (index < 0 || index >= manifest.bosses.length) return;
+    if (stageIndex !== index) { transformPins = new Set(); actionPins = new Set(); }
+    stageIndex = index;
+    stageManifest = manifest;
     const current = stagePaths(manifest, index);
-    const next = index + 1 < manifest.bosses.length ? stagePaths(manifest, index + 1) : [];
+    const next = !transformPins.size && !actionPins.size && canPrefetchNext(manifest, index) ? stagePaths(manifest, index + 1) : [];
     stagePins = new Set(current.concat(next));
     for (let i = 0; i < current.length; i++) request(current[i], { pin: 'stage' }).promise.catch(function () {});
     for (let i = 0; i < next.length; i++) request(next[i], { pin: 'stage', prefetch: true }).promise.catch(function () {});
     evict();
   }
 
+  function setTransformPages(paths) {
+    if (paths.length > 2 || paths.some(src => groupOf(src) !== 'transform')) {
+      throw new Error('Expected at most two authored transformation pages');
+    }
+    if (paths.length === transformPins.size && paths.every(src => transformPins.has(src))) return;
+    transformPins = new Set(paths);
+    if (stageIndex >= 0) enterStage(stageIndex, stageManifest);
+    for (let i = 0; i < paths.length; i++) request(paths[i], { prefetch: i > 0 }).promise.catch(function () {});
+    evict();
+  }
+
+  function setActionPages(paths) {
+    if (paths.length > 2 || paths.some(src => groupOf(src) !== 'action')) {
+      throw new Error('Expected at most two authored action pages');
+    }
+    if (paths.length === actionPins.size && paths.every(src => actionPins.has(src))) return;
+    actionPins = new Set(paths);
+    if (stageIndex >= 0) enterStage(stageIndex, stageManifest);
+    for (let i = 0; i < paths.length; i++) request(paths[i], { prefetch: i > 0 }).promise.catch(function () {});
+    evict();
+  }
+
+  function loaded(src) {
+    const rec = records.get(src);
+    return rec?.state === 'ready' ? rec.img : null;
+  }
+
   function status() {
-    const resident = { boss: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
-    const decoded = { boss: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const resident = { boss: 0, transform: 0, action: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
+    const decoded = { boss: 0, transform: 0, action: 0, stage: 0, fighter: 0, ufo: 0, other: 0 };
     const errors = [];
     let pending = 0;
     let ready = 0;
@@ -436,7 +539,8 @@ function create(opts) {
     return { loadSlots: loadSlots, decodeSlots: decodeSlots, peakLoad: peakLoad, peakDecode: peakDecode, queued: queue.length, records: records.size };
   }
 
-  return { request: request, image: image, preload: preload, prefetch: prefetch, enterStage: enterStage, status: status, debug: debug };
+  return { request: request, image: image, loaded: loaded, preload: preload, prefetch: prefetch,
+    enterStage: enterStage, setTransformPages: setTransformPages, setActionPages: setActionPages, status: status, debug: debug };
 }
 
 let singleton = null;
@@ -461,6 +565,13 @@ root.AssetLoader = {
   motionPath: motionPath,
   portraits: PORTRAITS,
   groups: groups,
+  enemyProjectileSheet: enemyProjectileSheet,
+  stageOnlyBoss: stageOnlyBoss,
+  deferBossBanks: deferBossBanks,
+  lowerBossActorPath: lowerBossActorPath,
+  bossActorFrame: bossActorFrame,
+  barActorPageRows: BAR_ACTOR_PAGE_ROWS,
+  canPrefetchNext: canPrefetchNext,
   resolve: resolve,
   pageScripts: pageScripts,
   budgetOf: budgetOf,

@@ -1189,7 +1189,7 @@ function loadGameScript(file, api) {
   if (gameScripts.has(file)) return gameScripts.get(file);
   const job = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'js/' + file + '.js';
+    script.src = window.AssetLoader.resolve('js/' + file + '.js', document.baseURI);
     script.onload = () => { if (window[api]) resolve(); else script.onerror(); };
     script.onerror = () => { script.remove(); gameScripts.delete(file); reject(new Error('could not load ' + file)); };
     document.head.appendChild(script);

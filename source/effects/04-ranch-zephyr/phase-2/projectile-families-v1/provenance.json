@@ -1,0 +1,123 @@
+{
+  "status": "Accepted existing HF projectile families only; body combat pending",
+  "public": "assets/bosses/04-ranch-zephyr-p2-projectiles.png",
+  "publicEncodedSha256": "18bb09542471ce39c57a6b9e32501452689dc9615e063b19c30743129a4ebc8a",
+  "acceptedTop16SourceSha256": "c7a8a62993d295fd4425d2a09f056ede004ec2654637ef33ab0b1f84f408bfd8",
+  "stagedManifestSha256": "99e9a8face9bea11195b0e8069b33029d90f5c84831e5681caa4c375a18bc7a2",
+  "V3ProofManifestSha256": "06b668fee6f891cd7b091ad60f0e6f2089343cabd54aafcf36deddab12e98afe",
+  "runtimeProofBaseline": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "importBaseline": "b16e01fda1881f313e40587e7bfef1920c266d00",
+  "sourceFamilies": [
+    {
+      "purpose": "lane",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-lane-03-reviewed-flame-matte-v2",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "8be6340a08399ee9b91c56d8b557bac93f797381188fd18255d8db048f795727",
+      "verifiedFiles": 37,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "56414fe8d59e48070dd397a04e7fe33da391470045c261897f73b00c157cc402",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/lane.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-lane-03-reviewed-flame-matte-v2-independent-v1/REPORT.md",
+      "sourceReviewSha256": "05f5d63864d51bff1436ff1821388d03b38e22a2218dc2d0e8557a293a1f25ac",
+      "firstCell": 0,
+      "anchor": [
+        47,
+        51
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "spread",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-spread-03-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "2da9160e9b3ef337b70598c05ae5be748b47706c8b0c20961245daaa36e9e973",
+      "verifiedFiles": 19,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "289468f2b19c27a4512a2575a98b699a32f3e52e4e201ab804670709e0128bee",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/spread.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/reviewed-background-mattes-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "2514c7489e090558232ebe969f03e5061c4306654c30b1db16e5da03870d0578",
+      "firstCell": 4,
+      "anchor": [
+        43,
+        48
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "homing",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-homing-03-independent-v1",
+      "manifest": "delivery-manifest.json",
+      "manifestSha256": "4bfc522072b0755a09b63ac1df27d03cb4bca9faf10d8b8c5e8bd5f939d9e280",
+      "verifiedFiles": 138,
+      "page": "material-finish-128-v2/zephyr-p2-homing03-fixed128-4x1.png",
+      "pageSha256": "c13af1e07579ae01d14288e3dafd5726c38ed4cc18757ceaf0c6fed370d180ef",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/homing.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-homing-03-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "7559f32047ee40f69e858e007906ebbcf071b556fba2675866a613a6306bef7e",
+      "firstCell": 8,
+      "anchor": [
+        42,
+        48
+      ],
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "grounded": false
+    },
+    {
+      "purpose": "impact",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-impact-04-reviewed-matte-v1",
+      "manifest": "freeze-manifest.json",
+      "manifestSha256": "a44ea9b4ecb67d2de1c10c3acbe1da034acb1a728a88e4a0e2f6ee41189bb61c",
+      "verifiedFiles": 40,
+      "page": "reviewed-four-cel-atlas96.png",
+      "pageSha256": "9fa944aac96d2aa63612c2d336dfcf5ae1e4f75e0aa6b3ec3cee2a9457cf4853",
+      "stagedSourcePage": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/staged-effects/zephyr-p2-four-projectile-families-staged-v1/source-pages/impact.png",
+      "sourceReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-lane03-impact04-derived-second-review-v1/REPORT.md",
+      "sourceReviewSha256": "b024a0be4f9d2077cff7acf2e414d3f15bd454aee75b57f76a88404c21c26292",
+      "firstCell": 12,
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "grounded": false
+    }
+  ],
+  "bottom16AcceptedPageSha256": "eafbbeae223b377afc28ddb1a321e86f0d87bebf2aef64ff916c58d36ec2dea1",
+  "bottom16AndMetadataExact": true,
+  "originalSourceArchiveRemains": "../original-projectile-bank.png; unchanged fixture sourceOriginalPngBase64/encodedSHA",
+  "nativeFringeLimitation": "Native ambiguous/connected contour fringe retained; delivered96was independently reviewed. No native halo-free claim.",
+  "sourceRGBOrAlphaChangesDuringImport": 0,
+  "localNewArtOrMotion": false,
+  "providerCalls": false,
+  "newURLRequests": 0,
+  "decodedDelta": 0,
+  "sourceProofExactScenes": 2224,
+  "sourceProofExactDraws": 9770
+}

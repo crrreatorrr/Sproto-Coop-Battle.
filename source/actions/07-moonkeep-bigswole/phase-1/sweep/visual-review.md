@@ -1,0 +1,5 @@
+# Big Swole phase-one rear sweep QA
+
+PASS. I reproduced the source from the provider RGB and exact matte rules, using the measured per-cel origin offsets on one common scale. All four original source tiles and all four packed page cels matched. The no-floor-line redraw preserves the connected shield, separate front maul, two boots, purple castle roof and authentic blue puppet with round pale eyes, red mouth and golden ear. The pose sequence moves the shield from upright guard to a low rear strike then back, with the front unchanged. Both side views stay complete through the camera reversal.
+
+The low rear shield tip reaches about 123 game pixels at tick 36, close to the existing rear nova at about 130, inside the live sweep zone. The near-floor contact reads at game size without a fake floor or a disconnected painted shadow. Fine connected green source edge colors remain, with no more than 26 saturated samples in any packed cel. The same masked source and exact lossless page passed 124 browser snapshots through the complete sweep, including both facings, tick-36 nova, late decode, reconnect and idle return.

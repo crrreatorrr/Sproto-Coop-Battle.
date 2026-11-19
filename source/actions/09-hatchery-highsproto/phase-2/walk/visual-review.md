@@ -1,0 +1,13 @@
+# High Sproto P2 walk v3 — independent commit gate
+
+**PASS** for exact page9c1ff8278822c55e3378659fad4c18ca936f1ab968f38a33ce0fdb1a27fc0b09,660²,188576encoded/1742400decoded bytes. No game/source/candidate edits by reviewer.
+
+The genuine new source fixes v1's single-support bounce: A/C have four planted complete boots; B lifts only the leftmost front cream leg with three other supports planted; D lifts only the rightmost rear cream leg with the other three planted. The inner dark rear foot uses the approved farther floor plane. Four closed hip/knee/ankle/boot chains remain, two full attached pincers and cream/teal/coral armor stay coherent, original yellow-haired blue-bearded/yellow-eyed/red-shirt pilot remains recognizable within the physical cabin. Four true provider drawings, not copies or local poses. All16 final330-delivery views (both faces, pale/dark) were inspected; no blocking magenta gap flecks or detached white paint observed. Native thin darker key edge tones are retained and disclosed; native halo-free quality is not claimed.
+
+Independent v2 source reconstruction: provider728c2eb41afd2cc9b6b315da3a3446a0515f884d41720bda5762783ec0627424, exact measured magenta32/987666flat+6786bounded-mixture extraction and retained RGBA all replay. The separate v3 change is exactly35samples, matching the whole source RGBA diff. Independent8-connected BFS verifies nine complete eligible components equal the proposal mask, with all original RGBA witnesses exact. Native raw/overlay contexts locate these in cap/teal-strut and hip background slots; true cream/teal/coral/black hardware and pilot remain untouched. All unmasked RGBA exact; provider/v2/proposal/v3 frozen manifests validate unchanged. Only six normalized samples disappear[4,1,0,1], no other game-pixel change.
+
+All four exact627→673NN→960whole placements→330NN cels and660page replay. Identical673common scale/placements[97,193],[127,193],[97,194],[127,193], sole260/anchor[165,261]/coreRect[55,55,220,220],4×9ticks/36loop. No per-part motion, width change, face transplant, deletion of real armor or pose synthesis. The archived rear-cylinder registration is excluded.
+
+Fresh independent Chromium replay against isolated exact98921c0 public runtime passes242actualSim snapshots, both facings, true movement/age-loop selection, cold fallback, late decode, one page request and two export/import reconnects. The author's separate242-proof also binds the exact page. Representative own scenes are saved; runtime/harness hashes bound in checks.json + runtime-provenance.json. No independent full-scene pixel-oracle claim.
+
+Input byte preservation was rechecked at freeze; all new evidence lives only here. Root owns final registration/commit.

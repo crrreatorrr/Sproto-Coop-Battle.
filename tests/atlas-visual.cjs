@@ -5,6 +5,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('node:crypto');
 const { chromium } = require('playwright');
 
 const root = path.join(__dirname, '..');
@@ -227,7 +228,69 @@ async function paintBoss(page) {
 }
 
 async function verifyBossPlayback(page) {
-  return page.evaluate(async () => {
+  const reviewed = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/boss-import-source-checks.json'), 'utf8'));
+  const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+  for (const [asset, bank] of Object.entries(reviewed.banks)) {
+    if (digest(fs.readFileSync(path.join(root, 'public', asset))) !== bank.runtimeEncodedSha256) {
+      throw new Error(asset + ' encoded bytes differ from the reviewed import');
+    }
+    if (bank.sourceOriginalPngBase64 && digest(Buffer.from(bank.sourceOriginalPngBase64, 'base64')) !== bank.sourceOriginalEncodedSha256) {
+      throw new Error(asset + ' original FX reference bytes differ');
+    }
+    if (bank.acceptedReplacedSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedReplacedSourceFile));
+      if (digest(bytes) !== bank.acceptedReplacedSourceEncodedSha256 || bank.cell !== 96 || bank.rows !== 8 || bank.acceptedReplacedRgbaSha256?.length !== 16) {
+        throw new Error(asset + ' accepted replacement FX source differs');
+      }
+      bank.acceptedReplacedSourcePngBase64 = bytes.toString('base64'); // Test-only decoded reference.
+    }
+    if (bank.acceptedLaneSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedLaneSourceFile));
+      if (digest(bytes) !== bank.acceptedLaneSourceEncodedSha256 || bank.cell !== 96 ||
+          bank.acceptedLaneRgbaSha256?.length !== 4) {
+        throw new Error(asset + ' accepted lane source differs');
+      }
+      bank.acceptedLaneSourcePngBase64 = bytes.toString('base64');
+    }
+    for (const ref of bank.higgsfieldSources || []) {
+      const bytes = fs.readFileSync(path.join(root, ref.file));
+      if (digest(bytes) !== ref.encodedSha256 || ref.rgbaSha256.length !== 16 ||
+          !Number.isInteger(ref.firstCell) || ref.firstCell < 0 || ref.firstCell % 4 ||
+          !Number.isInteger(ref.sourceFirstCell) || ref.sourceFirstCell < 0 || ref.sourceFirstCell % 4 ||
+          ![4, 16].includes(ref.frames) || ref.sourceFirstCell + ref.frames > 16 ||
+          ref.firstCell + ref.frames > bank.rows * 4 || bank.cell !== 96 ||
+          (ref.partialAlphaCells !== undefined && (!Array.isArray(ref.partialAlphaCells) ||
+            ref.partialAlphaCells.some((cell, i) => !Number.isInteger(cell) || cell < 0 || cell >= 16 ||
+              (i && cell <= ref.partialAlphaCells[i - 1]))))) {
+        throw new Error(asset + ' Higgsfield FX source differs');
+      }
+      ref.pngBase64 = bytes.toString('base64');
+    }
+    if (bank.acceptedDedicatedSourceFile) {
+      const bytes = fs.readFileSync(path.join(root, bank.acceptedDedicatedSourceFile));
+      if (digest(bytes) !== bank.acceptedDedicatedSourceEncodedSha256 || bank.cell !== 96 ||
+          bank.acceptedDedicatedRgbaSha256?.length !== bank.rows * 4) {
+        throw new Error(asset + ' dedicated FX reference bytes differ');
+      }
+      bank.acceptedDedicatedSourcePngBase64 = bytes.toString('base64'); // Test-only independent decode preserves partial-alpha semantics.
+    }
+  }
+  const banks = Object.values(reviewed.banks);
+  const expected = {
+    exactSourceCells: banks.reduce((sum, bank) => sum + bank.rows * 4, 0),
+    acceptedFxCells: banks.reduce((total, bank) => {
+      if (bank.kind !== 'fx') return total;
+      for (let i = 0; i < bank.rows * 4; i++) {
+        if (bank.acceptedDedicatedSourceFile || (i < 4 && bank.acceptedLaneSourceFile) ||
+            (i < 16 && bank.acceptedReplacedSourceFile) ||
+            (i >= 16 && bank.acceptedAppendedSourceEncodedSha256) ||
+            (bank.higgsfieldSources || []).some(ref => i >= ref.firstCell && i < ref.firstCell + ref.frames)) total++;
+      }
+      return total;
+    }, 0),
+    dedicatedFxSheets: banks.filter(bank => bank.acceptedDedicatedSourceFile).length,
+  };
+  const result = await page.evaluate(async reviewed => {
     const ACTOR = 220, FX = 96;
     const transformKeys = [28, 96, 174, 258, 342, 442];
     const reviewTicks = [0, 62, 96, 134, 174, 216, 258, 300, 342, 392, 442, 480];
@@ -237,19 +300,48 @@ async function verifyBossPlayback(page) {
     canvas.width = Sim.W; canvas.height = Sim.H;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.imageSmoothingEnabled = false;
-    const calls = [], drawImage = ctx.drawImage.bind(ctx);
+    const actorLayer = document.createElement('canvas'); actorLayer.width = actorLayer.height = 256;
+    const actorContext = actorLayer.getContext('2d', { willReadFrequently: true });
+    const calls = [], drawImage = ctx.drawImage.bind(ctx), scratchLineage = new WeakMap();
+    let registeredFxDraws = 0;
+    const nativeDraw = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function (image, ...args) {
+      if (this.canvas.width === FX && this.canvas.height === FX && image instanceof HTMLImageElement) {
+        const asset = new URL(image.src).pathname.replace(/^\//, '');
+        if (asset.startsWith('assets/bosses/')) {
+          if (args.length !== 8 || args.slice(2).join(',') !== [FX,FX,0,0,FX,FX].join(',')) {
+            throw new Error('Registered FX scratch must copy exactly one native cel');
+          }
+          scratchLineage.set(this.canvas, { asset, source: args.slice(0,4) });
+        }
+      }
+      return nativeDraw.call(this, image, ...args);
+    };
     ctx.drawImage = (image, ...args) => {
-      let asset;
+      let asset, source;
       if (image instanceof HTMLImageElement) {
-        const source = new URL(image.src).pathname.replace(/^\//, '');
-        if (source.startsWith('assets/bosses/')) asset = source;
+        const assetPath = new URL(image.src).pathname.replace(/^\//, '');
+        if (assetPath.startsWith('assets/bosses/')) asset = assetPath;
       } else if (image instanceof HTMLCanvasElement && image.width === ACTOR && image.height === ACTOR) {
         asset = null;
       }
+      if (image instanceof HTMLCanvasElement && image.width === FX && image.height === FX) {
+        const origin = scratchLineage.get(image);
+        if (!origin) throw new Error('Registered FX scratch lost its source lineage');
+        asset = origin.asset; source = origin.source;
+        if (args.slice(0,4).join(',') !== [0,0,FX,FX].join(',')) throw new Error('FX draw did not use the native scratch origin');
+        registeredFxDraws++;
+      }
       if (asset !== undefined) {
         const matrix = ctx.getTransform();
+        if (args[2] === ACTOR && args[3] === ACTOR) {
+          actorContext.save(); actorContext.imageSmoothingEnabled = false;
+          actorContext.setTransform(matrix.a,matrix.b,matrix.c,matrix.d,128,240);
+          actorContext.globalAlpha = ctx.globalAlpha; actorContext.filter = ctx.filter;
+          actorContext.drawImage(image,...args); actorContext.restore();
+        }
         calls.push({
-          asset, source: args.slice(0, 4), facing: Math.sign(matrix.a), alpha: ctx.globalAlpha,
+          asset, source: source || args.slice(0, 4), facing: Math.sign(matrix.a), alpha: ctx.globalAlpha,
           image: asset === null ? image : undefined,
         });
       }
@@ -257,9 +349,18 @@ async function verifyBossPlayback(page) {
     };
     const check = (predicate, message) => { if (!predicate) throw new Error(message); };
     const expected = (asset, cell, row, col, facing) => ({ asset, source: [col * cell, row * cell, cell, cell], facing });
+    const expectedFx = (bi, ph, purpose, age, row, col, facing = 1) => {
+      const clip = CoopBossFxSelection.clipFor(CoopBossTransformations.animations, MANIFEST,
+        { bossIndex: bi, phase: ph, purpose });
+      if (!clip) return expected(MANIFEST.bosses[bi].phases[ph].proj, FX, row, col, facing);
+      const frame = CoopSpriteTimeline.plan(clip).at(age, false);
+      return { asset: frame.page.src, source: [frame.x, frame.y, FX, FX], facing };
+    };
+    const sha256 = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)))
+      .map(n => n.toString(16).padStart(2,'0')).join('');
     const renderSnapshot = state => JSON.parse(JSON.stringify(Sim.snapshot(state)));
     const draw = snap => {
-      calls.length = 0;
+      calls.length = 0; actorContext.clearRect(0,0,256,256);
       Render.drawWorld(ctx, snap, { noBanner: true });
       return calls;
     };
@@ -332,7 +433,7 @@ async function verifyBossPlayback(page) {
       check(blended === 0, label + ' mixes the texture colors of adjacent poses in ' + blended + ' pixels');
       return hash;
     };
-    const verifyTransformation = (state, firstSheet, secondSheet, pilot) => {
+    const verifyLegacyTransformation = (state, firstSheet, secondSheet, pilot) => {
       const duration = Sim.BOSS_TRANSFORM_TICKS;
       check(duration === 480, 'transformation must run for eight seconds at 60 Hz');
       const poses = [[firstSheet, 0, 0], [firstSheet, 6, 0], [firstSheet, 6, 1],
@@ -395,38 +496,183 @@ async function verifyBossPlayback(page) {
       check(sampledMorphs.size === transformKeys.length - 1, pilot + ' has repeated representative morph frames');
       return { renders, morphs };
     };
-    const projectileArt = new Set();
+    const verifyAuthoredTransformation = async (state, firstSheet, secondSheet, pilot) => {
+      const duration = Sim.BOSS_TRANSFORM_TICKS, key = MANIFEST.bosses[state.stageIdx].key;
+      const clip = CoopBossTransformations.clips[key], source = reviewed.transformations[key];
+      check(duration === 480 && clip.frameTicks.length === 160 && clip.frameTicks.every(n => n === 3),
+        pilot + ' must use its complete160-cel/eight-second authored sequence');
+      check(clip.cell.join(',') === '220,220' && clip.anchor.join(',') === '110,206' &&
+        clip.pages.length === 4 && clip.pages.every(p => p.columns === 8 && p.frames === 40),
+        pilot + ' authored source geometry changed');
+      const sampled = new Set(), hashes = new Map();
+      let renders = 0, lastSnapshot;
+      for (let tick = 0; tick <= duration; tick++) {
+        if (tick > 0) Sim.step(state);
+        const transforming = tick < duration;
+        check(state.boss.phase === 1 && state.boss.st === (transforming ? 'transform' : 'idle') &&
+          state.boss.t === (transforming ? tick : 0), pilot + ' authored clock/state mismatch at ' + tick);
+        if (tick % 2 !== 0 && tick !== duration - 1) continue;
+        const snapshot = renderSnapshot(state);
+        const art = { ...snapshot, players: [], enemies: [], items: [], projs: [], fx: [], hz: [] };
+        for (const facing of [-1,1]) {
+          const frame = { ...art, boss: { ...art.boss, fc: facing, fl: 0, su: undefined } };
+          CoopBossTransformPlayer.shared().sync(frame);
+          const started = performance.now();
+          while (loader.status().pending || loader.debug().loadSlots || loader.debug().decodeSlots || loader.debug().queued) {
+            check(performance.now() - started < 15000, pilot + ' authored page decode timeout');
+            await new Promise(resolve => setTimeout(resolve,2));
+          }
+          check(!loader.status().error && loader.status().resident.transform <= 2,
+            pilot + ' failed decode or retained more than two transformation pages');
+          const actual = draw(frame), caption = pilot + ' authored tick ' + tick;
+          check(actual.length === 1 && actual[0].alpha === 1, caption + ' must draw one opaque actor');
+          if (transforming) {
+            const index = Math.floor(tick / 3), local = index % 40;
+            const asset = clip.pages[Math.floor(index / 40)].src, sx = local % 8 * ACTOR, sy = Math.floor(local / 8) * ACTOR;
+            checkDrawCalls(actual, [{ asset, source: [sx,sy,ACTOR,ACTOR], facing: -facing }], caption);
+            if (!hashes.has(index)) {
+              paletteCtx.clearRect(0,0,ACTOR,ACTOR);
+              paletteCtx.drawImage(Render.img(asset),sx,sy,ACTOR,ACTOR,0,0,ACTOR,ACTOR);
+              hashes.set(index,await sha256(paletteCtx.getImageData(0,0,ACTOR,ACTOR).data));
+            }
+            check(hashes.get(index) === source.rgbaSha256[index], caption + ' differs from reviewed source cel ' + index);
+            sampled.add(index);
+          } else {
+            checkDrawCalls(actual,[expected(secondSheet,ACTOR,0,0,-facing)],caption + ' standing handoff');
+            check(loader.status().resident.transform === 0, pilot + ' retained T pages after phase-two handoff');
+          }
+          if (facing === -1) drawReviewFrame(frame,tick,pilot);
+          if (tick === 0 || tick === duration - 1) {
+            // Compare the actor layer: the authored path intentionally uses the
+            // phase-two ground shadow throughout, while P1 idle has its own.
+            const transformed = actorContext.getImageData(0,0,256,256).data;
+            draw({ ...frame, boss: { ...frame.boss, st: 'idle', ph: Number(tick > 0), t: 0 } });
+            const standing = actorContext.getImageData(0,0,256,256).data;
+            check(transformed.every((byte,i) => byte === standing[i]),caption + ' differs from exact standing endpoint');
+          }
+          renders++;
+        }
+        if (reviewTicks.includes(tick) && tick < duration - 6) {
+          const newer = { ...art, boss: { ...art.boss, t: tick + 6 } };
+          const blend = Render.interpolateSnapshot(art,newer,0.25);
+          check(blend.boss.t === tick + 1.5 && !('z' in blend.boss) && newer.boss.t === tick + 6,
+            pilot + ' lost authored sub-tick progress');
+        }
+        if (tick === duration - 1) lastSnapshot = snapshot;
+        if (tick === duration) {
+          const handoff = Render.interpolateSnapshot(lastSnapshot,snapshot,0.5);
+          check(handoff.boss.st === 'idle' && handoff.boss.t === 0, pilot + ' interpolated across authored phase-two handoff');
+        }
+      }
+      check(sampled.size === 160, pilot + ' did not exercise every authored source cel');
+      return { renders, cels: sampled.size };
+    };
+    const projectileArt = new Set(), checkedDedicatedFx = new Set();
     // Lightly tinted steel can read as white at game scale. Saturated
     // colored glows and emissive paint remain available to each boss.
     const isPale = (r, g, b) => {
       const low = Math.min(r, g, b);
       return low >= 164 && Math.max(r, g, b) - low <= 49;
     };
-    const assertAtlas = (asset, cell, rows) => {
-      const image = Render.img(asset);
+    let exactSourceCells = 0, acceptedFxCells = 0;
+    const assertAtlas = async (asset, cell, rows) => {
+      const image = Render.img(asset), reviewedBank = reviewed.banks[asset];
+      check(reviewedBank && reviewedBank.cell === cell && reviewedBank.rows === rows, asset + ' lacks reviewed source geometry');
       check(Render.ready(image) && image.naturalWidth === 4 * cell && image.naturalHeight === rows * cell,
         asset + ' has incorrect atlas dimensions');
+      // Browser-native comparison keeps original partial-alpha premultiplication
+      // exact, while Node verifies the reference's original encoded SHA above.
+      let legacyFxPixels;
+      if (cell === FX && reviewedBank.sourceOriginalPngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.sourceOriginalPngBase64;
+        await reference.decode();
+        const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4 * FX;
+        legacyFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); legacyFxPixels.drawImage(reference,0,0);
+      }
+      let replacedFxPixels;
+      if (cell === FX && reviewedBank.acceptedReplacedSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedReplacedSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4*FX && reference.naturalHeight === 4*FX, asset + ' replacement source geometry');
+        const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = sourceCanvas.height = 4*FX;
+        replacedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); replacedFxPixels.drawImage(reference,0,0);
+      }
+      let laneFxPixels;
+      if (cell === FX && reviewedBank.acceptedLaneSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedLaneSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4 * FX && reference.naturalHeight === FX, asset + ' lane source geometry');
+        const sourceCanvas = document.createElement('canvas');
+        sourceCanvas.width = 4 * FX; sourceCanvas.height = FX;
+        laneFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true });
+        laneFxPixels.drawImage(reference, 0, 0);
+      }
+      let dedicatedFxPixels;
+      if (cell === FX && reviewedBank.acceptedDedicatedSourcePngBase64) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + reviewedBank.acceptedDedicatedSourcePngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4*FX && reference.naturalHeight === rows*FX, asset + ' dedicated source geometry');
+        const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = reference.naturalWidth; sourceCanvas.height = reference.naturalHeight;
+        dedicatedFxPixels = sourceCanvas.getContext('2d', { willReadFrequently: true }); dedicatedFxPixels.drawImage(reference, 0, 0);
+      }
+      const higgsfield = [];
+      for (const ref of reviewedBank.higgsfieldSources || []) {
+        const reference = new Image(); reference.src = 'data:image/png;base64,' + ref.pngBase64;
+        await reference.decode();
+        check(reference.naturalWidth === 4 * FX && reference.naturalHeight === 4 * FX,
+          asset + ' Higgsfield source geometry');
+        const sheet = document.createElement('canvas');
+        sheet.width = sheet.height = 4 * FX;
+        const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(reference, 0, 0);
+        higgsfield.push({ ...ref, pixels });
+      }
       const sheet = document.createElement('canvas');
       sheet.width = image.naturalWidth; sheet.height = image.naturalHeight;
-      const pixels = sheet.getContext('2d', { willReadFrequently: true });
-      pixels.drawImage(image, 0, 0);
+      const pixels = sheet.getContext('2d', { willReadFrequently: true }); pixels.drawImage(image, 0, 0);
       for (let row = 0; row < rows; row++) {
         const frames = new Set();
         for (let col = 0; col < 4; col++) {
           const rgba = pixels.getImageData(col * cell, row * cell, cell, cell).data;
           let ink = 0, white = 0, hash = 2166136261;
           for (let i = 0; i < rgba.length; i++) {
-            if (i % 4 === 3 && rgba[i] > 0) {
-              ink++;
-              if (isPale(rgba[i - 3], rgba[i - 2], rgba[i - 1])) white++;
-            }
+            if (i % 4 === 3 && rgba[i] > 0) { ink++; if (isPale(rgba[i-3],rgba[i-2],rgba[i-1])) white++; }
             hash = Math.imul(hash ^ rgba[i], 16777619);
           }
-          check(ink > 100 && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
-          check(white === 0, asset + ' has pale-neutral highlights in cell ' + row + '/' + col);
-          if (cell === FX && col === 0) {
-            check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row);
-            projectileArt.add(hash);
+          const sourceHash = await sha256(rgba);
+          // Canvas may round RGB when premultiplying genuine partial alpha. Compare
+          // its independently decoded source exactly; raw PNG RGBA hashes stay in the fixture.
+          const laneSource = cell === FX && row === 0 && laneFxPixels;
+          const ref = higgsfield.find(entry => row * 4 + col >= entry.firstCell &&
+            row * 4 + col < entry.firstCell + entry.frames);
+          const localCell = ref ? ref.sourceFirstCell + row * 4 + col - ref.firstCell : 0;
+          const expectedHash = ref
+            ? await sha256(ref.pixels.getImageData(localCell % 4 * FX, Math.floor(localCell / 4) * FX, FX, FX).data)
+            : laneSource
+            ? await sha256(laneFxPixels.getImageData(col * FX, 0, FX, FX).data)
+            : dedicatedFxPixels
+            ? await sha256(dedicatedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+            : cell === FX && row < 4 && replacedFxPixels
+            ? await sha256(replacedFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+            : cell === FX && row < 4 && legacyFxPixels
+              ? await sha256(legacyFxPixels.getImageData(col*FX,row*FX,FX,FX).data)
+              : reviewedBank.rgbaSha256[row*4+col];
+          if (ref && !ref.partialAlphaCells?.includes(localCell)) check(expectedHash === ref.rgbaSha256[localCell], asset + ' reviewed FX source binding');
+          if (!ref && laneSource) check(expectedHash === reviewedBank.acceptedLaneRgbaSha256[col], asset + ' lane source binding');
+          if (!ref && replacedFxPixels && row < 4) check(expectedHash === reviewedBank.acceptedReplacedRgbaSha256[row*4+col], asset + ' replacement cel source binding');
+          check(sourceHash === expectedHash, asset + ' differs from exact reviewed source in cell ' + row + '/' + col);
+          exactSourceCells++;
+          const minimum = ref && (['signature', 'special'].includes(ref.family) || ref.sourceFirstCell === 12) ? 1 : 101;
+          check(ink >= minimum && ink < cell * cell, asset + ' has an empty or opaque cell ' + row + '/' + col);
+          const approvedStanding = cell === ACTOR && row === 0 && col === 0;
+          const approvedReplacedFx = cell === FX && row < 4 && replacedFxPixels;
+          const approvedAppendedFx = cell === FX && row >= 4 && reviewedBank.acceptedAppendedSourceEncodedSha256;
+          const approvedDedicatedFx = cell === FX && asset.startsWith('assets/bosses/effects/') &&
+            reviewedBank.acceptedDedicatedSourceEncodedSha256;
+          if (approvedStanding) check(sourceHash === reviewedBank.standingCol0Sha256, asset + ' standing endpoint differs');
+          else if (ref || laneSource || approvedReplacedFx || approvedAppendedFx || approvedDedicatedFx) acceptedFxCells++;
+          else check(white === 0, asset + ' has pale-neutral highlights in untouched fallback cell ' + row + '/' + col);
+          if (cell === FX && row < 4 && col === 0 && !approvedDedicatedFx) {
+            check(!projectileArt.has(hash), asset + ' reuses projectile art in row ' + row); projectileArt.add(hash);
           }
           frames.add(hash);
         }
@@ -446,6 +692,7 @@ async function verifyBossPlayback(page) {
       canvas.width = canvas.height = 8;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       for (const [row, col, x, y] of windows) {
+        if (row === 0 && col === 0) continue; // Exact reviewed standing SHA replaces only this legacy pose.
         ctx.clearRect(0, 0, 8, 8);
         ctx.drawImage(Render.img(asset), col * ACTOR + x, row * ACTOR + y, 8, 8, 0, 0, 8, 8);
         const data = ctx.getImageData(0, 0, 8, 8).data;
@@ -510,7 +757,7 @@ async function verifyBossPlayback(page) {
       const strike = renderSnapshot(state);
       const effects = verifyWave(strike, 0);
       check(player.hp < preImpactHp, name + ' did not damage the marked player on release');
-      const art = effects.map(() => expected(proj, FX, 3, 0, 1));
+      const art = effects.map(effect => expectedFx(state.boss.bi, 1, mode, effect.t, 3, 0));
       checkDraw(strike, [actor(2), ...art], name + ' strike');
 
       player.inv = 1000;
@@ -545,7 +792,7 @@ async function verifyBossPlayback(page) {
     }
 
     let phases = 0, launched = 0, impacts = 0, summons = 0, transitions = 0, extraAttacks = 0;
-    let transformRenders = 0, transformMorphs = 0;
+    let transformRenders = 0, transformMorphs = 0, legacyTransformRenders = 0, registeredTransformCels = 0;
     for (const [bi, boss] of MANIFEST.bosses.entries()) {
       // Single-phase Last Call has separate 8/16-column playback coverage.
       if (boss.attacks === 'bar') continue;
@@ -554,8 +801,16 @@ async function verifyBossPlayback(page) {
       const snap = { si: bi, t: 12, sk: 0, camX: 0, items: [], players: [], enemies: [], fx: [], projs: [] };
       const ar = bi % Sim.BOSS_ARCHETYPES.length;
       for (const [ph, { sheet, proj }] of boss.phases.entries()) {
-        assertAtlas(sheet, ACTOR, 7 + ph + Number(summoners.has(boss.pilot)));
-        assertAtlas(proj, FX, 4);
+        await assertAtlas(sheet, ACTOR, 7 + ph + Number(summoners.has(boss.pilot)));
+        await assertAtlas(proj, FX, reviewed.banks[proj].rows);
+        const authoredFx = CoopBossTransformations.animations?.bosses?.[boss.key]?.phases?.[ph]?.fx || {};
+        for (const clip of Object.values(authoredFx)) for (const page of clip.pages || []) {
+          if (!page.src.startsWith('assets/bosses/effects/') || checkedDedicatedFx.has(page.src)) continue;
+          const source = reviewed.banks[page.src];
+          check(source?.acceptedDedicatedSourceEncodedSha256, page.src + ' lacks exact accepted dedicated FX provenance');
+          await assertAtlas(page.src, FX, source.rows);
+          checkedDedicatedFx.add(page.src);
+        }
         if (boss.pilot === 'zephyr') verifyZephyrClawClearance(sheet, ph);
         const status = { bi, ph, ar, x: 420, y: 36, fc: -1, hp: 50, mh: 100, fl: 0, w: 130 };
         const label = boss.pilot + ' phase ' + (ph + 1);
@@ -609,7 +864,8 @@ async function verifyBossPlayback(page) {
           check(release.projs.length > 0, label + ' missing projectile at release');
           check(release.projs.every(p => p.k === 'boss' && p.bi === bi && p.ph === ph && p.r === shotRow),
             label + ' snapshot has incorrect projectile provenance');
-          const shots = release.projs.map(p => expected(proj, FX, visualRow, 0, p.vx > 0 ? -1 : 1));
+          const purpose = ['lane', 'spread', 'homing'][visualRow];
+          const shots = release.projs.map(p => expectedFx(bi, ph, purpose, p.t, visualRow, 0, p.vx > 0 ? -1 : 1));
           checkDraw(release, [expected(sheet, ACTOR, row, 1, 1), ...shots], label + ' live projectile row ' + row);
           launched += shots.length;
 
@@ -629,7 +885,7 @@ async function verifyBossPlayback(page) {
           check(impact.projs.length === 0 &&
             impact.fx.some(f => f.k === 'bossImpact' && f.bi === bi && f.ph === ph && f.t === 1),
           label + ' shot did not report an impact with its boss and phase');
-          checkDraw(impact, [expected(sheet, ACTOR, row, 1, 1), expected(proj, FX, 3, 0, 1)],
+          checkDraw(impact, [expected(sheet, ACTOR, row, 1, 1), expectedFx(bi, ph, 'impact', 1, 3, 0)],
             label + ' themed impact for attack row ' + row);
           impacts++;
         }
@@ -668,9 +924,15 @@ async function verifyBossPlayback(page) {
           Sim.step(s);
           player.in.p = 0;
           const secondSheet = boss.phases[1].sheet;
-          const transform = verifyTransformation(s, sheet, secondSheet, boss.pilot);
-          transformRenders += transform.renders;
-          transformMorphs += transform.morphs;
+          const clip = CoopBossTransformations.clips[boss.key];
+          check(clip, boss.pilot + ' requires its accepted authored transformation');
+          delete CoopBossTransformations.clips[boss.key];
+          try {
+            const legacy = verifyLegacyTransformation(structuredClone(s), sheet, secondSheet, boss.pilot);
+            legacyTransformRenders += legacy.renders; transformMorphs += legacy.morphs;
+          } finally { CoopBossTransformations.clips[boss.key] = clip; }
+          const transform = await verifyAuthoredTransformation(s, sheet, secondSheet, boss.pilot);
+          transformRenders += transform.renders; registeredTransformCels += transform.cels;
           transitions++;
           s.items = [];
           const secondProj = boss.phases[1].proj;
@@ -681,11 +943,17 @@ async function verifyBossPlayback(page) {
         phases++;
       }
     }
+    CanvasRenderingContext2D.prototype.drawImage = nativeDraw;
     return {
       phases, launched, impacts, summons, transitions, extraAttacks, transformRenders, transformMorphs,
-      projectileDesigns: projectileArt.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
+      legacyTransformRenders, registeredTransformCels, registeredFxDraws, exactSourceCells, acceptedFxCells,
+      projectileDesigns: projectileArt.size, dedicatedFxSheets: checkedDedicatedFx.size, contacts: contactSheets.map(sheet => sheet.toDataURL('image/png')),
     };
-  });
+  }, reviewed);
+  for (const [key, count] of Object.entries(expected)) {
+    if (result[key] !== count) throw new Error(key + ' ' + result[key] + ', expected ' + count);
+  }
+  return result;
 }
 
 async function main() {
@@ -723,7 +991,8 @@ async function main() {
         if (bossPlayback.phases !== 24 || bossPlayback.impacts !== 72 || bossPlayback.summons !== 6 ||
             bossPlayback.transitions !== 12 || bossPlayback.extraAttacks !== 24 ||
             bossPlayback.transformRenders !== 5808 || bossPlayback.transformMorphs !== 4848 ||
-            bossPlayback.projectileDesigns !== 96) {
+            bossPlayback.projectileDesigns !== 96 || bossPlayback.legacyTransformRenders !== 5808 ||
+            bossPlayback.registeredTransformCels !== 1920 || bossPlayback.registeredFxDraws < 1) {
           throw new Error('missing boss playback coverage: ' + JSON.stringify(bossPlayback));
         }
         for (const [i, png] of contacts.entries()) {

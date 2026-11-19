@@ -1,0 +1,21 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "27f87ff345deeef6adbda8c1422b62f8b9fe5f0be89f5edd7c72d97f94b453a9",
+  "sourceSHA256": "d8fe22ca4341e9426e5ce94dd35ec0211d416ddcf4f36c9bf3c1551564becbfd",
+  "measuredMatteRGB": [
+    250.0,
+    12.0,
+    249.0
+  ],
+  "flatTolerance": 32,
+  "flatCount": 1071494,
+  "mixedCount": 5834,
+  "mixedRule": "R>G+38,B>G+38,R>150,B>150 within Chebyshev4 of measured flat matte",
+  "retainedRGBAExactOutsideMask": true,
+  "phase": 1,
+  "action": "walk",
+  "status": "bounded technical matte revision candidate",
+  "baseSourceV3SHA256": "ef6320ea8700b709b05af9a7fa130af07e8c9d8fca4ed9e0f3e771b459c2b4fa",
+  "additionalReviewedBackgroundSamples": 10,
+  "reviewedMask": "reviewed-hip-gap-mask.png"
+}

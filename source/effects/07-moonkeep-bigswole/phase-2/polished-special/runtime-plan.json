@@ -1,0 +1,82 @@
+{
+  "boss": "07-moonkeep-bigswole",
+  "phase": 1,
+  "family": "special",
+  "purposes": [
+    "special"
+  ],
+  "asset": "assets/bosses/effects/07-moonkeep-bigswole-p2-special-4715a8bc8d6a.png",
+  "atlasSha256": "4715a8bc8d6ae055ca6fd2c5e70829a29e77fe82ab30d487db6f2c43adde80f5",
+  "runtimeSha256": "4715a8bc8d6ae055ca6fd2c5e70829a29e77fe82ab30d487db6f2c43adde80f5",
+  "runtimeDimensions": [
+    384,
+    384
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 0,
+      "frames": 16
+    }
+  ],
+  "clips": {
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        68
+      ],
+      "grounded": true,
+      "frameTicks": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/07-moonkeep-bigswole-p2-special-4715a8bc8d6a.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 16,
+          "firstCell": 0
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

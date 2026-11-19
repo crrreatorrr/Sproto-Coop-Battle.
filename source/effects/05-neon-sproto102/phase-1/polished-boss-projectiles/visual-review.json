@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "atlasSha256": "2c96c67a8aec055862267b22f125a6a0c5bce526b593446423744989904bd3f2",
+  "providerSha256": "cf18191533f991e77faff4753297b43b85c27d4758c7772e3c83d990c20c98b3",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "purposes": [
+    "lane",
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "notes": "Compact red lance, widening red-gold spread fins, and plated tracker distinguish the left-facing flight rows. Lane currents flicker with fixed engine registration. The red/gold impact runs center flash, fracture, sparsely glowing ruby pieces. Bright highlights remain attached to metallic/emissive parts. No visible bleed, matte, foreign particles, or text. Independently reviewed the raw sprites, foreground validation and dark/light game-size contact. Visual approval only; runtime proof remains required.",
+  "reviewedPartialAlpha": true
+}

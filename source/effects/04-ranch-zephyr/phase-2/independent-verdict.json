@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "runtimeCommit": "fbf1ad90e749bb9a8c5bcfa51d6c5edce906eebc",
+  "bankSha256": "13acc4990e93d439150588946121a39bde578bb49fd61bbbbe43797de1f01043",
+  "pixelScenes": 624,
+  "authoredDrawChecks": 794,
+  "bothActualFacings": true,
+  "additionalBankRequests": 0,
+  "allInputsUnchanged": true,
+  "gameWrites": false,
+  "connectedChromeUsed": false,
+  "installationRequiresSeparateBudgetCheckpoint": true,
+  "fullCombatActorAdmission": false,
+  "report": "REPORT.md"
+}

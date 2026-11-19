@@ -1,0 +1,374 @@
+{
+  "status": "PASS_NUMERIC_PENDING_INDEPENDENT_DELIVERY96_AND_SIM",
+  "sourceOriginalSHA256": "d1433df30a41c8fbd58fc4feb543b7f18fb3d21ed25e65ce6d31ef3faaffdf71",
+  "nativeSourceCell": [
+    1024,
+    1024
+  ],
+  "originalSourceField": [
+    2048,
+    2048
+  ],
+  "commonSourceEmptyPaddingCrop": [
+    512,
+    512,
+    1536,
+    1536
+  ],
+  "originalActualPaintLoss": 0,
+  "measuredCommonMatteRGB": [
+    22,
+    210,
+    19
+  ],
+  "keyTolerance": 32,
+  "protectedSourcePaintSamples": 846926,
+  "realMagentaSamplesProtected": 411369,
+  "sourcePaddingCropOnlyNoResizeOrPaintTrim": true,
+  "actualProviderDrawings": 4,
+  "distinctTemporalForms": 4,
+  "onePalette": 128,
+  "trainingSamples": 800795,
+  "sourceRGBMappingsChecked": 178252,
+  "allNearestMappingsExact": true,
+  "explicitFourConnectedMasks": 5,
+  "nativeTrainingErosionPixels": 8,
+  "trainingMasksIndependentReplayMismatches": 0,
+  "seedSamplesTotal": 829,
+  "groundedOnly": [
+    "signature"
+  ],
+  "wholeCellTranslationsY": [
+    27,
+    1,
+    27,
+    33
+  ],
+  "records": [
+    {
+      "tile": 0,
+      "temporalName": "sealed-canister",
+      "sourceCropRGBAMismatches": 0,
+      "matteIndependentBFSRGBAMismatches": 0,
+      "sourcePaintRGBAMismatchesBeforeFinish": 0,
+      "reviewedSeedSamples": 0,
+      "paletteMappingRGBMismatches": 0,
+      "nativeAlphaOrGeometryChangesDuringFinish": 0,
+      "game96NNRGBAMismatches": 0,
+      "contactShift": [
+        0,
+        27
+      ],
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "anchor": [
+        48,
+        95
+      ],
+      "native1024": {
+        "opaqueSamples": 98815,
+        "bounds": [
+          352,
+          314,
+          705,
+          727
+        ],
+        "minimumPadding": 297,
+        "components8": [
+          {
+            "pixels": 98815,
+            "bounds": [
+              352,
+              314,
+              705,
+              727
+            ]
+          }
+        ],
+        "integratedLuminance": 5414633,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 6529,
+        "greenMatteHueSamples": 0
+      },
+      "game96": {
+        "opaqueSamples": 871,
+        "bounds": [
+          33,
+          56,
+          66,
+          95
+        ],
+        "minimumPadding": 1,
+        "components8": [
+          {
+            "pixels": 871,
+            "bounds": [
+              33,
+              56,
+              66,
+              95
+            ]
+          }
+        ],
+        "integratedLuminance": 47169,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 56,
+        "greenMatteHueSamples": 0
+      },
+      "protectedSourcePaintSamples": 95836,
+      "protectedSourcePaintRGBAMismatchesBeforeFinish": 0,
+      "originalRealMagentaSamplesProtected": 7371,
+      "realMagentaRGBAMismatchesBeforeFinish": 0
+    },
+    {
+      "tile": 1,
+      "temporalName": "sludge-crush-pool-peak",
+      "sourceCropRGBAMismatches": 0,
+      "matteIndependentBFSRGBAMismatches": 0,
+      "sourcePaintRGBAMismatchesBeforeFinish": 0,
+      "reviewedSeedSamples": 827,
+      "paletteMappingRGBMismatches": 0,
+      "nativeAlphaOrGeometryChangesDuringFinish": 0,
+      "game96NNRGBAMismatches": 0,
+      "contactShift": [
+        0,
+        1
+      ],
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "anchor": [
+        48,
+        95
+      ],
+      "native1024": {
+        "opaqueSamples": 498649,
+        "bounds": [
+          106,
+          214,
+          952,
+          1007
+        ],
+        "minimumPadding": 17,
+        "components8": [
+          {
+            "pixels": 498646,
+            "bounds": [
+              106,
+              214,
+              952,
+              1007
+            ]
+          },
+          {
+            "pixels": 3,
+            "bounds": [
+              426,
+              626,
+              429,
+              627
+            ]
+          }
+        ],
+        "integratedLuminance": 28909797,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 247689,
+        "greenMatteHueSamples": 0
+      },
+      "game96": {
+        "opaqueSamples": 4388,
+        "bounds": [
+          10,
+          21,
+          89,
+          95
+        ],
+        "minimumPadding": 1,
+        "components8": [
+          {
+            "pixels": 4388,
+            "bounds": [
+              10,
+              21,
+              89,
+              95
+            ]
+          }
+        ],
+        "integratedLuminance": 254560,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 2185,
+        "greenMatteHueSamples": 0
+      },
+      "protectedSourcePaintSamples": 491696,
+      "protectedSourcePaintRGBAMismatchesBeforeFinish": 0,
+      "originalRealMagentaSamplesProtected": 324378,
+      "realMagentaRGBAMismatchesBeforeFinish": 0
+    },
+    {
+      "tile": 2,
+      "temporalName": "contracting-thick-slurry",
+      "sourceCropRGBAMismatches": 0,
+      "matteIndependentBFSRGBAMismatches": 0,
+      "sourcePaintRGBAMismatchesBeforeFinish": 0,
+      "reviewedSeedSamples": 2,
+      "paletteMappingRGBMismatches": 0,
+      "nativeAlphaOrGeometryChangesDuringFinish": 0,
+      "game96NNRGBAMismatches": 0,
+      "contactShift": [
+        0,
+        27
+      ],
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "anchor": [
+        48,
+        95
+      ],
+      "native1024": {
+        "opaqueSamples": 193718,
+        "bounds": [
+          285,
+          231,
+          815,
+          727
+        ],
+        "minimumPadding": 209,
+        "components8": [
+          {
+            "pixels": 193717,
+            "bounds": [
+              285,
+              231,
+              815,
+              727
+            ]
+          },
+          {
+            "pixels": 1,
+            "bounds": [
+              458,
+              308,
+              459,
+              309
+            ]
+          }
+        ],
+        "integratedLuminance": 10638092,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 59313,
+        "greenMatteHueSamples": 0
+      },
+      "game96": {
+        "opaqueSamples": 1693,
+        "bounds": [
+          27,
+          49,
+          76,
+          95
+        ],
+        "minimumPadding": 1,
+        "components8": [
+          {
+            "pixels": 1693,
+            "bounds": [
+              27,
+              49,
+              76,
+              95
+            ]
+          }
+        ],
+        "integratedLuminance": 91897,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 516,
+        "greenMatteHueSamples": 0
+      },
+      "protectedSourcePaintSamples": 189125,
+      "protectedSourcePaintRGBAMismatchesBeforeFinish": 0,
+      "originalRealMagentaSamplesProtected": 70728,
+      "realMagentaRGBAMismatchesBeforeFinish": 0
+    },
+    {
+      "tile": 3,
+      "temporalName": "spent-canister-remnant",
+      "sourceCropRGBAMismatches": 0,
+      "matteIndependentBFSRGBAMismatches": 0,
+      "sourcePaintRGBAMismatchesBeforeFinish": 0,
+      "reviewedSeedSamples": 0,
+      "paletteMappingRGBMismatches": 0,
+      "nativeAlphaOrGeometryChangesDuringFinish": 0,
+      "game96NNRGBAMismatches": 0,
+      "contactShift": [
+        0,
+        33
+      ],
+      "inverseRGBAMismatches": 0,
+      "clippedOpaqueSamples": 0,
+      "anchor": [
+        48,
+        95
+      ],
+      "native1024": {
+        "opaqueSamples": 72435,
+        "bounds": [
+          368,
+          353,
+          692,
+          663
+        ],
+        "minimumPadding": 332,
+        "components8": [
+          {
+            "pixels": 72435,
+            "bounds": [
+              368,
+              353,
+              692,
+              663
+            ]
+          }
+        ],
+        "integratedLuminance": 3947807,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 5159,
+        "greenMatteHueSamples": 0
+      },
+      "game96": {
+        "opaqueSamples": 644,
+        "bounds": [
+          34,
+          66,
+          65,
+          95
+        ],
+        "minimumPadding": 1,
+        "components8": [
+          {
+            "pixels": 644,
+            "bounds": [
+              34,
+              66,
+              65,
+              95
+            ]
+          }
+        ],
+        "integratedLuminance": 33951,
+        "literalWhiteMinRGB220": 0,
+        "realMagentaPaintSamples": 49,
+        "greenMatteHueSamples": 0
+      },
+      "protectedSourcePaintSamples": 70269,
+      "protectedSourcePaintRGBAMismatchesBeforeFinish": 0,
+      "originalRealMagentaSamplesProtected": 8892,
+      "realMagentaRGBAMismatchesBeforeFinish": 0
+    }
+  ],
+  "nativeFringeNotHaloFree": true,
+  "allFourSourceSilhouettesCompleteNoClipping": true,
+  "minimumNativePaddingRetainedContour": 17,
+  "minimumNativePaddingProtectedPaint": 19,
+  "gameOrProviderChanges": false,
+  "paintComponentDiagnosticsConnectivity": 8,
+  "matteMaskConnectivity": 4
+}

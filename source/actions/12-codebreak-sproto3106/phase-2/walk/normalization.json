@@ -1,0 +1,189 @@
+{
+  "sourceSHA256": "2f1922b1d2c61fb70ca63bfb67ec7c7368ab9e90cb4e06691cb6f0899e022c0c",
+  "sourceCelBounds": [
+    [
+      0,
+      0,
+      627,
+      627
+    ],
+    [
+      627,
+      0,
+      1254,
+      627
+    ],
+    [
+      0,
+      627,
+      627,
+      1254
+    ],
+    [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  ],
+  "fixedUniformScale": 1.0318979266347688,
+  "uniformNearestOutputSizes": [
+    [
+      647,
+      647
+    ],
+    [
+      647,
+      647
+    ],
+    [
+      647,
+      647
+    ],
+    [
+      647,
+      647
+    ]
+  ],
+  "nativePlacements": [
+    [
+      138,
+      193
+    ],
+    [
+      169,
+      193
+    ],
+    [
+      142,
+      192
+    ],
+    [
+      169,
+      192
+    ]
+  ],
+  "nativeCanvas": [
+    960,
+    960
+  ],
+  "gameCell": [
+    330,
+    330
+  ],
+  "coreRect": [
+    55,
+    55,
+    220,
+    220
+  ],
+  "anchor": [
+    165,
+    261
+  ],
+  "placementBasis": "Common standing/contact height scale, source fixed near-tower cyan strip centroid for horizontal whole-cel registration, planted support sole759. No per-part movement.",
+  "sourceNearTowerCyanCentroidX": [
+    272.55399061032864,
+    242.15384615384616,
+    268.8905472636816,
+    242.26708074534162
+  ],
+  "targetNearTowerCyanCentroidX": 419.1173469387755,
+  "newArtworkOrRetainedRGBEdits": false,
+  "cases": [
+    {
+      "cel": 1,
+      "nativeBounds": [
+        235,
+        207,
+        689,
+        760
+      ],
+      "gameBounds": [
+        81,
+        71,
+        237,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    },
+    {
+      "cel": 2,
+      "nativeBounds": [
+        254,
+        207,
+        690,
+        760
+      ],
+      "gameBounds": [
+        87,
+        71,
+        237,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": [
+        {
+          "xy": [
+            115,
+            182
+          ],
+          "rgba": [
+            188,
+            138,
+            177,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "cel": 3,
+      "nativeBounds": [
+        249,
+        206,
+        681,
+        760
+      ],
+      "gameBounds": [
+        86,
+        71,
+        234,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": [
+        {
+          "xy": [
+            120,
+            188
+          ],
+          "rgba": [
+            201,
+            143,
+            183,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "cel": 4,
+      "nativeBounds": [
+        243,
+        206,
+        690,
+        760
+      ],
+      "gameBounds": [
+        84,
+        71,
+        237,
+        261
+      ],
+      "opaqueClipped": 0,
+      "retainedStrongMagentaGameSamples": []
+    }
+  ]
+}

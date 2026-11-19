@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "b44b3d66d7b9acbb9bc69b76ff4bf257826be80458f7a8d7f9e994809e253e9d",
+  "providerSha256": "ed7774d89a67f9a817ba1af8bfd57f05d91808891da8623cb25d59e9024f4329",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Twin Maul Slam reads as a violet shard eruption over a tight amber-orange shock center. The narrow floorward rock bed stays visually stable as the crystals expand, break and settle. In-game capture shows the centered cluster under the maul and target, with no detached neutral highlights farther than two pixels from colored material. All 16 unique source-derived cels were checked at gameplay scale on light and dark backgrounds. Actual Chromium proof verifies real release damage, 24-tick lifetime, both facings, all source cels and reconnects."
+}

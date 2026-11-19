@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "10-verse-sprotosales",
+    "phase": 1,
+    "family": "special",
+    "purposes": [
+      "special"
+    ],
+    "asset": "assets/bosses/effects/10-verse-sprotosales-p2-special-d20d5b11ec49.png",
+    "atlasSha256": "d20d5b11ec49fdd36dd2e09840f5649e7114074cd9e3598b8ec0122c0f7d7030",
+    "runtimeSha256": "d20d5b11ec49fdd36dd2e09840f5649e7114074cd9e3598b8ec0122c0f7d7030",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "special": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          48,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/10-verse-sprotosales-p2-special-d20d5b11ec49.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 204,
+  "animatedDraws": 210,
+  "resumed": 2,
+  "hit": [
+    20,
+    20
+  ],
+  "warnings": 50,
+  "lastWave": 15,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    11
+  ]
+}

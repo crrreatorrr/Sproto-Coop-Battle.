@@ -1,0 +1,11 @@
+{
+  "provider": "Built-in ImageGen",
+  "toolOriginal": "/Users/kenhiraoka/.codex/generated_images/01a1eada-6f50-7cf3-938c-c3da8448518d/exec-cc3307c5-d0c2-48af-b2eb-f6cb97182483.png",
+  "toolOriginalSHA256": "4e159e9557911cc69bc7ced623d46108663f337404a33089bc0b29391a1059cf",
+  "workspaceOriginalSHA256": "4e159e9557911cc69bc7ced623d46108663f337404a33089bc0b29391a1059cf",
+  "reference": "inputs/approved-p2-padded960.png",
+  "prompt": "prompt.txt",
+  "genuineSourcePoses": 4,
+  "newLocalPoseSynthesis": false,
+  "status": "candidate, not registered"
+}

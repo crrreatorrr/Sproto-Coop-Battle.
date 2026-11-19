@@ -1,0 +1,88 @@
+{
+  "status": "NUMERIC_PASS_VISUAL_PASS_WITH_VELA_OCCLUSION_CAVEAT",
+  "runtimeCommit": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "rendererSHA256": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+  "noRuntimeOverrides": true,
+  "families": {
+    "vela": {
+      "status": "PASS",
+      "sceneComparisons": 624,
+      "sceneRGBAMismatches": 0,
+      "independentlyCheckedDraws": 108,
+      "fractionalSizeDraws": 0,
+      "sourceCells": {
+        "signature/-1": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "signature/1": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "finiteEnd": true,
+      "singleNewBankRequest": 1,
+      "noExtraBanks": true,
+      "groundedDraws": 108,
+      "phase0FallbackSnapshots": 28,
+      "mixedCases": 2,
+      "stageReleased": true
+    },
+    "crapto": {
+      "status": "PASS",
+      "sceneComparisons": 644,
+      "sceneRGBAMismatches": 0,
+      "independentlyCheckedDraws": 388,
+      "fractionalSizeDraws": 296,
+      "sourceCells": {
+        "signature/-1": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "special/-1": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "signature/1": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "special/1": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "finiteEnd": true,
+      "singleNewBankRequest": 1,
+      "noExtraBanks": true,
+      "groundedDraws": 388,
+      "phase0FallbackSnapshots": 28,
+      "mixedCases": 2,
+      "stageReleased": true
+    }
+  },
+  "visualVerdicts": {
+    "vela": "Clean delivered forward chop all4cels/bothfaces; rear zone correctly behind existing legacy front leg, partially occluded. No source-art pale/white/ghost blocker observed.",
+    "crapto": "HF canister signature and ImageGen three-crest Blackout clean at actual game sizes in bothfaces with delayed overlaps. No detached pale/white marks observed."
+  },
+  "limitations": [
+    "Four real provider/ImageGen key drawings per family; no local inbetween animation authored.",
+    "Source-alpha1 tails retained. No global alpha threshold or opacity hardening. Native HF contour fringe remains disclosed.",
+    "Actor art and depth are committed legacy baseline bodies; parent later actor imports are separate and may change overlap.",
+    "Source author QA and this numeric integration proof do not replace an independent admission review."
+  ],
+  "sourcePacketsReadBack": 5,
+  "gameWrites": false
+}

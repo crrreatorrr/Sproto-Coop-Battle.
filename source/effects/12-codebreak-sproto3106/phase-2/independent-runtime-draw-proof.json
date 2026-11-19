@@ -1,0 +1,26 @@
+{
+  "observedCanvasLineage": true,
+  "noImplementationSourceTags": true,
+  "actualWorldScratchRect": [
+    0,
+    0,
+    96,
+    96
+  ],
+  "status": "PASS",
+  "snapshots": 640,
+  "independentlyCheckedAuthoredDraws": 694,
+  "sourceCellsAndFrameTicksMatchSnapshotAges": true,
+  "allDrawOriginsAndAnchorsExact": true,
+  "groundedZoneDraws": 358,
+  "phase0FallbackSnapshots": 28,
+  "simultaneousLegacySpreadDedicatedSpecialHurtCases": 2,
+  "simultaneousLegacyImpactDedicatedSpecialDeathCases": 2,
+  "noCurrentActorPhaseInference": true,
+  "noEarlyCelCutOrFrameClock": true,
+  "constants": {
+    "floor": 218,
+    "bossScale": 0.95
+  },
+  "evidenceScope": "Actual committed Sim snapshots; direct independent age/rect/origin math against actual canvas draw logs. Art and grounding code authored by another agent."
+}

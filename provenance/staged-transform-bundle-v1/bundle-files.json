@@ -1,0 +1,409 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 1128,
+      "sha256": "5288805c777940061e1da182e77a8478c90798194814585ec4c099b2ed234489"
+    },
+    "provenance/bundle.json": {
+      "bytes": 3869,
+      "sha256": "59dc4936c9991fc61c6ef688bcdd193d44461e56bb222542f55ebc238c3ffee3"
+    },
+    "public/assets/bosses/transformations/01-marina-bront-3673d5831d38-00.webp": {
+      "bytes": 57186,
+      "sha256": "3673d5831d3821304570186ad6815a6ddff9f96c725f38741de6a2e54087c775"
+    },
+    "public/assets/bosses/transformations/01-marina-bront-82eb73f5f1da-03.webp": {
+      "bytes": 34344,
+      "sha256": "82eb73f5f1da5ed5d6e7f1e134c9e0205154fb7a3c5f1ce0dccc146ba650ebf1"
+    },
+    "public/assets/bosses/transformations/01-marina-bront-a0da8145fb8d-02.webp": {
+      "bytes": 139878,
+      "sha256": "a0da8145fb8d5e6a3904c65a8fccb98c3cc75c7b85e6288ac2ab106bc66b0d59"
+    },
+    "public/assets/bosses/transformations/01-marina-bront-e20feca9ea09-01.webp": {
+      "bytes": 173696,
+      "sha256": "e20feca9ea09cf420440219cf1976f1eb8cd058bc058fd919ee9562e683cc35f"
+    },
+    "public/assets/bosses/transformations/02-last-light-vela-29a47f8dfac6-00.webp": {
+      "bytes": 58506,
+      "sha256": "29a47f8dfac61ef23246e53c0522ec31db472ed28b50aef4bd96779d46ff393f"
+    },
+    "public/assets/bosses/transformations/02-last-light-vela-ab7c63d22470-03.webp": {
+      "bytes": 34062,
+      "sha256": "ab7c63d2247086d4fa4386737c844523d7045afcf3eacd49eef9d07b82ed56f8"
+    },
+    "public/assets/bosses/transformations/02-last-light-vela-c8b9574dbc8d-02.webp": {
+      "bytes": 170214,
+      "sha256": "c8b9574dbc8d010ef767c250cfb9ed0f0d5081a1e9f7df617cce7e14336a8e1c"
+    },
+    "public/assets/bosses/transformations/02-last-light-vela-e9f7d14d7a6f-01.webp": {
+      "bytes": 189166,
+      "sha256": "e9f7d14d7a6fa31ab18b16e7b3a333eb8a7f6408f343e08e62f537542816eabd"
+    },
+    "public/assets/bosses/transformations/03-mudline-crapto-2f3ddb2afc42-01.webp": {
+      "bytes": 236306,
+      "sha256": "2f3ddb2afc42f3581a72406bf8519b086b58e51fdde411e7398908a702de9389"
+    },
+    "public/assets/bosses/transformations/03-mudline-crapto-3253e6aa07a7-03.webp": {
+      "bytes": 56928,
+      "sha256": "3253e6aa07a7299f3806bb1ad20de82f8962ac911f388b401e3afdf0ec1a4a14"
+    },
+    "public/assets/bosses/transformations/03-mudline-crapto-5057795fab34-00.webp": {
+      "bytes": 54620,
+      "sha256": "5057795fab344c09bca55d1d6993650bac1249cae4738c892bdd1cf250ba44b5"
+    },
+    "public/assets/bosses/transformations/03-mudline-crapto-bfe95e03966f-02.webp": {
+      "bytes": 96126,
+      "sha256": "bfe95e03966f2bbc18d887b2641e2f1e601da4fc68cbfa849e815c2348ed0010"
+    },
+    "public/assets/bosses/transformations/04-ranch-zephyr-1009319f6451-00.webp": {
+      "bytes": 27230,
+      "sha256": "1009319f6451cc752914943e0509bee9cf8db28f9d1408e86593e37127562359"
+    },
+    "public/assets/bosses/transformations/04-ranch-zephyr-46d05033ac28-02.webp": {
+      "bytes": 95280,
+      "sha256": "46d05033ac28263792eb0e2c2e6a719f6223935659c92275fc9af58690d5a2e3"
+    },
+    "public/assets/bosses/transformations/04-ranch-zephyr-e21bd5ea0fce-01.webp": {
+      "bytes": 130066,
+      "sha256": "e21bd5ea0fcec0a5200bd4d00935498c92cb06657d775772d8c4c3f44c53bc80"
+    },
+    "public/assets/bosses/transformations/04-ranch-zephyr-e8e5d3333503-03.webp": {
+      "bytes": 38446,
+      "sha256": "e8e5d3333503e1ffd39d7c795f0df9af5a3343ef452b094624e065bd06f03fe1"
+    },
+    "public/assets/bosses/transformations/05-neon-sproto102-063c1600bf19-03.webp": {
+      "bytes": 19648,
+      "sha256": "063c1600bf19d17874d2bec90ef350d26176a02e15d848171fd8326d734039bb"
+    },
+    "public/assets/bosses/transformations/05-neon-sproto102-83e337714bea-02.webp": {
+      "bytes": 186196,
+      "sha256": "83e337714bea78349c060d1f5ad9c68973b0ec08b72e6ceca52ea868aa5add91"
+    },
+    "public/assets/bosses/transformations/05-neon-sproto102-d2533266bf05-01.webp": {
+      "bytes": 288722,
+      "sha256": "d2533266bf05d01a2da326ac2f0804cde88a113af947e5282e058d8bf62ed9cb"
+    },
+    "public/assets/bosses/transformations/05-neon-sproto102-d4a8136ed666-00.webp": {
+      "bytes": 61892,
+      "sha256": "d4a8136ed666bf941dc3e16d1dc98a8d79ae8a577ab733fb40e4da6da3c7bb8f"
+    },
+    "public/assets/bosses/transformations/06-circuit-rune-395072ce0434-03.webp": {
+      "bytes": 81166,
+      "sha256": "395072ce0434eb79b28429e29b44cc56dbd6ec800231dd94ff96de2f694cc0b0"
+    },
+    "public/assets/bosses/transformations/06-circuit-rune-671eedf88989-01.webp": {
+      "bytes": 213916,
+      "sha256": "671eedf889899c5e791502f5c2ab7a0bfb402321d0feb5f8b370a4fc97d0767f"
+    },
+    "public/assets/bosses/transformations/06-circuit-rune-6ef1999dcd25-02.webp": {
+      "bytes": 328380,
+      "sha256": "6ef1999dcd2515ce29e994e0740194552e6b34d051b23e576d02b140b3b2850f"
+    },
+    "public/assets/bosses/transformations/06-circuit-rune-a81cd0c1e50b-00.webp": {
+      "bytes": 69356,
+      "sha256": "a81cd0c1e50b7ee456ec8172ec9cde4eea023146bff2bc5657abf681d928faf1"
+    },
+    "public/assets/bosses/transformations/07-moonkeep-bigswole-12ee9fb7dcb2-03.webp": {
+      "bytes": 51618,
+      "sha256": "12ee9fb7dcb2efa86cd5dde0e36821811dfab249806f7362180ac03b715ff7c6"
+    },
+    "public/assets/bosses/transformations/07-moonkeep-bigswole-1f4fea0f8a4a-01.webp": {
+      "bytes": 173834,
+      "sha256": "1f4fea0f8a4a59808e02c820c2aa2f5006aa2c8e3d86f2d73dbd1fac63a6b353"
+    },
+    "public/assets/bosses/transformations/07-moonkeep-bigswole-9e615a87c331-00.webp": {
+      "bytes": 75382,
+      "sha256": "9e615a87c33101c56921ede67f8c5585f8c64efb5c0b7475d2714e2ff0f4309e"
+    },
+    "public/assets/bosses/transformations/07-moonkeep-bigswole-df722404a1db-02.webp": {
+      "bytes": 97294,
+      "sha256": "df722404a1dbb03a3d171d9383a2ec55c19740f623bd64eef5d7a1128aee3c1a"
+    },
+    "public/assets/bosses/transformations/08-crown-alpha777-5d48e97de1b6-03.webp": {
+      "bytes": 30028,
+      "sha256": "5d48e97de1b6a8b01072629348d8832fa9fbe666054ccbf2d5972aaf5c20813d"
+    },
+    "public/assets/bosses/transformations/08-crown-alpha777-6e5552b546d2-02.webp": {
+      "bytes": 56660,
+      "sha256": "6e5552b546d29ae432e963fd29738f1c90d083d9af90d2e29a8fc965635d5395"
+    },
+    "public/assets/bosses/transformations/08-crown-alpha777-a99d6858461b-00.webp": {
+      "bytes": 62240,
+      "sha256": "a99d6858461be81857df33e196271969da494e49032ac58d2b095fc154bb988a"
+    },
+    "public/assets/bosses/transformations/08-crown-alpha777-bd98b9820e8b-01.webp": {
+      "bytes": 217086,
+      "sha256": "bd98b9820e8b6df01c6c28b87c114ce3a2c1bd8b2a2c78b4d4062b93b3913aee"
+    },
+    "public/assets/bosses/transformations/09-hatchery-highsproto-3a226354cc36-02.webp": {
+      "bytes": 184386,
+      "sha256": "3a226354cc36c25871770897c25ffe376685ac1725555ffc636b4d1b74c6abd3"
+    },
+    "public/assets/bosses/transformations/09-hatchery-highsproto-5ac21c94a3ed-03.webp": {
+      "bytes": 23628,
+      "sha256": "5ac21c94a3edf2890bdc5433a4ddf21791f6d9413db4ea1ae657cdd9cf9d968b"
+    },
+    "public/assets/bosses/transformations/09-hatchery-highsproto-b41a3b5eed14-01.webp": {
+      "bytes": 274306,
+      "sha256": "b41a3b5eed1431a50977df7fb79ad9b3781e806f4152ed76a784cdd3327c1f4f"
+    },
+    "public/assets/bosses/transformations/09-hatchery-highsproto-ee120c32c5b9-00.webp": {
+      "bytes": 101576,
+      "sha256": "ee120c32c5b9bf598cacef30408dc0a136e3bbf68b4c8b16950b409df989b2ba"
+    },
+    "public/assets/bosses/transformations/10-verse-sprotosales-8420af2076e0-01.webp": {
+      "bytes": 211814,
+      "sha256": "8420af2076e0640638f3343a7e13c860d73896046ec008b323abf75b36d25553"
+    },
+    "public/assets/bosses/transformations/10-verse-sprotosales-886adc611cd7-02.webp": {
+      "bytes": 159394,
+      "sha256": "886adc611cd7235f107301b1101b9ee50087a622fe4ba115443e7dcc4d3211ce"
+    },
+    "public/assets/bosses/transformations/10-verse-sprotosales-af9d17cea70f-00.webp": {
+      "bytes": 51228,
+      "sha256": "af9d17cea70ffcb981f149b66ac45ccfa20782cc5caf928f3b477aabc8995324"
+    },
+    "public/assets/bosses/transformations/10-verse-sprotosales-e30da9e779d4-03.webp": {
+      "bytes": 22224,
+      "sha256": "e30da9e779d4c84035cf5d02f4bf3f1436ce939e47ddcdfbbfa7e6a168bbada0"
+    },
+    "public/assets/bosses/transformations/11-rooftop-sproto1668-1798ae81b07f-01.webp": {
+      "bytes": 271540,
+      "sha256": "1798ae81b07f37d0f14982ede59cead2e529bfa91a37cb4821ef2c3fd98f4d3e"
+    },
+    "public/assets/bosses/transformations/11-rooftop-sproto1668-2725596c1707-03.webp": {
+      "bytes": 35696,
+      "sha256": "2725596c17072db3383cbf57e76c2551a583ebebe210d98e672cfb45538d7321"
+    },
+    "public/assets/bosses/transformations/11-rooftop-sproto1668-942f1a85e179-00.webp": {
+      "bytes": 84996,
+      "sha256": "942f1a85e179296e26ffa21746e578ca0c923d176032952330b8692e204815f6"
+    },
+    "public/assets/bosses/transformations/11-rooftop-sproto1668-e1a49bc156f8-02.webp": {
+      "bytes": 88730,
+      "sha256": "e1a49bc156f898cdedca68a1f4030a0c9f5583f33aa32cd4a1ddadd7189b9495"
+    },
+    "public/assets/bosses/transformations/12-codebreak-sproto3106-473eb29df133-01.webp": {
+      "bytes": 172320,
+      "sha256": "473eb29df13330be2e6cdb140bde7e9229d5b8a169ca43c91ea0db582040c2e1"
+    },
+    "public/assets/bosses/transformations/12-codebreak-sproto3106-64bc9dbde45a-02.webp": {
+      "bytes": 285776,
+      "sha256": "64bc9dbde45a432e1995ddce069b45d97de42bfc5594e11177db570df64baa0f"
+    },
+    "public/assets/bosses/transformations/12-codebreak-sproto3106-ce3a63bea2d5-00.webp": {
+      "bytes": 86508,
+      "sha256": "ce3a63bea2d5599a76b4c87d605132d547557bd9c2d97879af5243281587fc34"
+    },
+    "public/assets/bosses/transformations/12-codebreak-sproto3106-e8413298b77f-03.webp": {
+      "bytes": 52956,
+      "sha256": "e8413298b77ff40b24a313cbc904bdf670eccd9e5c5e9fd99f817e3afc67da4f"
+    },
+    "registry-fragment.json": {
+      "bytes": 31052,
+      "sha256": "b97e7c56fa840a6c4e9930a2b100428801b05c2724a5eff7f0b0ac725ae88f3a"
+    },
+    "source/endpoint-rigs/alpha777.zip": {
+      "bytes": 703895,
+      "sha256": "04a3ec3558e88c20a2512e9a5279b4accfa241bb063a977c2174686ab74aad77"
+    },
+    "source/endpoint-rigs/bigswole.zip": {
+      "bytes": 671055,
+      "sha256": "288947c01edb04d8a409d69d44a0254a5218f5be808cee105247e45c8683fbdd"
+    },
+    "source/endpoint-rigs/bront.zip": {
+      "bytes": 705214,
+      "sha256": "49e38dbe09f9b7ce31ce8dfcf9b72e8dcb62e915e6982c9c5ff620cb21e057fd"
+    },
+    "source/endpoint-rigs/crapto.zip": {
+      "bytes": 844163,
+      "sha256": "89debf53da24196af042c4aef83718a6314e612eedfc0ebaa8dcf73a238bbad5"
+    },
+    "source/endpoint-rigs/highsproto.zip": {
+      "bytes": 923797,
+      "sha256": "9aaa155208b841eb5a65b824affc3d85eb6c6109675874a705d624462c5f1751"
+    },
+    "source/endpoint-rigs/index.json": {
+      "bytes": 9008,
+      "sha256": "233c7d05e5c7e5d550b18cf1121929dc664093866d6eb2455e24a3dfaa354b95"
+    },
+    "source/endpoint-rigs/portable_rig.py": {
+      "bytes": 6038,
+      "sha256": "4a836f358173e78ed07a3a45268744c4cbb77095656e0fe220b331620d1d6b80"
+    },
+    "source/endpoint-rigs/rune.zip": {
+      "bytes": 1033602,
+      "sha256": "cddbd428f1d068db1580dbd39c7fcc46f4f95fc8ed715ecf5b48ed867dc3df74"
+    },
+    "source/endpoint-rigs/sproto102.zip": {
+      "bytes": 867542,
+      "sha256": "c3c52999a0c9002adc7a1543f3bb5ca717f6e00bb6cf348d758c8b461a992b65"
+    },
+    "source/endpoint-rigs/sproto1668.zip": {
+      "bytes": 1054064,
+      "sha256": "c06eb6b8e6b5574a2f812828c62362957598e06313e0751c4bf081f4ba81312d"
+    },
+    "source/endpoint-rigs/sproto3106.zip": {
+      "bytes": 905928,
+      "sha256": "d0ad6897303e01cf0a0daa00c0691e9a1a5a03d69c076a32d4b05d3bf72599e6"
+    },
+    "source/endpoint-rigs/sprotosales.zip": {
+      "bytes": 750688,
+      "sha256": "4eb7f810f17be9f7019e75b217a377b0ca7e1d66fc15d5a13fd43a0b9d239b8e"
+    },
+    "source/endpoint-rigs/vela.zip": {
+      "bytes": 677769,
+      "sha256": "05d9defc19d7ba79516bd8980cd35376afe5c6e2efe41cd08f965636023241ad"
+    },
+    "source/endpoint-rigs/zephyr.zip": {
+      "bytes": 605740,
+      "sha256": "7a96c108c3d58ba174bbe0dce3883e3fdad591fdcde2c021db9a1b83e9950296"
+    },
+    "source/transformations/01-marina-bront/pack-spec.json": {
+      "bytes": 23046,
+      "sha256": "51a93ab61dbc4caa7aeceb1acb89e4ffffd61589a6f9cf298e38e68184190bd8"
+    },
+    "source/transformations/01-marina-bront/provenance.json": {
+      "bytes": 91595,
+      "sha256": "77b7faa154783240c5bced8b610bb75c6df7facf18b2288758f96584959f8e05"
+    },
+    "source/transformations/01-marina-bront/source-atlas.png": {
+      "bytes": 1698041,
+      "sha256": "c6402ca21879714fef07c5a0a1d9bad982f5d3dc64c5a9d7c34ca627e8c412ea"
+    },
+    "source/transformations/02-last-light-vela/pack-spec.json": {
+      "bytes": 23049,
+      "sha256": "bb46056335f35112c33aac6c3ac813bb36c0ea23d0438fc41921aaa842b300d5"
+    },
+    "source/transformations/02-last-light-vela/provenance.json": {
+      "bytes": 91653,
+      "sha256": "f2625cb8b8660b529583abb93febdbb0cd30a4160d992cbe82d6b5af04204736"
+    },
+    "source/transformations/02-last-light-vela/source-atlas.png": {
+      "bytes": 1740443,
+      "sha256": "945c0c2513a3471bceac3bbb186c039d1a60d7e5806174afa23a8e006cae7c5a"
+    },
+    "source/transformations/03-mudline-crapto/pack-spec.json": {
+      "bytes": 23048,
+      "sha256": "358e72570f1f20a20ae998adacbd4130e5f4647d3c2d3a0aa4531b1f3fd40645"
+    },
+    "source/transformations/03-mudline-crapto/provenance.json": {
+      "bytes": 91629,
+      "sha256": "3613ed96dd365ab39584bdbbba984e7784664afde0fdea98d09774bc6d12c9b7"
+    },
+    "source/transformations/03-mudline-crapto/source-atlas.png": {
+      "bytes": 1842159,
+      "sha256": "a983ff2772bf0f6b64975ae9cc8d2586fda5092544528996e3708c3c868f4bd7"
+    },
+    "source/transformations/04-ranch-zephyr/pack-spec.json": {
+      "bytes": 23046,
+      "sha256": "45f1d9ddaf531b2b99cd974776dc4cc4acda1b4371a9e9507a26fd21ba401ff8"
+    },
+    "source/transformations/04-ranch-zephyr/provenance.json": {
+      "bytes": 81746,
+      "sha256": "2aebd579b9e6148a5081089ba3bd54eb89c70b0fb1333051e217a7890c480250"
+    },
+    "source/transformations/04-ranch-zephyr/source-atlas.png": {
+      "bytes": 1173816,
+      "sha256": "1c95e801087ac75a30dcfa7b580f764a9dc57a414fe97d2659ddbb6b1902bf8f"
+    },
+    "source/transformations/05-neon-sproto102/pack-spec.json": {
+      "bytes": 23048,
+      "sha256": "dfbc4c5d556c47cfd5ae5084101fb001e137f05d1488080e5a667fcda5e9bc2c"
+    },
+    "source/transformations/05-neon-sproto102/provenance.json": {
+      "bytes": 91654,
+      "sha256": "17baafa2301f9477d0a14857f39f66fa1a17ecc4525945ec3d4696398c06b968"
+    },
+    "source/transformations/05-neon-sproto102/source-atlas.png": {
+      "bytes": 2206609,
+      "sha256": "f2b4e668e216333621e32306c3805430a0ed4722a5f487d999bcbb1e26db9c65"
+    },
+    "source/transformations/06-circuit-rune/pack-spec.json": {
+      "bytes": 23046,
+      "sha256": "1ccdb96d46ccf69604a308951f8984a99a9a9fbe145762a941857af2d22a7b2b"
+    },
+    "source/transformations/06-circuit-rune/provenance.json": {
+      "bytes": 91677,
+      "sha256": "95317b0a32be511759a64d7d3ad42b4b584ab1743d4c2898c1b0125cdca4c04e"
+    },
+    "source/transformations/06-circuit-rune/source-atlas.png": {
+      "bytes": 2583235,
+      "sha256": "801d6d7f1b778882b7e98623ffd030c8be0430fb5a3ccfe1d0a1ba6ab4a3a9d0"
+    },
+    "source/transformations/07-moonkeep-bigswole/pack-spec.json": {
+      "bytes": 23051,
+      "sha256": "ef1199e6af791efda2056e0d08bb45e8f5ad08a46205bf00b2c5c688ac1bbf0a"
+    },
+    "source/transformations/07-moonkeep-bigswole/provenance.json": {
+      "bytes": 91676,
+      "sha256": "8fc731e288a33a8dcac636f33327499c01425e4092fecb3e2a3073c437db0402"
+    },
+    "source/transformations/07-moonkeep-bigswole/source-atlas.png": {
+      "bytes": 1646974,
+      "sha256": "bf00857147fba8c82fd3e613795fcb77c5e21d9912edbb174396f7a75189459b"
+    },
+    "source/transformations/08-crown-alpha777/pack-spec.json": {
+      "bytes": 23048,
+      "sha256": "9c6ad085313567fe1c289e682f85e24d6093d4a6936896655bd3c476f1e14434"
+    },
+    "source/transformations/08-crown-alpha777/provenance.json": {
+      "bytes": 91644,
+      "sha256": "e6b639cd5c64abe432e68fd67c2edced718ca8f04897e608773bb97e1b6ad603"
+    },
+    "source/transformations/08-crown-alpha777/source-atlas.png": {
+      "bytes": 1522835,
+      "sha256": "6f98fdf7986a8c02f6c281abaf302fc9d7c3b149fdc01b1b3c0c9c099e896a2f"
+    },
+    "source/transformations/09-hatchery-highsproto/pack-spec.json": {
+      "bytes": 23053,
+      "sha256": "dea000c3670d3f31eff7b92d6487be4020010f45af682ec6438eee46fdf70f4a"
+    },
+    "source/transformations/09-hatchery-highsproto/provenance.json": {
+      "bytes": 91744,
+      "sha256": "6766f47929920c19d532679671c412ff81d53355fc8318f5cf4f5e8194403371"
+    },
+    "source/transformations/09-hatchery-highsproto/source-atlas.png": {
+      "bytes": 2273673,
+      "sha256": "e0bd5210dd540ea3b74f0162ae1254ebec01bf0835e7d66a3db72527e9cecdf4"
+    },
+    "source/transformations/10-verse-sprotosales/pack-spec.json": {
+      "bytes": 23051,
+      "sha256": "cf43d4e03ebd7de5dc447c49b7584c6b846545cd24870640454f656e1cecb728"
+    },
+    "source/transformations/10-verse-sprotosales/provenance.json": {
+      "bytes": 91636,
+      "sha256": "a66881b78da9ef65decd2746bdb1f4ec7ee8499265d592f13770b0ca7fc9aefe"
+    },
+    "source/transformations/10-verse-sprotosales/source-atlas.png": {
+      "bytes": 1780585,
+      "sha256": "5986a924ad0e3e0b7154fca1a372954eb8fd1e8c163faef2e3883e8fcc1b12cd"
+    },
+    "source/transformations/11-rooftop-sproto1668/pack-spec.json": {
+      "bytes": 23052,
+      "sha256": "a0b8ae67f52d1351612506702bb44aa97fdf6aeaed5c180cbea25bc2353e7378"
+    },
+    "source/transformations/11-rooftop-sproto1668/provenance.json": {
+      "bytes": 91705,
+      "sha256": "3d34dac3ca3a57ab1ed32cd1e86ef49e6bf7fa6ab6be726d47f11891306768b6"
+    },
+    "source/transformations/11-rooftop-sproto1668/source-atlas.png": {
+      "bytes": 1971855,
+      "sha256": "8f711c6c1ddb7681c60051129199f00e475960de8f69277b5c5fb601a550caaf"
+    },
+    "source/transformations/12-codebreak-sproto3106/pack-spec.json": {
+      "bytes": 23054,
+      "sha256": "de3786134ca4e8e835b688318087db2e1c3d2416ec923e178aa2d401431f7a96"
+    },
+    "source/transformations/12-codebreak-sproto3106/provenance.json": {
+      "bytes": 91715,
+      "sha256": "0075dbe48f409525760b308853d379adbec589ce544bad36012dfa469752d9b3"
+    },
+    "source/transformations/12-codebreak-sproto3106/source-atlas.png": {
+      "bytes": 2130438,
+      "sha256": "6492394c95dacb418271cd0d51ce6f6a6d111c1a4934fdb1ae035729333c9172"
+    }
+  },
+  "version": 1
+}

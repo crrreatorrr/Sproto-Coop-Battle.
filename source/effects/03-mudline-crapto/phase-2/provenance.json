@@ -1,0 +1,119 @@
+{
+  "status": "Source delivery and actual-Sim exact proof PASS; parent authorized import without new generation",
+  "page": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+  "encodedSha256": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+  "rgbaCelSha256": [
+    "4f56c89980d20fbd853f24eaf1406e4d2f3e7d51e2f09906897d58dc04f16e57",
+    "c2c4db2766573bee4b2d681fcec053ecc8054633c10d2b6baa66a3c6b799e7da",
+    "666231d4301c074e67c30e6c4e22ed7aa797ead11edb081a3fd8a7b3e9790195",
+    "c03ab4a34b512d2acd8708ca8d7ad5e3beec5a765849e2b3dd570fb13ab9bf8c",
+    "10f073af563421b830a9532fc6abcd68aad3c46d95349fad2ec94da92167923b",
+    "f8ed16fe077fa4808609ddf3c55f8505b693b778e72d0310253e8b7e0b87c9aa",
+    "348ba08eface2bca1fb511c612888cab28ddce81d34bb6ded70b86b6f8b3ef5e",
+    "c5c1bb892b80c48bfdbc868caf669b75b8a3dc8e8079644abcd1e59448ff8560"
+  ],
+  "families": [
+    "signature",
+    "special"
+  ],
+  "sourceManifestSha256": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6",
+  "stageManifestSha256": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146",
+  "browserManifestSha256": "7ef322a2985c5e1078625a7026b69453811e84c10bdf935ffb2bcc8eef7a574a",
+  "registeredMetadata": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+          "columns": 4,
+          "rows": 2,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        72
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "grounded": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/03-mudline-crapto-p2-attacks-fe184d408c3b.png",
+          "columns": 4,
+          "rows": 2,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    }
+  },
+  "runtimeBase": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "actorImportBase": "f538aaa7df11daf7ed5d4a6f4179e555555b7780",
+  "existingActorsPreserved": true,
+  "legacyPagesPreserved": true,
+  "newLocalPosesOrInbetweens": false,
+  "alphaTailCleanupOrHardening": false,
+  "nativeHaloFree": false,
+  "qualifications": [
+    "Four source drawings per family; no high-frame-count smoothness claim.",
+    "Vela rear zone partially occluded by old proof legacy front leg; installed actor capture follows.",
+    "HF native muted connected contour tones remain disclosed. Raw ImageGen alpha unchanged."
+  ],
+  "sourceCopies": {
+    "accepted-effects-atlas96.png": "fe184d408c3b31c46eeb4bb1aaf35cf17761882a2316a1cf81293439493931b2",
+    "registry-fragment.json": "38302c79b726f1abe682a4eb93c03dc47bb8e80d122058b67a81b62af6f61e87",
+    "imagegen-original-source.png": "9573cf76fb0c356a521056b878a4c05eabd7ac70634ce1e60f473219e8f06de0",
+    "imagegen-source.json": "9e6930daf48cf56eb9daab1d5e19e8632ecb9df8cfdf5cc6de1d802b14a6a858",
+    "imagegen-prompt.txt": "2c5d14892bdb5210007ed3a0b5c1b64f04d5c701b426407816c324b347b6bb72",
+    "imagegen-source-and-pack-audit.json": "4e0099c52ccc22e2823051aefae34d98355872599a11cefc4e4b24e7b8512d61",
+    "import-source-manifest.json": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6",
+    "staging-freeze-manifest.json": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146",
+    "browser-REPORT.md": "0cedf9bce849574c6601f5341c5ddb6efb0e6bf8ef9ddfd0b502831f8bb16126",
+    "browser-final-summary.json": "12a00cbe135138c546f98fb92f5825f832e4a52bf9555f426361749e1c0b5396",
+    "browser-runtime-checks.json": "21a310da91cb4b6f52ca3b1c37c128ed4841cead7f4a32d1ae4d35650717bf09",
+    "browser-independent-draw-proof.json": "90c9afe9672778cd662492eff40396b6d7d647ee1e3a45dc50abeb341f073f29",
+    "browser-source-readback.json": "58b81bb010e8c70d48c3de891b0ac268bc4d763ba3319016ae6e3fe82359a182",
+    "browser-selected-scene-proof.json": "d20263583dd2974ed293e7db75a8c7067432f7920ead1ad0c739e2d10cc6b503",
+    "source-row-packing-proof.json": "052c17c4579d0128a5d5e455bbbdaa7801aadf3f944907f4b0a56353f929a8ab",
+    "latest-registry-resource-review.json": "18d9231db05c9fdc14e6490fae31f054fbf0da147a8a60e4dda6539720123b8a",
+    "higgsfield-signature/source-hashes.json": "cf0d3e0dc5bcd49422d986a5d828b89f550f5d5be20c097e116fbe28f6037847",
+    "higgsfield-signature/reviewed-extraction-config.json": "f2a5bf2885a116605ef5e856e69d8ac0c61fecdfe1cb0651c03184136fa178a9",
+    "higgsfield-signature/reviewed-matte-apertures.json": "ce578140b40c960aa1805d2cbb8be1d88cc24fdefb28f364589f941e090dd264",
+    "higgsfield-signature/source-preservation-audit.json": "4c56bed7027e68983a1fd4d33323293a3e200616d954a4ab4ec27436b1863ba6",
+    "higgsfield-signature/source-crop-paint-and-rule-preflight.json": "5436e2f1046197d7e3f52ccb48f057d37fe9cddab143f50b6b60ba656c64fcd1",
+    "higgsfield-signature/palette.json": "57caaa33007c02d721d296841b9a5f4b6d3b07b07cbeaf72b1954a9d36e4fe43",
+    "higgsfield-signature/exact-source-rgb-to-fixed128.npz": "b214b8154d3f4a592acbd7737914613c01e9060caa76cd6e21de165baf895c2a",
+    "higgsfield-signature/contact-alignment-report.json": "641400dbff65f8c4dd97a808b4471fda94d6369b4bb3cdaf2973c3d02198ba97",
+    "higgsfield-signature/reviewed-matte-masks/tile-001-gap-01.png": "bb8a16d30ad55ebec7c8de2ccf34927ad97bf3982c203e43739737caeb02924b",
+    "higgsfield-signature/reviewed-matte-masks/tile-001-gap-00.png": "3e5d8e62562aa55ef5eecaa7e82d2e7c2b58c669aa7aeeb4f4cf28db0758c6c1",
+    "higgsfield-signature/reviewed-matte-masks/tile-001-gap-02.png": "462b96c6c808ab710d49cc598f51c9b06c28e6331456acecd90c1f5beed81291",
+    "higgsfield-signature/reviewed-matte-masks/tile-002-gap-03.png": "3dbea06dc4a44caf8dab4a01057874680e94490fd636d3aaea055a85cb03ab9b",
+    "higgsfield-signature/reviewed-matte-masks/tile-002-gap-04.png": "beb1d9a7f44ecd75ce075206e94c223fc586c45515210fc22ef8ae68e6200a2f"
+  }
+}

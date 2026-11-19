@@ -1,0 +1,50 @@
+{
+  "status": "PRIVATE_CANDIDATE_PENDING_INDEPENDENT_REVIEW_NOT_REGISTERED",
+  "phaseIndex": 0,
+  "state": "sweep",
+  "sourceSha256": "43d9560a90e3e9a827b927e5e71380faad840c18ad78c6203bb414c6f2009e5a",
+  "extractedSha256": "d650634194921340d9c1bf656d898b3f8efe3bc1dd54fd3b1c988036c5fc2f51",
+  "clips": {
+    "sweep": {
+      "cell": [
+        330,
+        330
+      ],
+      "anchor": [
+        165,
+        261
+      ],
+      "coreRect": [
+        55,
+        55,
+        220,
+        220
+      ],
+      "loop": false,
+      "frameTicks": [
+        36,
+        6,
+        8,
+        11
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/actions/03-mudline-crapto/phase-1/crapto-p1-rear-sweep-v1-070abbb635174413.webp",
+          "columns": 2,
+          "rows": 2,
+          "frames": 4,
+          "cells": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  "pageSha256": "070abbb63517441328bc64b9072877812059c4883e3f287b74e80a3814501879",
+  "encodedBytes": 170450,
+  "decodedBytes": 1742400,
+  "noNewLocalPoses": true
+}

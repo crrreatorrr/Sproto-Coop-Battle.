@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "installed": false,
+  "plan": {
+    "boss": "05-neon-sproto102",
+    "phase": 1,
+    "family": "special",
+    "purposes": [
+      "special"
+    ],
+    "asset": "assets/bosses/effects/05-neon-sproto102-p2-special-9fcf3b85b15d.png",
+    "atlasSha256": "9fcf3b85b15d3f6dad8668f884756590b8ff12a4883ece0cfd6d3403d6f79a9a",
+    "runtimeSha256": "9fcf3b85b15d3f6dad8668f884756590b8ff12a4883ece0cfd6d3403d6f79a9a",
+    "runtimeDimensions": [
+      384,
+      384
+    ],
+    "sourceFirstCell": 0,
+    "references": [
+      {
+        "firstCell": 0,
+        "sourceFirstCell": 0,
+        "frames": 16
+      }
+    ],
+    "clips": {
+      "special": {
+        "cell": [
+          96,
+          96
+        ],
+        "anchor": [
+          47,
+          48
+        ],
+        "grounded": false,
+        "frameTicks": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3
+        ],
+        "loop": false,
+        "pages": [
+          {
+            "src": "assets/bosses/effects/05-neon-sproto102-p2-special-9fcf3b85b15d.png",
+            "columns": 4,
+            "rows": 4,
+            "frames": 16,
+            "firstCell": 0
+          }
+        ]
+      }
+    },
+    "partialAlphaCells": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "requests": 1,
+  "snapshots": 212,
+  "animatedDraws": 280,
+  "resumed": 2,
+  "hit": [
+    17,
+    17
+  ],
+  "warnings": 49,
+  "lastWave": 20,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "coldEventAges": [
+    11,
+    11
+  ]
+}

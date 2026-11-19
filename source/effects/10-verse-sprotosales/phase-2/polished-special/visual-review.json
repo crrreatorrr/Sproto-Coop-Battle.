@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "d20d5b11ec49fdd36dd2e09840f5649e7114074cd9e3598b8ec0122c0f7d7030",
+  "providerSha256": "a01a2c36a5a5c37b48f194576657d7ce1c76dd537a5c38ba93975d0ddab8873b",
+  "anchor": [
+    48,
+    48
+  ],
+  "grounded": false,
+  "notes": "Independently reviewed the 16 native frames and packed dark/light gameplay contact. Crescent Tempest has a clear compact contact, expanding amber and crimson crescents, a decisive peak, and a progressive breakup to one amber ember without restarting. The centered pivot is stable on the core. No visible cell seams, matte, text, or pale islands. The 26 near-white packed pixels are attached to the incandescent center or an illuminated orange blade edge, not detached artifacts. Centered nongrounded playback preserves the existing impact origin. This is visual approval for the posted atlas; runtime QA is separate.",
+  "reviewedPartialAlpha": true
+}

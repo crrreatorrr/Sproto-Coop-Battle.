@@ -1,0 +1,20 @@
+{
+  "status": "PACKED_EXACT_REVIEWED_EFFECTS_NOT_INSTALLED",
+  "sourceSha256": "eafbbeae223b377afc28ddb1a321e86f0d87bebf2aef64ff916c58d36ec2dea1",
+  "originalBankSha256": "8f50b3673283ecafe8ed5f0dfe8f3f3b7be5402024f03211f698f51c25e98adf",
+  "outputSha256": "13acc4990e93d439150588946121a39bde578bb49fd61bbbbe43797de1f01043",
+  "outputBytes": 150215,
+  "outputSize": [
+    384,
+    768
+  ],
+  "oldProjectileRowsRGBAMismatches": 0,
+  "acceptedEffectRowsRGBAMismatches": 0,
+  "newLocalArtwork": false,
+  "newMotion": false,
+  "newPreloadRequests": 0,
+  "decodedBytesIncrease": 589824,
+  "independentGroundingReplay": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-fx-01-grounded-root-review-v1/checks.json",
+  "materialFinishReview": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/zephyr-p2-fx-01-finish-independent-v1/REPORT.md",
+  "integrationQualification": "Real Sim FX proof used legacy actor. All new body combat animations remain pending."
+}

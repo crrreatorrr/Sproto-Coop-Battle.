@@ -1,0 +1,141 @@
+{
+  "fixedSheetScale": 0.344,
+  "sourceAnchorAfterOriginRegistration": [
+    315,
+    555
+  ],
+  "deliveryAnchor": [
+    165,
+    261
+  ],
+  "sourceSlotSize": [
+    627,
+    627
+  ],
+  "sourceMatteRGB": [
+    4.0,
+    248.0,
+    10.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1034862,
+  "boundedMixtureSamples": 6099,
+  "mixtureRule": "G>R+35 and G>B+35 and G>138 within4nativepx of measured flat key",
+  "realGreenMaterialsInApprovedRefs": false,
+  "retainedRGBChanges": 0,
+  "alphaOnRetainedPaint": 255,
+  "paletteFinish": false,
+  "frameRegistration": [
+    [
+      0,
+      0
+    ],
+    [
+      65,
+      0
+    ],
+    [
+      41,
+      32
+    ],
+    [
+      49,
+      31
+    ]
+  ],
+  "registrationNote": "Whole-cel origin formatting only; no scaling variation or per-part edits. All four source layouts are registered by measured blue-head horizontal landmarks and common two-boot sole row. One scale, no per-part patch.",
+  "cells": [
+    {
+      "index": 0,
+      "sourceBounds": [
+        89,
+        80,
+        506,
+        555
+      ],
+      "sourcePositiveAlpha": 123538,
+      "deliveryBounds": [
+        87,
+        98,
+        231,
+        261
+      ],
+      "integerOriginRegistration": [
+        0,
+        0
+      ],
+      "sourceRGBASha256": "820623c41d3b660ae5de82bd61c6bbe2156fd6cfb24e1b0b9fd56824b1eb3428",
+      "deliveryRGBASha256": "201bdfa87c58786f09d51e9d6553a3f2521d0654974fb686aec02ba467083f1e",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 1,
+      "sourceBounds": [
+        24,
+        80,
+        576,
+        555
+      ],
+      "sourcePositiveAlpha": 140052,
+      "deliveryBounds": [
+        87,
+        98,
+        277,
+        261
+      ],
+      "integerOriginRegistration": [
+        65,
+        0
+      ],
+      "sourceRGBASha256": "a6cb2ce9d22d3cad6bf14555c104e37e0ad0666042146333deec8288f0332728",
+      "deliveryRGBASha256": "c4ae5780c5e11869bc73b592b5c25e4d7fcf1bdcc0754258963f0a9fb5c53f3e",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 2,
+      "sourceBounds": [
+        46,
+        44,
+        591,
+        523
+      ],
+      "sourcePositiveAlpha": 140865,
+      "deliveryBounds": [
+        87,
+        96,
+        274,
+        261
+      ],
+      "integerOriginRegistration": [
+        41,
+        32
+      ],
+      "sourceRGBASha256": "82c122537a695d9fc465f82e7383d741249124db2c52605d479ecf2257156850",
+      "deliveryRGBASha256": "2003f0f432c4861a78488455004b214a9391af9985f0afe0acac8ba8d7b15447",
+      "allTransformedSourcePaintInsideField": true
+    },
+    {
+      "index": 3,
+      "sourceBounds": [
+        38,
+        45,
+        466,
+        524
+      ],
+      "sourcePositiveAlpha": 127100,
+      "deliveryBounds": [
+        87,
+        96,
+        234,
+        261
+      ],
+      "integerOriginRegistration": [
+        49,
+        31
+      ],
+      "sourceRGBASha256": "a52df8af1bbc6768e3c6773d0d8c0f0cc2f7816f963e422f9f332df971bd8312",
+      "deliveryRGBASha256": "f2501fb0981639f616fbfca6b9a5ee69c2952e7bb8e2299455ac18f5263ae9fe",
+      "allTransformedSourcePaintInsideField": true
+    }
+  ]
+}

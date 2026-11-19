@@ -1,0 +1,245 @@
+{
+  "version": 1,
+  "status": "Independent source/delivered96 and actual-Sim PASS; root authorized exact dedicated-page import; other combat art pending",
+  "packing": "One dedicated canonical optional384square page; original legacy bank untouched",
+  "public": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+  "publicEncodedSha256": "367aedae1b936cc4fe2012d2146098cb18b4338db96d97de7fabb8336c96b50e",
+  "legacyPath": "assets/bosses/12-codebreak-sproto3106-p2-projectiles.png",
+  "legacyEncodedSha256": "bd87732e6863a9b7ee581ffa969f752a6c89444674d4ff04efdfbeaf75fe831d",
+  "legacyPublicBytesUnchanged": true,
+  "acceptedSourceAtlasEncodedSha256": "367aedae1b936cc4fe2012d2146098cb18b4338db96d97de7fabb8336c96b50e",
+  "accepted16RgbaSha256": [
+    "4cfa4bcc69923958a4c6dc1bebceb1777af8da1b2bc2f56a6a0860b2f612f9e8",
+    "e69eef29c3748ab496acb499c49e69de726a223fc81838dd8b4fc0967c5e9d1d",
+    "8814d8fd00290d1aac1b1ba6c236582bf24118fc17535930ebdf0b2a309d66c2",
+    "a1a6638ab7cc444954c7ebdfe29e325d23627c9fec46aaaa592889749231dd00",
+    "ad49f56898bb2bd6d4e5c59bfbc7754266cdc712830c68e616c12efa058436c5",
+    "f598873063e2c10c4895dabf62dfa2a9e65cfa64e4e1e6aaa482871f01c3fa53",
+    "4904d59e3c3accff457df3cd917b8ef1f119de09fea66ba998336d499d3c8b13",
+    "c1e213491d49909330499f713c20ae24780b93c557891dfabdde66c5acff9bb2",
+    "d24503568bb072b02362c02d96b377aa3fe17af517687e692a273671af138d00",
+    "709d40aff7af9256e82e8977cc78a213d02e5752c036fc5fae07edb85c0417ba",
+    "121421f3619f2f28d3400d58b97ac6a9ccfe2028d86e2259941220d5e0ac1e12",
+    "2920c6ed84b8683b4e8617ce71dd275b3b544360227defce91f7664baf47cb7b",
+    "603fbab58521d8699e04112efc42742fde77999086a70f92bfdea388b7238e97",
+    "98e27aa583dc8b7785afacef50ffa6bc5b48062fa6c05f30b75cf81861c3cb09",
+    "2821c73dc71f7fd7780de634184a0ffd40ea3e43b30cd430f89e982c1ed12a5b",
+    "e039c2293673b059e487b2fef2868ea9eefd3b461d7878c86773048692bb8ade"
+  ],
+  "providerOriginals": [
+    {
+      "family": "signature",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-fx-01/result-original.png",
+      "originalSHA256": "479e989652749968081052f574c8ee340570c93442a19bc6e3ca427a71433336",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-signature-fx01-independent-v1",
+      "packetFreezeSHA256": "753926e09939748113dc3c175702607584e23c1f4e540415cebe2231108d5acf",
+      "originalCopy": "source-originals/signature-provider-original.png",
+      "allOriginalPacketFilesVerified": 134
+    },
+    {
+      "family": "special",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-special-02/provider-original.png",
+      "originalSHA256": "c726b32b69e35da15c74685ee6f87e3ee9cdcd503313b3447b30956716310ee3",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-special-02-independent-v1",
+      "packetFreezeSHA256": "ad596a99210c49575890e9848440557b26bcf3c12505824f70d1090dafd45c09",
+      "originalCopy": "source-originals/special-provider-original.png",
+      "allOriginalPacketFilesVerified": 120
+    },
+    {
+      "family": "hurt",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-hurt-02-retry-01/provider-original.png",
+      "originalSHA256": "1477fa32e2e7e01bca733ea67fa6505df63514f0e14656ce0a503bf11edcafbf",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-hurt-02-retry-01-independent-v1",
+      "packetFreezeSHA256": "144395dd58c9cd3ce26b05dddd4cd3ed21605a353bd89f6b823ac34744ed592a",
+      "originalCopy": "source-originals/hurt-provider-original.png",
+      "allOriginalPacketFilesVerified": 124
+    },
+    {
+      "family": "death",
+      "original": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/browser-runs/sproto3106-p2-death-03/provider-original.png",
+      "originalSHA256": "8c4dcadbf5fe004e6f1d41288e28244f2e1cc66af07dc07b610f6d14026f1ab4",
+      "packet": "/Users/kenhiraoka/Documents/Codex/2026-11-15/use-parallel-agents-in-the-sproto-2/work/higgsfield-free-bosses/higgsfield-combat/qa/sproto3106-p2-death-03-independent-v1",
+      "packetFreezeSHA256": "1a7f06dfb458c6510b422f5badaca9f0ada1a6f4eaf6951e4e5bb3fe791fc57a",
+      "originalCopy": "source-originals/death-provider-original.png",
+      "allOriginalPacketFilesVerified": 125
+    }
+  ],
+  "candidateManifestSha256": "4a64defff117707306253ae05b5bd8ddc63e9531aca00530ca6af229c2661aa5",
+  "sourceReviewManifestSha256": "383d6db762e014277782ae36d82ae9a91043de56e688b1b6d47b048a37e7eeac",
+  "runtimeReviewManifestSha256": "d1a980126830fb423aef13bb65ae2e111a398bfb5884205bce50c049fb082e90",
+  "stagingManifestSha256": "0bd1113490da341e19c610ab881c26c2805ba154468759b9a6f53aa92c8d3719",
+  "runtimeBaseCommit": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "rendererSha256": "8d39746edb9f6144a5b61e7587cd4d120a4aab3d4606e0648671a3b96a475f97",
+  "runtimeSnapshots": 640,
+  "runtimeFullSceneMismatches": 0,
+  "runtimeIndependentDraws": 694,
+  "runtimeGroundedDraws": 358,
+  "runtimeObservedScratchCanvases": 1,
+  "stage12NewPageRequests": 1,
+  "firstStageImageRequestDelta": 0,
+  "sourceRGBMappings": 328673,
+  "trainingNativeErosionPixels": 8,
+  "trainingSamples": 2873977,
+  "nativeFields": "Signature512; other families1024, sampled directly to96 without upscaling or padding",
+  "nativeHaloFree": false,
+  "edgeQualification": "Thin muted connected warm/violet/gray/cyan tones and native texture retained; delivered96 visually accepted; intentional source breakup chips preserved.",
+  "registry": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ],
+      "grounded": true
+    },
+    "special": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        95
+      ],
+      "frameTicks": [
+        9,
+        9,
+        9,
+        9
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ],
+      "grounded": true
+    },
+    "hurt": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    },
+    "death": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "frameTicks": [
+        38,
+        38,
+        38,
+        37
+      ],
+      "pages": [
+        {
+          "src": "assets/bosses/effects/12-codebreak-sproto3106-p2-fx-367aedae1b93.png",
+          "columns": 4,
+          "rows": 4,
+          "frames": 4,
+          "firstCell": 12
+        }
+      ]
+    }
+  },
+  "sourceEvidenceCopies": {
+    "accepted-effects-atlas96.png": "367aedae1b936cc4fe2012d2146098cb18b4338db96d97de7fabb8336c96b50e",
+    "original-legacy-projectile-bank.png": "bd87732e6863a9b7ee581ffa969f752a6c89444674d4ff04efdfbeaf75fe831d",
+    "registry-fragment.json": "f09c03e5ba1ae1d5c9a4fff245d523ead5e0280595237e232fed475476057cba",
+    "source-selection-provenance.json": "102bcbb7c507842103ff990bdc6bc9df69daaf08250d54979e32ca1717c14265",
+    "combined-palette.json": "29bc06561dd3d06abc6cc2eadaadda4c559b24dbee16f95b925576b673316e42",
+    "exact-source-rgb-to-fixed128.npz": "f17549884af260a0e493e6cd090a690f75da63a0585a7126e2edeb8faa8c7e09",
+    "contact-alignment-report.json": "eb34d5cc8ede11663bb7ad6672c99022cd44be7cfe79787caca669632528a972",
+    "independent-source-REPORT.md": "4cf3a140232efc150225b181e81d9af953ff1b772eac01565eeee832d460abde",
+    "independent-source-checks.json": "f433d7b1be8f3fc7de1fcad5c04ae7ec9985ce8f48544b12c794a9d05925bd31",
+    "independent-source-handoff.json": "be834e48ead2c37d2c49afa65228ae04500e8943104ad0ea9b987a3f9aa9a7a5",
+    "independent-runtime-REPORT.md": "b980bcd332e8dd5924f182dd84b5ad9f493666efb1e5ff8b60279860c6316753",
+    "independent-runtime-summary.json": "404944433ed66722496da9f580e9675f8882162f3eae635396144675dce3c9b1",
+    "independent-runtime-draw-proof.json": "05c2bad91ec9fe80f49bf79c398bbd69e8baba2352b6d41edf5306177ba1c57c",
+    "independent-runtime-handoff.json": "136e9f38f0539885c4be25d7b0ff99e66f8bfc08f0e4de0b6e2853b65d9e5645",
+    "staged-resource-replay.json": "6f9925427506e84793c4db527d70b626682c1f113b0757b2e41eccdc59d005b8",
+    "input-provenance/signature/reviewed-extraction-config.json": "7f96e7c2717f024d8973a9c76131fe5328a4232aabfc8cf63712482403f95e2b",
+    "input-provenance/signature/reviewed-matte-apertures.json": "e609853f8a1605fdcda409ac9dcab9adca59cfd59eb8e426c4956c24ebc0fb7a",
+    "reviewed-matte-masks/signature/tile-001-gap-00.png": "78f1ade063ff49fc6ee48c94edc80f3f3601f0ffed3593f2251f195ecc4f5d36",
+    "reviewed-matte-masks/signature/tile-001-gap-01.png": "3a961fa10c9bca64dbeba402a15c256a4aca5352c0d09877199e3b3ae0f03010",
+    "reviewed-matte-masks/signature/tile-002-gap-00.png": "ebe90396688eb5166f066153d92fc5e5cbe2780df86cf316e53ba6a2d77f9ea2",
+    "reviewed-matte-masks/signature/tile-002-gap-01.png": "9cbfbcb2a866b5a9ca35c5a90f2ac6e1398145941309ec57cdc2f4ed3ffb4f82",
+    "reviewed-matte-masks/signature/tile-002-gap-02.png": "d9fb5dce69291d11e25d0ff154a684c31b7d740534584406257a869276fbd2d0",
+    "reviewed-matte-masks/signature/tile-002-gap-03.png": "d7ce25d3a6fe2d6ff8a1257491e2b1689b78c74cbd7b13f7366c3674e78f330c",
+    "reviewed-matte-masks/signature/tile-002-gap-04.png": "fe5e1002dfccdbacdff308bb98c9cc314fe6e1f3aa390d2b7e002a520105db58",
+    "reviewed-matte-masks/signature/tile-002-gap-05.png": "60089cdb83a013ceb4e838c1a79dc56c8997236406e0f1f83e3c65e91204428d",
+    "reviewed-matte-masks/signature/tile-002-gap-06.png": "8ff7d3a14463c3f12b729974aed8195c8a4d493ae042a528fa382769816ea90b",
+    "reviewed-matte-masks/signature/tile-002-gap-07.png": "18bf410b1e4eebedfda0324b95a4ecdb096041ad5e7c4a36e11ad6961e7e9fdb",
+    "reviewed-matte-masks/signature/tile-003-gap-00.png": "89058a6f0708514506d21924a0b9c4f1605c53dc854576ef12040bc1b06b970d",
+    "input-provenance/special/reviewed-extraction-config.json": "ba285af780705bcd8d9f66a86d8ddc8bb20745165920d902f4ad10033236caa3",
+    "input-provenance/special/reviewed-matte-apertures.json": "fe0d3e981d9551a8bd3b8da9a8d7f16fdaefdc10a620645ab8f4383aa5884fec",
+    "reviewed-matte-masks/special/tile-000-gap-00.png": "8ec7c0f6c48b9769a83602cc01dcf60782a3ba53f0dc625bfddf743b598a7a5d",
+    "reviewed-matte-masks/special/tile-000-gap-01.png": "3b019bf1053bda740d46951fa5eabb78d6915b190b98c22650346af2aac88635",
+    "reviewed-matte-masks/special/tile-002-gap-00.png": "ffdcad387df8003d3baeb92d66ff9c18db2d2d9cae94f52b4b0e8d59d02c87d3",
+    "reviewed-matte-masks/special/tile-002-gap-01.png": "960501e9e7a17885cb4ee694198d3efaa7a3fb8624006fc48627b2b032a3aa6e",
+    "reviewed-matte-masks/special/tile-002-gap-02.png": "9c24662fb0c23ef359049997fbe6c4f2781254dfabe377bf99468c15615fec48",
+    "reviewed-matte-masks/special/tile-002-gap-03.png": "3cabb915ec1cbbc7d1db2165de8c1a7e1dc193dcbcf3971c313def888e1b1ba9",
+    "input-provenance/hurt/reviewed-extraction-config.json": "f95c3cb2d55d69d422ac3ac2a0cbb3ad8804955a5235d12092dba00ab964c8b3",
+    "input-provenance/hurt/reviewed-matte-apertures.json": "172b23bbaeed93989027539d3a8f5df8ebb4e4fdda3232c0babfdd24c293034c",
+    "reviewed-matte-masks/hurt/tile-001-gap-00.png": "a0008e98e2150814e855ede6f63e844e8d15ba309efbd8423b490a62ddf52ba5",
+    "reviewed-matte-masks/hurt/tile-002-gap-00.png": "58ef835ea811c0be81d20176f1dd8a516fac1d24eca0f0044670c8757a02ebea",
+    "reviewed-matte-masks/hurt/tile-002-gap-01.png": "7cae17817c8a81cd600b86139e197c27925ab876df6ffe3bd1f86fe6f362a2f9",
+    "reviewed-matte-masks/hurt/tile-002-gap-02.png": "d15f44364a4829b87bdb9306c8d75b5eb8381bb6f55e4791f4321dcab08c6477",
+    "reviewed-matte-masks/hurt/tile-002-gap-03.png": "ba6b950ab5f13fa61974d492b04d02e9e2968755e1f82aa069cf7c9422b52dff",
+    "reviewed-matte-masks/hurt/tile-002-gap-04.png": "d7d69ce2b90f7008104b8dfaea81d2cbcb90010aff9ac1de692c58931ab0d0dc",
+    "reviewed-matte-masks/hurt/tile-002-gap-05.png": "1d69235cd21952a0e20f3f6e4fd6b77281b642e4759ab65bf5f487ca3ee591e1",
+    "reviewed-matte-masks/hurt/tile-002-gap-06.png": "372343264220f87c45acb1277274c87e6f93ee33fa272ec24014ef68a4e1c078",
+    "input-provenance/death/reviewed-extraction-config.json": "fd1c17dd5c6adf8557867e516c0115eba46ec28d2adc3b6c9dde7889795a5955",
+    "input-provenance/death/reviewed-matte-apertures.json": "7a4f3b004b9604e64ad8bf42189b3817a5cd2a2ea4a7e6e645a393952406c45c",
+    "reviewed-matte-masks/death/tile-002-gap-00.png": "f7a0bbe3bad47f3a18694b768220acd3213a9f88d096de2c7db7e975d18522dd",
+    "reviewed-matte-masks/death/tile-002-gap-01.png": "4571b93f910b6b71fa2dd0e1d299d3cb8885ca9cdfb47efaebd935248c0c0a85",
+    "input-provenance/death/central-rule-exact-mask.png": "ae2f912cc940e6f3486c8904aa98ec42cd73c95c4a63dfb91e1d666a28dd8429"
+  },
+  "newArtOrMotion": false,
+  "providerActions": 0
+}

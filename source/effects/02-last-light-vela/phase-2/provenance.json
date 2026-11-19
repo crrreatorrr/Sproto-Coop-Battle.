@@ -1,0 +1,75 @@
+{
+  "status": "Source delivery and actual-Sim exact proof PASS; parent authorized import without new generation",
+  "page": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+  "encodedSha256": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+  "rgbaCelSha256": [
+    "6b3d2cf33598752cf53a7564f719e591c131e863eae256f4abaddebda312341e",
+    "a4618408860f79ae281d4f897070516330de16412b58e74b75672c4134e9aabc",
+    "8d0474d6ff6028cf00068039ad9d46e19cacaf754882ec47aaab1fbd39617a83",
+    "1ea64cdc8f80426242bd61bb1a2b91d4449a12a13c515847408b8fbdcf5fceb0"
+  ],
+  "families": [
+    "signature"
+  ],
+  "sourceManifestSha256": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6",
+  "stageManifestSha256": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146",
+  "browserManifestSha256": "7ef322a2985c5e1078625a7026b69453811e84c10bdf935ffb2bcc8eef7a574a",
+  "registeredMetadata": {
+    "signature": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        63
+      ],
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "grounded": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/02-last-light-vela-p2-attacks-74421fdd5132.png",
+          "columns": 4,
+          "rows": 1,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    }
+  },
+  "runtimeBase": "0c1aae3546a6fc0b1fb175b42e54ac1736e33e92",
+  "actorImportBase": "f538aaa7df11daf7ed5d4a6f4179e555555b7780",
+  "existingActorsPreserved": true,
+  "legacyPagesPreserved": true,
+  "newLocalPosesOrInbetweens": false,
+  "alphaTailCleanupOrHardening": false,
+  "nativeHaloFree": false,
+  "qualifications": [
+    "Four source drawings per family; no high-frame-count smoothness claim.",
+    "Vela rear zone partially occluded by old proof legacy front leg; installed actor capture follows.",
+    "HF native muted connected contour tones remain disclosed. Raw ImageGen alpha unchanged."
+  ],
+  "sourceCopies": {
+    "accepted-effects-atlas96.png": "74421fdd5132dbab16426c7e4daa0ef764e6d631acebf2f6dc9d231e64a9f286",
+    "registry-fragment.json": "ca327f256d294f54a3c8af015ab23ea58d3be8709f2a1df391545a37d3102546",
+    "imagegen-original-source.png": "9e892c7871e3324ed94a9c17b2a661b6eaa6baf018a172c2b5f45942bedf1d9a",
+    "imagegen-source.json": "007a945f7d7ea1cbcb975b48eaa65674a766ee867ef7a60acbebea94d43001b9",
+    "imagegen-prompt.txt": "b13aef798944311a9c44a353c3633ba8e4c0a9146088c1fc99b0a88eeee11b54",
+    "imagegen-source-and-pack-audit.json": "0a4c72441d9eda7753660907d2f019f70557fcca06c6bcc24a0e0adcab771ec4",
+    "import-source-manifest.json": "6205ff2c7d993b5855df4713bc1d57024a25411d9882340961f77150283c08f6",
+    "staging-freeze-manifest.json": "c57b2dfeb853a9d99a2a401a7268b776b4d0f87cead2b4d7a8cb19a243630146",
+    "browser-REPORT.md": "0cedf9bce849574c6601f5341c5ddb6efb0e6bf8ef9ddfd0b502831f8bb16126",
+    "browser-final-summary.json": "12a00cbe135138c546f98fb92f5825f832e4a52bf9555f426361749e1c0b5396",
+    "browser-runtime-checks.json": "d35fd5d21ee74be2838fe23d91c1e22cf17c7d0da952495bb448d7bc36a86caa",
+    "browser-independent-draw-proof.json": "05e69d51c14d7a209eed8cde3b22f8f5703a8b22e770abb15bccbfa80da3d173",
+    "browser-source-readback.json": "58b81bb010e8c70d48c3de891b0ac268bc4d763ba3319016ae6e3fe82359a182",
+    "browser-selected-scene-proof.json": "9cfe4ac46bb65650ada25d7d1d166c305ea98c6bc9b52d6a0adb0336e510fe31",
+    "source-row-packing-proof.json": "1bd4b8d9bf4c42def989a8bdbf1b2f7ee3a3f1c5b0f502af740100bd21542b67",
+    "latest-registry-resource-review.json": "18d9231db05c9fdc14e6490fae31f054fbf0da147a8a60e4dda6539720123b8a"
+  }
+}

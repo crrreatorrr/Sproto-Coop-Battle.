@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "atlasSha256": "9fcf3b85b15d3f6dad8668f884756590b8ff12a4883ece0cfd6d3403d6f79a9a",
+  "providerSha256": "585752e840349fb87a4df74b19597346b6cb498c569f763d8574c35be8e08b34",
+  "anchor": [
+    47,
+    48
+  ],
+  "grounded": false,
+  "reviewedPartialAlpha": true,
+  "notes": "Scarlet plasma rays and forked amber traces spread from a readable orange contact and break into fragments over the existing rail barrage zones. All 16 packed cels have zero near-white samples. The exact quarter-grid fields have 32px minimum native seam clearance after removing only 1/255 backdrop noise, with no composition or geometry repairs. The aimed strike remains distinct from the shorter Alternating Cannons signature."
+}

@@ -1,0 +1,136 @@
+{
+  "boss": "02-last-light-vela",
+  "phase": 1,
+  "family": "boss-projectiles",
+  "purposes": [
+    "spread",
+    "homing",
+    "impact"
+  ],
+  "asset": "assets/bosses/effects/02-last-light-vela-p2-spread-homing-impact-daf9039aca20.png",
+  "atlasSha256": "12e877948b264a0e1a99a04faa35cef1187948cb18efdcd38c34572c51809f71",
+  "runtimeSha256": "daf9039aca203a4a06b375213b9fdaa1c1803d700069120e4ebbc3f21c9cc959",
+  "runtimeDimensions": [
+    384,
+    288
+  ],
+  "sourceFirstCell": 0,
+  "references": [
+    {
+      "firstCell": 0,
+      "sourceFirstCell": 4,
+      "frames": 4
+    },
+    {
+      "firstCell": 4,
+      "sourceFirstCell": 8,
+      "frames": 4
+    },
+    {
+      "firstCell": 8,
+      "sourceFirstCell": 12,
+      "frames": 4
+    }
+  ],
+  "clips": {
+    "spread": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/02-last-light-vela-p2-spread-homing-impact-daf9039aca20.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 0
+        }
+      ]
+    },
+    "homing": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "loop": true,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/02-last-light-vela-p2-spread-homing-impact-daf9039aca20.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 4
+        }
+      ]
+    },
+    "impact": {
+      "cell": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        48
+      ],
+      "grounded": false,
+      "frameTicks": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "loop": false,
+      "pages": [
+        {
+          "src": "assets/bosses/effects/02-last-light-vela-p2-spread-homing-impact-daf9039aca20.png",
+          "columns": 4,
+          "rows": 3,
+          "frames": 4,
+          "firstCell": 8
+        }
+      ]
+    }
+  },
+  "partialAlphaCells": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ]
+}

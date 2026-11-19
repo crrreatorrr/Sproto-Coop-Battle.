@@ -1,0 +1,136 @@
+{
+  "provider": "Built-in ImageGen",
+  "providerSourceSHA256": "bdcf3dcde5bc8618259a2176bf5615077142d86718087cf5696f039ea9556381",
+  "sourceSHA256": "7674cc65b121db557bb9410295a9efab89a89518560b991b252bce26936bb73e",
+  "size": [
+    1254,
+    1254
+  ],
+  "matteRGB": [
+    249.0,
+    3.0,
+    249.0
+  ],
+  "flatTolerance": 32,
+  "flatSamples": 1052255,
+  "mixedSamples": 4428,
+  "mixtureRule": "R>180 && B>180 && G<125 within4native Chebyshev pixels of source-bound flat32 key",
+  "retainedRGBUnchanged": true,
+  "paletteFinish": false,
+  "controls": {
+    "green-lime": {
+      "nativeSamples": 44084,
+      "removed": 0,
+      "retainedRGBExact": true
+    },
+    "blue": {
+      "nativeSamples": 46186,
+      "removed": 0,
+      "retainedRGBExact": true
+    },
+    "red": {
+      "nativeSamples": 13831,
+      "removed": 0,
+      "retainedRGBExact": true
+    },
+    "neutral-metal": {
+      "nativeSamples": 14037,
+      "removed": 0,
+      "retainedRGBExact": true
+    }
+  },
+  "sourceCels": [
+    {
+      "cel": 0,
+      "sourceRectangle": [
+        0,
+        0,
+        611,
+        627
+      ],
+      "size": [
+        611,
+        627
+      ],
+      "bounds": [
+        82,
+        56,
+        583,
+        534
+      ],
+      "minimumMargin": 28,
+      "borderSamples": 0,
+      "sourceRGBASHA256": "7e0f5a1d02a206c84ffc367f669af828fb5070d9e4d6ed573379c7475a9815d3"
+    },
+    {
+      "cel": 1,
+      "sourceRectangle": [
+        611,
+        0,
+        1254,
+        627
+      ],
+      "size": [
+        643,
+        627
+      ],
+      "bounds": [
+        15,
+        184,
+        591,
+        534
+      ],
+      "minimumMargin": 15,
+      "borderSamples": 0,
+      "sourceRGBASHA256": "a429df89cb86724d4735d031920eec20ed5df7efb65415b771002dff214ce19a"
+    },
+    {
+      "cel": 2,
+      "sourceRectangle": [
+        0,
+        627,
+        611,
+        1254
+      ],
+      "size": [
+        611,
+        627
+      ],
+      "bounds": [
+        21,
+        180,
+        598,
+        522
+      ],
+      "minimumMargin": 13,
+      "borderSamples": 0,
+      "sourceRGBASHA256": "0eb73a683cbf5b7c903c3bf1063c329c9648f52bb834b111cdf6b565f2249b12"
+    },
+    {
+      "cel": 3,
+      "sourceRectangle": [
+        611,
+        627,
+        1254,
+        1254
+      ],
+      "size": [
+        643,
+        627
+      ],
+      "bounds": [
+        61,
+        53,
+        596,
+        522
+      ],
+      "minimumMargin": 47,
+      "borderSamples": 0,
+      "sourceRGBASHA256": "657fb281deffa593dd0f2ed928617a48bacfd5056a0ac33d041a8a76194623b2"
+    }
+  ],
+  "sourceSeamX": 611,
+  "sourceSeamEntirelyAlphaZero": true,
+  "allSourceSamplesOwnedOnceByDisjointRectangles": true,
+  "status": "SELF_QA_AND_PRIVATE_REAL_SIM_PASS_INDEPENDENT_REVIEW_PENDING"
+}
