@@ -225,7 +225,10 @@
     if (Array.isArray(v)) return v.map(plainCopy);
     var out = {};
     var keys = Object.keys(v);
-    for (var i = 0; i < keys.length; i++) out[keys[i]] = plainCopy(v[keys[i]]);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] === '__proto__') throw new Error('delta'); // would set the prototype, not a key
+      out[keys[i]] = plainCopy(v[keys[i]]);
+    }
     return out;
   }
   function patch(a, d) {

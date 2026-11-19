@@ -79,6 +79,9 @@ function drive(state, t) {
   assert.strictEqual(P.applySnapshotDelta(json(a), Object.assign({}, d, { d: { o: { __proto__x: 1 } } })).reason, 'delta');
   assert.strictEqual(P.applySnapshotDelta(json(a), JSON.parse('{"kind":"' + P.DELTA_KIND + '","matchId":"m1","base":2,"baseTick":' + a.tick + ',"d":{"o":{"__proto__":{"r":{"polluted":1}}}}}')).reason, 'delta');
   assert.strictEqual({}.polluted, undefined);
+  const smuggled = JSON.parse('{"o":{"boss":{"r":{"__proto__":{"st":"dead"},"x":1}}}}');
+  assert.strictEqual(P.applySnapshotDelta(json(a), Object.assign({}, d, { d: smuggled })).reason, 'delta', '__proto__ inside a replacement');
+  assert.strictEqual(NetHub.applySnapshotDelta(json(a.state), smuggled), null, 'client refuses it too');
   assert.strictEqual(P.applySnapshotDelta(json(a), Object.assign({}, d, { d: { a: { 0: { r: 1 } } } })).reason, 'delta', 'array patch on an object');
   assert.strictEqual(P.applySnapshotDelta(json(a), Object.assign({}, d, { d: { o: { players: { a: { 9: { r: 1 } } } } } })).reason, 'delta', 'index past the length');
   // The base is never mutated (the client keeps it for interpolation).

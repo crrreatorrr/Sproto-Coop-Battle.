@@ -584,7 +584,10 @@ function plainCopy(v) {
   }
   const out = {};
   const keys = Object.keys(v);
-  for (let i = 0; i < keys.length; i++) out[keys[i]] = plainCopy(v[keys[i]]);
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i] === '__proto__') throw new Error('delta'); // would set the prototype, not a key
+    out[keys[i]] = plainCopy(v[keys[i]]);
+  }
   return out;
 }
 function patchValue(a, d) {
