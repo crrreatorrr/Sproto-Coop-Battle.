@@ -10,7 +10,6 @@ const FONT = '"Press Start 2P", ui-monospace, monospace';
 if (!root.AssetLoader) throw new Error('asset-loader.js must load before render.js');
 const Cells = root.AssetLoader.lru(96);
 const Tints = root.AssetLoader.lru(96);
-const atlasBuffers = new Map();
 function loader() { return root.AssetLoader.shared(); }
 function img(src) { return loader().image(src); }
 const ready = im => !!(im && im.complete && im.naturalWidth > 0);
@@ -57,10 +56,8 @@ function loadStatus() {
   const stat = loader().status();
   stat.cells = Cells.size;
   stat.tints = Tints.size;
-  stat.atlasBuffers = atlasBuffers.size;
   stat.cellBytes = Cells.size * 128 * 128 * 4;
   stat.tintBytes = Tints.size * 128 * 128 * 4;
-  stat.atlasBufferBytes = Array.from(atlasBuffers.values()).reduce((bytes, ctx) => bytes + ctx.canvas.width * ctx.canvas.height * 4, 0);
   return stat;
 }
 
@@ -71,21 +68,8 @@ function canFilter() {
   return filterOK;
 }
 const HUES = [0, 150, 235, 300, 60, 190];
-// Copy one atlas cell with getImageData so the 128 canvas matches the pose PNG.
-// The atlas image stays resident; cell and tint canvases are capped.
-function atlasContext(path) {
-  const cached = atlasBuffers.get(path);
-  if (cached) return cached;
-  const sheet = img(path);
-  if (!ready(sheet)) return null;
-  const c = document.createElement('canvas');
-  c.width = sheet.naturalWidth; c.height = sheet.naturalHeight;
-  const g = c.getContext('2d', { willReadFrequently: true });
-  g.imageSmoothingEnabled = false;
-  g.drawImage(sheet, 0, 0);
-  atlasBuffers.set(path, g);
-  return g;
-}
+// Copy one atlas cell straight from the decoded image into a capped 128 px canvas. No full-atlas
+// staging canvas and no getImageData readback: a 1:1 drawImage with smoothing off keeps the pixels.
 function cellCanvas(fid, pose) {
   const f = M.fighters[fid];
   if (!f) return null;
@@ -97,14 +81,13 @@ function cellCanvas(fid, pose) {
   const key = fid + '|' + rect.i;
   const hit = Cells.get(key);
   if (hit) return hit;
-  const sheet = atlasContext(path);
-  if (!sheet) return null;
-  if (rect.x + rect.w > sheet.canvas.width || rect.y + rect.h > sheet.canvas.height) return null;
+  const sheet = img(path);
+  if (!ready(sheet)) return null;
+  if (rect.x + rect.w > sheet.naturalWidth || rect.y + rect.h > sheet.naturalHeight) return null;
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   g.imageSmoothingEnabled = false;
-  if (rect.w === 128) g.putImageData(sheet.getImageData(rect.x, rect.y, rect.w, rect.h), 0, 0);
-  else g.drawImage(sheet.canvas, rect.x, rect.y, rect.w, rect.h, 0, 0, 128, 128);
+  g.drawImage(sheet, rect.x, rect.y, rect.w, rect.h, 0, 0, 128, 128);
   Cells.set(key, c);
   return c;
 }
@@ -162,7 +145,7 @@ function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
   if (o.cl) {
     loadFx();
     const motion = root.AssetLoader.motionPath(f);
-    if (motion && !atlasBuffers.has(motion)) atlasContext(motion);
+    if (motion) img(motion); // start the class-motion sheet early
   }
   const art = root.RenderFx;
   const P = art ? art.pose(o, wpnId, wpnStats) : { pose: Math.floor(o.t / 30) % 2, ang: -52 + Math.sin(o.t / 12) * 3 };
