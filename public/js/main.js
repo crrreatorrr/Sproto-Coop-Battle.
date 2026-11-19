@@ -279,8 +279,8 @@ function hostStep() {
     else if (s.ctrl === 'remote') p.in = I.unpack(((app.remoteIn[s.owner] || {})[s.dev]) | 0);
   }
   S.step(sim);
-  // Preload the next bosses' sheets as the campaign advances.
-  R.bossImages(sim.stageIdx); if (sim.stageIdx + 1 < M.bosses.length) R.bossImages(sim.stageIdx + 1);
+  // Boss sheets load through Render.enterStage (drawWorld calls it every frame), which pins the
+  // current stage and prefetches the next only when AssetLoader.canPrefetchNext allows it.
   for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'bossdown') latchKill(sim.stageIdx, sim.players); if (e === 'clear') stageClear(sim.stageIdx, sim.god, sim.players); }
   sim.events.length = 0;
   if (app.role === 'host' && app.net && app.net.open && ++app.sendTick % 2 === 0) {
@@ -952,7 +952,6 @@ function drawGame() {
   } else snap = S.snapshot(app.sim);
   app.view = snap;
   noteRun(snap);
-  R.bossImages(snap.si);
   // Seats played on this device get a marker so they can be found in a crowd.
   const mine = [];
   app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });

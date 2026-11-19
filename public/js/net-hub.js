@@ -944,8 +944,7 @@
         app.screen = 'game';
         if (root.Render && view.snapshot && view.stageIndex !== lastStage) {
           lastStage = view.stageIndex;
-          root.Render.enterStage(view.stageIndex || 0);
-          if ((view.stageIndex || 0) + 1 < root.MANIFEST.bosses.length) root.Render.bossImages((view.stageIndex || 0) + 1);
+          root.Render.enterStage(view.stageIndex || 0); // also prefetches the next stage when allowed
         }
       } else if (view.phase === 'lobby' || view.phase === 'queue') app.screen = 'lobby';
     });
