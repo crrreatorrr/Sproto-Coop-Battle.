@@ -73,10 +73,11 @@ function contour(data) {
 
 function sourceImage(sheets, phase, row) {
   const entry = sheets[phase];
-  // Last Call stores later actor rows on a second page. Other bosses pass one sheet.
+  // Last Call keeps rows 0-4 on the first page and every later row on one lower page.
+  // The lower page is taller than five rows, so row 10 stays on that same image.
   if (options.pageRows && Array.isArray(entry)) {
-    const page = Math.floor(row / options.pageRows);
-    return { image: entry[page], row: row - page * options.pageRows };
+    if (row < options.pageRows) return { image: entry[0], row };
+    return { image: entry[1], row: row - options.pageRows };
   }
   return { image: entry, row };
 }
