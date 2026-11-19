@@ -4,9 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sproto Coop Battle</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" crossorigin="anonymous">
+<link rel="preload" href="fonts/press-start-2p-latin-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  /* Press Start 2P, latin subset, self-hosted (SIL OFL 1.1, fonts/OFL.txt). */
+  @font-face { font-family: "Press Start 2P"; font-style: normal; font-weight: 400; font-display: swap;
+    src: url("fonts/press-start-2p-latin-400.woff2") format("woff2"); }
   html, body { margin: 0; height: 100%; background: #07060d; overflow: hidden; }
   body { display: flex; align-items: center; justify-content: center; font-family: "Press Start 2P", ui-monospace, monospace; color: #fff; }
   canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; background: #000; }

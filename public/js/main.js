@@ -1179,7 +1179,11 @@ function cancelHubReturn() {
 }
 const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
-const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
+// The font is self-hosted; still never let a slow or failed font load hold the title screen.
+const FONT_WAIT_MS = 1500;
+const fontReady = document.fonts
+  ? Promise.race([document.fonts.load('10px "Press Start 2P"').catch(() => {}), new Promise(resolve => setTimeout(resolve, FONT_WAIT_MS))])
+  : Promise.resolve();
 // C2 load boundary: title waits on lobby art; a failed critical file stays on this screen until retry.
 const launchOptions = new URLSearchParams(location.search);
 const gameScripts = new Map();
