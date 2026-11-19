@@ -424,6 +424,24 @@ function restartHarness(rpcImpl, opts) {
     assert.strictEqual(h.ctl.view().phase, 'ended');
     console.log('pump ends an expired reconnect');
   }
+  {
+    // Quick play matchmakes at most one account per seat (four), not the old six.
+    const asks = [];
+    const ctl = NetHub.create({
+      transport: {
+        rpc: async id => (id === 'coop.version' ? { enabled: true, protocol: NetHub.PROTOCOL, fingerprint: NetHub.FINGERPRINT } : {}),
+        addMatchmaker: async ask => { asks.push(ask); return { ticket: 't1' }; },
+        onMatched: () => {},
+        disconnect: () => {},
+      },
+      keepSocket: true,
+    });
+    await ctl.quickQueue();
+    assert.strictEqual(asks.length, 1);
+    assert.strictEqual(asks[0].maxCount, 4);
+    assert.strictEqual(asks[0].minCount, 1);
+    console.log('quick play matchmakes up to four accounts');
+  }
 })().catch(err => {
   console.error(err);
   process.exit(1);

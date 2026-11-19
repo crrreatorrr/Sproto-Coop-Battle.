@@ -849,7 +849,7 @@
         var queued = await opened.addMatchmaker({
           query: '*',
           minCount: 1,
-          maxCount: 6,
+          maxCount: SEATS, // one account per seat at most; the 6-seat build used 6
           stringProperties: { game: GAME_ID, v: '1', sim: FINGERPRINT },
         });
         ticket = queued && queued.ticket || '';
