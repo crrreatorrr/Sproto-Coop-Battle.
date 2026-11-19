@@ -198,8 +198,43 @@ export function assertBudgets(report, built) {
   return { expected, problems };
 }
 
+// UPDATE_BASELINE=1 rewrites the measured fields of the fixture from the live tree. The budget caps
+// (staticBudgetBytes, titleBudgetBytes, ...) and the description stay as reviewed; the gates still run.
+export function updateBaseline(report) {
+  const expected = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  const live = runtimeBudget(report);
+  Object.assign(expected, {
+    assetCount: report.assetCount,
+    assetBytes: report.assetBytes,
+    assetMegabytesDecimal: Number((report.assetBytes / 1e6).toFixed(6)),
+    assetMebibytes: Number((report.assetBytes / MiB).toFixed(3)),
+    publicFileCount: report.publicFileCount,
+    publicBytes: report.publicBytes,
+    assetTreeSha256: report.assetTreeSha256,
+    publicTreeSha256: report.publicTreeSha256,
+    preloadCount: report.preloadCount,
+    preloadBytes: report.preloadCost.bytes,
+    preloadGzipBytes: report.preloadCost.gzipBytes,
+    preloadDecodedBytes: report.preloadCost.decodedBytes,
+    dynamicRefCount: report.dynamicRefCount,
+    titleBytes: live.titleBytes,
+    firstStageBytes: live.firstStageBytes,
+    criticalRequests: live.criticalRequests,
+    unused: report.unused.slice(),
+    categories: JSON.parse(JSON.stringify(report.categories)),
+    basePublicBytes: report.basePublicBytes,
+    optionalMediaCount: report.optionalMediaCount,
+    optionalMediaBytes: report.optionalMediaBytes,
+    optionalMediaTreeSha256: report.optionalMediaTreeSha256,
+    presentationDecodedBytesMax: report.streamedMedia.maxPresentationDecodedBytes,
+    fxScratchDecodedBytes: report.fxScratchDecodedBytes,
+  });
+  fs.writeFileSync(fixturePath, JSON.stringify(expected, null, 2) + '\n');
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const report = inventory();
+  if (process.env.UPDATE_BASELINE === '1') updateBaseline(report);
   let built = null;
   try { built = buildDist(); } catch (err) {
     console.error(err.detail || err);
