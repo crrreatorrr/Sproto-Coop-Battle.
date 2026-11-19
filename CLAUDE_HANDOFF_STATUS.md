@@ -42,12 +42,21 @@ exactly what it was.
 | 2.2a Batch the 3 `OP.INPUT` frames | done, hub side pending | Client `3da59aa`: one `{ t: 'inputs', batch }` per burst when `coop.version` returns `features.inputBatch: true`. Bundle `2701fe3`: `CoopProtocol.splitInputBatch`. Seq, rate (60/s per account) and owner checks still run per item. Blocked on metaverse-hub calling it and advertising the feature. |
 | 2.2b Delta snapshots + keyframes | done, hub side pending | `CoopProtocol.snapshotDelta` / `applySnapshotDelta` and a matching client patcher. Exact JSON round trip over 2,664 real snapshot pairs; deltas are **36.9 %** of full snapshot bytes (−63 %). The hub must send a full envelope on join/resume/stage change and at least every 60 loops (`LIMITS.snapshotKeyframeLoops`), and deltas only to presences whose join metadata has `snapDelta: '1'`. Contract in `docs/coop-server-contract.md`. Not done: dropping static fields or packing entities as tuples — the delta already omits unchanged fields, and tuples would change the render snapshot shape. |
 | 2.2c Measure B/s down in `c5-reconnect-summary.json` | partial | The in-repo hub stand-in does not send deltas, so e2e still reports ~24.6 KB/s received (this stand-in, not the handoff's 175 KB/s live Nakama figure, which could not be checked here). Expect about −63 % of snapshot bytes once the hub sends deltas. |
-| Re-pin | done `1371523` | `bundleSha256` `c9288850…9fa3` → `483d4094…9605` (174,879 B). `contentSha256` unchanged (`3fddedd1…e97b`; it does not cover `net-protocol.js`), so per AGENTS.md the goldens and `FINGERPRINT` (net-hub.js, browser-hub-online.cjs) stay as they are; `tests/fixtures/sim-goldens.json` is untouched and passes in Node, goja and Chromium. `SIM` in `tests/hub.test.js` updated. |
+| Re-pin | done `1371523`, again `41688af` | `bundleSha256` `c9288850…9fa3` → `483d4094…9605` → **`c4292eb9…af5d`** (174,986 B, after the review fix). `contentSha256` unchanged (`3fddedd1…e97b`; it does not cover `net-protocol.js`), so per AGENTS.md the goldens and `FINGERPRINT` (net-hub.js, browser-hub-online.cjs) stay as they are; `tests/fixtures/sim-goldens.json` is untouched and passes in Node, goja and Chromium. `SIM` in `tests/hub.test.js` updated. |
 
 ## Phase 3 — remaining P2/P3
 
 Nothing beyond §1–§3 was left in the handoff. Its remaining items are listed above as blocked
 (3.1c hub-sdk re-vendor) or skipped (3.2b Sprotel 30 fps, 3.3c moving raw art to LFS).
+
+## Final review
+
+`/code-review` (high) over `a87d3a7..HEAD`, all five findings fixed:
+- gzip cache keyed only by size+mtime ETag could serve another file's body → keyed by path too (`4e59f21`).
+- `__proto__` inside a `{ r: … }` delta replacement could set a prototype in both patchers → refused, tested, re-pinned (`41688af`).
+- `tools/__pycache__/*.pyc` committed by accident → untracked and ignored; stale `hub-link.js` comment and AGENTS.md "no bundler" intro fixed (`f81bc72`).
+
+After the fixes: `npm test`, `build` + `check:assets` + `check:budgets`, `test:browser`, `test:e2e` all pass; `bench:goja` p95 2.3 ms.
 
 ## Measurements
 
