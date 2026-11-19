@@ -39,7 +39,7 @@ const TYPES = {
 // Images and fonts are already compressed; text files are gzipped when the client accepts it.
 const GZIP_TYPES = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt']);
 const GZIP_MIN = 1024;
-const gzipCache = new Map(); // etag -> gzipped bytes; bounded below
+const gzipCache = new Map(); // path + etag -> gzipped bytes; bounded below
 const GZIP_CACHE_MAX = 64;
 const GUEST_TYPES = new Set(['want', 'leave', 'pick', 'in', 'god']);
 const HOST_TYPES = new Set(['lobby', 'snap']);
@@ -153,11 +153,13 @@ function acceptsGzip(req) {
   return /(^|,)\s*gzip\s*(;\s*q=(?!0(\.0*)?\s*(,|$))[0-9.]+)?\s*(,|$)/i.test(String(req.headers['accept-encoding'] || ''));
 }
 
-function gzipFor(etag, data) {
-  let hit = gzipCache.get(etag);
+function gzipFor(file, etag, data) {
+  // The ETag alone is size + mtime, which two files can share; the path keeps them apart.
+  const key = file + '\0' + etag;
+  let hit = gzipCache.get(key);
   if (hit) return hit;
   hit = zlib.gzipSync(data, { level: 6 });
-  gzipCache.set(etag, hit);
+  gzipCache.set(key, hit);
   if (gzipCache.size > GZIP_CACHE_MAX) gzipCache.delete(gzipCache.keys().next().value);
   return hit;
 }
@@ -251,7 +253,7 @@ const server = http.createServer((req, res) => {
         }
         fs.readFile(real, (readErr, data) => {
           if (readErr) { sendJson(res, 404, 'not found'); return; }
-          const body = zipped ? gzipFor(etag, data) : data;
+          const body = zipped ? gzipFor(real, etag, data) : data;
           if (zipped) headers['Content-Encoding'] = 'gzip';
           headers['Content-Length'] = body.length;
           res.writeHead(200, headers);
