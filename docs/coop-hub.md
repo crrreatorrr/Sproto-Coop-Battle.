@@ -8,14 +8,14 @@ This phase is session init, Ticket balance, and return only. It does not award T
 
 | Item | Value |
 |---|---|
-| Package | `@metaverse/hub-sdk` 0.8.0 |
-| Hub commit | `b7921f2` (`main`) |
+| Package | `@metaverse/hub-sdk` 0.9.0 |
+| Hub commit | `a3d94f9` (`main`, merge of PR #196) |
 | Classic script | `vendor/hub-sdk/dist/hub-sdk.iife.js` |
 | Global | `HubSDK` |
-| IIFE sha256 | `833ce281696f9769bd13d284b9d9262957838181cf1ac308358c6b602b21f309` |
+| IIFE sha256 | `d74ffe49c3a59390040e57ad0016d25db194bd68410fbcf5a0e199a1acbe17be` |
 | Pin | `vendor/hub-sdk/SOURCE.pin.json` |
 
-Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
+Vendored with the hub repo's `node scripts/vendor-sdk.mjs` at that commit. 0.9.0 adds `ProgressStore.flushKeepalive()`, `writeSave(data, { keepalive })`, `InitResult.otherRelics` and `EventResult.grantedOther`, plus ESM entry points under `dist/entry/` that this page does not load; the game uses none of them yet, and the IIFE keeps the same `HubSDK` surface it relies on. The hub at that commit also answers `coop.version` with `features: { inputBatch: true, snapshotDelta: true }`; `tests/browser-hub-online.cjs` runs its stand-in the same way (`COOP_STANDIN_FEATURES=0` turns that off) and fails unless batches and deltas were both used. The page loads the file from the game origin (`vendor/hub-sdk/dist/hub-sdk.iife.js` in `dist/`). It is not loaded from a CDN. `npm run build` copies that file into `dist/` and refuses to build if the hash or pin drifts, or if the script contains an HTTP key.
 
 Nakama's HTTP key is not in this repo. The client server key is left empty except on loopback, where the public dev value `defaultkey` is used. A deploy may set `window.SPROTO_COOP_HUB.serverKey` to the public server key before `hub-config.js`. Do not commit that value.
 
@@ -78,7 +78,7 @@ Stage unlocks and the best run belong to whoever earned them. `Progress.createSt
 
 - **Owners.** `device` is play outside a hub session, under `sproto-coop-progress-v1` (the same key as before, so a browser's existing progress simply stays its device progress). `account` is the live hub player, account or guest: `sproto-coop-progress-v1@<playerId>` in the browser plus the player's cloud save (`save.get` / `save.put`). `pending` holds a hub visit's progress in memory until the player is known.
 - **Startup.** `main.js` creates the store with `hubVisit: CoopHub.visitStarting()` (a `#t=` ticket or the saved hub session, the same test as the SDK's `hubVisitStarting`), so a hub visit shows empty progress until it resolves, never the device's.
-- **The SDK loads only on a hub visit** (234 KB, and the page is at 30 startup requests). Until it loads, and on every visit without the hub, the store keeps the device copy and the pending hold itself, with the same key, model and merge as the SDK store's `device` owner. `hub-link.js` calls `progress.useSdk(HubSDK)` once the SDK has loaded; from then on `HubSDK.createProgressStore` does everything, taking over any progress held so far.
+- **The SDK loads only on a hub visit** (239 KB, and the page is at 30 startup requests). Until it loads, and on every visit without the hub, the store keeps the device copy and the pending hold itself, with the same key, model and merge as the SDK store's `device` owner. `hub-link.js` calls `progress.useSdk(HubSDK)` once the SDK has loaded; from then on `HubSDK.createProgressStore` does everything, taking over any progress held so far.
 - **Lifecycle (hub-link.js).** A live session attaches the store to `live.playerId` (also when the profile did not load: the session is still that player's, and the cloud push retries). An account change in this tab (`checkSession`, swap) releases and re-attaches to the new player. Sign-out, expiry, a takeover by another tab, a failed SDK load, a failed `init` and a visit with no session release the store to the device; pending progress then goes to the device. `leave` flushes any unsynced push before returning to the Bar; a push that does not finish is retried on the next attach.
 - **Tabs.** `main.js` passes `storage` events through `progress.watches(key)` and `refresh()`.
 - **Free play** is a setting (it can be switched off again), so it is not progress. It stays on this device under `sproto-coop-settings-v1`. A browser from before this change had it inside the progress record; `Progress.loadSettings` copies it from there once.

@@ -447,6 +447,11 @@ function createStandin(opts) {
   let seq = 0;
   const ledgerWrites = { n: 0 };
   const tickets = [];
+  // features: answer coop.version like a hub that ships the opt-in wire savings
+  // (docs/coop-server-contract.md): split { t: 'inputs' } batches and send snapshot deltas,
+  // with a full keyframe on join and at least every LIMITS.snapshotKeyframeLoops loops.
+  const features = opts.features === true;
+  const wire = { batches: 0, batchItems: 0, batchRejects: 0, fullSnapshots: 0, deltaSnapshots: 0, fullBytes: 0, deltaBytes: 0 };
   function oneWay() {
     const base = latency.ms / 2;
     const span = latency.jitter / 2;
@@ -458,10 +463,32 @@ function createStandin(opts) {
     delay(() => { if (ws.readyState === 1) ws.send(JSON.stringify(env)); });
   }
   function presenceWire(p) { return { user_id: p.userId, session_id: p.sessionId, username: p.username }; }
+  function snapshotFor(ws, envelope) {
+    // A presence that joined with snapDelta: '1' gets a delta against the last snapshot it was sent.
+    const last = ws.lastSnap;
+    ws.lastSnap = envelope;
+    if (features && ws.snapDelta && last && !envelope.restart && last.matchId === envelope.matchId &&
+        envelope.loop - ws.keyLoop < CoopProtocol.LIMITS.snapshotKeyframeLoops &&
+        (!last.state || !envelope.state || last.state.stage === envelope.state.stage)) {
+      const made = CoopProtocol.snapshotDelta(last, envelope);
+      if (made.ok) {
+        const text = JSON.stringify(made.delta);
+        wire.deltaSnapshots += 1;
+        wire.deltaBytes += text.length;
+        return text;
+      }
+    }
+    ws.keyLoop = envelope.loop;
+    const text = JSON.stringify(envelope);
+    wire.fullSnapshots += 1;
+    wire.fullBytes += text.length;
+    return text;
+  }
   function deliver(match, events) {
     for (let i = 0; i < events.length; i++) {
       const ev = events[i];
-      const payload = Buffer.from(JSON.stringify(ev.body)).toString('base64');
+      const snapshot = ev.op === OP.SNAPSHOT && ev.body && ev.body.kind === 'sproto-coop-battle-snapshot';
+      const payload = snapshot ? '' : Buffer.from(JSON.stringify(ev.body)).toString('base64');
       const targets = [];
       if (ev.to) targets.push(ev.to);
       else {
@@ -477,7 +504,8 @@ function createStandin(opts) {
           send(ws, { match_presence_event: { match_id: match.state.id, leaves: [presenceWire(targets[t])] } });
           continue;
         }
-        send(ws, { match_data: { match_id: match.state.id, op_code: String(ev.op), data: payload, reliable: true } });
+        const data = snapshot ? Buffer.from(snapshotFor(ws, ev.body)).toString('base64') : payload;
+        send(ws, { match_data: { match_id: match.state.id, op_code: String(ev.op), data: data, reliable: true } });
       }
     }
   }
@@ -489,7 +517,9 @@ function createStandin(opts) {
   function rpc(ws, cid, id, body) {
     const presence = ws.presence;
     if (id === 'coop.version') {
-      return { protocol: PROTOCOL, fingerprint: FINGERPRINT, enabled: true, rewards: 0, hostTakeover: 0, match: 'sproto_coop', loopHz: 20, substeps: 3, snapshotHz: 10 };
+      const version = { protocol: PROTOCOL, fingerprint: FINGERPRINT, enabled: true, rewards: 0, hostTakeover: 0, match: 'sproto_coop', loopHz: 20, substeps: 3, snapshotHz: 10 };
+      if (features) version.features = { inputBatch: true, snapshotDelta: true };
+      return version;
     }
     if (id === 'coop.room_create') {
       if (body && (body.seed != null || body.state != null || body.stage != null || body.god != null)) return { error: 'rejected', message: 'The server chooses the run' };
@@ -611,6 +641,8 @@ function createStandin(opts) {
         }
         if (!match.rosterAllows(ws.presence.userId)) { send(ws, { cid: cid, error: { code: 5, message: 'not_in_roster' } }); return; }
         ws.matchId = match.state.id;
+        ws.snapDelta = features && meta.snapDelta === '1';
+        ws.lastSnap = null; // the first snapshot after a join is always full
         const others = [];
         for (const id of Object.keys(match.state.present)) {
           const presence = match.state.present[id];
@@ -641,7 +673,18 @@ function createStandin(opts) {
           else if (op === OP.HELLO) match.hello(ws.presence, msg);
           else if (op === OP.READY) match.ready(ws.presence);
           else if (op === OP.RELEASE) match.release(ws.presence, msg);
-          else if (op === OP.INPUT) match.input(ws.presence, msg, Date.now(), rawLen);
+          else if (op === OP.INPUT && features && msg.t === 'inputs') {
+            const split = CoopProtocol.splitInputBatch(msg);
+            if (!split.ok) {
+              wire.batchRejects += 1;
+              match.state.out.push({ to: ws.presence, op: OP.REJECT, body: { t: 'reject', reason: split.reason || 'rejected', rewards: 0, hostTakeover: 0 } });
+            } else {
+              wire.batches += 1;
+              wire.batchItems += split.inputs.length;
+              const now = Date.now();
+              for (const item of split.inputs) match.input(ws.presence, item, now, JSON.stringify(item).length);
+            }
+          } else if (op === OP.INPUT) match.input(ws.presence, msg, Date.now(), rawLen);
           deliver(match, match.drain());
         }, wait);
       }
@@ -675,7 +718,7 @@ function createStandin(opts) {
     return result.saved;
   }
   return {
-    latency: latency, matches: matches, ledgerWrites: ledgerWrites, checkpoints: checkpoints,
+    latency: latency, matches: matches, ledgerWrites: ledgerWrites, checkpoints: checkpoints, wire: wire,
     listen: () => new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server.address().port))),
     close: () => new Promise(resolve => { clearInterval(timer); wss.close(); server.close(() => resolve()); }),
     drop: userId => new Promise(resolve => {
@@ -781,7 +824,9 @@ async function main() {
   const out = path.resolve(process.argv[2] || path.join(__dirname, 'artifacts'));
   fs.mkdirSync(out, { recursive: true });
   const { chromium } = require('playwright');
-  const standin = createStandin();
+  // The hub advertises features.inputBatch and snapshotDelta, so this run does too.
+  // tests/e2e/reconnect.spec.js keeps a stand-in without them (the older hub shape).
+  const standin = createStandin({ features: process.env.COOP_STANDIN_FEATURES !== '0' });
   const port = await standin.listen();
   const nakama = 'http://127.0.0.1:' + port;
   const staticServer = await startStatic();
@@ -1009,6 +1054,12 @@ async function main() {
 
     summary.ledgerWrites = standin.ledgerWrites.n;
     if (summary.ledgerWrites !== 0) throw new Error('stand-in recorded an economy RPC');
+    summary.wire = Object.assign({}, standin.wire);
+    summary.wire.deltaMisses = await guest.evaluate(() => window.SprotoApp.authority ? window.SprotoApp.authority.state.deltaMisses : null);
+    if (process.env.COOP_STANDIN_FEATURES !== '0') {
+      if (!(summary.wire.batches > 0) || summary.wire.batchRejects !== 0) throw new Error('input batches not exercised ' + JSON.stringify(summary.wire));
+      if (!(summary.wire.deltaSnapshots > 0) || !(summary.wire.fullSnapshots > 0)) throw new Error('snapshot deltas not exercised ' + JSON.stringify(summary.wire));
+    }
     if (errs.length) throw new Error(errs.join(' | '));
     fs.writeFileSync(path.join(out, 'c4-browser-summary.json'), JSON.stringify(summary, null, 2) + '\n');
     console.log('hub browser ok', JSON.stringify(summary));
