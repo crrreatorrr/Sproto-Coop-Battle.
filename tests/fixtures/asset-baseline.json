@@ -1,49 +1,44 @@
 {
   "description": "Reviewed boss transformations, combat action clips and effects with exact source provenance. Sprotel's standing change adds two key rows on the existing phase-one lower page.",
-  "assetCount": 274,
-  "assetBytes": 28294411,
-  "assetMegabytesDecimal": 28.294411,
-  "assetMebibytes": 26.984,
-  "publicFileCount": 305,
-  "publicBytes": 28929273,
-  "assetTreeSha256": "cfadf1d8f903a935160c3f68f4cd0030cfa20746386b40d6f2460adbf0377f9a",
-  "publicTreeSha256": "b385da3fcfa3d0d75260c58ed4fc9f7d05712821f9cd74320b0a936b0121c7c9",
+  "assetCount": 270,
+  "assetBytes": 27834472,
+  "assetMegabytesDecimal": 27.834472,
+  "assetMebibytes": 26.545,
+  "publicFileCount": 301,
+  "publicBytes": 28469155,
+  "assetTreeSha256": "3b5519239beb90ffca60ffbf5eaebd90ecdeb458ef40f0ee5082fceb47d07294",
+  "publicTreeSha256": "4034ff9b707c3a2e4bcd5a67dfdfa301d5c659ecf5b66c20144e627035d18a24",
   "preloadCount": 8,
-  "preloadBytes": 718587,
-  "preloadGzipBytes": 717670,
+  "preloadBytes": 689327,
+  "preloadGzipBytes": 688400,
   "preloadDecodedBytes": 12313328,
   "dynamicRefCount": 270,
-  "titleBytes": 1136294,
-  "firstStageBytes": 2598873,
+  "titleBytes": 1106753,
+  "firstStageBytes": 2545486,
   "criticalRequests": 30,
   "staticBudgetBytes": 10485760,
   "titleBudgetBytes": 1572864,
   "firstStageBudgetBytes": 3145728,
   "criticalRequestBudget": 30,
-  "unused": [
-    "assets/ufo/idle.png",
-    "assets/ufo/muzzle.png",
-    "assets/ufo/red-laser.png",
-    "assets/ufo/thrust.png"
-  ],
+  "unused": [],
   "categories": {
     "fighter": {
       "count": 22,
-      "bytes": 975611,
-      "gzipBytes": 963174,
+      "bytes": 930042,
+      "gzipBytes": 929367,
       "decodedBytes": 28886016
     },
     "stage": {
       "count": 24,
-      "bytes": 1519769,
-      "gzipBytes": 1517486,
+      "bytes": 1295811,
+      "gzipBytes": 1291842,
       "decodedBytes": 10655568
     },
     "ufo": {
-      "count": 12,
-      "bytes": 186245,
-      "gzipBytes": 186462,
-      "decodedBytes": 808156
+      "count": 8,
+      "bytes": 134189,
+      "gzipBytes": 134304,
+      "decodedBytes": 641328
     },
     "boss": {
       "count": 198,
@@ -59,12 +54,12 @@
     },
     "shadow": {
       "count": 12,
-      "bytes": 1048828,
-      "gzipBytes": 1021415,
+      "bytes": 910472,
+      "gzipBytes": 910316,
       "decodedBytes": 58261504
     }
   },
-  "basePublicBytes": 10096256,
+  "basePublicBytes": 9636138,
   "optionalMediaCount": 154,
   "optionalMediaBytes": 18833017,
   "optionalMediaTreeSha256": "7b0ce307ea1c8c5569195dd1d00de7eca8176efb3b8ab58730b363b91e1f2925",
