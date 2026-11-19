@@ -197,7 +197,10 @@ function pageScripts(html) {
   return out;
 }
 
-function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
+const DEFERRED_SCRIPTS = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'];
+
+// deferredScripts: the scripts fetched after the title (the built page fetches one fx bundle).
+function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes, deferredScripts) {
   const g = groups(manifest);
   const sum = function (list) {
     let n = 0;
@@ -212,7 +215,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const deferred = (deferredScripts || DEFERRED_SCRIPTS).filter(path => !scriptPaths.includes(path));
   const firstTransform = transformPaths(manifest, 0).slice(0, 1);
   const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {

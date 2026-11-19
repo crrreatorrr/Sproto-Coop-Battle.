@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, loadAssetLoader, loadManifest } from './check-assets.mjs';
-import { buildDist, runtimeIndex } from './build.mjs';
+import { buildDist, runtimeIndex, FX_BUNDLE } from './build.mjs';
 import { MEDIA_LIMITS } from './streamed-media-budget.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,6 +24,7 @@ const SYNTAX = [
   'public/js/ai.js',
   'public/js/combat.js',
   'public/js/audio.js',
+  'public/js/progress.js',
   'public/js/gamepad.js',
   'public/js/input.js',
   'public/js/main.js',
@@ -68,6 +69,7 @@ const SYNTAX = [
   'tests/progress.test.js',
   'tests/audio.test.js',
   'tests/atlas-visual.cjs',
+  'tests/browser-dist.cjs',
   'scripts/build.mjs',
   'scripts/check-assets.mjs',
   'scripts/check-budgets.mjs',
@@ -102,18 +104,23 @@ export function runtimeBudget(report) {
   const html = index.html;
   const scripts = loader.pageScripts(html);
   const bytes = new Map(report.files.map(file => [file.path, file.bytes]));
+  for (const bundle of index.bundles) bytes.set(bundle.path, bundle.bytes);
+  const bundleBytes = index.bundles.reduce((n, bundle) => n + bundle.bytes, 0);
+  // After the title the built page fetches the fx bundle, then ai.js and party-picker.js.
+  const deferred = [FX_BUNDLE, 'js/ai.js', 'js/party-picker.js'];
   const budget = loader.budgetOf(manifest, rel => {
     if (!bytes.has(rel)) throw new Error('budget missing ' + rel);
     return bytes.get(rel);
-  }, scripts, index.bytes);
+  }, scripts, index.bytes, deferred);
   const atlasFiles = report.files.filter(file => /assets\/fighters\/[^/]+\/atlas\.(png|webp)$/.test(file.path));
   const poses = path.join(root, 'art', 'fighter-poses');
   const poseCount = fs.readdirSync(poses, { withFileTypes: true })
     .filter(dir => dir.isDirectory())
     .reduce((count, dir) => count + fs.readdirSync(path.join(poses, dir.name)).filter(name => /^(?:\d\d|w0\d)\.png$/.test(name)).length, 0);
   return Object.assign(budget, {
-    staticBytes: report.publicBytes + index.bytes - bytes.get('index.html'),
-    baseStaticBytes: report.basePublicBytes + index.bytes - bytes.get('index.html'),
+    staticBytes: report.publicBytes + bundleBytes + index.bytes - bytes.get('index.html'),
+    baseStaticBytes: report.basePublicBytes + bundleBytes + index.bytes - bytes.get('index.html'),
+    bundleBytes,
     optionalMediaBytes: report.optionalMediaBytes,
     optionalMediaCount: report.optionalMediaCount,
     maxPresentationDecodedBytes: report.streamedMedia.maxPresentationDecodedBytes,

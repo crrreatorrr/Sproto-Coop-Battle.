@@ -28,26 +28,30 @@ function enterStage(i) {
   }
   loadFx();
 }
+// In-game scripts, fetched once the first stage is entered. scripts/build.mjs reads this list to
+// make dist/js/fx.bundle.js (same order); the built page names it in CoopFxBundle.
+const FX_SCRIPTS = [
+  ['CoopSpriteTimeline', 'sprite-timeline.js'],
+  ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
+  ['CoopBossActionSelection', 'boss-action-selection.js'],
+  ['CoopBossActionPlayer', 'boss-action-player.js'],
+  ['CoopBossFxSelection', 'boss-fx-selection.js'],
+  ['CoopBossTransformPlayer', 'boss-transform-player.js'],
+  ['CoopBossMorphField', 'boss-morph-field.js'],
+  ['CoopBossMorph', 'boss-morph.js'],
+  ['RenderFx', 'render-fx.js'],
+];
 function loadFx() {
   if (fxRequested || !root.document) return;
   fxRequested = true;
-  const scripts = [
-    ['CoopSpriteTimeline', 'sprite-timeline.js'],
-    ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
-    ['CoopBossActionSelection', 'boss-action-selection.js'],
-    ['CoopBossActionPlayer', 'boss-action-player.js'],
-    ['CoopBossFxSelection', 'boss-fx-selection.js'],
-    ['CoopBossTransformPlayer', 'boss-transform-player.js'],
-    ['CoopBossMorphField', 'boss-morph-field.js'],
-    ['CoopBossMorph', 'boss-morph.js'],
-    ['RenderFx', 'render-fx.js'],
-  ];
+  const bundle = typeof root.CoopFxBundle === 'string' && /^[a-z0-9.-]+\.js$/.test(root.CoopFxBundle) ? root.CoopFxBundle : '';
+  const scripts = bundle && !FX_SCRIPTS.some(([global]) => root[global]) ? [['RenderFx', bundle]] : FX_SCRIPTS;
   for (const [global, file] of scripts) {
     if (root[global]) continue;
     const el = root.document.createElement('script');
     el.async = false;
     el.src = root.AssetLoader.resolve('js/' + file, root.document.baseURI);
-    el.onerror = () => { root.setTimeout(() => { fxRequested = false; }, 1000); };
+    el.onerror = () => { el.remove(); root.setTimeout(() => { fxRequested = false; }, 1000); };
     root.document.head.appendChild(el);
   }
 }

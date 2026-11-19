@@ -436,7 +436,7 @@ async function main() {
   test('real first-boss loader budget still counts a dedicated FX bank request and first-stage bytes',()=>{
     const report=assets.inventory(),manifest=assets.loadManifest(),registry=assets.loadPresentationRegistry();
     const before=realLoader(registry),index=runtimeIndex(report),scriptPaths=before.pageScripts(index.html);
-    const bytes=new Map(report.files.map(p=>[p.path,p.bytes]));const src=E+'qa-metadata-only-not-art.png';bytes.set(src,1200);
+    const bytes=new Map(report.files.map(p=>[p.path,p.bytes]));for(const b of index.bundles)bytes.set(b.path,b.bytes);const src=E+'qa-metadata-only-not-art.png';bytes.set(src,1200);
     const cost=loader=>loader.budgetOf(manifest,src=>{assert(bytes.has(src),src);return bytes.get(src);},scriptPaths,index.bytes);
     const baseline=cost(before),expected=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/asset-baseline.json')));
     assert.equal(baseline.criticalRequests,expected.criticalRequests);assert(baseline.criticalRequests<=30);

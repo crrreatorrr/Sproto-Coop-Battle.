@@ -2,6 +2,9 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
 
 async function main() {
   const assets = await import('../scripts/check-assets.mjs');
@@ -50,6 +53,24 @@ async function main() {
   assert.ok(built.distFiles.includes('js/combat.js'));
   assert.ok(built.distFiles.includes('asset-manifest.json'));
   assert.ok(!built.distFiles.some(file => file.startsWith('server/') || file.startsWith('tools/') || file.startsWith('tests/') || file.endsWith('.py')));
+  // dist/ loads one minified startup bundle and one in-game bundle, built from the same files in order.
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'dist', 'index.html'), 'utf8');
+  const tags = Array.from(indexHtml.matchAll(/<script src="([^"?]+)/g), m => m[1]);
+  assert.deepStrictEqual(tags, [build.APP_BUNDLE], 'the built page has a single startup script');
+  assert.ok(/globalThis\.CoopFxBundle="fx\.bundle\.js"/.test(indexHtml));
+  const rows = Object.fromEntries(built.manifest.bundles.map(row => [row.path, row]));
+  assert.deepStrictEqual(rows[build.APP_BUNDLE].sources, build.startupScripts());
+  assert.strictEqual(rows[build.APP_BUNDLE].sources.length, 17);
+  assert.deepStrictEqual(rows[build.FX_BUNDLE].sources, build.fxScripts());
+  assert.strictEqual(rows[build.FX_BUNDLE].sources.length, 9);
+  for (const row of built.manifest.bundles) {
+    const code = fs.readFileSync(path.join(__dirname, '..', 'dist', row.path));
+    assert.strictEqual(code.length, row.bytes);
+    assert.ok(row.bytes < row.sourceBytes, row.path + ' is minified');
+    assert.ok(built.distFiles.includes(row.path));
+    new vm.Script(code.toString('utf8'), { filename: row.path }); // parses as one classic script
+    for (const src of row.sources) assert.ok(code.includes('/* ' + src + ' */'), row.path + ' carries ' + src);
+  }
   const result = budgets.assertBudgets(report, built);
   assert.deepStrictEqual(result.problems, [], result.problems.join('\n'));
   console.log('asset manifest ok');
