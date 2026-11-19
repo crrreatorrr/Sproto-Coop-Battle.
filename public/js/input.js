@@ -234,7 +234,28 @@ apply(load());
 
 const pack = i => (i.l) | (i.r << 1) | (i.u << 2) | (i.d << 3) | (i.a << 4) | (i.j << 5) | (i.s << 6) | ((i.p | 0) << 7);
 const unpack = n => ({ l: n & 1, r: (n >> 1) & 1, u: (n >> 2) & 1, d: (n >> 3) & 1, a: (n >> 4) & 1, j: (n >> 5) & 1, s: (n >> 6) & 1, p: (n >> 7) & 1 });
-const Input = { poll, endFrame, read, devices, pressed, pack, unpack, keys, DEVICE_NAMES, LAYOUTS, GAME_LAYOUTS, isPad, latch, setMuted, keyDown, keyUp, swallow, Controls, lastKind: () => lastKind };
+// Practice relay guest sends: the host steps at 60 Hz, so a 120/144 Hz display must not send every
+// animation frame. A changed input goes out at the next 60 Hz slot; an unchanged one is repeated
+// as a heartbeat. The host keeps the last input it got, so a skipped repeat changes nothing.
+function sendGate(opts) {
+  opts = opts || {};
+  const period = opts.period == null ? 1000 / 60 : opts.period;
+  const heartbeat = opts.heartbeat == null ? 1000 / 15 : opts.heartbeat;
+  let lastKey = null, lastAt = -Infinity, nextAt = -Infinity;
+  return {
+    due(key, now) {
+      if (now < nextAt) return false;
+      if (key === lastKey && now - lastAt < heartbeat) return false;
+      // Slots advance by one period per send, so the average never passes 60/s; after an idle
+      // spell the next slot is at least half a period away.
+      nextAt = Math.max(nextAt + period, now + period / 2);
+      lastKey = key; lastAt = now;
+      return true;
+    },
+    reset() { lastKey = null; lastAt = -Infinity; nextAt = -Infinity; },
+  };
+}
+const Input = { poll, endFrame, read, devices, pressed, pack, unpack, sendGate, keys, DEVICE_NAMES, LAYOUTS, GAME_LAYOUTS, isPad, latch, setMuted, keyDown, keyUp, swallow, Controls, lastKind: () => lastKind };
 root.Input = Input;
 if (typeof module !== 'undefined' && module.exports) module.exports = Input;
 })(typeof window !== 'undefined' ? window : globalThis);

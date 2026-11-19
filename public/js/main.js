@@ -1119,8 +1119,8 @@ function frameStep(now) {
   }
   if (app.role === 'guest' && app.net && app.net.open && app.screen === 'game' && !app.hub.confirming) {
     const inp = {}; for (const s of app.slots) if (s.ctrl === 'remote' && s.owner === app.myId) inp[s.dev] = I.pack(I.read(s.dev));
-    app.net.send({ t: 'in', inp });
-  }
+    if (guestSend.due(JSON.stringify(inp), now)) app.net.send({ t: 'in', inp });
+  } else guestSend.reset();
   if ((app.screen === 'lobby' || app.screen === 'stages') && app.role === 'host' && (app.lobbyDirty || app.t % 60 === 0)) broadcastLobby();
 
   hits.length = 0;
@@ -1177,6 +1177,7 @@ function cancelHubReturn() {
   if (hub) hub.cancelReturn();
   app.hub.confirming = false;
 }
+const guestSend = I.sendGate();
 const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
 // The font is self-hosted; still never let a slow or failed font load hold the title screen.
