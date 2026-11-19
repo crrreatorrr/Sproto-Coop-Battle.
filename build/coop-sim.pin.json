@@ -13,9 +13,9 @@
     "combat.js": "2a28b6791593e90c95df2d030865f24bbd538ce7a9e2c36485de81a3a0fe9add",
     "sim.js": "ceac83485aa0b43fa044c3ead82628c26c9f0f4174b2c94fc24fbefd797e8100",
     "ai.js": "d058452121fa52d83efbd9b4297c2e2964efc4106105b92f81d9b8cd8249c8a2",
-    "net-protocol.js": "d25bb3d65cf0453c497f7a05b30c9b8ace3efe3007ec7b1207bef23635d8c7d0"
+    "net-protocol.js": "14401b1b673fac62a46b300d389f3f3c940c24a917b9fed4a70a02b738d82d10"
   },
-  "bundleSha256": "c9288850bc41e8abb3a7478453b7c1e6b1d59d97cfb84c57f25115a0b9979fa3",
+  "bundleSha256": "483d4094c98a0fd20452f3b7f96ac278392543c3cbe1d51e3d73b0fc32c29605",
   "contentSha256": "3fddedd1b65c0e2d71600e54822e0db5c66b45ac765535b7d0e88c2cf262e97b",
   "goja": "github.com/dop251/goja v0.0.0-20261107161106-d6eaa50db8bc",
   "node": ">=22"
