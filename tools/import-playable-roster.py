@@ -73,8 +73,12 @@ def grip(cell):
 def save(sheet, filename):
     filename.parent.mkdir(parents=True, exist_ok=True)
     # Preserve transparency and cap per-sheet colors for compact pixel-art transfers.
-    sheet.quantize(colors=240, method=Image.Quantize.FASTOCTREE,
-                   dither=Image.Dither.NONE).save(filename, optimize=True)
+    quantized = sheet.quantize(colors=240, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+    if filename.suffix == '.webp':
+        # Shipped atlases are lossless WebP with the quantized pixels kept exactly.
+        quantized.convert('RGBA').save(filename, format='WEBP', lossless=True, quality=100, method=6, exact=True)
+    else:
+        quantized.save(filename, optimize=True)
 
 
 def pack(cells, filename):
@@ -126,7 +130,7 @@ def make_fighter(source, config, meta, fid, original):
     guard = register(source, config, config['frames'][0], {}, density, foot)
     folder = ROOT / 'public/assets/fighters' / fid
     if cells:
-        pack(cells, folder / ('motion.png' if original else 'atlas.png'))
+        pack(cells, folder / ('motion.webp' if original else 'atlas.webp'))
     hands = [grip(tile) for tile in cells]
     if original:
         return {'clips': clips, 'motionHands': hands} if cells else {}, guard

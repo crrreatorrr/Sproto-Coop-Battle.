@@ -270,5 +270,6 @@ for i in range(1, 13):
             pal = tuple(tuple(int(v * .45 + g * .55) for v, g in zip(c, (96, 92, 118))) for c in pal)
         floor = gen_floor(i, style, pal)
     back.save(f'{O}{i:02d}-back.jpg', quality=86)
-    floor.save(f'{O}{i:02d}-floor.png', optimize=True)
+    floor.convert('RGBA' if floor.mode in ('RGBA', 'P', 'LA') else 'RGB').save(
+        f'{O}{i:02d}-floor.webp', format='WEBP', lossless=True, quality=100, method=6, exact=True)
     print(i, style, back.size, floor.size)

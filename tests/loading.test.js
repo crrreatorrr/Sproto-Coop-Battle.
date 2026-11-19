@@ -16,8 +16,9 @@ function loadApi(registry) {
 
 function sizeFor(src) {
   if (src.includes('/bosses/')) return [1024, 1024];
+  // The added roster's 64 px-cell atlases are 512x576; the classic 128 px atlases are 1024x640.
+  if (/\/fighters\/(aktree|corn|forchaneth|lilgoldied|pilgrim|seph0x|solanadelray|sprotocius|spunow|tradertimmy)\/atlas\./.test(src)) return [512, 576];
   if (src.includes('/atlas.webp')) return [1024, 640];
-  if (src.includes('/atlas.png')) return [512, 576];
   if (src.includes('-floor')) return [512, 150];
   return [640, 226];
 }

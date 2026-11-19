@@ -31,17 +31,24 @@ function frameRect(pose, cell = CELL, separateMotion = false) {
   return { i: i, x: (n % COLS) * cell, y: Math.floor(n / COLS) * cell, w: cell, h: cell };
 }
 
-function atlasPath(fighter) { return 'assets/fighters/' + fighter.id + '/atlas.' + (fighter.cell ? 'png' : 'webp'); }
+// Every fighter atlas, motion sheet, stage floor and shadow sheet ships as lossless WebP (exact,
+// same pixels as the PNG it replaced).
+function atlasPath(fighter) { return 'assets/fighters/' + fighter.id + '/atlas.webp'; }
 
 function motionPath(fighter) {
-  return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.png' : null;
+  return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.webp' : null;
+}
+
+// manifest.js is pinned and still names the shadow sheets .png; the shipped files are .webp.
+function shadowSheet(src) {
+  return typeof src === 'string' ? src.replace(/^(assets\/shadows\/[A-Za-z0-9_-]+)\.png$/, '$1.webp') : src;
 }
 
 function stageNo(i, manifest) { return String(manifest?.bosses[i]?.scenery || i + 1).padStart(2, '0'); }
 
 function scenery(i, manifest) {
   const n = stageNo(i, manifest || root.MANIFEST);
-  return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.png'];
+  return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.webp'];
 }
 
 function bossPaths(manifest, i) {
@@ -107,11 +114,11 @@ function canPrefetchNext(manifest, i) {
 function stagePaths(manifest, i) {
   const paths = scenery(i, manifest).concat(bossPaths(manifest, i));
   const shadow = manifest.shadows?.sheets[manifest.bosses[i].shadowStage ?? i];
-  if (shadow) paths.push(shadow);
+  if (shadow) paths.push(shadowSheet(shadow));
   return paths;
 }
 
-// Drawn by render.js. idle.png and muzzle.png are on disk and unused.
+// Drawn by render-fx.js. The unused idle/muzzle/red-laser/thrust art lives in art/ufo-unused/.
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
 // Combat effects and gear are prefetched with the first stage and stay resident.
@@ -139,7 +146,7 @@ function unique(list) {
 function groups(manifest) {
   const atlas = manifest.fighters.map(atlasPath);
   const motion = manifest.fighters.map(motionPath).filter(Boolean);
-  const shadows = manifest.shadows?.sheets || [];
+  const shadows = (manifest.shadows?.sheets || []).map(shadowSheet);
   const stages = [];
   const bosses = [], transformations = [], actions = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
@@ -563,6 +570,7 @@ root.AssetLoader = {
   frameRect: frameRect,
   atlasPath: atlasPath,
   motionPath: motionPath,
+  shadowSheet: shadowSheet,
   portraits: PORTRAITS,
   groups: groups,
   enemyProjectileSheet: enemyProjectileSheet,

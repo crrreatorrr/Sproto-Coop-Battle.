@@ -39,7 +39,7 @@ async function main() {
     const result = await page.evaluate(async () => {
       SprotoApp.frozen = true;
       const plan = AssetLoader.groups(MANIFEST);
-      await AssetLoader.shared().preload(plan.boss(12).concat(plan.scenery(12), [MANIFEST.shadows.sheets[1]]));
+      await AssetLoader.shared().preload(plan.boss(12).concat(plan.scenery(12), [AssetLoader.shadowSheet(MANIFEST.shadows.sheets[1])]));
       const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360;
       const g = cv.getContext('2d'), draw = g.drawImage.bind(g), calls = [];
       g.drawImage = (...args) => { calls.push(args); draw(...args); };

@@ -309,18 +309,22 @@ def main():
         sheets = []
         rows = []
         for i, stage in enumerate(stages):
+            # manifest.js names the sheet .png (it is pinned); the file is lossless WebP and
+            # AssetLoader.shadowSheet maps the name. Rename both when manifest.js is next re-pinned.
             name = f'{i + 1:02}.png'
             sheet = Image.new('RGBA', (COLUMNS * CELL, len(stage) * CELL))
             entries = [{'id': ident, 'name': data[ident]['name'], 'role': roles[ident]} for ident in stage]
             for row, meta in enumerate(entries):
                 ident = meta['id']
                 place_row(sheet, row, source, atlases, meta, paired.get(ident, [ident]), shapes[ident], signatures, icons)
-            sheet.quantize(colors=128, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(dest / name, optimize=True)
+            quantized = sheet.quantize(colors=128, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+            quantized.convert('RGBA').save(dest / name.replace('.png', '.webp'), format='WEBP',
+                                           lossless=True, quality=100, method=6, exact=True)
             sheets.append('assets/shadows/' + name)
             rows.append(entries)
         info = {'source': source.commit, 'cell': CELL, 'foot': FOOT, 'scale': SCALE, 'sheets': sheets, 'stages': rows}
         (ROOT / 'tools/shadow-roster.json').write_text(json.dumps(info, ensure_ascii=True, indent=2) + '\n')
-        print(f'{len(ids)} Fighter identities, {dict(Counter(roles.values()))}, {sum((ROOT / "public" / name).stat().st_size for name in sheets)} bytes')
+        print(f'{len(ids)} Fighter identities, {dict(Counter(roles.values()))}, {sum((ROOT / "public" / name.replace(".png", ".webp")).stat().st_size for name in sheets)} bytes')
     finally:
         source.close()
 
