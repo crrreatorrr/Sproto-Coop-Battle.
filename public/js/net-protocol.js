@@ -442,14 +442,33 @@ function terminalFacts(session) {
   };
 }
 
+// Rollback copies for stepLoop. seq is { key: number } and limiters is { account: { tokens, last } },
+// so a copy of each map and each bucket is all a failed loop needs to restore.
+function copySeq(seq) {
+  const out = {};
+  const keys = Object.keys(seq);
+  for (let i = 0; i < keys.length; i++) out[keys[i]] = seq[keys[i]];
+  return out;
+}
+function copyLimiters(limiters) {
+  const out = {};
+  const keys = Object.keys(limiters);
+  for (let i = 0; i < keys.length; i++) {
+    const bucket = limiters[keys[i]];
+    out[keys[i]] = { tokens: bucket.tokens, last: bucket.last };
+  }
+  return out;
+}
+
 function stepLoop(session, frames, now) {
   if (!session) return fail('schema');
   if (!Array.isArray(frames) || frames.length !== LIMITS.substeps) return fail('substeps');
-  const savedSeq = JSON.parse(JSON.stringify(session.seq));
-  const savedLimiters = JSON.parse(JSON.stringify(session.limiters));
+  // Taken before the first input is checked; a loop with no input copies nothing.
+  let savedSeq = null, savedLimiters = null;
   const decoded = [];
   for (let i = 0; i < frames.length; i++) {
     if (!frames[i]) { decoded.push(null); continue; }
+    if (!savedSeq) { savedSeq = copySeq(session.seq); savedLimiters = copyLimiters(session.limiters); }
     const applied = acceptInput(session, frames[i], now + i);
     if (!applied.ok) {
       session.seq = savedSeq;
