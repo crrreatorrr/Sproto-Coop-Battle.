@@ -1,0 +1,46 @@
+{
+  "service": "Higgsfield",
+  "generationInterface": "Chrome",
+  "exportInterface": "Higgsfield completed-generation export (Chrome blocked automatic multiple downloads)",
+  "model": "Seedream 5.0 Lite",
+  "mode": "Unlimited",
+  "creditsBefore": 132.6,
+  "creditsAfter": 132.6,
+  "creditsUsed": 0,
+  "sourceGrid": "2x2",
+  "resolution": [
+    4096,
+    4096
+  ],
+  "sources": [
+    {
+      "file": "p1/hf-standing-master.png",
+      "jobId": "5a8e5128-5388-4796-a500-23cfcab97a92",
+      "model": "seedream_v5_lite",
+      "seed": 349000,
+      "prompt": "Create a production game boss TRANSFORMATION KEYFRAME SHEET, four full-body drawings in chronological reading order, a strict invisible 2 BY 2 grid on a 4096x4096 canvas. Each cell is 2048x2048. The turquoise/gold humanoid reference is the START; the cobalt-blue/silver upright marlin reference is the END. Match BOTH supplied character designs and their detailed illustrated dark-ink/cel-shaded style exactly. The robot is tall and lean with long limbs, never fat or chibi. Same fixed three-quarter front camera facing SCREEN RIGHT, same actor scale, and the OPEN cockpit/pilot stays centered at local coordinate [1024,720] in every cell. Keep the smiling blue pilot with yellow eyes, red nose/lips, Santa hat, yellow shirt, red seat and joysticks visible, identical and unobscured throughout. Include the WHOLE actor, bill, feet, fins and tail with generous empty margin in its own cell.\n\nThese are FOUR different stages of ONE continuous mechanical conversion while the actor stays UPRIGHT in the same place, like a standing arcade boss changing forms. 1: exact standing phase-one reference, both long legs and feet planted, original turquoise/gold jukebox armor. 2: early mechanical conversion: shoulder covers hinge backward to uncover folded blue/silver dorsal-fin sections, forearms telescope and tuck alongside cockpit, shin covers open, feet turn inward and the two legs begin aligning; still clearly a humanoid with two long separate legs. 3: late mechanical conversion: both legs have interlocked into ONE curved segmented tail ending in an unfolding crescent, arms fold into pectoral fins, chest/helmet panels slide forward into a partially extended marlin bill pointing up/right, cobalt/silver armor unfolding over turquoise/gold inner panels; still visibly moving mechanical parts, cockpit unchanged. 4: EXACT FINAL phase-two reference, UPRIGHT ready/idle marlin, long bill up/right, big dorsal sail at upper left, pectoral fin right and curved segmented crescent tail below. No humanoid legs or arms in the final frame.\n\nShow believable visible hinges, sliding plates, telescoping joints and sequential locking, NOT a magical liquid morph, dissolve, shrink, instant costume swap, horizontal swimming/diving, explosion or dust. Plain PERFECTLY FLAT opaque #FF00FF magenta background and ALL exterior gaps, no gradients, ground/shadows, grid lines, labels, text, frames, extra objects or decorative effects. Only four consistent full-body sprites. Keep exterior boundaries crisp for game sprite extraction."
+    },
+    {
+      "file": "p1/hf-standing-a.png",
+      "jobId": "225e012a-aa50-49ba-a5ae-c91f17749bd0",
+      "model": "seedream_v5_lite",
+      "seed": 19116,
+      "prompt": "Illustrated game sprite ANIMATION SHEET, strict 2x2 grid, 4096x4096. Draw the SAME TALL LEAN robot from the one reference in four ordered consecutive changing poses. Preserve the reference design, camera angle, proportions, crisp inked detailed cel-shading, turquoise/gold armor and blue Santa-hat pilot in open red cockpit. WHOLE BODY in each cell, ample margins, identical scale. SOLID FLAT #FF00FF magenta background, no ground, text, grid or effects. All FOUR drawings are different mechanical stages, NOT four copies. Top LEFT: shoulder covers opened on visible hinges, arm elbows bent tightly in toward waist; both long separate legs still straight. Top RIGHT: shoulder covers rotate to the rear, folded silver-blue fin panels become visible, forearms telescope halfway up alongside cockpit; knees bend inward, both shins still separate. Bottom LEFT: forearms finish retracting, both shin covers slide away exposing silver segmented joints, feet rotate inward and toward each other, two knees touch, both lower legs curl backward independently. Bottom RIGHT: both lower legs interlock into one long segmented curved mechanical tail, feet fold into tail tip; the upper body and original helmet remain upright and unchanged, shoulders and fins half deployed. Show the actual visible moving plates and separated mechanical joints. Keep cockpit center identical in each cell. Do NOT complete a marlin head/bill yet, do NOT change camera or hide the pilot. Each new pose must follow the previous small movement smoothly."
+    },
+    {
+      "file": "p1/hf-standing-b.png",
+      "jobId": "50fb992b-6765-46a5-9fa0-600c6b6e0e19",
+      "model": "seedream_v5_lite",
+      "seed": 47176,
+      "prompt": "Game boss mechanical TRANSFORMATION ANIMATION sheet, strict invisible 2 by 2 grid, four FULL BODY sprites in reading order, 4096x4096. One reference shows the EXACT starting tall upright machine with curved segmented tail, turquoise/gold jukebox cockpit and helmet, silver-blue folded fins. Same three-quarter front view facing SCREEN RIGHT, fixed scale and fixed open cockpit center. Pilot blue, red nose/lips, Santa hat, yellow shirt, red seat and joysticks unchanged and always visible. Four DIFFERENT small progressive engineering steps: TOP LEFT helmet side covers hinge backward, a short silver pointed snout starts telescoping upward/right out of helmet center, dorsal fin three folded blades partially open. TOP RIGHT snout extends halfway into a narrow marlin bill, the helmet shell retracts exposing cobalt-blue streamlined metal head behind snout, silver side armor unfolds halfway around cockpit. BOTTOM LEFT bill extends three-quarters length, more dorsal blades open sequentially, silver-blue chest panels finish sliding around open cockpit, shoulder gold plates still visible folding to the rear. BOTTOM RIGHT long bill near full extension, gold shoulder covers fully hidden under cobalt/silver marlin side armor, dorsal sail nearly fully fanned, curved segmented tail still below torso. This interval ONLY deploys head and body armor, do not draw humanoid legs, do not skip instantly to a fish. Rigid panels with visible hinges and sliding mechanical seams; no magical liquid morph, smoke, explosion, dissolve or blur. Match the detailed inked cel-shaded illustrated style exactly. Flat pure opaque #FF00FF magenta all exterior space, no gradient, shadow, text or gridlines. Generous margin keeps whole bill, fins and tail within each cell."
+    },
+    {
+      "file": "p1/hf-standing-c.png",
+      "jobId": "a2074918-13fc-4851-aeff-278f78d1d03e",
+      "model": "seedream_v5_lite",
+      "seed": 134677,
+      "prompt": "Create FOUR consecutive mechanical animation in-between keyframes, strict 2 BY 2 sheet, reading order top left, top right, bottom left, bottom right, 4096x4096 square canvas. Reference 1 is the START pose. Reference 2 is the END pose. Draw only four evenly spaced intermediate stages at 20%, 40%, 60%, 80% BETWEEN these two exact designs. Match the supplied detailed illustrated cel-shaded black-ink game sprite style, tall lean proportions and three-quarter front camera facing screen right. NO extra characters. The cockpit with blue pilot, yellow eyes, red nose/lips, Santa hat, yellow shirt and red seat is identical, OPEN and visible at a fixed center in every cell. Camera and scale locked. Whole actor including all bill/fins/tail/feet visible within generous margins. A continuous UPRIGHT standing conversion, not horizontal flight. Each cell differs only by a small progressive movement of hinged plates, telescoping joints and interlocking segments. Perfectly FLAT opaque #FF00FF magenta background including all gaps, no gradient, no shadow, no ground, no grid lines, no text or labels. Crisp separated full-body game sprites. Do not repeat endpoint poses or jump ahead. FINAL CONVERSION ONLY: both references are already cobalt-blue and silver upright MARLIN machines, never draw a humanoid or legs. Start at the exact marlin with its long tail curled into an almost closed loop. Show four precise progressive late stages as interlocking tail joints rotate one at a time, opening the loop and pulling the lower tail up into the final crescent fork shown by reference 2. The long bill and head remain upright pointing up/right. Blue dorsal sail segments and silver pectoral fin slide a few degrees and lock flush, cockpit and smiling pilot remain identical. The fourth sprite is nearly the final ready stance. Only small measured mechanical motion in these four drawings, maintain full body scale and fixed camera. Clear hinges, rigid metal plates, no liquid morph, motion blur, smoke or explosion."
+    }
+  ],
+  "refinements": "Two earlier bridge attempts were replaced with more specific single-reference mechanical stages; all six generations used Unlimited."
+}

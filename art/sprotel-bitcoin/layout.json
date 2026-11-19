@@ -42,11 +42,15 @@
             "death"
           ],
           [
-            "transform-a",
-            "transform-b"
+            "hf-standing-keys-0",
+            "hf-standing-keys-1"
+          ],
+          [
+            "hf-standing-keys-2",
+            "hf-standing-keys-3"
           ]
         ],
-        "frames": 80,
+        "frames": 88,
         "foot": [
           88,
           165
@@ -128,5 +132,80 @@
     "projectiles": "4x4",
     "tool": "image_gen",
     "phaseCount": 2
+  },
+  "standingTransformation": {
+    "tool": "Higgsfield in Chrome",
+    "model": "Seedream 5.0 Lite",
+    "mode": "Unlimited",
+    "sourceGrid": "2x2",
+    "authoredKeys": 16,
+    "runtimeKeys": 18,
+    "frameRate": 60,
+    "sequence": [
+      [
+        "hf-standing-master",
+        0
+      ],
+      [
+        "hf-standing-a",
+        0
+      ],
+      [
+        "hf-standing-a",
+        1
+      ],
+      [
+        "hf-standing-a",
+        2
+      ],
+      [
+        "hf-standing-a",
+        3
+      ],
+      [
+        "hf-standing-master",
+        1
+      ],
+      [
+        "hf-standing-b",
+        0
+      ],
+      [
+        "hf-standing-b",
+        1
+      ],
+      [
+        "hf-standing-b",
+        2
+      ],
+      [
+        "hf-standing-b",
+        3
+      ],
+      [
+        "hf-standing-master",
+        2
+      ],
+      [
+        "hf-standing-c",
+        0
+      ],
+      [
+        "hf-standing-c",
+        1
+      ],
+      [
+        "hf-standing-c",
+        2
+      ],
+      [
+        "hf-standing-c",
+        3
+      ],
+      [
+        "hf-standing-master",
+        3
+      ]
+    ]
   }
 }

@@ -207,7 +207,8 @@ export function analyzeStreamedMedia(manifest, registry, files) {
           { src: phase.sheet, expectedSrc: stem + '.webp',
             width, height: phase.actorCell * actorRows },
           { src: scope.AssetLoader.lowerBossActorPath(phase), expectedSrc: stem + '-lower.webp',
-            width, height: phase.actorCell * ((phaseIndex ? 9 : 10) - actorRows) },
+            // Phase one is eleven rows: nine gameplay rows plus two standing-key rows. Phase two stays at nine.
+            width, height: phase.actorCell * ((phaseIndex ? 9 : 11) - actorRows) },
           { src: phase.proj, expectedSrc: stem + '-projectiles.png',
             width: phase.fxCell * phase.fxColumns, height: phase.fxCell * (phase.impactRow + 1) });
       } else {
