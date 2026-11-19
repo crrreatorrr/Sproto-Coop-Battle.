@@ -17,6 +17,19 @@ Line numbers in the handoff were checked against the code; where its claim was o
 Pinned output: `npm run build:server-sim` after Phase 0 leaves `build/` byte-identical
 (bundle `c9288850…9fa3`, content `3fddedd1…e97b`).
 
+## Phase 1 — handoff §3 (non-pinned)
+
+| Item | Status | Notes |
+| --- | --- | --- |
+| 3.1a Bundle + minify startup scripts | done `8ff2d6b` | `npm run build` writes `dist/js/app.bundle.js` (17 startup scripts, index.html order) and `dist/js/fx.bundle.js` (render.js `FX_SCRIPTS`). esbuild 0.28.2 pinned; each file minified on its own (`target: esnext`, no wrapping), so top-level names and per-file `'use strict'` are kept (checked: no file has a file-level directive). `public/` and `npm start` unchanged. Bundles are in `asset-manifest.json` under `bundles`. No source maps (would push base bytes toward the 10 MiB cap); the readable files stay in `dist/js/`. New `tests/browser-dist.cjs` boots the built page. |
+| 3.1b Extract `Progress` into `progress.js` | done `ef2b9d8` | Pure move. |
+| 3.1c Re-vendor hub-sdk v0.9 | blocked | The brief forbids re-vendoring in this pass; hub SDK changes are unmerged. |
+| 3.2a Fighter `getImageData` readbacks | done `b776344` | Cells drawn straight from the atlas image into the capped 128 px cell canvas; the per-fighter 1024×640 `willReadFrequently` staging canvas (2.6 MB each) and `getImageData` are gone. Kept the cell canvas (tinted/shadow variants and `frameCanvas` callers need it) rather than drawing atlas rects in `drawFighter`. atlas-visual's per-pixel check of all 240 cells passes. |
+| 3.2b Sprotel morph `frameTicks` 1 → 2 | skipped | Owner set 60 Hz on purpose in `c06d92f` ("play at 60 Hz"), and `browser-sprotel-bitcoin.cjs` asserts it. Measured in Chromium: `generate` p50 0.7 ms, p95 0.9 ms per frame (max 39 ms is the one-off cel cache fill at each of the 17 gap changes). Not a main-thread stall; no change. |
+| 3.3a Unused UFO PNGs | done `64ce891` | Moved to `art/ufo-unused/` (kept in git, out of `dist/`) instead of deleting. Manifest test now requires an empty unused list. |
+| 3.3b PNG → lossless WebP | done `51120a9` | 10 roster `atlas.png` + 5 `motion.png` (not in the handoff, same treatment) + 12 floors + 12 shadows: 2,323,159 → 1,915,076 B (−17.6%, not the handoff's 33%). Every file decodes to identical RGBA; the PNGs had no gAMA/iCCP/sRGB chunks. `manifest.js` is pinned and still names the shadow sheets `.png`; `AssetLoader.shadowSheet` maps them. Import tools now write WebP. |
+| 3.3c Move `source/` + `art/` to LFS / archive | skipped (owner) | Needs a history rewrite; not done. Already outside `dist/`. See hygiene list. |
+
 ## Measurements
 
 Boot to the title screen, Playwright Chromium against `server/server.js` (`npm start`), same
@@ -30,15 +43,30 @@ machine, `main` (`a87d3a7`) in a worktree vs this branch. Script: scratchpad `me
 | before, warm reload | 27 | 1,142,095 B | 133 | 2 |
 | after Phase 0, warm reload | 26 | 7,343 B | 109 | none |
 
+Built `dist/` (what ships), served with gzip for html/js/json, cache disabled. Script:
+scratchpad `measure-dist.cjs`. `main` = `a87d3a7` built in a worktree.
+
+| | title requests | title scripts | title transfer | script transfer (title / with fx) | ms to title, unthrottled | ms to title, 10 Mbps 100 ms RTT |
+| --- | --- | --- | --- | --- | --- | --- |
+| before (`main`) | 27 | 16 | 858,302 B | 122,176 / 178,781 B (25 scripts) | 514 | 1,277 |
+| after Phase 1 | 11 | 1 | 784,510 B | 79,544 / 124,900 B (2 scripts) | 125 | 1,063 |
+
+Budget model (`npm run check:budgets`):
+
+| | critical requests | title bytes | first-stage bytes | assets | base public |
+| --- | --- | --- | --- | --- | --- |
+| `main` | 30 / 30 | 1,134,814 | 2,597,393 | 274 files, 28,294,411 B | 10,077,852 (source tree) |
+| after Phase 1 | 15 / 30 | 942,562 | 2,339,310 | 270 files, 27,834,472 B | 10,003,947 incl. 367,797 B of bundles (cap 10,485,760) |
+
 ## Checks
 
-| Command | Phase 0 result |
-| --- | --- |
-| `npm ci` | ok |
-| `npm test` | pass (Go 1.24.7 local; go.mod's 1.26 downloaded itself). goja p95 3.2 ms logged |
-| `npm run build && npm run check:assets && npm run check:budgets` | pass |
-| `npm run test:browser` | pass (Chromium only, see below) |
-| `npm run test:e2e` | pass; Firefox leg reported unavailable |
+| Command | Phase 0 | Phase 1 |
+| --- | --- | --- |
+| `npm ci` | ok | ok (adds esbuild 0.28.2) |
+| `npm test` | pass (Go 1.24.7 local; go.mod's 1.26 downloaded itself). goja p95 3.2 ms logged | pass |
+| `npm run build && npm run check:assets && npm run check:budgets` | pass | pass |
+| `npm run test:browser` | pass (Chromium only, see below) | pass, incl. new `browser-dist.cjs` |
+| `npm run test:e2e` | pass; Firefox leg reported unavailable | pass; Firefox unavailable |
 
 Environment notes: the repo pins Playwright 1.65 (Chromium build 1254); the container ships build
 1243, so `/opt/pw-browsers/chromium*-1254` were symlinked to 1243 outside the repo. `npx playwright
@@ -47,9 +75,22 @@ Test runs rewrite `tests/artifacts/*.json`; those rewrites were reverted, not co
 
 ## Cross-repo follow-ups
 
-- None yet from Phase 0. The matchmaker `maxCount` is a client hint; if metaverse-hub's matchmaker
-  hook has its own 6-player cap, it should be 4 too.
+- The matchmaker `maxCount` is a client hint; if metaverse-hub's matchmaker hook has its own
+  6-player cap, it should be 4 too (not checked: this session cannot read metaverse-hub).
+- Whatever deploys `dist/` must ship `js/app.bundle.js` and `js/fx.bundle.js` (listed under
+  `bundles` in `asset-manifest.json`, not under `files`) and `fonts/`.
+- When `manifest.js` is next re-pinned, rename the shadow sheets to `.webp` there (and in
+  `tools/shadow-roster.json`) and drop `AssetLoader.shadowSheet`.
+- hub-sdk v0.9 re-vendor (handoff 3.1.3) once metaverse-hub ships it.
 
 ## Proposed repo-hygiene deletions (owner to decide)
 
-(filled in by Phase 1)
+Nothing below ships in `dist/` (the build copies only `public/` plus the SDK and bundles). The pack
+is 466 MiB. Moving these to Git LFS or an archive bucket means rewriting history, so it was not done.
+
+- `art/sprotel-bitcoin/` — 158 MB, mostly the four 22–24 MB Higgsfield PNGs
+  `p1/hf-standing-{master,a,b,c}.png` added in `c06d92f`.
+- `source/actions/` 146 MB, `source/effects/` 106 MB (one 19 MB `provider-original.png`),
+  `source/transformations/` 23 MB, `source/endpoint-rigs/` 9.4 MB, `source/fallback-standing-holds/` 4.8 MB.
+- Keep `art/fighter-poses/` (1.9 MB): `check:budgets` and `atlas-visual.cjs` read it.
+- `art/ufo-unused/` (68 KB): the four UFO PNGs nothing requests; delete if not wanted.
