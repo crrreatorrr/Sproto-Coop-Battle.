@@ -30,6 +30,25 @@ Pinned output: `npm run build:server-sim` after Phase 0 leaves `build/` byte-ide
 | 3.3b PNG → lossless WebP | done `51120a9` | 10 roster `atlas.png` + 5 `motion.png` (not in the handoff, same treatment) + 12 floors + 12 shadows: 2,323,159 → 1,915,076 B (−17.6%, not the handoff's 33%). Every file decodes to identical RGBA; the PNGs had no gAMA/iCCP/sRGB chunks. `manifest.js` is pinned and still names the shadow sheets `.png`; `AssetLoader.shadowSheet` maps them. Import tools now write WebP. |
 | 3.3c Move `source/` + `art/` to LFS / archive | skipped (owner) | Needs a history rewrite; not done. Already outside `dist/`. See hygiene list. |
 
+## Phase 2 — handoff §2 (pinned; commits after all non-pinned work)
+
+Order: `3da59aa` (client, non-pinned) → `1069f17`, `2701fe3` (pinned `net-protocol.js`) → `1371523`
+(re-pin). Everything is opt-in, so until the hub advertises the features the wire traffic is
+exactly what it was.
+
+| Item | Status | Notes |
+| --- | --- | --- |
+| 2.1 Goja `JSON.parse(JSON.stringify)` rollback | done `1069f17` | Per-map / per-bucket copies, taken only once a loop has an input. V8 micro-bench: ~1,610 → ~165 ns per loop. The handoff's "28 ms p95" was not reproduced: `bench:goja` p95 is 1.8–4.8 ms before and 1.6–5.9 ms after on this (shared, not idle) container — noise, 5× under the 25 ms budget. The bench's frames are all `null`, so it barely exercises this path; the clone was never the bottleneck. |
+| 2.2a Batch the 3 `OP.INPUT` frames | done, hub side pending | Client `3da59aa`: one `{ t: 'inputs', batch }` per burst when `coop.version` returns `features.inputBatch: true`. Bundle `2701fe3`: `CoopProtocol.splitInputBatch`. Seq, rate (60/s per account) and owner checks still run per item. Blocked on metaverse-hub calling it and advertising the feature. |
+| 2.2b Delta snapshots + keyframes | done, hub side pending | `CoopProtocol.snapshotDelta` / `applySnapshotDelta` and a matching client patcher. Exact JSON round trip over 2,664 real snapshot pairs; deltas are **36.9 %** of full snapshot bytes (−63 %). The hub must send a full envelope on join/resume/stage change and at least every 60 loops (`LIMITS.snapshotKeyframeLoops`), and deltas only to presences whose join metadata has `snapDelta: '1'`. Contract in `docs/coop-server-contract.md`. Not done: dropping static fields or packing entities as tuples — the delta already omits unchanged fields, and tuples would change the render snapshot shape. |
+| 2.2c Measure B/s down in `c5-reconnect-summary.json` | partial | The in-repo hub stand-in does not send deltas, so e2e still reports ~24.6 KB/s received (this stand-in, not the handoff's 175 KB/s live Nakama figure, which could not be checked here). Expect about −63 % of snapshot bytes once the hub sends deltas. |
+| Re-pin | done `1371523` | `bundleSha256` `c9288850…9fa3` → `483d4094…9605` (174,879 B). `contentSha256` unchanged (`3fddedd1…e97b`; it does not cover `net-protocol.js`), so per AGENTS.md the goldens and `FINGERPRINT` (net-hub.js, browser-hub-online.cjs) stay as they are; `tests/fixtures/sim-goldens.json` is untouched and passes in Node, goja and Chromium. `SIM` in `tests/hub.test.js` updated. |
+
+## Phase 3 — remaining P2/P3
+
+Nothing beyond §1–§3 was left in the handoff. Its remaining items are listed above as blocked
+(3.1c hub-sdk re-vendor) or skipped (3.2b Sprotel 30 fps, 3.3c moving raw art to LFS).
+
 ## Measurements
 
 Boot to the title screen, Playwright Chromium against `server/server.js` (`npm start`), same
@@ -60,13 +79,14 @@ Budget model (`npm run check:budgets`):
 
 ## Checks
 
-| Command | Phase 0 | Phase 1 |
-| --- | --- | --- |
-| `npm ci` | ok | ok (adds esbuild 0.28.2) |
-| `npm test` | pass (Go 1.24.7 local; go.mod's 1.26 downloaded itself). goja p95 3.2 ms logged | pass |
-| `npm run build && npm run check:assets && npm run check:budgets` | pass | pass |
-| `npm run test:browser` | pass (Chromium only, see below) | pass, incl. new `browser-dist.cjs` |
-| `npm run test:e2e` | pass; Firefox leg reported unavailable | pass; Firefox unavailable |
+| Command | Phase 0 | Phase 1 | Phase 2 |
+| --- | --- | --- | --- |
+| `npm ci` | ok | ok (adds esbuild 0.28.2) | ok |
+| `npm test` | pass (Go 1.24.7 local; go.mod's 1.26 downloaded itself). goja p95 3.2 ms logged | pass | pass (incl. new `snapshot-delta.test.js`) |
+| `npm run build && npm run check:assets && npm run check:budgets` | pass | pass | pass |
+| `npm run bench:goja` | — | — | pass ×3 before (p95 2.1 / 4.8 / 1.8 ms) and ×3 after (1.6 / 5.9 / 2.9 ms); container not idle |
+| `npm run test:browser` | pass (Chromium only, see below) | pass, incl. new `browser-dist.cjs` | pass (browser goldens 49, content `3fddedd1…`) |
+| `npm run test:e2e` | pass; Firefox leg reported unavailable | pass; Firefox unavailable | pass; Firefox unavailable |
 
 Environment notes: the repo pins Playwright 1.65 (Chromium build 1254); the container ships build
 1243, so `/opt/pw-browsers/chromium*-1254` were symlinked to 1243 outside the repo. `npx playwright
@@ -82,6 +102,15 @@ Test runs rewrite `tests/artifacts/*.json`; those rewrites were reverted, not co
 - When `manifest.js` is next re-pinned, rename the shadow sheets to `.webp` there (and in
   `tools/shadow-roster.json`) and drop `AssetLoader.shadowSheet`.
 - hub-sdk v0.9 re-vendor (handoff 3.1.3) once metaverse-hub ships it.
+- **Re-pin in metaverse-hub** (bundleSha256 changed, content did not): copy `build/coop-sim.js` and
+  `build/coop-sim.pin.json` into `server/modules/vendor/`, update the `CoopProto` constants in
+  `server/modules/src/games/coop_protocol.ts`, run `node scripts/check-coop-sim-version.mjs`. Until
+  then hub CI's comparison with this repo's `main` fails on `bundleSha256` once this merges.
+- **Hub adoption of the wire savings** (`docs/coop-server-contract.md`, "Optional: input batches and
+  snapshot deltas"): return `features: { inputBatch: true, snapshotDelta: true }` from
+  `coop.version`; route `{ t: 'inputs' }` through `CoopProtocol.splitInputBatch`; keep the last sent
+  envelope per match and send `snapshotDelta` to presences with `snapDelta: '1'`, with a full
+  envelope on join, resume, stage change and every 60 loops. Then re-measure B/s down.
 
 ## Proposed repo-hygiene deletions (owner to decide)
 
