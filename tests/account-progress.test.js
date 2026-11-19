@@ -1,7 +1,7 @@
 // Progress per hub account (hub SDK 0.8.0): stage unlocks and the best run belong to the hub player
 // who earned them and load on any device; play outside the hub stays with this browser.
 // Runs the real vendored SDK store (HubSDK.createProgressStore) behind Progress.createStore
-// (public/js/audio.js) and the session wiring in public/js/hub-link.js.
+// (public/js/progress.js) and the session wiring in public/js/hub-link.js.
 'use strict';
 
 const assert = require('assert');
@@ -11,7 +11,7 @@ const path = require('path');
 const vm = require('vm');
 
 const root = path.join(__dirname, '..');
-const P = require(path.join(root, 'public', 'js', 'audio.js'));
+const P = require(path.join(root, 'public', 'js', 'progress.js'));
 
 function loadSdk() {
   const context = {

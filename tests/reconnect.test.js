@@ -424,6 +424,61 @@ function restartHarness(rpcImpl, opts) {
     assert.strictEqual(h.ctl.view().phase, 'ended');
     console.log('pump ends an expired reconnect');
   }
+  {
+    // A hub that offers input batches gets one INPUT message per burst instead of one per frame.
+    for (const batch of [false, true]) {
+      const h = restartHarness(() => ({}));
+      const handle = await h.start();
+      h.ctl.state.inputBatch = batch;
+      h.ctl.state.serverTick = 30; h.ctl.state.serverTickAt = 1000; h.ctl.state.rtt = 120; h.ctl.state.lastSentFrame = 30;
+      handle.sent.length = 0;
+      h.ctl.pump(1000);
+      const inputs = handle.sent.filter(m => m.op === OP.INPUT);
+      if (!batch) {
+        assert.ok(inputs.length > 1, 'one message per frame without the feature: ' + inputs.length);
+        assert.ok(inputs.every(m => m.body.t === 'input'));
+      } else {
+        assert.strictEqual(inputs.length, 1);
+        assert.strictEqual(inputs[0].body.t, 'inputs');
+        assert.ok(inputs[0].body.batch.length > 1 && inputs[0].body.batch.length <= 3);
+        assert.ok(inputs[0].body.batch.every((m, i, all) => m.t === 'input' && (!i || m.frame > all[i - 1].frame && m.seq === all[i - 1].seq + 1)));
+      }
+    }
+    console.log('input bursts are batched only when the hub offers it');
+  }
+
+  {
+    // Quick play matchmakes at most one account per seat (four), not the old six.
+    const asks = [];
+    const ctl = NetHub.create({
+      transport: {
+        rpc: async id => (id === 'coop.version' ? { enabled: true, protocol: NetHub.PROTOCOL, fingerprint: NetHub.FINGERPRINT } : {}),
+        addMatchmaker: async ask => { asks.push(ask); return { ticket: 't1' }; },
+        onMatched: () => {},
+        disconnect: () => {},
+      },
+      keepSocket: true,
+    });
+    await ctl.quickQueue();
+    assert.strictEqual(asks.length, 1);
+    assert.strictEqual(asks[0].maxCount, 4);
+    assert.strictEqual(asks[0].minCount, 1);
+    console.log('quick play matchmakes up to four accounts');
+    assert.strictEqual(ctl.state.inputBatch, false, 'no features: no batching');
+    assert.strictEqual(ctl.state.snapshotDelta, false, 'no features: full snapshots only');
+    const offered = NetHub.create({
+      transport: {
+        rpc: async id => (id === 'coop.version' ? { enabled: true, protocol: NetHub.PROTOCOL, fingerprint: NetHub.FINGERPRINT,
+          features: { inputBatch: true, snapshotDelta: true } } : {}),
+        addMatchmaker: async () => ({ ticket: 't2' }), onMatched: () => {}, disconnect: () => {},
+      },
+      keepSocket: true,
+    });
+    await offered.quickQueue();
+    assert.strictEqual(offered.state.inputBatch, true);
+    assert.strictEqual(offered.state.snapshotDelta, true);
+    console.log('coop.version features turn on input batches and snapshot deltas');
+  }
 })().catch(err => {
   console.error(err);
   process.exit(1);

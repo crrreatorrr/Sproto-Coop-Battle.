@@ -4,3 +4,4 @@ dist/
 # Test and benchmark output (tests/goja-goldens.test.js, browser checks). Files already
 # committed here stay tracked; add new evidence with git add -f.
 tests/artifacts/
+__pycache__/

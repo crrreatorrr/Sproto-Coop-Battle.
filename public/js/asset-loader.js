@@ -31,17 +31,24 @@ function frameRect(pose, cell = CELL, separateMotion = false) {
   return { i: i, x: (n % COLS) * cell, y: Math.floor(n / COLS) * cell, w: cell, h: cell };
 }
 
-function atlasPath(fighter) { return 'assets/fighters/' + fighter.id + '/atlas.' + (fighter.cell ? 'png' : 'webp'); }
+// Every fighter atlas, motion sheet, stage floor and shadow sheet ships as lossless WebP (exact,
+// same pixels as the PNG it replaced).
+function atlasPath(fighter) { return 'assets/fighters/' + fighter.id + '/atlas.webp'; }
 
 function motionPath(fighter) {
-  return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.png' : null;
+  return !fighter.cell && fighter.clips ? 'assets/fighters/' + fighter.id + '/motion.webp' : null;
+}
+
+// manifest.js is pinned and still names the shadow sheets .png; the shipped files are .webp.
+function shadowSheet(src) {
+  return typeof src === 'string' ? src.replace(/^(assets\/shadows\/[A-Za-z0-9_-]+)\.png$/, '$1.webp') : src;
 }
 
 function stageNo(i, manifest) { return String(manifest?.bosses[i]?.scenery || i + 1).padStart(2, '0'); }
 
 function scenery(i, manifest) {
   const n = stageNo(i, manifest || root.MANIFEST);
-  return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.png'];
+  return ['assets/stages/' + n + '-back.jpg', 'assets/stages/' + n + '-floor.webp'];
 }
 
 function bossPaths(manifest, i) {
@@ -107,11 +114,11 @@ function canPrefetchNext(manifest, i) {
 function stagePaths(manifest, i) {
   const paths = scenery(i, manifest).concat(bossPaths(manifest, i));
   const shadow = manifest.shadows?.sheets[manifest.bosses[i].shadowStage ?? i];
-  if (shadow) paths.push(shadow);
+  if (shadow) paths.push(shadowSheet(shadow));
   return paths;
 }
 
-// Drawn by render.js. idle.png and muzzle.png are on disk and unused.
+// Drawn by render-fx.js. The unused idle/muzzle/red-laser/thrust art lives in art/ufo-unused/.
 const UFO = ['cockpit-front', 'cockpit-rear', 'laser', 'beach-ball', 'shield1', 'shield2', 'shield3', 'shield4']
   .map(function (name) { return 'assets/ufo/' + name + '.png'; });
 // Combat effects and gear are prefetched with the first stage and stay resident.
@@ -139,7 +146,7 @@ function unique(list) {
 function groups(manifest) {
   const atlas = manifest.fighters.map(atlasPath);
   const motion = manifest.fighters.map(motionPath).filter(Boolean);
-  const shadows = manifest.shadows?.sheets || [];
+  const shadows = (manifest.shadows?.sheets || []).map(shadowSheet);
   const stages = [];
   const bosses = [], transformations = [], actions = [];
   for (let i = 0; i < manifest.bosses.length; i++) {
@@ -190,7 +197,10 @@ function pageScripts(html) {
   return out;
 }
 
-function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
+const DEFERRED_SCRIPTS = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'];
+
+// deferredScripts: the scripts fetched after the title (the built page fetches one fx bundle).
+function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes, deferredScripts) {
   const g = groups(manifest);
   const sum = function (list) {
     let n = 0;
@@ -205,7 +215,7 @@ function budgetOf(manifest, bytesOf, scriptPaths, htmlBytes) {
     const paths = [atlasPath(f), motionPath(f)].filter(path => path && !g.startup.includes(path));
     return sum(paths);
   }).sort((a, b) => b - a).slice(0, 4).reduce((total, n) => total + n, 0);
-  const deferred = ['js/render-fx.js', 'js/boss-transform-player.js', 'js/sprite-timeline.js', 'js/sprite-clip-player.js', 'js/boss-action-selection.js', 'js/boss-action-player.js', 'js/boss-fx-selection.js', 'js/boss-morph-field.js', 'js/boss-morph.js', 'js/ai.js', 'js/party-picker.js'].filter(path => !scriptPaths.includes(path));
+  const deferred = (deferredScripts || DEFERRED_SCRIPTS).filter(path => !scriptPaths.includes(path));
   const firstTransform = transformPaths(manifest, 0).slice(0, 1);
   const firstStageBytes = titleBytes + sum(firstTransform) + sum(deferred) + lineup + bytesOf(PORTRAITS) + sum(g.firstBoss.concat(g.ufo, g.fx, g.shadows.slice(0, 1)));
   return {
@@ -563,6 +573,7 @@ root.AssetLoader = {
   frameRect: frameRect,
   atlasPath: atlasPath,
   motionPath: motionPath,
+  shadowSheet: shadowSheet,
   portraits: PORTRAITS,
   groups: groups,
   enemyProjectileSheet: enemyProjectileSheet,

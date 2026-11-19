@@ -8,6 +8,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const { WebSocketServer } = require('ws');
 const STAGES = 13; // Twelve original stages plus Last Call Bar.
 
@@ -32,7 +33,14 @@ const TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.ico': 'image/x-icon',
   '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8',
 };
+// Images and fonts are already compressed; text files are gzipped when the client accepts it.
+const GZIP_TYPES = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt']);
+const GZIP_MIN = 1024;
+const gzipCache = new Map(); // path + etag -> gzipped bytes; bounded below
+const GZIP_CACHE_MAX = 64;
 const GUEST_TYPES = new Set(['want', 'leave', 'pick', 'in', 'god']);
 const HOST_TYPES = new Set(['lobby', 'snap']);
 const HIGH_RATE_TYPES = new Set(['in', 'snap', 'lobby']);
@@ -128,6 +136,34 @@ function originAllowed(req) {
   return !!host && parsed.host === host;
 }
 
+// Weak validator from size and mtime: cheap, and it changes whenever the file is saved.
+function etagOf(st) {
+  return 'W/"' + st.size.toString(16) + '-' + Math.floor(st.mtimeMs).toString(16) + '"';
+}
+
+function etagMatches(header, etag) {
+  if (!header) return false;
+  return String(header).split(',').some(tag => {
+    const t = tag.trim();
+    return t === '*' || t === etag || t.replace(/^W\//, '') === etag.replace(/^W\//, '');
+  });
+}
+
+function acceptsGzip(req) {
+  return /(^|,)\s*gzip\s*(;\s*q=(?!0(\.0*)?\s*(,|$))[0-9.]+)?\s*(,|$)/i.test(String(req.headers['accept-encoding'] || ''));
+}
+
+function gzipFor(file, etag, data) {
+  // The ETag alone is size + mtime, which two files can share; the path keeps them apart.
+  const key = file + '\0' + etag;
+  let hit = gzipCache.get(key);
+  if (hit) return hit;
+  hit = zlib.gzipSync(data, { level: 6 });
+  gzipCache.set(key, hit);
+  if (gzipCache.size > GZIP_CACHE_MAX) gzipCache.delete(gzipCache.keys().next().value);
+  return hit;
+}
+
 function baseHeaders(type) {
   const headers = {
     'Cache-Control': 'no-cache',
@@ -196,15 +232,32 @@ const server = http.createServer((req, res) => {
       }
       fs.stat(real, (statErr, st) => {
         if (statErr || !st.isFile()) { sendJson(res, 404, 'not found'); return; }
-        if (req.method === 'HEAD') {
-          res.writeHead(200, Object.assign(baseHeaders(TYPES[path.extname(real)] || 'application/octet-stream'), { 'Content-Length': st.size }));
+        // Cache-Control stays no-cache (dev files change without a version), so the browser
+        // revalidates every time; the ETag turns an unchanged file into a bodiless 304.
+        const ext = path.extname(real);
+        const etag = etagOf(st);
+        const gzip = GZIP_TYPES.has(ext) && st.size >= GZIP_MIN;
+        const headers = Object.assign(baseHeaders(TYPES[ext] || 'application/octet-stream'), { ETag: etag });
+        if (gzip) headers.Vary = 'Accept-Encoding';
+        if (etagMatches(req.headers['if-none-match'], etag)) {
+          delete headers['Content-Type'];
+          res.writeHead(304, headers);
+          res.end();
+          return;
+        }
+        const zipped = gzip && acceptsGzip(req);
+        if (req.method === 'HEAD' && !zipped) {
+          res.writeHead(200, Object.assign(headers, { 'Content-Length': st.size }));
           res.end();
           return;
         }
         fs.readFile(real, (readErr, data) => {
           if (readErr) { sendJson(res, 404, 'not found'); return; }
-          res.writeHead(200, baseHeaders(TYPES[path.extname(real)] || 'application/octet-stream'));
-          res.end(data);
+          const body = zipped ? gzipFor(real, etag, data) : data;
+          if (zipped) headers['Content-Encoding'] = 'gzip';
+          headers['Content-Length'] = body.length;
+          res.writeHead(200, headers);
+          res.end(req.method === 'HEAD' ? undefined : body);
         });
       });
     });

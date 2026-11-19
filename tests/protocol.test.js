@@ -194,6 +194,26 @@ function input(session, seq, generation, mask, extra) {
 }
 
 {
+  // A loop whose second frame fails restores seq and the rate buckets to their exact values from
+  // before the loop (the first frame's seq and token are given back), and steps nothing.
+  const session = banked(16);
+  seat(session, 2, 'k1');
+  assert.strictEqual(CoopProtocol.stepLoop(session, [input(session, 1, 1, 1), null, null], 500).ok, true);
+  const seqBefore = JSON.stringify(session.seq), bucketsBefore = JSON.stringify(session.limiters), t = session.state.t;
+  const good = input(session, 2, 1, 1), bad = input(session, 3, 1, 1, { frame: t + 2, seats: [{ slot: 2, device: 'k1', mask: 1.5 }] });
+  const failed = CoopProtocol.stepLoop(session, [good, bad, null], 900);
+  assert.strictEqual(failed.reason, 'mask');
+  assert.strictEqual(JSON.stringify(session.seq), seqBefore);
+  assert.strictEqual(JSON.stringify(session.limiters), bucketsBefore);
+  assert.strictEqual(session.state.t, t);
+  // The restored buckets are live: the next good loop spends from them and is not a duplicate.
+  const again = CoopProtocol.stepLoop(session, [input(session, 2, 1, 1), null, null], 900);
+  assert.strictEqual(again.ok, true, again.reason);
+  assert.strictEqual(session.seq['ken#1'], 2);
+  console.log('a failed loop restores seq and rate buckets exactly');
+}
+
+{
   const session = banked(19);
   const devices = ['k1', 'k2', 'gp0', 'gp1'];
   for (let i = 0; i < 4; i++) seat(session, i, devices[i]);

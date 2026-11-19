@@ -43,6 +43,29 @@ Banked matches start at stage 0 from a server seed. The server rejects `god`, `s
 
 Input messages are at most 768 bytes. Any message over 2048 bytes is rejected. A seat mask is an integer 0..255 with the same bits as `Input.pack`: `l r u d a j s p`. `NaN`, a non-integer mask, a frame at or behind `state.t`, and a frame more than 3 ticks ahead are rejected. Sequence numbers are strictly increasing per account and generation. Duplicates and older sequences are rejected. Each account may deliver 60 input messages per second with a burst of 12. A failed frame does not advance the match. Missed substeps apply neutral buttons. There is no client pause and no mint RPC.
 
+### Optional: input batches and snapshot deltas
+
+Both are off until the hub opts in, and neither changes the match. `stepLoop` still takes one
+input message per substep and returns full snapshot envelopes.
+
+- The hub advertises them in its `coop.version` answer: `features: { inputBatch: true,
+  snapshotDelta: true }`. A client that sees no `features` behaves exactly as before.
+- **Input batch.** With `inputBatch`, a client sends one `OP.INPUT` message
+  `{ t: 'inputs', batch: [input, input, input] }` per 50 ms burst instead of up to three. The hub
+  passes it to `CoopProtocol.splitInputBatch(msg)` (at most 2048 bytes, 1 to `LIMITS.inputBatchMax`
+  = 3 items, each `t: 'input'`, frames increasing) and handles each returned item as if it had
+  arrived alone, so seq, rate (still 60 input messages a second per account), owner and frame
+  checks are unchanged.
+- **Snapshot delta.** A client that can apply deltas adds `snapDelta: '1'` to its join metadata
+  (only when the hub advertised `snapshotDelta`). For those presences the hub may send
+  `CoopProtocol.snapshotDelta(lastSent, next).delta` (`kind: 'sproto-coop-battle-snapshot-delta'`,
+  naming its base by `base` loop and `baseTick`) instead of the full envelope. It must send a full
+  envelope on join, resume and stage change, and at least every `LIMITS.snapshotKeyframeLoops`
+  (60 loops, 3 s). A client drops any delta whose base is not the last snapshot it applied and
+  waits for the next full one. `applySnapshotDelta(base, delta)` gives exactly the full envelope's
+  JSON (`tests/snapshot-delta.test.js`, 2,664 real snapshot pairs). Measured on four 4-player
+  fights, deltas are 36.9% of the full snapshot bytes.
+
 The 15 second reconnect grace is the seat reservation H2-C enforces. This module records the generation so a stale socket cannot write after the grace hands the seat to AI.
 
 ## Bosses

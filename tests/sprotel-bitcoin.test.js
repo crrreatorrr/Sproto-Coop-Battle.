@@ -4,7 +4,7 @@ globalThis.window = globalThis;
 require('../public/js/manifest.js');
 const S = require('../public/js/sim.js');
 require('../public/js/ai.js');
-const P = require('../public/js/audio.js');
+const P = require('../public/js/progress.js');
 require('../public/js/net-protocol.js');
 
 function arena(stage = 12) {

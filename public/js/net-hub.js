@@ -97,6 +97,12 @@
       picks: {},
       cpuPicks: {},
       snapshot: null,
+      snapshotLoop: null,
+      snapshotTick: null,
+      snapshotMatch: '',
+      deltaMisses: 0,
+      inputBatch: false,
+      snapshotDelta: false,
       prevSnapshot: null,
       snapAt: 0,
       snapGap: 100,
@@ -212,14 +218,80 @@
     }
     return rows;
   }
+  // Apply a snapshot delta (net-protocol.js snapshotDelta) to a copy of the previous render state.
+  // Returns null for a malformed patch. tests/snapshot-delta.test.js checks it against the bundle.
+  function plainCopy(v) {
+    if (typeof v !== 'object' || v === null) return v;
+    if (Array.isArray(v)) return v.map(plainCopy);
+    var out = {};
+    var keys = Object.keys(v);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] === '__proto__') throw new Error('delta'); // would set the prototype, not a key
+      out[keys[i]] = plainCopy(v[keys[i]]);
+    }
+    return out;
+  }
+  function patch(a, d) {
+    if (!d || typeof d !== 'object') throw new Error('delta');
+    if (Object.prototype.hasOwnProperty.call(d, 'r')) return plainCopy(d.r);
+    var keys, i, out;
+    if (d.a) {
+      if (!Array.isArray(a)) throw new Error('delta');
+      var n = d.n === undefined ? a.length : d.n;
+      if (!Number.isInteger(n) || n < 0) throw new Error('delta');
+      out = a.slice(0, n);
+      keys = Object.keys(d.a);
+      for (i = 0; i < keys.length; i++) {
+        var at = Number(keys[i]);
+        if (!Number.isInteger(at) || at < 0 || at >= n) throw new Error('delta');
+        out[at] = patch(out[at], d.a[keys[i]]);
+      }
+      return out;
+    }
+    if (d.o) {
+      if (typeof a !== 'object' || a === null || Array.isArray(a)) throw new Error('delta');
+      out = {};
+      var gone = Array.isArray(d.d) ? d.d : [];
+      keys = Object.keys(a);
+      for (i = 0; i < keys.length; i++) if (gone.indexOf(keys[i]) < 0) out[keys[i]] = a[keys[i]];
+      keys = Object.keys(d.o);
+      for (i = 0; i < keys.length; i++) {
+        if (keys[i] === '__proto__') throw new Error('delta');
+        out[keys[i]] = patch(out[keys[i]], d.o[keys[i]]);
+      }
+      if (!Array.isArray(d.k)) return out;
+      var ordered = {};
+      for (i = 0; i < d.k.length; i++) {
+        if (typeof d.k[i] !== 'string' || !Object.prototype.hasOwnProperty.call(out, d.k[i]) || d.k[i] === '__proto__') throw new Error('delta');
+        ordered[d.k[i]] = out[d.k[i]];
+      }
+      if (Object.keys(ordered).length !== Object.keys(out).length) throw new Error('delta');
+      return ordered;
+    }
+    throw new Error('delta');
+  }
+  function applySnapshotDelta(baseState, d) {
+    try { return d === null ? plainCopy(baseState) : patch(plainCopy(baseState), d); }
+    catch (err) { return null; }
+  }
   function takeRender(state, envelope, now) {
     if (!envelope) return;
     if (envelope.restart) {
       state.importedRestart += 1;
       return;
     }
-    var render = envelope.kind === 'sproto-coop-battle-snapshot' ? envelope.state : envelope.state || null;
+    var render;
+    if (envelope.kind === 'sproto-coop-battle-snapshot-delta') {
+      // Only on top of the exact snapshot it was made from; otherwise wait for the next full one.
+      if (!state.snapshot || envelope.base !== state.snapshotLoop || envelope.baseTick !== state.snapshotTick ||
+          envelope.matchId !== state.snapshotMatch) { state.deltaMisses += 1; return; }
+      render = applySnapshotDelta(state.snapshot, envelope.d);
+      if (!render) { state.deltaMisses += 1; return; }
+    } else render = envelope.state || null;
     if (!render || !render.players) return;
+    state.snapshotLoop = typeof envelope.loop === 'number' ? envelope.loop : null;
+    state.snapshotTick = typeof envelope.tick === 'number' ? envelope.tick : null;
+    state.snapshotMatch = typeof envelope.matchId === 'string' ? envelope.matchId : '';
     state.prevSnapshot = state.snapshot;
     state.snapshot = render;
     state.snapGap = state.snapAt ? Math.min(200, Math.max(16, now - state.snapAt)) : 100;
@@ -652,10 +724,16 @@
         return false;
       }
       if (version.rewards) state.rewards = 0;
+      // Opt-in wire savings: only a hub that says it understands them gets them.
+      var features = version.features && typeof version.features === 'object' ? version.features : {};
+      state.inputBatch = features.inputBatch === true;
+      state.snapshotDelta = features.snapshotDelta === true;
       return true;
     }
     function meta() {
-      return { protocol: String(PROTOCOL), fingerprint: FINGERPRINT, v: String(PROTOCOL), sim: FINGERPRINT };
+      var out = { protocol: String(PROTOCOL), fingerprint: FINGERPRINT, v: String(PROTOCOL), sim: FINGERPRINT };
+      if (state.snapshotDelta) out.snapDelta = '1'; // this client can apply snapshot deltas
+      return out;
     }
     async function join(matchId) {
       var opened = await openTransport();
@@ -759,14 +837,17 @@
         var dev = state.yours[i];
         masks[dev] = (state.held || state.background) ? 0 : ((opts.readMask ? opts.readMask(dev) : 0) | 0);
       }
-      var sent = 0;
+      var sent = 0, bodies = [];
       for (var f = 0; f < frames.length && sent < 3; f++) {
         var body = buildInput(state, frames[f], masks);
         if (!body) break;
-        send(OP.INPUT, body);
+        bodies.push(body);
         state.lastSentFrame = frames[f];
         sent += 1;
       }
+      // One message for the burst when the hub accepts batches; otherwise one per frame.
+      if (state.inputBatch && bodies.length > 1) send(OP.INPUT, { t: 'inputs', batch: bodies });
+      else for (var b = 0; b < bodies.length; b++) send(OP.INPUT, bodies[b]);
       if (sent) state.lastBurst = t;
       if (!state.lastPing || t - state.lastPing > 500) {
         state.lastPing = t;
@@ -849,7 +930,7 @@
         var queued = await opened.addMatchmaker({
           query: '*',
           minCount: 1,
-          maxCount: 6,
+          maxCount: SEATS, // one account per seat at most; the 6-seat build used 6
           stringProperties: { game: GAME_ID, v: '1', sim: FINGERPRINT },
         });
         ticket = queued && queued.ticket || '';
@@ -944,8 +1025,7 @@
         app.screen = 'game';
         if (root.Render && view.snapshot && view.stageIndex !== lastStage) {
           lastStage = view.stageIndex;
-          root.Render.enterStage(view.stageIndex || 0);
-          if ((view.stageIndex || 0) + 1 < root.MANIFEST.bosses.length) root.Render.bossImages((view.stageIndex || 0) + 1);
+          root.Render.enterStage(view.stageIndex || 0); // also prefetches the next stage when allowed
         }
       } else if (view.phase === 'lobby' || view.phase === 'queue') app.screen = 'lobby';
     });
@@ -968,6 +1048,7 @@
     createState: createState,
     applyMessage: applyMessage,
     buildInput: buildInput,
+    applySnapshotDelta: applySnapshotDelta,
     planFrames: planFrames,
     slotsOf: slotsOf,
     viewOf: viewOf,

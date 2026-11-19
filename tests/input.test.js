@@ -157,3 +157,25 @@ assert.strictEqual(I.pack({ l: 1, r: 0, u: 0, d: 0, a: 1, j: 1, s: 0, p: 1, star
 assert.deepStrictEqual(I.unpack(1 | 16 | 32 | 128), { l: 1, r: 0, u: 0, d: 0, a: 1, j: 1, s: 0, p: 1 });
 
 console.log('input ok');
+
+// ---- practice relay guest send gate: 60 Hz cap on changes, 15 Hz heartbeat when idle ----
+{
+  const gate = I.sendGate();
+  let sent = 0, last = '';
+  // 144 Hz for one second with the input changing every frame: at most one send per 60 Hz slot.
+  for (let f = 0; f < 144; f++) { const key = String(f); if (gate.due(key, f * 1000 / 144)) { sent++; last = key; } }
+  assert.ok(sent <= 61 && sent >= 55, '144 Hz changes send ~60/s, got ' + sent);
+  // The newest input is never stranded: a change that lands inside a slot goes out at the next one.
+  const g2 = I.sendGate();
+  assert.ok(g2.due('a', 0));
+  assert.ok(!g2.due('b', 7), 'second change inside the slot waits');
+  assert.ok(g2.due('b', 17), 'and is sent at the next slot');
+  // Held input: only the heartbeat repeats it.
+  const g3 = I.sendGate();
+  let beats = 0;
+  for (let f = 0; f < 144; f++) if (g3.due('held', f * 1000 / 144)) beats++;
+  assert.ok(beats >= 14 && beats <= 16, 'idle heartbeat ~15/s, got ' + beats);
+  g3.reset();
+  assert.ok(g3.due('held', 1000), 'reset sends at once');
+  console.log('guest send gate ok: ' + sent + ' sends at 144 Hz changing, ' + beats + ' idle');
+}

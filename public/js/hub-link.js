@@ -2,7 +2,7 @@
 // never a CDN. Redeems #t= once, then the game can play with or without a hub account.
 // Local play and the old relay stay practice: this file never calls earn or score. Its one event
 // write is the Marina Anchor Relic for a stage 1 clear (reportStageClear below), which pays no Tickets.
-// It also tells the progress store (Progress.createStore in audio.js) whose progress is on screen:
+// It also tells the progress store (Progress.createStore in progress.js) whose progress is on screen:
 // the live hub player's (account or guest, attach) or this device's (release), and switches it
 // when the hub account changes.
 (function (root) {

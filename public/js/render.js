@@ -10,7 +10,6 @@ const FONT = '"Press Start 2P", ui-monospace, monospace';
 if (!root.AssetLoader) throw new Error('asset-loader.js must load before render.js');
 const Cells = root.AssetLoader.lru(96);
 const Tints = root.AssetLoader.lru(96);
-const atlasBuffers = new Map();
 function loader() { return root.AssetLoader.shared(); }
 function img(src) { return loader().image(src); }
 const ready = im => !!(im && im.complete && im.naturalWidth > 0);
@@ -29,26 +28,30 @@ function enterStage(i) {
   }
   loadFx();
 }
+// In-game scripts, fetched once the first stage is entered. scripts/build.mjs reads this list to
+// make dist/js/fx.bundle.js (same order); the built page names it in CoopFxBundle.
+const FX_SCRIPTS = [
+  ['CoopSpriteTimeline', 'sprite-timeline.js'],
+  ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
+  ['CoopBossActionSelection', 'boss-action-selection.js'],
+  ['CoopBossActionPlayer', 'boss-action-player.js'],
+  ['CoopBossFxSelection', 'boss-fx-selection.js'],
+  ['CoopBossTransformPlayer', 'boss-transform-player.js'],
+  ['CoopBossMorphField', 'boss-morph-field.js'],
+  ['CoopBossMorph', 'boss-morph.js'],
+  ['RenderFx', 'render-fx.js'],
+];
 function loadFx() {
   if (fxRequested || !root.document) return;
   fxRequested = true;
-  const scripts = [
-    ['CoopSpriteTimeline', 'sprite-timeline.js'],
-    ['CoopSpriteClipPlayer', 'sprite-clip-player.js'],
-    ['CoopBossActionSelection', 'boss-action-selection.js'],
-    ['CoopBossActionPlayer', 'boss-action-player.js'],
-    ['CoopBossFxSelection', 'boss-fx-selection.js'],
-    ['CoopBossTransformPlayer', 'boss-transform-player.js'],
-    ['CoopBossMorphField', 'boss-morph-field.js'],
-    ['CoopBossMorph', 'boss-morph.js'],
-    ['RenderFx', 'render-fx.js'],
-  ];
+  const bundle = typeof root.CoopFxBundle === 'string' && /^[a-z0-9.-]+\.js$/.test(root.CoopFxBundle) ? root.CoopFxBundle : '';
+  const scripts = bundle && !FX_SCRIPTS.some(([global]) => root[global]) ? [['RenderFx', bundle]] : FX_SCRIPTS;
   for (const [global, file] of scripts) {
     if (root[global]) continue;
     const el = root.document.createElement('script');
     el.async = false;
     el.src = root.AssetLoader.resolve('js/' + file, root.document.baseURI);
-    el.onerror = () => { root.setTimeout(() => { fxRequested = false; }, 1000); };
+    el.onerror = () => { el.remove(); root.setTimeout(() => { fxRequested = false; }, 1000); };
     root.document.head.appendChild(el);
   }
 }
@@ -57,10 +60,8 @@ function loadStatus() {
   const stat = loader().status();
   stat.cells = Cells.size;
   stat.tints = Tints.size;
-  stat.atlasBuffers = atlasBuffers.size;
   stat.cellBytes = Cells.size * 128 * 128 * 4;
   stat.tintBytes = Tints.size * 128 * 128 * 4;
-  stat.atlasBufferBytes = Array.from(atlasBuffers.values()).reduce((bytes, ctx) => bytes + ctx.canvas.width * ctx.canvas.height * 4, 0);
   return stat;
 }
 
@@ -71,21 +72,8 @@ function canFilter() {
   return filterOK;
 }
 const HUES = [0, 150, 235, 300, 60, 190];
-// Copy one atlas cell with getImageData so the 128 canvas matches the pose PNG.
-// The atlas image stays resident; cell and tint canvases are capped.
-function atlasContext(path) {
-  const cached = atlasBuffers.get(path);
-  if (cached) return cached;
-  const sheet = img(path);
-  if (!ready(sheet)) return null;
-  const c = document.createElement('canvas');
-  c.width = sheet.naturalWidth; c.height = sheet.naturalHeight;
-  const g = c.getContext('2d', { willReadFrequently: true });
-  g.imageSmoothingEnabled = false;
-  g.drawImage(sheet, 0, 0);
-  atlasBuffers.set(path, g);
-  return g;
-}
+// Copy one atlas cell straight from the decoded image into a capped 128 px canvas. No full-atlas
+// staging canvas and no getImageData readback: a 1:1 drawImage with smoothing off keeps the pixels.
 function cellCanvas(fid, pose) {
   const f = M.fighters[fid];
   if (!f) return null;
@@ -97,14 +85,13 @@ function cellCanvas(fid, pose) {
   const key = fid + '|' + rect.i;
   const hit = Cells.get(key);
   if (hit) return hit;
-  const sheet = atlasContext(path);
-  if (!sheet) return null;
-  if (rect.x + rect.w > sheet.canvas.width || rect.y + rect.h > sheet.canvas.height) return null;
+  const sheet = img(path);
+  if (!ready(sheet)) return null;
+  if (rect.x + rect.w > sheet.naturalWidth || rect.y + rect.h > sheet.naturalHeight) return null;
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   g.imageSmoothingEnabled = false;
-  if (rect.w === 128) g.putImageData(sheet.getImageData(rect.x, rect.y, rect.w, rect.h), 0, 0);
-  else g.drawImage(sheet.canvas, rect.x, rect.y, rect.w, rect.h, 0, 0, 128, 128);
+  g.drawImage(sheet, rect.x, rect.y, rect.w, rect.h, 0, 0, 128, 128);
   Cells.set(key, c);
   return c;
 }
@@ -162,7 +149,7 @@ function drawFighter(g, o, sx, sy, variant, wpnId, wpnStats, alpha) {
   if (o.cl) {
     loadFx();
     const motion = root.AssetLoader.motionPath(f);
-    if (motion && !atlasBuffers.has(motion)) atlasContext(motion);
+    if (motion) img(motion); // start the class-motion sheet early
   }
   const art = root.RenderFx;
   const P = art ? art.pose(o, wpnId, wpnStats) : { pose: Math.floor(o.t / 30) % 2, ang: -52 + Math.sin(o.t / 12) * 3 };
@@ -228,7 +215,7 @@ function mirrorTile(g, im, x0, y, h) {
 }
 function drawBackground(g, si, camX) {
   const n = String(M.bosses[si % M.bosses.length].scenery || si % M.bosses.length + 1).padStart(2, '0');
-  const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.png`);
+  const back = img(`assets/stages/${n}-back.jpg`), floor = img(`assets/stages/${n}-floor.webp`);
   if (ready(back) && ready(floor)) {
     mirrorTile(g, back, -camX * 0.5, 0, 226);
     mirrorTile(g, floor, -camX, FLOOR_TOP - 6, 150);

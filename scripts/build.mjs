@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { transformSync } from 'esbuild';
 import { inventory, loadAssetLoader, loadManifest, scanTree, walkFiles } from './check-assets.mjs';
 
 const SDK_REL = 'vendor/hub-sdk/dist/hub-sdk.iife.js';
@@ -15,15 +16,71 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = path.join(root, 'public');
 const dist = path.join(root, 'dist');
 
+export const APP_BUNDLE = 'js/app.bundle.js';
+export const FX_BUNDLE = 'js/fx.bundle.js';
+
+// The classic scripts index.html loads at startup, in page order.
+export function startupScripts() {
+  const html = fs.readFileSync(path.join(pub, 'index.html'), 'utf8');
+  return Array.from(html.matchAll(/<script src="(js\/[^"?#]+\.js)"><\/script>/g), match => match[1]);
+}
+
+// The in-game scripts render.js loads on the first stage, in its FX_SCRIPTS order.
+export function fxScripts() {
+  const source = fs.readFileSync(path.join(pub, 'js', 'render.js'), 'utf8');
+  const block = source.match(/const FX_SCRIPTS = \[([\s\S]*?)\];/);
+  if (!block) throw new Error('render.js FX_SCRIPTS list not found');
+  const files = Array.from(block[1].matchAll(/\['[A-Za-z]+', '([a-z0-9-]+\.js)'\]/g), match => 'js/' + match[1]);
+  if (!files.length) throw new Error('render.js FX_SCRIPTS list is empty');
+  return files;
+}
+
+// Minify each classic script on its own (no module wrapping, no down-levelling: esbuild keeps
+// top-level names and each file's own 'use strict'), then join them in load order. A bundle runs
+// exactly like the separate tags did; public/ itself is unchanged, so npm start still serves
+// the readable files.
+const bundleCache = new Map();
+export function makeBundle(bundlePath, sources) {
+  const texts = sources.map(rel => fs.readFileSync(path.join(pub, rel), 'utf8'));
+  const key = bundlePath + '\0' + crypto.createHash('sha256').update(sources.join('\0') + '\0' + texts.join('\0')).digest('hex');
+  if (bundleCache.has(key)) return bundleCache.get(key);
+  const code = sources.map((rel, i) => {
+    const out = transformSync(texts[i], { loader: 'js', minify: true, target: 'esnext', charset: 'utf8', legalComments: 'none', sourcefile: rel }).code;
+    return '/* ' + rel + ' */\n' + out.trimEnd() + '\n;\n';
+  }).join('');
+  const buf = Buffer.from(code);
+  const bundle = { path: bundlePath, sources: sources.slice(), code, bytes: buf.length,
+    sha256: crypto.createHash('sha256').update(buf).digest('hex'), gzipBytes: zlib.gzipSync(buf, { level: 9, mtime: 0 }).length,
+    sourceBytes: texts.reduce((n, text) => n + Buffer.byteLength(text), 0) };
+  bundleCache.set(key, bundle);
+  return bundle;
+}
+
+export function runtimeBundles() {
+  return [makeBundle(APP_BUNDLE, startupScripts()), makeBundle(FX_BUNDLE, fxScripts())];
+}
+
 // Every release requests matching scripts and image bytes, including legacy
 // manifest filenames. A cached old atlas cannot accompany a new transformation.
+// The startup tags become one minified bundle, and the page tells render.js to fetch the
+// in-game scripts as one bundle too.
 export function runtimeIndex(report, sdkHash = SDK_IIFE_SHA256) {
   const version = crypto.createHash('sha256').update(report.publicTreeSha256 + ':' + sdkHash).digest('hex').slice(0, 24);
+  const bundles = runtimeBundles();
+  const app = bundles.find(bundle => bundle.path === APP_BUNDLE);
+  const fx = bundles.find(bundle => bundle.path === FX_BUNDLE);
   let html = fs.readFileSync(path.join(pub, 'index.html'), 'utf8');
+  let placed = false;
+  html = html.replace(/<script src="(js\/[^"?#]+\.js)"><\/script>\n?/g, (tag, source) => {
+    if (!app.sources.includes(source)) return tag;
+    if (placed) return '';
+    placed = true;
+    return `<script src="${APP_BUNDLE}"></script>\n`;
+  });
   html = html.replace(/<script src="((?:js|vendor)\/[^"]+\.js)"/g,
     (_, source) => `<script src="${source}?v=${version}"`);
-  html = html.replace('<script src=', `<script>globalThis.CoopAssetVersion="${version}";</script>\n<script src=`);
-  return { version, html, bytes: Buffer.byteLength(html), sha256: crypto.createHash('sha256').update(html).digest('hex') };
+  html = html.replace('<script src=', `<script>globalThis.CoopAssetVersion="${version}";globalThis.CoopFxBundle="${path.posix.basename(fx.path)}";</script>\n<script src=`);
+  return { version, html, bytes: Buffer.byteLength(html), sha256: crypto.createHash('sha256').update(html).digest('hex'), bundles };
 }
 
 export function assertSdkPin() {
@@ -66,6 +123,12 @@ export function buildDist() {
   const report = inventory();
   const index = runtimeIndex(report, sdk.hash);
   fs.writeFileSync(path.join(dist, 'index.html'), index.html);
+  for (const bundle of index.bundles) {
+    if (copied.includes(bundle.path)) throw new Error(bundle.path + ' collides with a public file');
+    fs.writeFileSync(path.join(dist, bundle.path), bundle.code);
+    copied.push(bundle.path);
+  }
+  const bundleBytes = index.bundles.reduce((n, bundle) => n + bundle.bytes, 0);
   const manifestFiles = report.files.map(file => {
     const row = { path: file.path, bytes: file.bytes, sha256: file.sha256 };
     if (file.gzipBytes != null) row.gzipBytes = file.gzipBytes;
@@ -89,14 +152,14 @@ export function buildDist() {
     economy: 'none',
     algorithm: 'sha256',
     releaseVersion: index.version,
-    runtimePublicBytes: report.publicBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
+    runtimePublicBytes: report.publicBytes + bundleBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
     runtimeIndexSha256: index.sha256,
     assetCount: report.assetCount,
     assetBytes: report.assetBytes,
     publicFileCount: report.publicFileCount,
     publicBytes: report.publicBytes,
     basePublicBytes: report.basePublicBytes,
-    runtimeBasePublicBytes: report.basePublicBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
+    runtimeBasePublicBytes: report.basePublicBytes + bundleBytes + index.bytes - report.files.find(file => file.path === 'index.html').bytes,
     optionalMediaCount: report.optionalMediaCount,
     optionalMediaBytes: report.optionalMediaBytes,
     optionalMediaTreeSha256: report.optionalMediaTreeSha256,
@@ -114,6 +177,9 @@ export function buildDist() {
     unused: report.unused,
     startup: loadAssetLoader().groups(loadManifest()).startup,
     files: manifestFiles,
+    // Built, not in public/: minified copies of the startup and in-game classic scripts.
+    bundles: index.bundles.map(bundle => ({ path: bundle.path, bytes: bundle.bytes, sha256: bundle.sha256,
+      gzipBytes: bundle.gzipBytes, sourceBytes: bundle.sourceBytes, sources: bundle.sources })),
   };
   const body = JSON.stringify(manifest, null, 2) + '\n';
   fs.writeFileSync(path.join(dist, 'asset-manifest.json'), body);

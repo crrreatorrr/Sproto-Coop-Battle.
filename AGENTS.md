@@ -1,7 +1,7 @@
 # Sproto Coop Battle
 
-A 4-player co-op pixel beat-'em-up on Canvas 2D, written as plain classic scripts with no engine
-and no bundler. `README.md` describes the modes and controls. `docs/` holds the phase notes:
+A 4-player co-op pixel beat-'em-up on Canvas 2D, written as plain classic scripts with no engine.
+`public/` is served as is; only `npm run build` joins minified copies into two bundles in `dist/`. `README.md` describes the modes and controls. `docs/` holds the phase notes:
 `coop-server-contract.md` is the pin contract, `coop-online.md` the banked client and
 `coop-release.md` the release pins.
 
@@ -25,8 +25,10 @@ and no bundler. `README.md` describes the modes and controls. `docs/` holds the 
      refused with `version_mismatch` only when `contentSha256` (`FINGERPRINT`) changed.
 - `npm start` serves `public/` only. `vendor/` is outside it, so the hub SDK
   (`vendor/hub-sdk/dist/hub-sdk.iife.js`) returns 404 there and the hub link stays offline. To try
-  the hub link, run `npm run build` and serve `dist/` (`public/`, the SDK IIFE and
-  `asset-manifest.json`).
+  the hub link, run `npm run build` and serve `dist/` (`public/`, the SDK IIFE,
+  `asset-manifest.json`, and `js/app.bundle.js` / `js/fx.bundle.js`: esbuild-minified copies of the
+  startup scripts in `index.html` and of `FX_SCRIPTS` in `render.js`, which the built page loads
+  instead of the separate files).
 - `vendor/hub-sdk` comes from `metaverse-hub`. It is the IIFE build (global `HubSDK`), recorded in
   `vendor/hub-sdk/SOURCE.pin.json`. `npm run build` refuses a copy whose hash or version differs
   from that pin, so update the pin, `scripts/build.mjs` and `docs/coop-hub.md` together when you

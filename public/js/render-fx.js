@@ -1049,7 +1049,8 @@ function drawWorld(g, snap, opts) {
   const camX = snap.camX;
   const sk = snap.sk || 0;
   const shadowStage = M.bosses[snap.si].shadowStage ?? snap.si;
-  const shadowPath = M.shadows?.sheets[shadowStage];
+  const sheetName = M.shadows?.sheets[shadowStage], toSheet = root.AssetLoader.shadowSheet;
+  const shadowPath = toSheet ? toSheet(sheetName) : sheetName;
   const shadowSheet = shadowPath && img(shadowPath);
   g.save();
   if (sk) g.translate(Math.round(Math.sin(snap.t * 1.7) * sk), Math.round(Math.cos(snap.t * 2.3) * sk * 0.6));

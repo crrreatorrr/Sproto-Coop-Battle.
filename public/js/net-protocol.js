@@ -24,7 +24,11 @@ const LIMITS = {
   encounterGraceTicks: 180,
   afkAliveTicks: 300,
   buttonMaskMax: 255,
+  inputBatchMax: 3,
+  snapshotKeyframeLoops: 60,
 };
+const SNAPSHOT_KIND = 'sproto-coop-battle-snapshot';
+const DELTA_KIND = 'sproto-coop-battle-snapshot-delta';
 const ACCOUNT_RE = /^[A-Za-z0-9_.:-]{1,64}$/;
 const DEVICE_RE = /^[A-Za-z0-9_-]{1,16}$/;
 
@@ -442,14 +446,33 @@ function terminalFacts(session) {
   };
 }
 
+// Rollback copies for stepLoop. seq is { key: number } and limiters is { account: { tokens, last } },
+// so a copy of each map and each bucket is all a failed loop needs to restore.
+function copySeq(seq) {
+  const out = {};
+  const keys = Object.keys(seq);
+  for (let i = 0; i < keys.length; i++) out[keys[i]] = seq[keys[i]];
+  return out;
+}
+function copyLimiters(limiters) {
+  const out = {};
+  const keys = Object.keys(limiters);
+  for (let i = 0; i < keys.length; i++) {
+    const bucket = limiters[keys[i]];
+    out[keys[i]] = { tokens: bucket.tokens, last: bucket.last };
+  }
+  return out;
+}
+
 function stepLoop(session, frames, now) {
   if (!session) return fail('schema');
   if (!Array.isArray(frames) || frames.length !== LIMITS.substeps) return fail('substeps');
-  const savedSeq = JSON.parse(JSON.stringify(session.seq));
-  const savedLimiters = JSON.parse(JSON.stringify(session.limiters));
+  // Taken before the first input is checked; a loop with no input copies nothing.
+  let savedSeq = null, savedLimiters = null;
   const decoded = [];
   for (let i = 0; i < frames.length; i++) {
     if (!frames[i]) { decoded.push(null); continue; }
+    if (!savedSeq) { savedSeq = copySeq(session.seq); savedLimiters = copyLimiters(session.limiters); }
     const applied = acceptInput(session, frames[i], now + i);
     if (!applied.ok) {
       session.seq = savedSeq;
@@ -471,7 +494,7 @@ function stepLoop(session, frames, now) {
 
 function snapshotEnvelope(session) {
   return {
-    kind: 'sproto-coop-battle-snapshot',
+    kind: SNAPSHOT_KIND,
     protocol: PROTOCOL_VERSION,
     gameId: GAME_ID,
     matchId: session.matchId,
@@ -480,6 +503,155 @@ function snapshotEnvelope(session) {
     hz: LIMITS.snapshotHz,
     restart: 0,
     state: simApi().snapshot(session.state),
+  };
+}
+
+// Optional wire savings. Neither changes the match: the hub opts in (and tells clients through
+// coop.version features), and stepLoop still takes one input message per substep and returns full
+// snapshot envelopes.
+//
+// Input batch: one { t: 'inputs', batch: [input, ...] } message carries up to three substeps'
+// input messages. Each item is still checked by acceptInput (seq, rate, owner), as if sent alone.
+function splitInputBatch(msg) {
+  if (!msg || typeof msg !== 'object' || Array.isArray(msg) || msg.t !== 'inputs') return fail('schema');
+  if (payloadBytes(msg) > LIMITS.maxPayloadBytes) return fail('oversized');
+  const batch = msg.batch;
+  if (!Array.isArray(batch) || batch.length < 1 || batch.length > LIMITS.inputBatchMax) return fail('batch');
+  for (let i = 0; i < batch.length; i++) {
+    const item = batch[i];
+    if (!item || typeof item !== 'object' || Array.isArray(item) || item.t !== 'input') return fail('schema');
+    if (i && item.frame <= batch[i - 1].frame) return fail('frame');
+  }
+  return { ok: true, inputs: batch.slice() };
+}
+
+// Snapshot delta: the change from one snapshot envelope's render state to the next, as a tree of
+// { r: value } (replace), { o: { key: change }, d: [deleted keys] } (object) and
+// { a: { index: change }, n: length } (array). Values are compared as their JSON forms, so
+// applying the delta to the base gives exactly the JSON of the full envelope. A delta names its
+// base by loop; a client without that base waits for the next full envelope (keyframe).
+function jsonValue(v) { return v === undefined || typeof v === 'function' ? undefined : v; }
+function diffValue(a, b) {
+  if (a === b) return undefined;
+  const ao = typeof a === 'object' && a !== null, bo = typeof b === 'object' && b !== null;
+  if (!ao || !bo || Array.isArray(a) !== Array.isArray(b) || typeof b.toJSON === 'function') return { r: b };
+  if (Array.isArray(b)) {
+    const set = {};
+    let changed = a.length !== b.length;
+    for (let i = 0; i < b.length; i++) {
+      const v = jsonValue(b[i]) === undefined ? null : b[i];
+      const d = i < a.length ? diffValue(jsonValue(a[i]) === undefined ? null : a[i], v) : { r: v };
+      if (d !== undefined) { set[i] = d; changed = true; }
+    }
+    if (!changed) return undefined;
+    const out = { a: set };
+    if (a.length !== b.length) out.n = b.length;
+    return out;
+  }
+  const set = {}, gone = [];
+  let changed = false;
+  const keys = Object.keys(b);
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i], v = jsonValue(b[k]);
+    if (v === undefined) continue;
+    const was = jsonValue(a[k]);
+    const d = was === undefined || !Object.prototype.hasOwnProperty.call(a, k) ? { r: v } : diffValue(was, v);
+    if (d !== undefined) { set[k] = d; changed = true; }
+  }
+  const old = Object.keys(a);
+  for (let i = 0; i < old.length; i++) {
+    const k = old[i];
+    if (jsonValue(a[k]) !== undefined && jsonValue(b[k]) === undefined) gone.push(k);
+  }
+  // Key order, only when it is not the base's order with deletions removed and additions appended.
+  const kept = [], order = [];
+  for (let i = 0; i < old.length; i++) if (jsonValue(a[old[i]]) !== undefined && jsonValue(b[old[i]]) !== undefined) kept.push(old[i]);
+  for (let i = 0; i < keys.length; i++) if (jsonValue(b[keys[i]]) !== undefined) order.push(keys[i]);
+  let reordered = false;
+  for (let i = 0; i < kept.length; i++) if (order[i] !== kept[i]) { reordered = true; break; }
+  if (!changed && !gone.length && !reordered) return undefined;
+  const out = { o: set };
+  if (gone.length) out.d = gone;
+  if (reordered) out.k = order;
+  return out;
+}
+function plainCopy(v) {
+  if (typeof v !== 'object' || v === null) return v;
+  if (Array.isArray(v)) {
+    const out = new Array(v.length);
+    for (let i = 0; i < v.length; i++) out[i] = plainCopy(v[i]);
+    return out;
+  }
+  const out = {};
+  const keys = Object.keys(v);
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i] === '__proto__') throw new Error('delta'); // would set the prototype, not a key
+    out[keys[i]] = plainCopy(v[keys[i]]);
+  }
+  return out;
+}
+function patchValue(a, d) {
+  if (!d || typeof d !== 'object') throw new Error('delta');
+  if (Object.prototype.hasOwnProperty.call(d, 'r')) return plainCopy(d.r);
+  if (d.a) {
+    if (!Array.isArray(a)) throw new Error('delta');
+    const n = d.n === undefined ? a.length : d.n;
+    if (!Number.isInteger(n) || n < 0) throw new Error('delta');
+    const out = a.slice(0, n);
+    const keys = Object.keys(d.a);
+    for (let i = 0; i < keys.length; i++) {
+      const at = Number(keys[i]);
+      if (!Number.isInteger(at) || at < 0 || at >= n) throw new Error('delta');
+      out[at] = patchValue(out[at], d.a[keys[i]]);
+    }
+    return out;
+  }
+  if (d.o) {
+    if (typeof a !== 'object' || a === null || Array.isArray(a)) throw new Error('delta');
+    const out = {};
+    const gone = Array.isArray(d.d) ? d.d : [];
+    const keys = Object.keys(a);
+    for (let i = 0; i < keys.length; i++) if (gone.indexOf(keys[i]) < 0) out[keys[i]] = a[keys[i]];
+    const set = Object.keys(d.o);
+    for (let i = 0; i < set.length; i++) {
+      if (set[i] === '__proto__') throw new Error('delta');
+      out[set[i]] = patchValue(out[set[i]], d.o[set[i]]);
+    }
+    if (!Array.isArray(d.k)) return out;
+    const ordered = {};
+    for (let i = 0; i < d.k.length; i++) {
+      if (typeof d.k[i] !== 'string' || !Object.prototype.hasOwnProperty.call(out, d.k[i]) || d.k[i] === '__proto__') throw new Error('delta');
+      ordered[d.k[i]] = out[d.k[i]];
+    }
+    if (Object.keys(ordered).length !== Object.keys(out).length) throw new Error('delta');
+    return ordered;
+  }
+  throw new Error('delta');
+}
+function snapshotDelta(base, next) {
+  if (!base || !next || base.kind !== SNAPSHOT_KIND || next.kind !== SNAPSHOT_KIND || base.matchId !== next.matchId) return fail('base');
+  const d = diffValue(base.state, next.state);
+  return {
+    ok: true,
+    delta: {
+      kind: DELTA_KIND, protocol: next.protocol, gameId: next.gameId, matchId: next.matchId,
+      tick: next.tick, loop: next.loop, hz: next.hz, restart: next.restart,
+      base: base.loop, baseTick: base.tick, d: d === undefined ? null : d,
+    },
+  };
+}
+function applySnapshotDelta(base, delta) {
+  if (!base || !delta || base.kind !== SNAPSHOT_KIND || delta.kind !== DELTA_KIND) return fail('schema');
+  if (delta.matchId !== base.matchId || delta.base !== base.loop || delta.baseTick !== base.tick) return fail('base');
+  let state;
+  try { state = delta.d === null ? plainCopy(base.state) : patchValue(plainCopy(base.state), delta.d); }
+  catch (err) { return fail('delta'); }
+  return {
+    ok: true,
+    envelope: {
+      kind: SNAPSHOT_KIND, protocol: delta.protocol, gameId: delta.gameId, matchId: delta.matchId,
+      tick: delta.tick, loop: delta.loop, hz: delta.hz, restart: delta.restart, state: state,
+    },
   };
 }
 
@@ -528,6 +700,11 @@ const CoopProtocol = {
   participationFacts: participationFacts,
   terminalFacts: terminalFacts,
   snapshotEnvelope: snapshotEnvelope,
+  SNAPSHOT_KIND: SNAPSHOT_KIND,
+  DELTA_KIND: DELTA_KIND,
+  splitInputBatch: splitInputBatch,
+  snapshotDelta: snapshotDelta,
+  applySnapshotDelta: applySnapshotDelta,
   packMask: packMask,
   unpackMask: unpackMask,
   lifeFacts: lifeFacts,

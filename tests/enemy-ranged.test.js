@@ -189,9 +189,13 @@ for (const [weapon, left] of [[3, true], [4, false]]) {
   }));
   const kinds = new Set();
   for (const [stage, lineup] of roster.stages.entries()) {
-    const atlas = fs.readFileSync(path.join(__dirname, '../public', roster.sheets[stage]));
-    assert.equal(atlas.readUInt32BE(16), 14 * roster.cell);
-    assert.equal(atlas.readUInt32BE(20), lineup.length * roster.cell);
+    // Shipped as lossless WebP (manifest.js still names .png): VP8L stores width-1 and height-1 in 14 bits each.
+    const sheet = roster.sheets[stage].replace(/\.png$/, '.webp');
+    const atlas = fs.readFileSync(path.join(__dirname, '../public', sheet));
+    assert.equal(atlas.toString('ascii', 0, 4) + atlas.toString('ascii', 8, 16), 'RIFFWEBPVP8L', sheet + ' is lossless WebP');
+    const bits = atlas.readUInt32LE(21);
+    assert.equal((bits & 0x3fff) + 1, 14 * roster.cell);
+    assert.equal(((bits >>> 14) & 0x3fff) + 1, lineup.length * roster.cell);
     const game = Sim.create(slots, 15 + stage, stage);
     game.camX = 100;
     game.stage.waves.forEach(w => { w.x = 420; });
@@ -259,7 +263,7 @@ for (const [weapon, left] of [[3, true], [4, false]]) {
     enemy.sh = 0;
     run(game, shot.startup + 1);
     const snapshot = Sim.snapshot(game);
-    const shadowSource = MANIFEST.shadows.sheets[MANIFEST.bosses[snapshot.si].shadowStage ?? snapshot.si];
+    const shadowSource = scope.AssetLoader.shadowSheet(MANIFEST.shadows.sheets[MANIFEST.bosses[snapshot.si].shadowStage ?? snapshot.si]);
     images.set(shadowSource, { tag: 'shadow', naturalWidth: 896, naturalHeight: 1408 });
     const release = snapshot.projs[0];
     assert.equal(release.k, shot.kind, 'the real release reaches the expected enemy-FX row');

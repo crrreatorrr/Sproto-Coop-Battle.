@@ -117,5 +117,43 @@ async function main() {
   assert.throws(()=>loader.setActionPages(actions),/at most two/);
   assert.throws(()=>loader.setActionPages([pages[0]]),/action pages/);
   console.log('authored clip current/next page residency, cancellation, and stage release ok');
+
+  // Render.drawWorld calls enterStage every frame, so evict() runs every frame. While a clip owns the
+  // pages, the next stage's boss sheets must stay unloaded instead of being re-queued each tick.
+  const nextBoss = src => /\/b1-/.test(src || '');
+  const fresh = scope.window.AssetLoader.create({ Image });
+  let nextLoads = 0;
+  const countNext = () => { nextLoads += pending.filter(image => nextBoss(image.src)).length; };
+  async function settle() {
+    for (let n = 0; n < 100; n++) {
+      countNext();
+      pending.splice(0).forEach(image => image.succeed());
+      decodes.splice(0).forEach(job => job.resolve());
+      await Promise.resolve();
+      if (!pending.length && !decodes.length && !fresh.debug().loadSlots && !fresh.debug().decodeSlots) return;
+    }
+    throw new Error('loader failed to settle');
+  }
+  fresh.enterStage(0, manifest);
+  await settle();
+  fresh.setTransformPages(pages.slice(0, 2));
+  await settle();
+  nextLoads = 0;
+  for (let frame = 0; frame < 120; frame++) { fresh.enterStage(0, manifest); await settle(); }
+  assert.equal(nextLoads, 0, 'per-frame enterStage during a clip never re-queues evicted next-stage boss sheets');
+  assert.equal(fresh.status().resident.boss, 4);
+  // The removed per-tick Render.bossImages(stage + 1) call did exactly this: it re-fetched every frame.
+  for (let frame = 0; frame < 10; frame++) {
+    manifest.bosses[1].phases.forEach(p => { fresh.image(p.sheet); fresh.image(p.proj); });
+    await settle();
+    fresh.enterStage(0, manifest);
+    await settle();
+  }
+  assert.ok(nextLoads >= 10 * 4, 'the old per-tick next-boss request pattern thrashes (test is sensitive)');
+  for (const file of ['main.js', 'net-hub.js']) {
+    const src = fs.readFileSync(path.join(__dirname, '../public/js', file), 'utf8');
+    assert.ok(!/bossImages\s*\(/.test(src), file + ' leaves boss sheet loading to Render.enterStage');
+  }
+  console.log('per-frame stage pins never re-fetch evicted next-stage boss sheets');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

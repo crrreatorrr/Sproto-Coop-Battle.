@@ -279,8 +279,8 @@ function hostStep() {
     else if (s.ctrl === 'remote') p.in = I.unpack(((app.remoteIn[s.owner] || {})[s.dev]) | 0);
   }
   S.step(sim);
-  // Preload the next bosses' sheets as the campaign advances.
-  R.bossImages(sim.stageIdx); if (sim.stageIdx + 1 < M.bosses.length) R.bossImages(sim.stageIdx + 1);
+  // Boss sheets load through Render.enterStage (drawWorld calls it every frame), which pins the
+  // current stage and prefetches the next only when AssetLoader.canPrefetchNext allows it.
   for (const e of sim.events) { A.play(e); app.pendingEv.push(e); if (e === 'bossdown') latchKill(sim.stageIdx, sim.players); if (e === 'clear') stageClear(sim.stageIdx, sim.god, sim.players); }
   sim.events.length = 0;
   if (app.role === 'host' && app.net && app.net.open && ++app.sendTick % 2 === 0) {
@@ -952,7 +952,6 @@ function drawGame() {
   } else snap = S.snapshot(app.sim);
   app.view = snap;
   noteRun(snap);
-  R.bossImages(snap.si);
   // Seats played on this device get a marker so they can be found in a crowd.
   const mine = [];
   app.slots.forEach((sl, i) => { if (app.role === 'guest' ? sl.ctrl === 'remote' && sl.owner === app.myId : sl.ctrl === 'local') mine.push(i); });
@@ -1120,8 +1119,8 @@ function frameStep(now) {
   }
   if (app.role === 'guest' && app.net && app.net.open && app.screen === 'game' && !app.hub.confirming) {
     const inp = {}; for (const s of app.slots) if (s.ctrl === 'remote' && s.owner === app.myId) inp[s.dev] = I.pack(I.read(s.dev));
-    app.net.send({ t: 'in', inp });
-  }
+    if (guestSend.due(JSON.stringify(inp), now)) app.net.send({ t: 'in', inp });
+  } else guestSend.reset();
   if ((app.screen === 'lobby' || app.screen === 'stages') && app.role === 'host' && (app.lobbyDirty || app.t % 60 === 0)) broadcastLobby();
 
   hits.length = 0;
@@ -1178,9 +1177,14 @@ function cancelHubReturn() {
   if (hub) hub.cancelReturn();
   app.hub.confirming = false;
 }
+const guestSend = I.sendGate();
 const frame = C.frameLoop(frameStep, crash);
 requestAnimationFrame(frame);
-const fontReady = document.fonts ? document.fonts.load('10px "Press Start 2P"').catch(() => {}) : Promise.resolve();
+// The font is self-hosted; still never let a slow or failed font load hold the title screen.
+const FONT_WAIT_MS = 1500;
+const fontReady = document.fonts
+  ? Promise.race([document.fonts.load('10px "Press Start 2P"').catch(() => {}), new Promise(resolve => setTimeout(resolve, FONT_WAIT_MS))])
+  : Promise.resolve();
 // C2 load boundary: title waits on lobby art; a failed critical file stays on this screen until retry.
 const launchOptions = new URLSearchParams(location.search);
 const gameScripts = new Map();

@@ -166,7 +166,9 @@ export function inventory() {
   const assetFiles = publicFiles.filter(file => file.split(path.sep).includes('assets'));
   const assetSet = new Set(assetFiles.map(file => path.relative(pub, file).split(path.sep).join('/')));
   const refs = dynamicRefs(renderSource, manifest);
-  const literals = literalAssetRefs(sources);
+  // manifest.js (pinned) still names the shadow sheets .png; the loader maps them to the shipped .webp.
+  const shadowSheet = loadAssetLoader().shadowSheet;
+  const literals = new Set([...literalAssetRefs(sources)].map(ref => shadowSheet(ref)));
   const preload = preloadList(renderSource, manifest);
   const files = [];
   let assetBytes = 0;
