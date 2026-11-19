@@ -2,6 +2,7 @@
 'use strict';
 
 const http = require('http');
+const zlib = require('zlib');
 const assert = require('assert');
 const { WebSocket } = require('ws');
 const relay = require('../server/server.js');
@@ -15,7 +16,10 @@ function get(port, urlPath, headers) {
     const req = http.get({ host: '127.0.0.1', port, path: urlPath, headers }, res => {
       const chunks = [];
       res.on('data', chunk => chunks.push(chunk));
-      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks).toString('utf8') }));
+      res.on('end', () => {
+        const raw = Buffer.concat(chunks);
+        resolve({ status: res.statusCode, headers: res.headers, raw, body: raw.toString('utf8') });
+      });
     });
     req.on('error', reject);
   });
@@ -130,6 +134,24 @@ async function main() {
     const outsideName = await get(port, '/server/server.js');
     check(outsideName.status === 404, 'public/server/server.js must not exist');
     check(!outsideName.body.includes(marker), 'named server path leaked');
+
+    // Static files: text is gzipped on request, an unchanged file revalidates to a bodiless 304.
+    const plainJs = await get(port, '/js/main.js');
+    check(plainJs.status === 200 && !plainJs.headers['content-encoding'], 'plain js');
+    check(/^W\/"[0-9a-f]+-[0-9a-f]+"$/.test(plainJs.headers.etag || ''), 'js etag ' + plainJs.headers.etag);
+    check(plainJs.headers['cache-control'] === 'no-cache', 'dev files revalidate');
+    const zippedJs = await get(port, '/js/main.js', { 'accept-encoding': 'gzip, deflate, br' });
+    check(zippedJs.headers['content-encoding'] === 'gzip' && zippedJs.headers.vary === 'Accept-Encoding', 'gzip js');
+    check(zlib.gunzipSync(zippedJs.raw).equals(plainJs.raw), 'gzip round trip');
+    check(Number(zippedJs.headers['content-length']) === zippedJs.raw.length && zippedJs.raw.length < plainJs.raw.length / 2, 'gzip length');
+    const refused = await get(port, '/js/main.js', { 'accept-encoding': 'gzip;q=0' });
+    check(!refused.headers['content-encoding'], 'gzip;q=0 is honoured');
+    const again = await get(port, '/js/main.js', { 'if-none-match': plainJs.headers.etag });
+    check(again.status === 304 && again.raw.length === 0 && again.headers.etag === plainJs.headers.etag, '304 on matching etag');
+    const image = await get(port, '/assets/ufo/laser.png', { 'accept-encoding': 'gzip' });
+    check(image.status === 200 && !image.headers['content-encoding'] && image.headers['content-type'] === 'image/png', 'images are sent as is');
+    const font = await get(port, '/fonts/press-start-2p-latin-400.woff2');
+    check(font.status === 200 && font.headers['content-type'] === 'font/woff2', 'self-hosted font type');
 
     const posted = await request(port, 'POST', '/healthz');
     check(posted.status === 405, 'POST healthz');
