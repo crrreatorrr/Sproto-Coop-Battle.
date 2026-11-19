@@ -61,6 +61,7 @@ const SYNTAX = [
   'tests/boss-transform-loading.test.js',
   'tests/boss-transform-browser.cjs',
   'tests/budgets.test.js',
+  'tests/snapshot-delta.test.js',
   'tests/crash-guard.test.js',
   'tests/gamepad.test.js',
   'tests/input.test.js',
