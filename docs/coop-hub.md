@@ -74,7 +74,7 @@ The window uses the join dialog's look: Press Start 2P, `#14112a` panel, `#ffd23
 
 ## Progress per account (SDK 0.8.0)
 
-Stage unlocks and the best run belong to whoever earned them. `Progress.createStore` (end of `public/js/audio.js`) is the game's one progress store, and every change goes through its `update`. The model: `unlocked` merges by max; `best` keeps the better run by an explicit order (a win, then the furthest stage, then the higher score, then the faster run; all four equal means the same record), so merging is commutative, associative and idempotent.
+Stage unlocks and the best run belong to whoever earned them. `Progress.createStore` (`public/js/progress.js`) is the game's one progress store, and every change goes through its `update`. The model: `unlocked` merges by max; `best` keeps the better run by an explicit order (a win, then the furthest stage, then the higher score, then the faster run; all four equal means the same record), so merging is commutative, associative and idempotent.
 
 - **Owners.** `device` is play outside a hub session, under `sproto-coop-progress-v1` (the same key as before, so a browser's existing progress simply stays its device progress). `account` is the live hub player, account or guest: `sproto-coop-progress-v1@<playerId>` in the browser plus the player's cloud save (`save.get` / `save.put`). `pending` holds a hub visit's progress in memory until the player is known.
 - **Startup.** `main.js` creates the store with `hubVisit: CoopHub.visitStarting()` (a `#t=` ticket or the saved hub session, the same test as the SDK's `hubVisitStarting`), so a hub visit shows empty progress until it resolves, never the device's.

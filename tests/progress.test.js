@@ -1,10 +1,10 @@
-// Progress (the Progress module at the end of public/js/audio.js): best run, stage unlocks, free play,
+// Progress (public/js/progress.js): best run, stage unlocks, free play,
 // damaged saves. tests/account-progress.test.js covers owners, accounts and the cloud save.
 'use strict';
 
 const assert = require('assert');
 const path = require('path');
-const P = require(path.join(__dirname, '..', 'public', 'js', 'audio.js'));
+const P = require(path.join(__dirname, '..', 'public', 'js', 'progress.js'));
 
 function fakeStore(initial) {
   const map = new Map(initial ? [[P.KEY, initial]] : []);
