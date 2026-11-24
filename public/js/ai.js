@@ -79,7 +79,8 @@ function think(state, p) {
     let lead = -1e9;
     for (const o of state.players) if (o !== p && o.ctrl !== 'cpu' && S.alive(o) && (o.idle || 0) < S.IDLE_AFTER && o.x > lead) lead = o.x;
     const ahead = lead > -1e9 ? lead + 50 + p.slot * 18 : 1e9;
-    const crate = state.items.find(i => i.kind === 'crate' && i.x > p.x - 20 && i.x - p.x < 160 && i.x < ahead + 40);
+    // The crate is hit from its left, so that spot has to be on screen: the camera never goes back.
+    const crate = state.items.find(i => i.kind === 'crate' && i.x > p.x - 20 && i.x - p.x < 160 && i.x < ahead + 40 && i.x - 30 > state.camX + 16);
     if (crate) { if (go(crate.x - 30, crate.y, 6)) { p.face = 1; inp.a = ai.t % 14 === 0 ? 1 : 0; } return; }
     go(Math.min(state.camX + 420 + p.slot * 24, ahead), 12 + p.slot * 19 + ai.jitter * 0.3, 12);
     return;

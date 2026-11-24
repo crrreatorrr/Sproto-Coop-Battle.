@@ -388,14 +388,15 @@ function drive(g, me, seq) { for (const inp of seq) { me.in = { ...PN, ...inp };
       for (let i = 0; i < 200 && g.enemies.length < 4; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
       assert(g.enemies.length >= 4);
       for (const e of g.enemies) {
-        const base = (26 + stage * 4 + (e.weapon === 0 ? 14 : 0)) * (1.5 + 0.08 * stage);
+        // Past stage 6 the stage ramp flattens (Sim.ramp); stages 1 to 6 use the stage index itself.
+        const base = (26 + Sim.ramp(stage) * 4 + (e.weapon === 0 ? 14 : 0)) * (1.5 + 0.08 * Sim.ramp(stage));
         assert.strictEqual(e.maxHp, Math.round(base * Sim.GRUNT_HP_SCALE(want) * (e.elite ? 1.6 : 1)), 'Shadow Sproto health for ' + h + ' humans on stage ' + (stage + 1));
       }
       g.enemies.length = 0; g.stage.waves.forEach(x => (x.done = true));
       g.camX = g.stage.len; g.lockX = null;
       for (let i = 0; i < 400 && !g.boss; i++) { g.players.forEach(p => { p.in = { ...PN }; p.inv = 9999; }); Sim.step(g); }
       // Chargers (stages 2, 6, 10) have half the health: they spend the fight rushing out of reach.
-      assert.strictEqual(g.boss.maxHp, Math.round((4200 + 440 * stage) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
+      assert.strictEqual(g.boss.maxHp, Math.round((4200 + 440 * Sim.ramp(stage)) * Sim.BOSS_HP_SCALE(want) * (stage % 4 === 1 ? 0.5 : 1)), 'boss health for ' + h + ' humans on stage ' + (stage + 1));
     }
   }
   // Fewer humans means smaller waves and softer enemies; four humans face the largest of everything.

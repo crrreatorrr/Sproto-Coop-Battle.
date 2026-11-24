@@ -457,3 +457,83 @@ record its own seed-3 golden again. B1 changes how fast bosses fall (section 7).
   active wave when a local or relay drop-in raises the human count mid-stage. Only `main.js` calls
   it, so banked matches keep the locked count.
 
+
+## 12. Late-game rebalance and QA fixes (2026-11-24, one re-pin)
+
+A bot pass found stages 7 to 13 out of reach without god mode: stages 11 to 13 were cleared in 0 of
+12 fresh starts at almost every player count. Shadow health scaled twice with the stage, damage
+scaled with it too, and weapons are sidegrades. Lowering one slope at a time did not open stages 11
+and 13, so the whole stage ramp now flattens after stage 6.
+
+### What changed (`public/js/sim.js`, `public/js/ai.js`)
+
+| Constant | Before | Now |
+| --- | --- | --- |
+| `LATE_FROM`, `LATE_RAMP`, `ramp(s)` | none: every formula used the stage index `s` | `ramp(s)` is `s` up to index 5 (stage 6), then `5 + 0.3·(s − 5)` |
+| `ENEMY_HP(s)` | `1.5 + 0.08·s` | `1.5 + 0.08·ramp(s)` |
+| `ENEMY_DMG(s)` | `0.8 + 0.1·s` | `0.8 + 0.1·ramp(s)` |
+| Wave size, Shadow base health, elite chance, the flat melee bonus, boss health and every stage-scaled boss hit | used `s` | use `ramp(s)` (rounded where the old value was a whole number) |
+| `LATE_SUMMON_EVERY` | 220 ticks on every summoner (`SUMMON_EVERY`) | 880 ticks past stage 6 (stages 7 and 11) |
+| `SUMMON_ROOM`, `LATE_SUMMON_ROOM` | a pair while fewer than `1 + humans` Shadows are up | past stage 6: while fewer than `0 + humans` are up |
+| `POWER_BUFFER` | none | 3 ticks: Special pressed up to 3 ticks before Down still fires the saved power-up |
+
+Stage 13 now has: `ramp` 7.1 (it was 12), first wave 17 Shadows (22), a plain Shadow at 112 health
+before the human scale (182), damage ×1.51 (×2.0) and a 7,324 boss (9,480). Stages 1 to 6 are
+untouched: with only the rebalance applied, 162 bot runs over stages 1 to 6 (three bots, 1, 2 and 4
+humans, three seeds) ended in byte-identical exported states.
+
+Also fixed:
+
+- **Idle revivers.** A human who has pressed nothing for `IDLE_AFTER` ticks no longer counts as a
+  reviver. Idle seats standing together used to pick each other up for ever against one ranged
+  Shadow, so the wave never ended.
+- **CPU and off-screen crates.** A CPU only goes for a crate whose hit spot (`x − 30`) is on screen;
+  it used to walk into the left edge.
+- **End screen.** The blinking join prompt is hidden once the run is over, and the page carries an
+  inline icon instead of asking for `/favicon.ico`.
+
+Tests: `tests/late-game.test.js` (ramp, idle revivers, crate, power buffer; each part fails on the
+old code), `tests/sim.test.js` and `tests/atlas-visual.cjs` follow the new formulas.
+
+### Clear rates
+
+Each stage started fresh with weapons at tier = stage, twelve seeds, clears out of 12. "Competent"
+is the CPU brain plus revives and power-ups; "skilled" also parries, hops shots and fetches snacks.
+Neither dashes, launches or flanks.
+
+| Stage | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Skilled, 1 human, before | 12 | 12 | 12 | 12 | 12 | 12 | 6 | 9 | 6 | 2 | 0 | 0 | 0 |
+| Skilled, 1 human, now | 12 | 12 | 12 | 12 | 12 | 12 | 10 | 12 | 12 | 12 | 7 | 9 | 4 |
+| Skilled, 2 humans, before | 12 | 12 | 11 | 12 | 12 | 12 | 0 | 5 | 4 | 6 | 0 | 0 | 0 |
+| Skilled, 2 humans, now | 12 | 12 | 12 | 12 | 12 | 12 | 9 | 12 | 12 | 12 | 7 | 9 | 4 |
+| Skilled, 4 humans, before | 12 | 12 | 12 | 12 | 12 | 12 | 3 | 11 | 10 | 10 | 0 | 4 | 0 |
+| Skilled, 4 humans, now | 12 | 12 | 12 | 12 | 12 | 12 | 11 | 12 | 12 | 12 | 6 | 9 | 9 |
+| Competent, 1 human, before | 12 | 12 | 12 | 12 | 11 | 12 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| Competent, 1 human, now | 12 | 12 | 12 | 12 | 11 | 12 | 6 | 8 | 10 | 11 | 1 | 4 | 2 |
+| Competent, 2 humans, before | 12 | 12 | 10 | 12 | 12 | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Competent, 2 humans, now | 12 | 12 | 10 | 12 | 12 | 11 | 3 | 11 | 8 | 10 | 0 | 3 | 1 |
+| Competent, 4 humans, before | 12 | 12 | 7 | 12 | 12 | 12 | 0 | 7 | 3 | 3 | 0 | 0 | 0 |
+| Competent, 4 humans, now | 12 | 12 | 7 | 12 | 12 | 12 | 2 | 11 | 11 | 12 | 3 | 5 | 6 |
+
+Open: the competent bot with two humans still cleared stage 11 in 0 of 12 (it does not parry or dodge the
+summoned Shadows), and the skilled bot clears stage 13 with one or two humans in about a third to a
+half of starts (4 of 12 here; 6 and 8 of 16 over sixteen seeds).
+
+A fresh-save campaign from stage 1 to 13 without god mode (a game over restarts the stage it ended
+on, as START does; weapons as unlocked by then) reached VICTORY in every run: skilled bot, one
+human, 39 to 53 minutes of play with 4 to 8 game overs; two humans, 55 to 58 minutes with 5 to 7;
+four humans, 68 to 81 minutes with 4 to 7 (three seeds each). Before, the same run was stopped
+after 79 game overs, 73 and 76 of them on stage 11.
+
+### Pin
+
+| | `bundleSha256` | `contentSha256` |
+| --- | --- | --- |
+| Before | `c4292eb9e35095b98cd8aaa33f118b234237a71f6377d7ad25cb46a78da2af5d` | `3fddedd1b65c0e2d71600e54822e0db5c66b45ac765535b7d0e88c2cf262e97b` |
+| Now | `2a07199d2a5abbdfdc69bdc9efa538cf5076edfe330f1b22899764a3351de40a` (176,772 bytes) | unchanged |
+
+`contentSha256` covers the content manifest, not the sim code, so `FINGERPRINT` stays and clients
+are not refused. Behaviour changed, so `tests/fixtures/sim-goldens.json` was rewritten and the hub
+has to copy `build/coop-sim.js` and `build/coop-sim.pin.json`, update `CoopProto`'s bundle hash and
+record its own golden again. Protocol and state versions are still 1 / 1.

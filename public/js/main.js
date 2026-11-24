@@ -995,7 +995,7 @@ function drawGame() {
     if (banked.offerPractice) T(g, 'START BEGINS A NEW PRACTICE RUN', S.W / 2, 88, 6, '#fff', 'center');
   } else if (app.paused && !app.pauseMenu) { g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, 0, S.W, S.H); T(g, 'PAUSED', S.W / 2, S.H / 2, 20, '#fff', 'center'); }
   const free = app.slots.some(cpuSeat);
-  if (free && Math.floor(app.t / 40) % 2) T(g, padUI() ? 'PRESS A TO JOIN' : 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
+  if (free && !over && Math.floor(app.t / 40) % 2) T(g, padUI() ? 'PRESS A TO JOIN' : 'PRESS ATTACK TO JOIN', S.W / 2, S.H - 30, 6, '#7aff8a', 'center');
   if (app.code) T(g, 'ROOM ' + app.code, S.W - 6, S.H - 6, 6, '#7aff8a', 'right');
 }
 
