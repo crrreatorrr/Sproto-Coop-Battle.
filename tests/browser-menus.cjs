@@ -219,6 +219,23 @@ async function check(browser, base, size, shots) {
   await tap(page, 'Enter');
   assert.strictEqual((await state(page)).screen, 'title', 'a finished run leaves without asking');
 
+  // ---- game over: the stage select reopens on the stage the run ended on, when it is open ----
+  for (const open of [false, true]) {
+    await page.evaluate(free => { const a = window.SprotoApp; a.menu = 0; a.stageSel = 0; a.settings.freePlay = free; }, open);
+    await tap(page, 'Enter'); await tap(page, 'Enter');
+    await page.waitForFunction(() => window.SprotoApp.screen === 'stages');
+    await tap(page, 'Enter');
+    await page.waitForFunction(() => window.SprotoApp.screen === 'game');
+    await page.evaluate(() => { const sim = window.SprotoApp.sim; window.Sim.startStage(sim, 2); sim.mode = 'gameover'; });
+    await frames(page, 3);
+    await tap(page, 'Enter');
+    const after = await page.evaluate(() => ({ screen: window.SprotoApp.screen, sel: window.SprotoApp.stageSel }));
+    assert.deepStrictEqual(after, { screen: 'lobby', sel: open ? 2 : 0 }, 'game over returns to the lobby with the stage reached selected only when it is open');
+    await tap(page, 'Escape');
+    assert.strictEqual((await state(page)).screen, 'title', 'Esc leaves the lobby');
+  }
+  await page.evaluate(() => { const a = window.SprotoApp; a.stageSel = 0; a.settings.freePlay = false; });
+
   // ---- pad remap in a run: Y jumps on pad 1 ----
   await page.evaluate(() => { window.SprotoApp.menu = 0; });
   await padTap(page, 0); // A on the title: LOCAL PLAY, pad 1 is P1

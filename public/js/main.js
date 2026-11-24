@@ -508,7 +508,13 @@ function localDevicesInput() {
       }
       const mode = app.role === 'guest' ? app.snap && app.snap.mode : app.sim && app.sim.mode;
       const over = mode === 'gameover' || mode === 'victory';
-      if (p.start && over && app.role !== 'guest') { app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; return; }
+      if (p.start && over && app.role !== 'guest') {
+        // A lost run continues from the stage it ended on: the stage select opens there, not on
+        // the stage the run began from (when that stage is open to this player).
+        const reached = app.sim ? app.sim.stageIdx : -1;
+        if (mode === 'gameover' && reached >= 0 && P.isOpen(app.progress.get(), reached, app.settings.freePlay)) app.stageSel = reached;
+        app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; return;
+      }
       if (I.isPad(d) && p.start) { openPauseMenu(d); return; }
     }
   }
