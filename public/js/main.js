@@ -508,7 +508,13 @@ function localDevicesInput() {
       }
       const mode = app.role === 'guest' ? app.snap && app.snap.mode : app.sim && app.sim.mode;
       const over = mode === 'gameover' || mode === 'victory';
-      if (p.start && over && app.role !== 'guest') { app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; return; }
+      if (p.start && over && app.role !== 'guest') {
+        // A lost run continues from the stage it ended on: the stage select opens there, not on
+        // the stage the run began from (when that stage is open to this player).
+        const reached = app.sim ? app.sim.stageIdx : -1;
+        if (mode === 'gameover' && reached >= 0 && P.isOpen(app.progress.get(), reached, app.settings.freePlay)) app.stageSel = reached;
+        app.screen = 'lobby'; app.sim = null; app.lobbyDirty = true; return;
+      }
       if (I.isPad(d) && p.start) { openPauseMenu(d); return; }
     }
   }
@@ -1144,8 +1150,11 @@ function frameStep(now) {
   if (app.msgT > 0) {
     app.msgT--;
     if (app.screen !== 'lobby' || !window.PartyPicker) {
-      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16);
-      T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center');
+      // The title menu fills the lower screen, so its messages go above the Sprotos instead of
+      // over a menu item.
+      const my = app.screen === 'title' ? 132 : S.H - 52;
+      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, my, S.W, 16);
+      T(g, app.msg, S.W / 2, my + 8, 6, '#fff', 'center');
     }
   }
   if (app.hub.confirming) drawConfirm('RETURN TO THE BAR?', () => requestHubReturn(true), cancelHubReturn);
