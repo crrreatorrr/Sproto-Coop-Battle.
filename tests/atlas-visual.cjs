@@ -891,8 +891,9 @@ async function verifyBossPlayback(page) {
         }
 
         if (summoners.has(boss.pilot)) {
-          // Jump the summoner clock to just before its normal Shadow pair.
-          Object.assign(s.boss, { st: 'idle', t: 0, addT: (ph === 1 ? 132 : 220) - 1 });
+          // Jump the summoner clock to just before its normal Shadow pair (slower past stage 6).
+          const every = s.stageIdx > Sim.LATE_FROM ? Sim.LATE_SUMMON_EVERY : Sim.SUMMON_EVERY;
+          Object.assign(s.boss, { st: 'idle', t: 0, addT: Math.floor(every * (ph === 1 ? 0.6 : 1)) - 1 });
           s.fx = [];
           Sim.step(s);
           const arrival = renderSnapshot(s);

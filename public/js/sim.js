@@ -180,6 +180,8 @@ function classShotRange(p) {
 const DASH_TICKS = 14, DOUBLE_TAP = 14, SPIN_TAP = 6, PARRY_WINDOW = 8, PARRY_LOCK = 24, GRAB_TICKS = 150;
 // An Attack press is remembered for this many ticks, so one made late in a swing still comes out.
 const ATTACK_BUFFER = 6;
+// Down + Special fires the saved power-up. Special may land this many ticks before Down.
+const POWER_BUFFER = 3;
 // A human who has pressed nothing for this long no longer holds the CPU teammates back.
 const IDLE_AFTER = 300;
 // A downed Sproto that nobody revives within 10 seconds dies.
@@ -191,9 +193,15 @@ const CPU_DMG = 0.55, CPU_TAKEN = 1.35, CPU_DMG_FEW = 0.75, CPU_TAKEN_FEW = 1.15
 // starts so a drop-in mid-stage does not change the stage in progress.
 const WAVE_SCALE = h => 0.5 + 0.1 * h, GRUNT_HP_SCALE = h => 0.58 + 0.102 * h, BOSS_HP_SCALE = h => 0.35 + 0.15 * h;
 // Difficulty: more Shadow Sprotos, tougher and more aggressive.
-// Difficulty ramps by stage: stage 1 is a warm-up, stage 12 is brutal. Shadow Sproto health starts
-// 1.5x up from stage 1 so the opening stage is a real fight.
-const ENEMY_HP = s => 1.5 + 0.08 * s, ENEMY_DMG = s => 0.8 + 0.1 * s, MAX_ON_SCREEN = 12;
+// Difficulty ramps by stage: stage 1 is a warm-up, stage 13 is the hardest. Shadow Sproto health
+// starts 1.5x up from stage 1 so the opening stage is a real fight.
+// Weapons are sidegrades, so the party never out-grows the ramp. Stages 1 to 6 (index 0 to
+// LATE_FROM) climb a full step each; past that every stage adds only LATE_RAMP of a step to wave
+// size, Shadow and boss health, and every stage-scaled hit. ramp() is the stage index all of
+// those use.
+const LATE_FROM = 5, LATE_RAMP = 0.3;
+const ramp = s => s <= LATE_FROM ? s : LATE_FROM + (s - LATE_FROM) * LATE_RAMP;
+const ENEMY_HP = s => 1.5 + 0.08 * ramp(s), ENEMY_DMG = s => 0.8 + 0.1 * ramp(s), MAX_ON_SCREEN = 12;
 
 // One small passive per Sproto, by fighter index (the same order as MANIFEST.fighters).
 const PASSIVES = [
@@ -223,6 +231,9 @@ function setClass(p, classId) {
 const BOSS_ARCHETYPES = ['gunner', 'charger', 'summoner', 'bomber'];
 const ELITE_FROM_STAGE = 1, ELITE_MAX = 2, GUARD_HITS = 6, GUARD_REGEN = 300;
 const BOMB_FLIGHT = 48, FIRE_LIFE = 200, CHARGER_WINDUP = 36, CHARGER_HP = 0.5, SUMMON_EVERY = 220;
+// A summoner calls a pair while fewer than SUMMON_ROOM + humans Shadow Sprotos are up. Past stage 6
+// those Shadows take much longer to put down, so it calls less often and waits for more room.
+const SUMMON_ROOM = 1, LATE_SUMMON_EVERY = 880, LATE_SUMMON_ROOM = 0;
 
 function rng(state) { // mulberry32 stored in state.seed
   let t = (state.seed = (state.seed + 0x6D2B79F5) | 0);
@@ -257,7 +268,7 @@ function stageLength(i) { return 2200 + i * 80; }
 function makeStage(state, i) {
   const len = stageLength(i);
   const waves = [];
-  const per = 8 + Math.min(14, Math.round(i * 1.3)); // crowds grow every stage
+  const per = 8 + Math.min(14, Math.round(ramp(i) * 1.3)); // crowds grow every stage
   waves.push({ x: 420, count: per, done: false });
   waves.push({ x: Math.floor(len * 0.3), count: per + 3, done: false });
   waves.push({ x: Math.floor(len * 0.5), count: per + 4, done: false, ufo: true });
@@ -384,7 +395,9 @@ function updatePlayer(state, p) {
     p.downT--;
     // Humans revive anyone, as often as they like. CPU Sprotos revive anyone too, humans and each
     // other, but each Sproto gets only one CPU revive per life and per stage (p.npcRevived).
-    const helper = state.players.find(o => o !== p && (o.ctrl !== 'cpu' || !p.npcRevived) && alive(o) && o.st !== 'ufo' && Math.abs(o.x - p.x) < 30 && Math.abs(o.y - p.y) < 20);
+    // A human who has pressed nothing for IDLE_AFTER ticks revives nobody: seats left standing
+    // together would otherwise pick each other up forever and the wave would never end.
+    const helper = state.players.find(o => o !== p && (o.ctrl === 'cpu' ? !p.npcRevived : (o.idle || 0) < IDLE_AFTER) && alive(o) && o.st !== 'ufo' && Math.abs(o.x - p.x) < 30 && Math.abs(o.y - p.y) < 20);
     if (helper) {
       p.revive += has(helper, 'medic') && state.t % 5 < 2 ? 2 : 1; // a Medic revives 40% faster
       if (p.revive % 12 === 0) fx(state, 'spark', p.x, p.y, 20);
@@ -454,7 +467,10 @@ function updatePlayer(state, p) {
     if (p.t >= 20) setState(p, 'idle');
   } else if (p.st === 'block') {
     p.vx = 0; p.vy = 0;
-    if (!inp.s) {
+    if (inp.s && inp.d && p.t <= POWER_BUFFER && !p.blockHit && p.powers.length) {
+      // Special landed a tick or two before Down: this was Down + Special, not a block.
+      usePower(state, p, p.powers.shift());
+    } else if (!inp.s) {
       p.parryLock = state.t + PARRY_LOCK;
       // A quick tap that blocked nothing is the spin attack.
       if (p.t <= SPIN_TAP && !p.blockHit && !inp.d) startSpin(state, p, god); else setState(p, 'idle');
@@ -950,7 +966,7 @@ function spawnEnemy(state, side, plain) {
   // harder hits and a guard.
   let elites = 0;
   for (const o of state.enemies) if (o.elite && !o.dead) elites++;
-  const eliteRoll = !plain && state.stageIdx >= ELITE_FROM_STAGE && elites < ELITE_MAX && rng(state) < 0.08 + 0.01 * state.stageIdx;
+  const eliteRoll = !plain && state.stageIdx >= ELITE_FROM_STAGE && elites < ELITE_MAX && rng(state) < 0.08 + 0.01 * ramp(state.stageIdx);
   const elite = eliteRoll && !prefersRange;
   if (elite) kind = kind % 2 ? 2 : 0;
   else if (role === 'twin') kind = SHADOW_TWIN;
@@ -964,7 +980,7 @@ function spawnEnemy(state, side, plain) {
     else if (!plain && prefersRange) kind = SHADOW_CASTER;
     else if (!plain && state.stageIdx > 0 && rng(state) < 0.5) kind = SHADOW_ARCHER;
   }
-  const hp = Math.round((26 + state.stageIdx * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx) * GRUNT_HP_SCALE(humansOf(state)) * (elite ? 1.6 : 1));
+  const hp = Math.round((26 + ramp(state.stageIdx) * 4 + (kind === 0 ? 14 : 0)) * ENEMY_HP(state.stageIdx) * GRUNT_HP_SCALE(humansOf(state)) * (elite ? 1.6 : 1));
   const x = side > 0 ? state.camX + W + 30 + rng(state) * 40 : state.camX - 30 - rng(state) * 40;
   state.enemies.push({
     id: state.nextId++, fid: Math.floor(rng(state) * (root.MANIFEST ? root.MANIFEST.fighters.length : 3)), sh, weapon: kind, x, y: rng(state) * DEPTH, z: 0, vx: 0, vy: 0, vz: 0,
@@ -1091,7 +1107,7 @@ function updateEnemy(state, e) {
         const dx = (q.x - e.x) * e.face;
         if (dx > -8 && dx < w.reach && Math.abs(q.y - e.y) < 14 && q.z < 40 && !(e.hitDone && e.hitDone.has(q.slot))) {
           (e.hitDone || (e.hitDone = new Set())).add(q.slot);
-          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(state.stageIdx / 3)) * ENEMY_DMG(state.stageIdx) * (e.elite ? 1.25 : 1)), e.face, w.id === 'club' && rng(state) < 0.4, e);
+          hurtPlayer(state, q, Math.round((w.dmg + Math.floor(ramp(state.stageIdx) / 3)) * ENEMY_DMG(state.stageIdx) * (e.elite ? 1.25 : 1)), e.face, w.id === 'club' && rng(state) < 0.4, e);
         }
       }
     }
@@ -1195,7 +1211,7 @@ function updateBossExtra(state, b, players) {
         const dx = (p.x - x) / width, dy = (p.y - y) / depth;
         return rounded ? dx * dx + dy * dy < 1 : Math.abs(dx) < 1 && Math.abs(dy) < 1;
       });
-      if (inside) hurtPlayer(state, p, powerful ? 15 + Math.floor(state.stageIdx * .65) : 11 + Math.floor(state.stageIdx * .5),
+      if (inside) hurtPlayer(state, p, powerful ? 15 + Math.floor(ramp(state.stageIdx) * .65) : 11 + Math.floor(ramp(state.stageIdx) * .5),
         Math.sign(p.x - b.x) || b.face, powerful);
     }
     ev(state, 'boom');
@@ -1220,10 +1236,10 @@ function startBoss(state) {
   const info = bossInfo(state.stageIdx);
   const ph = info ? info.phases[0] : { body: [60, 60, 200, 250] };
   lockHumans(state);
-  // (4,200 on stage 1 up to 9,040 on stage 12) x the human scale: 2,100 to 4,520 for one human,
-  // 3,990 to 8,590 for four. One human faces about 53% of the four-human boss.
+  // (4,200 on stage 1, 6,400 on stage 6, 7,324 on stage 13) x the human scale: 2,100 to 3,662 for
+  // one human, 3,990 to 6,958 for four. One human faces about 53% of the four-human boss.
   // The charger spends much of its fight rushing out of reach, so it has less health to compensate.
-  const hp = Math.round((4200 + state.stageIdx * 440) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
+  const hp = Math.round((4200 + ramp(state.stageIdx) * 440) * BOSS_HP_SCALE(state.humans) * (state.stageIdx % 4 === 1 ? CHARGER_HP : 1));
   state.boss = {
     bi: state.stageIdx % stageCount(), phase: 0, hp, maxHp: hp, x: state.camX + W + 140, y: DEPTH / 2, z: 0, face: -1,
     st: 'enter', t: 0, row: 0, w: (ph.body[2] - ph.body[0]) * BOSS_SCALE * 0.85, cycle: 0, flash: 0, tx: 0, ty: 0, hitCd: 0, adds: 0,
@@ -1294,16 +1310,17 @@ function updateBoss(state) {
   // attack and leaves its lane burning. summoner: single shots, slower, but it keeps calling Shadow
   // Sprotos. bomber: weapon A lobs bombs at marked spots instead of firing along a lane.
   const arch = BOSS_ARCHETYPES[b.arch || 0];
-  if (arch === 'summoner' && ++b.addT % Math.floor(SUMMON_EVERY * fast) === 0) {
+  const lateSummon = state.stageIdx > LATE_FROM;
+  if (arch === 'summoner' && ++b.addT % Math.floor((lateSummon ? LATE_SUMMON_EVERY : SUMMON_EVERY) * fast) === 0) {
     let alive = 0; for (const e of state.enemies) if (!e.dead) alive++;
-    if (alive < 1 + humansOf(state)) {
+    if (alive < (lateSummon ? LATE_SUMMON_ROOM : SUMMON_ROOM) + humansOf(state)) {
       spawnEnemy(state, 1, true); spawnEnemy(state, -1, true); // plain Shadow Sprotos, never elites
       b.summonT = state.t;
     }
   }
   // Contact damage, only once the rush has started: the wind-up is the warning, not a hit.
   const windup = arch === 'charger' ? CHARGER_WINDUP : 24;
-  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge' && b.t >= windup) hurtPlayer(state, p, arch === 'charger' ? 12 + state.stageIdx : 16 + state.stageIdx * 1.5, Math.sign(p.x - b.x) || 1, true); // the charger rushes more often, for less
+  for (const p of ps) if (Math.abs(p.x - b.x) < b.w * 0.35 && Math.abs(p.y - b.y) < 16 && p.z < 30 && b.st === 'charge' && b.t >= windup) hurtPlayer(state, p, arch === 'charger' ? 12 + Math.round(ramp(state.stageIdx)) : 16 + Math.round(ramp(state.stageIdx)) * 1.5, Math.sign(p.x - b.x) || 1, true); // the charger rushes more often, for less
 
   if (b.st === 'idle') {
     // Drift toward a lane near the target, keep distance from the group.
@@ -1377,7 +1394,7 @@ function updateBoss(state) {
     if (b.t === SWEEP_WARN) {
       for (const p of ps) {
         const dx = (p.x - b.x) * b.tx;
-        if (p.st !== 'ufo' && dx > 0 && dx < b.w / 2 + SWEEP_REACH && p.z < 20) hurtPlayer(state, p, 12 + state.stageIdx, b.tx, true);
+        if (p.st !== 'ufo' && dx > 0 && dx < b.w / 2 + SWEEP_REACH && p.z < 20) hurtPlayer(state, p, 12 + Math.round(ramp(state.stageIdx)), b.tx, true);
       }
       fx(state, 'nova', b.x + b.tx * (b.w / 2 + 40), b.y, 0); ev(state, 'boom'); shake(state, 5);
     }
@@ -1445,7 +1462,7 @@ function bossLob(state, b) {
   const mz = (ph ? (ph.body[3] - ph.body[1]) * BOSS_SCALE : 120) * 0.45, mx = b.x + b.face * b.w * 0.55, n = BOMB_FLIGHT;
   ev(state, 'bossfire');
   for (const m of b.marks || []) {
-    state.projs.push({ id: state.nextId++, kind: 'boss', row: 0, x: mx, y: b.y, z: mz, vx: (m[0] - mx) / n, vy: (m[1] - b.y) / n, vz: 0.15 * n - mz / n, dmg: 12 + state.stageIdx, t: 0, life: n + 4, lob: n, tx: m[0], ty: m[1], phase: b.phase, bi: b.bi });
+    state.projs.push({ id: state.nextId++, kind: 'boss', row: 0, x: mx, y: b.y, z: mz, vx: (m[0] - mx) / n, vy: (m[1] - b.y) / n, vz: 0.15 * n - mz / n, dmg: 12 + Math.round(ramp(state.stageIdx)), t: 0, life: n + 4, lob: n, tx: m[0], ty: m[1], phase: b.phase, bi: b.bi });
   }
 }
 function bombBoom(state, pr) {
@@ -1464,7 +1481,7 @@ function updateHazards(state) {
     h.t++;
     if (h.t % 36 !== 18) continue;
     for (const p of activePlayers(state)) {
-      if (p.st !== 'ufo' && p.z < 10 && p.x > h.x0 - 6 && p.x < h.x1 + 6 && Math.abs(p.y - h.y) < h.half) hurtPlayer(state, p, 3 + Math.floor(state.stageIdx / 3), p.face, false);
+      if (p.st !== 'ufo' && p.z < 10 && p.x > h.x0 - 6 && p.x < h.x1 + 6 && Math.abs(p.y - h.y) < h.half) hurtPlayer(state, p, 3 + Math.floor(ramp(state.stageIdx) / 3), p.face, false);
     }
   }
   state.hazards = state.hazards.filter(h => h.t < h.life);
@@ -1475,7 +1492,7 @@ function bossShoot(state, b) {
   const bodyH = ph ? (ph.body[3] - ph.body[1]) * BOSS_SCALE : 120;
   const mz = bodyH * 0.45;
   const spd = b.phase ? 4.6 : 3.8;
-  const dmg = 11 + state.stageIdx;
+  const dmg = 11 + Math.round(ramp(state.stageIdx));
   ev(state, 'bossfire');
   // In the middle of the arena the same volley also leaves the machine's back.
   for (const dir of b.both ? [b.face, -b.face] : [b.face]) {
@@ -1844,7 +1861,7 @@ function importState(data) {
   return state;
 }
 
-const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, classShotRange, healTarget, canPickUp, partySlots, Combat, MAX_HP, BOSS_SCALE, BOSS_TRANSFORM_TICKS, bossExtraAttack, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
+const Sim = { W, H, DEPTH, FLOOR_TOP, SLOTS, EMPTY, seatIn, seatOut, SLOT_COLORS, WEAPONS, ENEMY_WEAPONS, CLASSES, classOf, setClass, weaponChoices, weaponFor, classMoveTiming, classShotPower, classShotRange, healTarget, canPickUp, partySlots, Combat, MAX_HP, BOSS_SCALE, BOSS_TRANSFORM_TICKS, bossExtraAttack, UFO_TICKS, DOWN_TICKS, REVIVE_TICKS, PARRY_WINDOW, SPIN_TAP, PARRY_LOCK, ATTACK_BUFFER, POWER_BUFFER, SWEEP_WARN, SWEEP_REACH, MID_ROOM, WAVE_SCALE, GRUNT_HP_SCALE, BOSS_HP_SCALE, humansOf, rescaleHumans, IDLE_AFTER, LATE_FROM, LATE_RAMP, ramp, ENEMY_HP, ENEMY_DMG, SUMMON_EVERY, SUMMON_ROOM, LATE_SUMMON_EVERY, LATE_SUMMON_ROOM, PASSIVES, BOSS_ARCHETYPES, GUARD_HITS, GUARD_REGEN, BOMB_FLIGHT, maxHp, STATE_KIND, STATE_VERSION, MAX_STATE_BYTES, create, step, snapshot, exportState, importState, toggleGod, startStage, stageLength, alive, rng, clamp };
 root.Sim = Sim;
 if (typeof module !== 'undefined') module.exports = Sim;
 })(typeof window !== 'undefined' ? window : globalThis);
