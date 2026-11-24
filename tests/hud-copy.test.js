@@ -75,6 +75,11 @@ async function shot() {
   }
 }
 
+// The end screen shows the run summary alone: the blinking join prompt stops once the run is over.
+assert.ok(/if \(free && !over && [^\n]*TO JOIN/.test(main), 'the join prompt is hidden on the end screen');
+// The page carries its own icon, so no browser asks the server for /favicon.ico (a 404).
+assert.ok(/<link rel="icon" href="data:image\/svg\+xml,/.test(fs.readFileSync(path.join(root, 'public/index.html'), 'utf8')));
+
 if (process.argv.includes('--shot')) {
   shot().catch(err => {
     console.error(err);
