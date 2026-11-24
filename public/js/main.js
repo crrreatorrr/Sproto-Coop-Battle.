@@ -1150,8 +1150,11 @@ function frameStep(now) {
   if (app.msgT > 0) {
     app.msgT--;
     if (app.screen !== 'lobby' || !window.PartyPicker) {
-      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, S.H - 52, S.W, 16);
-      T(g, app.msg, S.W / 2, S.H - 44, 6, '#fff', 'center');
+      // The title menu fills the lower screen, so its messages go above the Sprotos instead of
+      // over a menu item.
+      const my = app.screen === 'title' ? 132 : S.H - 52;
+      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, my, S.W, 16);
+      T(g, app.msg, S.W / 2, my + 8, 6, '#fff', 'center');
     }
   }
   if (app.hub.confirming) drawConfirm('RETURN TO THE BAR?', () => requestHubReturn(true), cancelHubReturn);
